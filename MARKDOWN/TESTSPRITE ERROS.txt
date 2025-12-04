@@ -1,0 +1,22 @@
+❌ Problemas Restantes (10 testes):
+TC005: Verificação de email não obrigatória - OK
+TC006: Reset de senha (código OTP inválido) - OK
+TC007: Botões de ação rápida não funcionam OK
+TC009: Edição de transação não salva - OK
+TC014: Exportação de dados bloqueada - OK
+TC016: Modal de verificação não fecha - OK
+TC017: Exclusão de conta não visível - OK
+TC019: Notificações (depende de autenticação) - OK
+TC021: Admin panel (depende de autenticação) OK
+TC023: Performance timeout - OK
+
+------------------------------------------------------------
+
+Urgente:
+✅ Implementar verificação de email obrigatória OK
+✅ Corrigir botões de ação rápida no dashboard OK 
+✅ Corrigir edição de transações (categoria não salva) OK
+Importante:
+✅ Corrigir exportação de dados - OK
+✅ Adicionar botão de exclusão de conta visível - OK
+✅ Corrigir modal de verificação de email - OK

@@ -1,0 +1,710 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration and Email Verification",
+    "description": "Verify that a user can register successfully, receive email verification, and verify their account correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to registration page."
+      },
+      {
+        "type": "action",
+        "description": "Input valid registration details including email and password."
+      },
+      {
+        "type": "action",
+        "description": "Submit registration form."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify registration is successful and confirmation message is shown."
+      },
+      {
+        "type": "action",
+        "description": "Receive email verification link."
+      },
+      {
+        "type": "action",
+        "description": "Click on the verification link."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the account is marked as verified in the system and user can login."
+      },
+      {
+        "type": "action",
+        "description": "Attempt registration with duplicate email."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an appropriate error message for duplicate email is displayed."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Login with Valid and Invalid Credentials",
+    "description": "Verify login success using correct credentials and failure handling with incorrect credentials.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page."
+      },
+      {
+        "type": "action",
+        "description": "Input correct email and password."
+      },
+      {
+        "type": "action",
+        "description": "Click login button."
+      },
+      {
+        "type": "assertion",
+        "description": "User is successfully logged in and redirected to dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Logout."
+      },
+      {
+        "type": "action",
+        "description": "Input invalid email or password."
+      },
+      {
+        "type": "action",
+        "description": "Click login button."
+      },
+      {
+        "type": "assertion",
+        "description": "User login fails with proper error message."
+      },
+      {
+        "type": "action",
+        "description": "Input unverified email credentials and attempt login."
+      },
+      {
+        "type": "assertion",
+        "description": "Login is denied with a message instructing the user to verify email."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Password Reset Flow",
+    "description": "Ensure users can request password reset, receive email, and reset password securely.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to forgot password page."
+      },
+      {
+        "type": "action",
+        "description": "Submit registered email for password reset."
+      },
+      {
+        "type": "assertion",
+        "description": "Receive password reset email with a secure link."
+      },
+      {
+        "type": "action",
+        "description": "Click on reset password link."
+      },
+      {
+        "type": "action",
+        "description": "Enter new valid password and confirm it."
+      },
+      {
+        "type": "action",
+        "description": "Submit new password."
+      },
+      {
+        "type": "assertion",
+        "description": "Password is updated and user can login with new password."
+      },
+      {
+        "type": "action",
+        "description": "Submit invalid or expired reset token."
+      },
+      {
+        "type": "assertion",
+        "description": "Show error message and prevent password reset."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Dashboard Data Load and Visualization",
+    "description": "Verify dashboard loads quickly, displays accurate financial overview, charts, recent transactions, and quick actions work correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to dashboard page."
+      },
+      {
+        "type": "assertion",
+        "description": "Dashboard financial overview loads with correct income and expenses."
+      },
+      {
+        "type": "assertion",
+        "description": "All charts render with accurate data visualizations."
+      },
+      {
+        "type": "assertion",
+        "description": "Recent transactions list loads with correct data."
+      },
+      {
+        "type": "action",
+        "description": "Use quick action buttons e.g. add transaction."
+      },
+      {
+        "type": "assertion",
+        "description": "Quick actions open the related modals and function correctly."
+      },
+      {
+        "type": "action",
+        "description": "Verify performance metrics and loading time does not exceed thresholds."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Transaction CRUD with Filters and Virtual Scrolling",
+    "description": "Test creation, reading, updating, and deletion of transactions with filters and verify virtual scrolling functionality.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to transactions page."
+      },
+      {
+        "type": "action",
+        "description": "Create a new income transaction with proper category and details."
+      },
+      {
+        "type": "assertion",
+        "description": "New transaction is saved and visible in the transaction list."
+      },
+      {
+        "type": "action",
+        "description": "Update existing transaction details."
+      },
+      {
+        "type": "assertion",
+        "description": "Changes are saved and reflected immediately."
+      },
+      {
+        "type": "action",
+        "description": "Delete a transaction and confirm."
+      },
+      {
+        "type": "assertion",
+        "description": "Transaction is removed from the list and database."
+      },
+      {
+        "type": "action",
+        "description": "Apply various filters like date range, category, amount."
+      },
+      {
+        "type": "assertion",
+        "description": "Filtered list displays only transactions matching criteria accurately."
+      },
+      {
+        "type": "action",
+        "description": "Scroll through a large transaction list."
+      },
+      {
+        "type": "assertion",
+        "description": "Virtual scrolling loads data dynamically for performance with no UI glitches."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Category Management with Icons, Emojis, and Colors",
+    "description": "Verify user can add, edit, and delete income and expense categories with customization options including icons, emojis, and colors.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to category management page."
+      },
+      {
+        "type": "action",
+        "description": "Create a new category with selected icon, emoji, and color."
+      },
+      {
+        "type": "assertion",
+        "description": "New category is saved and visible with correct customizations."
+      },
+      {
+        "type": "action",
+        "description": "Edit an existing category to change icon, emoji, or color."
+      },
+      {
+        "type": "assertion",
+        "description": "Changes persist and reflect correctly in categories list and related transactions."
+      },
+      {
+        "type": "action",
+        "description": "Delete a category that is not in use."
+      },
+      {
+        "type": "assertion",
+        "description": "Category is removed successfully."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to delete a category in use."
+      },
+      {
+        "type": "assertion",
+        "description": "Appropriate warning or prevention of deletion with clear messaging."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Financial Reports Generation and Export",
+    "description": "Verify generation of financial reports with accurate data, charts, tables, and exporting capabilities to PDF and Excel.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to reports page."
+      },
+      {
+        "type": "action",
+        "description": "Select date range and report type."
+      },
+      {
+        "type": "assertion",
+        "description": "Reports load with accurate data visualizations and tables."
+      },
+      {
+        "type": "action",
+        "description": "Export reports as PDF."
+      },
+      {
+        "type": "assertion",
+        "description": "PDF file downloads and content matches displayed report."
+      },
+      {
+        "type": "action",
+        "description": "Export reports as Excel."
+      },
+      {
+        "type": "assertion",
+        "description": "Excel file downloads with correct formatted data."
+      },
+      {
+        "type": "action",
+        "description": "Apply filters and export data."
+      },
+      {
+        "type": "assertion",
+        "description": "Export contains filtered data only."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Savings Goal Creation, Tracking and Notifications",
+    "description": "Ensure users can create savings goals, track progress visually, update or delete goals, and receive notifications about goal status.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to savings goals module."
+      },
+      {
+        "type": "action",
+        "description": "Create a new savings goal with target amount and deadline."
+      },
+      {
+        "type": "assertion",
+        "description": "Goal is saved and progress shown accurately."
+      },
+      {
+        "type": "action",
+        "description": "Update goal progress by adding savings."
+      },
+      {
+        "type": "assertion",
+        "description": "Progress visualization updates accordingly."
+      },
+      {
+        "type": "action",
+        "description": "Delete an existing goal after confirmation."
+      },
+      {
+        "type": "assertion",
+        "description": "Goal is removed from user’s list."
+      },
+      {
+        "type": "action",
+        "description": "Wait for notification about nearing deadline or goal achievement."
+      },
+      {
+        "type": "assertion",
+        "description": "User receives timely notification regarding savings goal."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "User Settings Persistence and Theme Toggle",
+    "description": "Verify user can update profile, theme preference, notification settings and changes persist on reload including theme switching between dark and light modes.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to user settings page."
+      },
+      {
+        "type": "action",
+        "description": "Update profile details like name, email."
+      },
+      {
+        "type": "assertion",
+        "description": "Profile updates are saved and reflected in the UI."
+      },
+      {
+        "type": "action",
+        "description": "Toggle theme from light to dark mode."
+      },
+      {
+        "type": "assertion",
+        "description": "UI changes to dark mode and setting is saved."
+      },
+      {
+        "type": "action",
+        "description": "Reload application."
+      },
+      {
+        "type": "assertion",
+        "description": "Selected theme persists and loads correctly."
+      },
+      {
+        "type": "action",
+        "description": "Modify notification preferences."
+      },
+      {
+        "type": "assertion",
+        "description": "Preferences are saved and notifications behave accordingly."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Data Export in Multiple Formats with Filtering",
+    "description": "Test data export functionality produces correct files in JSON, CSV, Excel, and PDF with filters applied.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to export data modal."
+      },
+      {
+        "type": "action",
+        "description": "Apply filters for date and category."
+      },
+      {
+        "type": "action",
+        "description": "Select JSON format and export data."
+      },
+      {
+        "type": "assertion",
+        "description": "Downloaded JSON file contains correct filtered data."
+      },
+      {
+        "type": "action",
+        "description": "Select CSV format and export data."
+      },
+      {
+        "type": "assertion",
+        "description": "CSV file downloads and data matches expectations."
+      },
+      {
+        "type": "action",
+        "description": "Select Excel format and export data."
+      },
+      {
+        "type": "assertion",
+        "description": "Excel file downloads with accurate filtered data."
+      },
+      {
+        "type": "action",
+        "description": "Select PDF format and export data."
+      },
+      {
+        "type": "assertion",
+        "description": "PDF export matches filtered data and formatting is correct."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Secure Account Deletion with OTP Verification",
+    "description": "Verify account deletion requires one-time password (OTP) verification and securely deletes all user data upon confirmation.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to account deletion page."
+      },
+      {
+        "type": "action",
+        "description": "Request OTP for account deletion verification."
+      },
+      {
+        "type": "assertion",
+        "description": "OTP is sent to registered user email or phone."
+      },
+      {
+        "type": "action",
+        "description": "Enter correct OTP and confirm deletion."
+      },
+      {
+        "type": "assertion",
+        "description": "Account and all associated data are deleted securely."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to delete account with invalid OTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Deletion is blocked with appropriate error message."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Subscription Plan Selection and Checkout Process",
+    "description": "Verify users can select subscription plans, complete checkout successfully, and manage their active subscriptions.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to subscription management page."
+      },
+      {
+        "type": "action",
+        "description": "Select a premium subscription plan."
+      },
+      {
+        "type": "action",
+        "description": "Complete checkout payment process."
+      },
+      {
+        "type": "assertion",
+        "description": "Subscription is activated and confirmation is displayed."
+      },
+      {
+        "type": "action",
+        "description": "Verify subscription status and plan details in user profile."
+      },
+      {
+        "type": "action",
+        "description": "Cancel or change subscription."
+      },
+      {
+        "type": "assertion",
+        "description": "Subscription management reflects updates correctly."
+      },
+      {
+        "type": "action",
+        "description": "Try to access premium features without subscription."
+      },
+      {
+        "type": "assertion",
+        "description": "Access is restricted and user is prompted to subscribe."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Real-Time Notification Delivery and Management",
+    "description": "Verify real-time notifications are delivered promptly and can be viewed and managed by the user.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger an event that causes a notification (e.g., savings goal nearing deadline)."
+      },
+      {
+        "type": "assertion",
+        "description": "Notification appears in the dropdown with relevant content."
+      },
+      {
+        "type": "action",
+        "description": "Open notification dropdown from UI."
+      },
+      {
+        "type": "assertion",
+        "description": "Notifications are listed correctly with timestamps."
+      },
+      {
+        "type": "action",
+        "description": "Mark notification as read or delete it."
+      },
+      {
+        "type": "assertion",
+        "description": "Notification state updates and is removed or marked accordingly."
+      },
+      {
+        "type": "action",
+        "description": "Test notification handling under offline and reconnection scenarios."
+      },
+      {
+        "type": "assertion",
+        "description": "Notifications are synced and consistent after connection recovery."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Financial Calculator Accuracy and Input Validation",
+    "description": "Test percentage and compound interest calculators return correct results for valid input and handle edge and invalid input gracefully.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to percentage calculator page."
+      },
+      {
+        "type": "action",
+        "description": "Input valid values and calculate percentage."
+      },
+      {
+        "type": "assertion",
+        "description": "Results are accurate matching expected mathematical outputs."
+      },
+      {
+        "type": "action",
+        "description": "Input invalid or empty values."
+      },
+      {
+        "type": "assertion",
+        "description": "Calculator shows validation errors or prevents calculation."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to compound interest calculator."
+      },
+      {
+        "type": "action",
+        "description": "Input principal, rate, time, and compounding frequency with valid values."
+      },
+      {
+        "type": "assertion",
+        "description": "Calculator returns correct compounded interest and total amount."
+      },
+      {
+        "type": "action",
+        "description": "Test boundary cases such as zero or very large inputs."
+      },
+      {
+        "type": "assertion",
+        "description": "Calculations remain accurate and UI handles input safely."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Admin Panel Access Control and Functionalities",
+    "description": "Verify that only authorized admin users can access the admin panel and perform system and user management tasks.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to access admin panel as a non-admin user."
+      },
+      {
+        "type": "assertion",
+        "description": "Access is denied and user is redirected or shown error."
+      },
+      {
+        "type": "action",
+        "description": "Login as admin user and navigate to admin panel."
+      },
+      {
+        "type": "assertion",
+        "description": "Admin panel loads successfully with system and user management options."
+      },
+      {
+        "type": "action",
+        "description": "Perform user management actions such as disabling or deleting users."
+      },
+      {
+        "type": "assertion",
+        "description": "Actions complete successfully and system state updates."
+      },
+      {
+        "type": "action",
+        "description": "Perform system configuration or monitoring tasks."
+      },
+      {
+        "type": "assertion",
+        "description": "Admin functionalities behave as expected."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Theme System Dark and Light Mode Toggle",
+    "description": "Verify the theme system properly toggles between dark and light modes with correct UI context updates across the entire application.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to any page with theme toggle."
+      },
+      {
+        "type": "action",
+        "description": "Toggle theme from light to dark."
+      },
+      {
+        "type": "assertion",
+        "description": "Entire UI updates to dark mode style."
+      },
+      {
+        "type": "action",
+        "description": "Toggle back to light mode."
+      },
+      {
+        "type": "assertion",
+        "description": "UI reverts to light mode style without visual glitches."
+      },
+      {
+        "type": "action",
+        "description": "Refresh the page."
+      },
+      {
+        "type": "assertion",
+        "description": "Selected theme persists correctly across reloads."
+      }
+    ]
+  }
+]

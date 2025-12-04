@@ -1,0 +1,171 @@
+# 🌐 Guia de Acesso via Rede Local
+
+## ✅ Configurações Aplicadas:
+
+### Frontend (Vite):
+- Host: 0.0.0.0 (aceita conexões de qualquer IP)
+- Porta: 3000
+
+### Backend (Express):
+- Host: 0.0.0.0 (aceita conexões de qualquer IP)
+- Porta: 3333
+
+---
+
+## 🚀 Como Usar:
+
+### 1. Iniciar os Servidores:
+
+**Backend:**
+```bash
+cd backend
+npm run dev
+```
+O backend mostrará o IP da rede local no console:
+```
+🌐 Network: http://192.168.x.x:3333
+```
+
+**Frontend:**
+```bash
+npm run dev
+```
+O Vite mostrará:
+```
+➜  Local:   http://localhost:3000/
+➜  Network: http://192.168.x.x:3000/
+```
+
+---
+
+### 2. Descobrir seu IP Local:
+
+**Windows (PowerShell):**
+```powershell
+ipconfig
+```
+Procure por "Endereço IPv4" na seção da sua rede (Wi-Fi ou Ethernet)
+Exemplo: `192.168.1.100`
+
+**Windows (CMD):**
+```cmd
+ipconfig | findstr IPv4
+```
+
+---
+
+### 3. Acessar de Outra Máquina:
+
+**Na mesma rede Wi-Fi/Ethernet:**
+
+**Frontend:**
+```
+http://SEU_IP:3000
+Exemplo: http://192.168.1.100:3000
+```
+
+**Backend (API):**
+```
+http://SEU_IP:3333
+Exemplo: http://192.168.1.100:3333
+```
+
+---
+
+## ⚙️ IMPORTANTE: Configurar o Frontend para Usar o Backend da Rede:
+
+**OBRIGATÓRIO** para acesso de outros dispositivos!
+
+**Edite o arquivo `.env` na raiz do projeto:**
+
+```env
+# Substitua pelo seu IP da rede
+VITE_API_URL=http://192.168.103.84:3333/api/v1
+```
+
+**Após editar, REINICIE o servidor frontend:**
+```bash
+# Pare o servidor (Ctrl+C)
+# Inicie novamente
+npm run dev
+```
+
+**ATENÇÃO:** Sem isso, o frontend tentará acessar `localhost` e não funcionará em outros dispositivos!
+
+---
+
+## 🔥 Firewall do Windows:
+
+Se não conseguir acessar, libere as portas no firewall:
+
+**PowerShell (como Administrador):**
+```powershell
+# Frontend (porta 3000)
+New-NetFirewallRule -DisplayName "Vite Dev Server" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow
+
+# Backend (porta 3333)
+New-NetFirewallRule -DisplayName "Node Backend" -Direction Inbound -LocalPort 3333 -Protocol TCP -Action Allow
+```
+
+**Ou via Interface Gráfica:**
+1. Painel de Controle → Firewall do Windows
+2. Configurações Avançadas
+3. Regras de Entrada → Nova Regra
+4. Porta → TCP → 3000 e 3333
+5. Permitir conexão
+
+---
+
+## 📱 Testar Conexão:
+
+**Do seu celular/outro PC:**
+
+1. Conecte na mesma rede Wi-Fi
+2. Abra o navegador
+3. Digite: `http://SEU_IP:3000`
+4. Deve carregar o projeto!
+
+---
+
+## 🐛 Problemas Comuns:
+
+### "Não consigo acessar"
+- ✅ Verifique se está na mesma rede
+- ✅ Verifique o firewall
+- ✅ Confirme o IP com `ipconfig`
+- ✅ Teste ping: `ping SEU_IP`
+
+### "API não funciona"
+- ✅ Verifique se o backend está rodando
+- ✅ Configure a variável VITE_API_URL
+- ✅ Reinicie o frontend após mudar .env
+
+### "Conexão recusada"
+- ✅ Firewall bloqueando
+- ✅ Backend não está em 0.0.0.0
+- ✅ Porta já está em uso
+
+---
+
+## 📝 Exemplo Completo:
+
+**Seu PC (192.168.1.100):**
+- Backend: http://192.168.1.100:3333
+- Frontend: http://192.168.1.100:3000
+
+**Outro dispositivo na rede:**
+- Acesse: http://192.168.1.100:3000
+- A API será: http://192.168.1.100:3333/api/v1
+
+---
+
+## 🎯 Checklist:
+
+- [ ] Backend rodando com `npm run dev`
+- [ ] Frontend rodando com `npm run dev`
+- [ ] IP local identificado (ipconfig)
+- [ ] Firewall configurado (portas 3000 e 3333)
+- [ ] Dispositivos na mesma rede
+- [ ] Testado no navegador: http://SEU_IP:3000
+
+**Tudo configurado! Agora você pode acessar de qualquer dispositivo na rede!** 🎉

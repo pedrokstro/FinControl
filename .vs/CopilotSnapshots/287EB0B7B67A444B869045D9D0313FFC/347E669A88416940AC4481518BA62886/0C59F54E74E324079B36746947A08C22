@@ -1,0 +1,323 @@
+﻿import {
+  // Income Icons
+  DollarSign,
+  Briefcase,
+  TrendingUp,
+  Gift,
+  PiggyBank,
+  Wallet,
+  BadgeDollarSign,
+  Coins,
+  Banknote,
+  
+  // Expense Icons - Food & Dining
+  UtensilsCrossed,
+  Coffee,
+  Pizza,
+  Wine,
+  IceCream,
+  Apple,
+  
+  // Expense Icons - Transportation
+  Car,
+  Bus,
+  Bike,
+  Plane,
+  Train,
+  Fuel,
+  
+  // Expense Icons - Housing
+  Home,
+  Building,
+  Lamp,
+  Droplets,
+  Zap,
+  Hammer,
+  
+  // Expense Icons - Entertainment & Leisure
+  Gamepad2,
+  Film,
+  Music,
+  ShoppingBag,
+  ShoppingCart,
+  Shirt,
+  Watch,
+  Ticket,
+  Palmtree,
+  
+  // Expense Icons - Health & Wellness
+  Heart,
+  Activity,
+  Stethoscope,
+  Pill,
+  Dumbbell,
+  Smile,
+  
+  // Expense Icons - Education & Work
+  GraduationCap,
+  BookOpen,
+  Laptop,
+  Pencil,
+  FileText,
+  
+  // Expense Icons - Bills & Services
+  Smartphone,
+  Wifi,
+  CreditCard,
+  Receipt,
+  FileCheck,
+  
+  // Expense Icons - Personal Care
+  Scissors,
+  Sparkles,
+  
+  // Expense Icons - Pets
+  Dog,
+  Cat,
+  
+  // Expense Icons - Other
+  Package,
+  MapPin,
+  Users,
+  Baby,
+  Cigarette,
+  type LucideIcon,
+} from 'lucide-react'
+
+export type IconName = 
+  // Income
+  | 'DollarSign' | 'Briefcase' | 'TrendingUp' | 'Gift' | 'PiggyBank' 
+  | 'Wallet' | 'BadgeDollarSign' | 'Coins' | 'Banknote'
+  // Food & Dining
+  | 'UtensilsCrossed' | 'Coffee' | 'Pizza' | 'Wine' | 'IceCream' | 'Apple'
+  // Transportation
+  | 'Car' | 'Bus' | 'Bike' | 'Plane' | 'Train' | 'Fuel'
+  // Housing
+  | 'Home' | 'Building' | 'Lamp' | 'Droplets' | 'Zap' | 'Hammer'
+  // Entertainment
+  | 'Gamepad2' | 'Film' | 'Music' | 'ShoppingBag' | 'ShoppingCart' 
+  | 'Shirt' | 'Watch' | 'Ticket' | 'Palmtree'
+  // Health
+  | 'Heart' | 'Activity' | 'Stethoscope' | 'Pill' | 'Dumbbell' | 'Smile'
+  // Education
+  | 'GraduationCap' | 'BookOpen' | 'Laptop' | 'Pencil' | 'FileText'
+  // Bills
+  | 'Smartphone' | 'Wifi' | 'CreditCard' | 'Receipt' | 'FileCheck'
+  // Personal
+  | 'Scissors' | 'Sparkles'
+  // Pets
+  | 'Dog' | 'Cat'
+  // Other
+  | 'Package' | 'MapPin' | 'Users' | 'Baby' | 'Cigarette'
+
+export const iconMap: Record<IconName, LucideIcon> = {
+  // Income Icons
+  DollarSign,
+  Briefcase,
+  TrendingUp,
+  Gift,
+  PiggyBank,
+  Wallet,
+  BadgeDollarSign,
+  Coins,
+  Banknote,
+  
+  // Food & Dining
+  UtensilsCrossed,
+  Coffee,
+  Pizza,
+  Wine,
+  IceCream,
+  Apple,
+  
+  // Transportation
+  Car,
+  Bus,
+  Bike,
+  Plane,
+  Train,
+  Fuel,
+  
+  // Housing
+  Home,
+  Building,
+  Lamp,
+  Droplets,
+  Zap,
+  Hammer,
+  
+  // Entertainment
+  Gamepad2,
+  Film,
+  Music,
+  ShoppingBag,
+  ShoppingCart,
+  Shirt,
+  Watch,
+  Ticket,
+  Palmtree,
+  
+  // Health
+  Heart,
+  Activity,
+  Stethoscope,
+  Pill,
+  Dumbbell,
+  Smile,
+  
+  // Education
+  GraduationCap,
+  BookOpen,
+  Laptop,
+  Pencil,
+  FileText,
+  
+  // Bills
+  Smartphone,
+  Wifi,
+  CreditCard,
+  Receipt,
+  FileCheck,
+  
+  // Personal
+  Scissors,
+  Sparkles,
+  
+  // Pets
+  Dog,
+  Cat,
+  
+  // Other
+  Package,
+  MapPin,
+  Users,
+  Baby,
+  Cigarette,
+}
+
+export const getIcon = (iconName: IconName): LucideIcon => {
+  return iconMap[iconName] || DollarSign
+}
+
+// Organized icon categories for easy selection
+export const iconCategories = {
+  income: [
+    { name: 'DollarSign', label: 'Dinheiro' },
+    { name: 'Briefcase', label: 'Trabalho' },
+    { name: 'TrendingUp', label: 'Investimento' },
+    { name: 'Gift', label: 'Presente' },
+    { name: 'PiggyBank', label: 'Poupança' },
+    { name: 'Wallet', label: 'Carteira' },
+    { name: 'BadgeDollarSign', label: 'Bônus' },
+    { name: 'Coins', label: 'Moedas' },
+    { name: 'Banknote', label: 'Nota' },
+  ] as const,
+  
+  foodAndDining: [
+    { name: 'UtensilsCrossed', label: 'Restaurante' },
+    { name: 'Coffee', label: 'Café' },
+    { name: 'Pizza', label: 'Pizza' },
+    { name: 'Wine', label: 'Bebidas' },
+    { name: 'IceCream', label: 'Sobremesa' },
+    { name: 'Apple', label: 'Supermercado' },
+  ] as const,
+  
+  transportation: [
+    { name: 'Car', label: 'Carro' },
+    { name: 'Bus', label: 'Ônibus' },
+    { name: 'Bike', label: 'Bicicleta' },
+    { name: 'Plane', label: 'Avião' },
+    { name: 'Train', label: 'Trem' },
+    { name: 'Fuel', label: 'Combustível' },
+  ] as const,
+  
+  housing: [
+    { name: 'Home', label: 'Casa' },
+    { name: 'Building', label: 'Prédio' },
+    { name: 'Lamp', label: 'Iluminação' },
+    { name: 'Droplets', label: 'Água' },
+    { name: 'Zap', label: 'Energia' },
+    { name: 'Hammer', label: 'Reparos' },
+  ] as const,
+  
+  entertainment: [
+    { name: 'Gamepad2', label: 'Games' },
+    { name: 'Film', label: 'Cinema' },
+    { name: 'Music', label: 'Música' },
+    { name: 'ShoppingBag', label: 'Compras' },
+    { name: 'ShoppingCart', label: 'Varejo' },
+    { name: 'Shirt', label: 'Roupas' },
+    { name: 'Watch', label: 'Acessórios' },
+    { name: 'Ticket', label: 'Eventos' },
+    { name: 'Palmtree', label: 'Viagem' },
+  ] as const,
+  
+  health: [
+    { name: 'Heart', label: 'Saúde' },
+    { name: 'Activity', label: 'Fitness' },
+    { name: 'Stethoscope', label: 'Médico' },
+    { name: 'Pill', label: 'Farmácia' },
+    { name: 'Dumbbell', label: 'Academia' },
+    { name: 'Smile', label: 'Bem-estar' },
+  ] as const,
+  
+  education: [
+    { name: 'GraduationCap', label: 'Educação' },
+    { name: 'BookOpen', label: 'Livros' },
+    { name: 'Laptop', label: 'Cursos Online' },
+    { name: 'Pencil', label: 'Material' },
+    { name: 'FileText', label: 'Documentos' },
+  ] as const,
+  
+  bills: [
+    { name: 'Smartphone', label: 'Telefone' },
+    { name: 'Wifi', label: 'Internet' },
+    { name: 'CreditCard', label: 'Cartão' },
+    { name: 'Receipt', label: 'Contas' },
+    { name: 'FileCheck', label: 'Assinatura' },
+  ] as const,
+  
+  personal: [
+    { name: 'Scissors', label: 'Cabelo' },
+    { name: 'Sparkles', label: 'Beleza' },
+  ] as const,
+  
+  pets: [
+    { name: 'Dog', label: 'Cachorro' },
+    { name: 'Cat', label: 'Gato' },
+  ] as const,
+  
+  other: [
+    { name: 'Package', label: 'Encomenda' },
+    { name: 'MapPin', label: 'Localização' },
+    { name: 'Users', label: 'Família' },
+    { name: 'Baby', label: 'Bebê' },
+    { name: 'Cigarette', label: 'Vícios' },
+  ] as const,
+}
+
+// Helper to get all available icons
+export const getAllIcons = () => {
+  return Object.values(iconCategories).flat()
+}
+
+// Helper to get icons by type
+export const getIconsByType = (type: 'income' | 'expense') => {
+  if (type === 'income') {
+    return iconCategories.income
+  }
+  
+  // For expenses, return all categories except income
+  return [
+    ...iconCategories.foodAndDining,
+    ...iconCategories.transportation,
+    ...iconCategories.housing,
+    ...iconCategories.entertainment,
+    ...iconCategories.health,
+    ...iconCategories.education,
+    ...iconCategories.bills,
+    ...iconCategories.personal,
+    ...iconCategories.pets,
+    ...iconCategories.other,
+  ]
+}

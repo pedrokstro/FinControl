@@ -1,0 +1,62 @@
+﻿import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { AuthState, User } from '@/types'
+import toast from 'react-hot-toast'
+
+// Simulação de API - Em produção, substituir por chamadas reais
+const mockLogin = async (email: string, password: string): Promise<{ user: User; token: string }> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (email === 'demo@financeiro.com' && password === 'demo123') {
+        resolve({
+          user: {
+            id: '1',
+            name: 'Usuário Demo',
+            email: 'demo@financeiro.com',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+            createdAt: new Date().toISOString(),
+          },
+          token: 'mock-jwt-token-12345',
+        })
+      } else {
+        reject(new Error('Credenciais inválidas'))
+      }
+    }, 1000)
+  })
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+
+      login: async (email: string, password: string) => {
+        try {
+          const { user, token } = await mockLogin(email, password)
+          set({ user, token, isAuthenticated: true })
+          toast.success(`Bem-vindo, ${user.name}!`)
+        } catch (error) {
+          toast.error('Email ou senha incorretos')
+          throw error
+        }
+      },
+
+      logout: () => {
+        set({ user: null, token: null, isAuthenticated: false })
+        toast.success('Logout realizado com sucesso')
+      },
+
+      updateUser: (userData: Partial<User>) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, ...userData } : null,
+        }))
+        toast.success('Perfil atualizado com sucesso')
+      },
+    }),
+    {
+      name: 'auth-storage',
+    }
+  )
+)

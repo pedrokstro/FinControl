@@ -1,0 +1,115 @@
+﻿import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { imageStorage } from '@/utils/imageStorage'
+
+interface User {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+}
+
+interface AuthState {
+  user: User | null
+  isAuthenticated: boolean
+  login: (email: string, password: string) => Promise<boolean>
+  logout: () => Promise<void>
+  updateUser: (data: Partial<User>) => void
+  updateAvatar: (avatarUrl: string) => Promise<void>
+  loadAvatar: () => Promise<void>
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      isAuthenticated: false,
+
+      login: async (email: string, password: string) => {
+        // Simulação de login (em produção, isso seria uma chamada à API)
+        if (email === 'demo@financeiro.com' && password === 'demo123') {
+          const user = {
+            id: '1',
+            name: 'Usuário Demo',
+            email: 'demo@financeiro.com',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+          }
+
+          set({ user, isAuthenticated: true })
+
+          // Tentar carregar avatar do IndexedDB
+          try {
+            const savedAvatar = await imageStorage.loadImage(user.id)
+            if (savedAvatar) {
+              set({ user: { ...user, avatar: savedAvatar } })
+            }
+          } catch (error) {
+            console.error('Erro ao carregar avatar:', error)
+          }
+
+          return true
+        }
+        return false
+      },
+
+      logout: async () => {
+        set({ user: null, isAuthenticated: false })
+      },
+
+      updateUser: (data: Partial<User>) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, ...data } : null,
+        }))
+      },
+
+      updateAvatar: async (avatarUrl: string) => {
+        const state = get()
+        if (!state.user) return
+
+        try {
+          // Salvar no IndexedDB
+          await imageStorage.saveImage(state.user.id, avatarUrl)
+
+          // Atualizar estado
+          set({
+            user: { ...state.user, avatar: avatarUrl },
+          })
+        } catch (error) {
+          console.error('Erro ao salvar avatar:', error)
+          throw error
+        }
+      },
+
+      loadAvatar: async () => {
+        const state = get()
+        if (!state.user) return
+
+        try {
+          const savedAvatar = await imageStorage.loadImage(state.user.id)
+          if (savedAvatar) {
+            set({
+              user: { ...state.user, avatar: savedAvatar },
+            })
+          }
+        } catch (error) {
+          console.error('Erro ao carregar avatar:', error)
+        }
+      },
+    }),
+    {
+      name: 'auth-storage',
+      // Não persistir avatar no localStorage (só metadados)
+      partialize: (state) => ({
+        user: state.user
+          ? {
+              id: state.user.id,
+              name: state.user.name,
+              email: state.user.email,
+              // avatar será carregado do IndexedDB
+            }
+          : null,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    }
+  )
+)

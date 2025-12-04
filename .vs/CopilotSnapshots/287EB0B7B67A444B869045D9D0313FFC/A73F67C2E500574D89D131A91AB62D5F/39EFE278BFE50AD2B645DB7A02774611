@@ -1,0 +1,642 @@
+﻿import { useMemo, useState } from 'react'
+import { useFinancialStore } from '@/store/financialStore'
+import {
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ComposedChart,
+} from 'recharts'
+import { format, startOfMonth, endOfMonth, subMonths, eachMonthOfInterval } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { Download, TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
+
+const Reports = () => {
+  const { transactions, categories } = useFinancialStore()
+  const [period, setPeriod] = useState<'3' | '6' | '12'>('6')
+
+  // Dados para gráfico de evolução mensal
+  const monthlyEvolution = useMemo(() => {
+    const months = parseInt(period)
+    const startDate = subMonths(new Date(), months - 1)
+    const endDate = new Date()
+    
+    const monthsArray = eachMonthOfInterval({ start: startDate, end: endDate })
+    
+    return monthsArray.map((month) => {
+      const monthStart = startOfMonth(month)
+      const monthEnd = endOfMonth(month)
+      
+      const monthTransactions = transactions.filter((t) => {
+        const tDate = new Date(t.date)
+        return tDate >= monthStart && tDate <= monthEnd
+      })
+      
+      const income = monthTransactions
+        .filter((t) => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0)
+      
+      const expense = monthTransactions
+        .filter((t) => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0)
+      
+      return {
+        month: format(month, 'MMM/yy', { locale: ptBR }),
+        receitas: income,
+        despesas: expense,
+        saldo: income - expense,
+      }
+    })
+  }, [transactions, period])
+
+  // Atualizar dados de categorias para incluir receitas e despesas DO MES ATUAL
+  const categoryData = useMemo(() => {
+    const now = new Date()
+    const monthStart = startOfMonth(now)
+    const monthEnd = endOfMonth(now)
+
+    // Filtrar apenas transações do mês atual
+    const monthTransactions = transactions.filter((t) => {
+      const tDate = new Date(t.date)
+      return tDate >= monthStart && tDate <= monthEnd
+    })
+
+    // Despesas por categoria (apenas do mês atual)
+    const expensesByCategory = categories
+      .filter((cat) => cat.type === 'expense')
+      .map((cat) => {
+        const total = monthTransactions
+          .filter((t) => t.categoryId === cat.id && t.type === 'expense')
+          .reduce((sum, t) => sum + t.amount, 0)
+        
+        return {
+          name: cat.name,
+          despesas: total,
+          receitas: 0,
+          color: cat.color,
+          type: 'expense' as const,
+        }
+      })
+      .filter((item) => item.despesas > 0)
+    
+    // Receitas por categoria (apenas do mês atual)
+    const incomeByCategory = categories
+      .filter((cat) => cat.type === 'income')
+      .map((cat) => {
+        const total = monthTransactions
+          .filter((t) => t.categoryId === cat.id && t.type === 'income')
+          .reduce((sum, t) => sum + t.amount, 0)
+        
+        return {
+          name: cat.name,
+          receitas: total,
+          despesas: 0,
+          color: cat.color,
+          type: 'income' as const,
+        }
+      })
+      .filter((item) => item.receitas > 0)
+    
+    return {
+      expenses: expensesByCategory.sort((a, b) => b.despesas - a.despesas),
+      income: incomeByCategory.sort((a, b) => b.receitas - a.receitas),
+      combined: [...expensesByCategory, ...incomeByCategory].sort((a, b) => 
+        (b.receitas + b.despesas) - (a.receitas + a.despesas)
+      ),
+    }
+  }, [transactions, categories])
+
+  // Dados para comparação lado a lado de receitas e despesas por categoria (MES ATUAL)
+  const categoryComparison = useMemo(() => {
+    const now = new Date()
+    const monthStart = startOfMonth(now)
+    const monthEnd = endOfMonth(now)
+
+    // Filtrar apenas transações do mês atual
+    const monthTransactions = transactions.filter((t) => {
+      const tDate = new Date(t.date)
+      return tDate >= monthStart && tDate <= monthEnd
+    })
+
+    const allCategories = new Set([
+      ...categories.filter(c => c.type === 'expense').map(c => c.name),
+      ...categories.filter(c => c.type === 'income').map(c => c.name),
+    ])
+    
+    return Array.from(allCategories).map(catName => {
+      const expenseCat = categories.find(c => c.name === catName && c.type === 'expense')
+      const incomeCat = categories.find(c => c.name === catName && c.type === 'income')
+      
+      const expenses = expenseCat 
+        ? monthTransactions
+            .filter(t => t.categoryId === expenseCat.id && t.type === 'expense')
+            .reduce((sum, t) => sum + t.amount, 0)
+        : 0
+      
+      const income = incomeCat
+        ? monthTransactions
+            .filter(t => t.categoryId === incomeCat.id && t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0)
+        : 0
+      
+      return {
+        category: catName,
+        receitas: income,
+        despesas: expenses,
+        total: income + expenses,
+      }
+    }).filter(item => item.total > 0)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10) // Top 10 categorias
+  }, [transactions, categories])
+
+  // Dados para comparação mensal
+  const monthlyComparison = useMemo(() => {
+    const currentMonth = new Date()
+    const lastMonth = subMonths(currentMonth, 1)
+    
+    const getCurrentMonthData = (date: Date) => {
+      const monthStart = startOfMonth(date)
+      const monthEnd = endOfMonth(date)
+      
+      const monthTransactions = transactions.filter((t) => {
+        const tDate = new Date(t.date)
+        return tDate >= monthStart && tDate <= monthEnd
+      })
+      
+      return {
+        income: monthTransactions
+          .filter((t) => t.type === 'income')
+          .reduce((sum, t) => sum + t.amount, 0),
+        expense: monthTransactions
+          .filter((t) => t.type === 'expense')
+          .reduce((sum, t) => sum + t.amount, 0),
+      }
+    }
+    
+    const current = getCurrentMonthData(currentMonth)
+    const last = getCurrentMonthData(lastMonth)
+    
+    return {
+      income: {
+        current: current.income,
+        last: last.income,
+        change: last.income > 0 ? ((current.income - last.income) / last.income) * 100 : 0,
+      },
+      expense: {
+        current: current.expense,
+        last: last.expense,
+        change: last.expense > 0 ? ((current.expense - last.expense) / last.expense) * 100 : 0,
+      },
+      balance: {
+        current: current.income - current.expense,
+        last: last.income - last.expense,
+        change: (last.income - last.expense) > 0 
+          ? (((current.income - current.expense) - (last.income - last.expense)) / (last.income - last.expense)) * 100 
+          : 0,
+      },
+    }
+  }, [transactions])
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
+
+  const formatPercent = (value: number) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
+  }
+
+  const exportToCSV = () => {
+    const csvContent = [
+      ['Mês', 'Receitas', 'Despesas', 'Saldo'],
+      ...monthlyEvolution.map(item => [
+        item.month,
+        item.receitas,
+        item.despesas,
+        item.saldo,
+      ]),
+    ]
+      .map(row => row.join(','))
+      .join('\n')
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `relatorio-financeiro-${format(new Date(), 'yyyy-MM-dd')}.csv`)
+    link.click()
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Relatórios</h1>
+          <p className="text-gray-600 mt-1">
+            Análise detalhada das suas finanças
+          </p>
+        </div>
+        <button
+          onClick={exportToCSV}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Download className="w-5 h-5" />
+          Exportar CSV
+        </button>
+      </div>
+
+      {/* Comparação Mensal */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">Receitas do Mês</h3>
+            <div className="w-10 h-10 bg-success-50 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-success-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mb-2">
+            {formatCurrency(monthlyComparison.income.current)}
+          </p>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-sm font-medium ${
+                monthlyComparison.income.change >= 0 ? 'text-success-600' : 'text-danger-600'
+              }`}
+            >
+              {formatPercent(monthlyComparison.income.change)}
+            </span>
+            <span className="text-sm text-gray-500">vs mês anterior</span>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">Despesas do Mês</h3>
+            <div className="w-10 h-10 bg-danger-50 rounded-lg flex items-center justify-center">
+              <TrendingDown className="w-5 h-5 text-danger-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mb-2">
+            {formatCurrency(monthlyComparison.expense.current)}
+          </p>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-sm font-medium ${
+                monthlyComparison.expense.change <= 0 ? 'text-success-600' : 'text-danger-600'
+              }`}
+            >
+              {formatPercent(monthlyComparison.expense.change)}
+            </span>
+            <span className="text-sm text-gray-500">vs mês anterior</span>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">Saldo do Mês</h3>
+            <div className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mb-2">
+            {formatCurrency(monthlyComparison.balance.current)}
+          </p>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-sm font-medium ${
+                monthlyComparison.balance.change >= 0 ? 'text-success-600' : 'text-danger-600'
+              }`}
+            >
+              {formatPercent(monthlyComparison.balance.change)}
+            </span>
+            <span className="text-sm text-gray-500">vs mês anterior</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Evolução Mensal */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Evolução Financeira
+          </h3>
+          <div className="flex gap-2">
+            {(['3', '6', '12'] as const).map((months) => (
+              <button
+                key={months}
+                onClick={() => setPeriod(months)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  period === months
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {months} meses
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <ResponsiveContainer width="100%" height={350}>
+          <LineChart data={monthlyEvolution}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="month" stroke="#6b7280" />
+            <YAxis stroke="#6b7280" />
+            <Tooltip
+              formatter={(value: number) => formatCurrency(value)}
+              contentStyle={{
+                backgroundColor: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+              }}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="receitas"
+              stroke="#22c55e"
+              strokeWidth={2}
+              name="Receitas"
+              dot={{ fill: '#22c55e', r: 4 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="despesas"
+              stroke="#ef4444"
+              strokeWidth={2}
+              name="Despesas"
+              dot={{ fill: '#ef4444', r: 4 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="saldo"
+              stroke="#0ea5e9"
+              strokeWidth={2}
+              name="Saldo"
+              dot={{ fill: '#0ea5e9', r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Novo: Comparação de Receitas vs Despesas por Categoria */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Receitas e Despesas por Categoria
+          </h3>
+          <div className="text-sm text-gray-500">
+            Top 10 categorias por volume
+          </div>
+        </div>
+
+        <ResponsiveContainer width="100%" height={400}>
+          <ComposedChart data={categoryComparison} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis type="number" stroke="#6b7280" />
+            <YAxis dataKey="category" type="category" stroke="#6b7280" width={120} />
+            <Tooltip
+              formatter={(value: number) => formatCurrency(value)}
+              contentStyle={{
+                backgroundColor: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+              }}
+            />
+            <Legend />
+            <Bar 
+              dataKey="receitas" 
+              fill="#22c55e" 
+              name="Receitas"
+              radius={[0, 8, 8, 0]}
+            />
+            <Bar 
+              dataKey="despesas" 
+              fill="#ef4444" 
+              name="Despesas"
+              radius={[0, 8, 8, 0]}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Gráficos de Distribuição lado a lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Distribuição de Receitas */}
+        <div className="card">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Distribuição de Receitas
+          </h3>
+          {categoryData.income.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categoryData.income}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="receitas"
+                >
+                  {categoryData.income.map((entry, index) => (
+                    <Cell key={`cell-income-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              Nenhuma receita registrada
+            </div>
+          )}
+        </div>
+
+        {/* Distribuição de Despesas */}
+        <div className="card">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Distribuição de Despesas
+          </h3>
+          {categoryData.expenses.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categoryData.expenses}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="despesas"
+                >
+                  {categoryData.expenses.map((entry, index) => (
+                    <Cell key={`cell-expense-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              Nenhuma despesa registrada
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Resumo Detalhado - Receitas e Despesas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Resumo de Receitas */}
+        <div className="card">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="w-2 h-6 bg-success-500 rounded"></div>
+            Resumo de Receitas por Categoria
+          </h3>
+          {categoryData.income.length > 0 ? (
+            <div className="space-y-4">
+              {categoryData.income.map((item) => {
+                const totalIncome = categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0)
+                const percentage = (item.receitas / totalIncome) * 100
+                return (
+                  <div key={item.name}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-4 h-4 rounded"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="font-medium text-gray-900">{item.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-success-600">
+                          {formatCurrency(item.receitas)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {percentage.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${percentage}%`,
+                          backgroundColor: item.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-900">Total de Receitas</span>
+                  <span className="font-bold text-success-600 text-lg">
+                    {formatCurrency(categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Nenhuma receita registrada
+            </div>
+          )}
+        </div>
+
+        {/* Resumo de Despesas */}
+        <div className="card">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="w-2 h-6 bg-danger-500 rounded"></div>
+            Resumo de Despesas por Categoria
+          </h3>
+          {categoryData.expenses.length > 0 ? (
+            <div className="space-y-4">
+              {categoryData.expenses.map((item) => {
+                const totalExpense = categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0)
+                const percentage = (item.despesas / totalExpense) * 100  // Fixed: removed + 0.1
+                return (
+                  <div key={item.name}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-4 h-4 rounded"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="font-medium text-gray-900">{item.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-danger-600">
+                          {formatCurrency(item.despesas)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {percentage.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${percentage}%`,
+                          backgroundColor: item.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-900">Total de Despesas</span>
+                  <span className="font-bold text-danger-600 text-lg">
+                    {formatCurrency(categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Nenhuma despesa registrada
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Reports

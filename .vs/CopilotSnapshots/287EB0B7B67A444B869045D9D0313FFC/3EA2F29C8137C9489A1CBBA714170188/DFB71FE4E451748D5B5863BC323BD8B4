@@ -1,0 +1,389 @@
+﻿import { useState } from 'react'
+import { useAuthStore } from '@/store/authStore'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { User, Bell, Palette, Database, Shield } from 'lucide-react'
+import toast from 'react-hot-toast'
+
+const profileSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+  email: z.string().email('Email inválido'),
+})
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+  newPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+  confirmPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'As senhas não coincidem',
+  path: ['confirmPassword'],
+})
+
+type ProfileFormData = z.infer<typeof profileSchema>
+type PasswordFormData = z.infer<typeof passwordSchema>
+
+const Settings = () => {
+  const { user, updateUser } = useAuthStore()
+  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'preferences'>('profile')
+
+  const profileForm = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: user?.name || '',
+      email: user?.email || '',
+    },
+  })
+
+  const passwordForm = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+  })
+
+  const onSubmitProfile = (data: ProfileFormData) => {
+    updateUser(data)
+    profileForm.reset(data)
+  }
+
+  const onSubmitPassword = (_data: PasswordFormData) => {
+    // Simulação de mudança de senha
+    toast.success('Senha alterada com sucesso')
+    passwordForm.reset()
+  }
+
+  const tabs = [
+    { id: 'profile', label: 'Perfil', icon: User },
+    { id: 'security', label: 'Segurança', icon: Shield },
+    { id: 'notifications', label: 'Notificações', icon: Bell },
+    { id: 'preferences', label: 'Preferências', icon: Palette },
+  ]
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configurações</h1>
+        <p className="text-gray-600 dark:text-neutral-400 mt-1">
+          Gerencie suas preferências e informações da conta
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar de Tabs */}
+        <div className="lg:col-span-1">
+          <div className="card p-4">
+            <nav className="space-y-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium'
+                        : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Conteúdo */}
+        <div className="lg:col-span-3">
+          {/* Tab: Perfil */}
+          {activeTab === 'profile' && (
+            <div className="card">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                Informações do Perfil
+              </h2>
+
+              <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
+                <img
+                  src={user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                  alt={user?.name}
+                  className="w-20 h-20 rounded-full border-4 border-gray-200 dark:border-neutral-700"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {user?.name}
+                  </h3>
+                  <p className="text-gray-600 dark:text-neutral-400">{user?.email}</p>
+                  <button className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                    Alterar foto
+                  </button>
+                </div>
+              </div>
+
+              <form
+                onSubmit={profileForm.handleSubmit(onSubmitProfile)}
+                className="space-y-5"
+              >
+                <div>
+                  <label className="label">Nome completo</label>
+                  <input
+                    type="text"
+                    {...profileForm.register('name')}
+                    className={`input-field ${
+                      profileForm.formState.errors.name ? 'input-error' : ''
+                    }`}
+                  />
+                  {profileForm.formState.errors.name && (
+                    <p className="error-message">
+                      {profileForm.formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label">Email</label>
+                  <input
+                    type="email"
+                    {...profileForm.register('email')}
+                    className={`input-field ${
+                      profileForm.formState.errors.email ? 'input-error' : ''
+                    }`}
+                  />
+                  {profileForm.formState.errors.email && (
+                    <p className="error-message">
+                      {profileForm.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <button type="submit" className="btn-primary">
+                    Salvar alterações
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Tab: Segurança */}
+          {activeTab === 'security' && (
+            <div className="space-y-6">
+              <div className="card">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Alterar Senha
+                </h2>
+
+                <form
+                  onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
+                  className="space-y-5"
+                >
+                  <div>
+                    <label className="label">Senha atual</label>
+                    <input
+                      type="password"
+                      {...passwordForm.register('currentPassword')}
+                      className={`input-field ${
+                        passwordForm.formState.errors.currentPassword
+                          ? 'input-error'
+                          : ''
+                      }`}
+                    />
+                    {passwordForm.formState.errors.currentPassword && (
+                      <p className="error-message">
+                        {passwordForm.formState.errors.currentPassword.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="label">Nova senha</label>
+                    <input
+                      type="password"
+                      {...passwordForm.register('newPassword')}
+                      className={`input-field ${
+                        passwordForm.formState.errors.newPassword
+                          ? 'input-error'
+                          : ''
+                      }`}
+                    />
+                    {passwordForm.formState.errors.newPassword && (
+                      <p className="error-message">
+                        {passwordForm.formState.errors.newPassword.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="label">Confirmar nova senha</label>
+                    <input
+                      type="password"
+                      {...passwordForm.register('confirmPassword')}
+                      className={`input-field ${
+                        passwordForm.formState.errors.confirmPassword
+                          ? 'input-error'
+                          : ''
+                      }`}
+                    />
+                    {passwordForm.formState.errors.confirmPassword && (
+                      <p className="error-message">
+                        {passwordForm.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <button type="submit" className="btn-primary">
+                      Alterar senha
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="card">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                  Autenticação de Dois Fatores
+                </h2>
+                <p className="text-gray-600 dark:text-neutral-400 mb-6">
+                  Adicione uma camada extra de segurança à sua conta
+                </p>
+                <button className="btn-secondary">
+                  Ativar autenticação em duas etapas
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Tab: Notificações */}
+          {activeTab === 'notifications' && (
+            <div className="card">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                Preferências de Notificação
+              </h2>
+
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Email de transações
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                      Receba emails quando novas transações forem adicionadas
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Resumo semanal
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                      Receba um resumo semanal das suas finanças
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Alertas de orçamento
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                      Seja notificado quando atingir limites de orçamento
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Novidades e atualizações
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                      Receba emails sobre novos recursos e atualizações
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab: Preferências */}
+          {activeTab === 'preferences' && (
+            <div className="space-y-6">
+              <div className="card">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Aparência
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="label">Tema</label>
+                    <select className="input-field">
+                      <option>Claro</option>
+                      <option>Escuro</option>
+                      <option>Automático</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label">Idioma</label>
+                    <select className="input-field">
+                      <option>Português (Brasil)</option>
+                      <option>English</option>
+                      <option>Español</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label">Moeda</label>
+                    <select className="input-field">
+                      <option>Real (R$)</option>
+                      <option>Dólar (USD)</option>
+                      <option>Euro (EUR)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Dados e Privacidade
+                </h2>
+
+                <div className="space-y-4">
+                  <button className="w-full btn-secondary flex items-center justify-center gap-2">
+                    <Database className="w-5 h-5" />
+                    Exportar meus dados
+                  </button>
+
+                  <button className="w-full btn-danger flex items-center justify-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    Excluir minha conta
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Settings

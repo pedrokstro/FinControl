@@ -1,0 +1,119 @@
+﻿import { useState, useRef, useEffect } from 'react'
+import { useAuthStore } from '@/store/authStore'
+import { Search, Bell, ChevronDown } from 'lucide-react'
+
+const Header = () => {
+  const { user, logout, loadAvatar } = useAuthStore()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Carregar avatar ao montar
+  useEffect(() => {
+    loadAvatar()
+  }, [loadAvatar])
+
+  // Função para obter saudação baseada na hora
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Bom dia'
+    if (hour < 18) return 'Boa tarde'
+    return 'Boa noite'
+  }
+
+  return (
+    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-6 py-4 transition-colors duration-300">
+      <div className="flex items-center justify-between">
+        <div className="flex-1 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
+            <input
+              type="text"
+              placeholder="Buscar transacoes..."
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 transition-colors"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button className="relative p-2 text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-colors">
+            <Bell className="w-6 h-6" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-danger-500 rounded-full"></span>
+          </button>
+
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-all"
+            >
+              <img
+                src={user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                alt={user?.name}
+                className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-neutral-700 object-cover"
+                onError={(e) => {
+                  // Fallback se imagem falhar
+                  const target = e.target as HTMLImageElement
+                  target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+                }}
+              />
+              <div className="text-left hidden md:block">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {getGreeting()}, {user?.name?.split(' ')[0]}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-neutral-400">
+                  Ver perfil
+                </p>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-neutral-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800 py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-neutral-800">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                    {user?.email}
+                  </p>
+                </div>
+                <a
+                  href="/settings"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  Configurações
+                </a>
+                <a
+                  href="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  Meu Perfil
+                </a>
+                <div className="border-t border-gray-200 dark:border-neutral-800 mt-2 pt-2">
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-4 py-2 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-colors"
+                  >
+                    Sair
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+export default Header

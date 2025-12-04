@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "authentication system endpoints",
+    "description": "test all authentication related endpoints including login, registration, email verification, password reset, and jwt token management to ensure secure and reliable user authentication flows."
+  },
+  {
+    "id": "TC002",
+    "title": "dashboard data retrieval",
+    "description": "verify the dashboard api endpoint returns correct financial overview data, charts data, recent transactions, and quick actions with proper performance."
+  },
+  {
+    "id": "TC003",
+    "title": "transaction management endpoints",
+    "description": "test create, read, update, and delete transaction endpoints with validation, filtering, and pagination to ensure correct transaction management and performance."
+  },
+  {
+    "id": "TC004",
+    "title": "category management endpoints",
+    "description": "verify endpoints for managing income and expense categories including creation, update, deletion, and retrieval with custom icons, emojis, and colors."
+  },
+  {
+    "id": "TC005",
+    "title": "financial reports generation",
+    "description": "test financial reports api endpoints to ensure accurate data aggregation, chart data generation, and export functionality in multiple formats."
+  },
+  {
+    "id": "TC006",
+    "title": "savings goal management",
+    "description": "verify endpoints for creating, updating, tracking progress, and deleting savings goals with correct deadline management and progress calculation."
+  },
+  {
+    "id": "TC007",
+    "title": "user settings management",
+    "description": "test user settings endpoints for profile updates, theme preferences, notification settings, and account security changes to ensure persistent and correct updates."
+  },
+  {
+    "id": "TC008",
+    "title": "data export functionality",
+    "description": "verify data export endpoints produce correctly formatted files in json, csv, excel, and pdf formats with applied filters."
+  },
+  {
+    "id": "TC009",
+    "title": "account deletion process",
+    "description": "test secure account deletion endpoint requiring otp verification and ensuring complete user data cleanup after successful deletion."
+  },
+  {
+    "id": "TC010",
+    "title": "subscription management endpoints",
+    "description": "verify subscription plan selection, checkout process, and subscription management endpoints to ensure correct subscription handling and payment integration."
+  }
+]

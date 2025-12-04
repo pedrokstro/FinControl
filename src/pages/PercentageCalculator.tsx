@@ -1,0 +1,275 @@
+import { useState } from 'react'
+import { Percent, Calculator, ArrowRight } from 'lucide-react'
+import PageTransition from '@/components/common/PageTransition'
+
+const PercentageCalculator = () => {
+  const [value, setValue] = useState('')
+  const [percentage, setPercentage] = useState('')
+  const [result, setResult] = useState<number | null>(null)
+  const [operation, setOperation] = useState<'of' | 'increase' | 'decrease'>('of')
+
+  const calculate = () => {
+    const numValue = parseFloat(value)
+    const numPercentage = parseFloat(percentage)
+
+    if (isNaN(numValue) || isNaN(numPercentage)) {
+      return
+    }
+
+    let calculatedResult: number
+
+    switch (operation) {
+      case 'of':
+        // X% de Y
+        calculatedResult = (numPercentage / 100) * numValue
+        break
+      case 'increase':
+        // Y + X%
+        calculatedResult = numValue + (numPercentage / 100) * numValue
+        break
+      case 'decrease':
+        // Y - X%
+        calculatedResult = numValue - (numPercentage / 100) * numValue
+        break
+    }
+
+    setResult(calculatedResult)
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
+
+  const clear = () => {
+    setValue('')
+    setPercentage('')
+    setResult(null)
+  }
+
+  return (
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+              <Percent className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+              Calculadora de Porcentagem
+            </h1>
+            <p className="text-gray-600 dark:text-neutral-400 mt-1">
+              Calcule porcentagens de forma rápida e fácil
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Formulário */}
+          <div className="card">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                <Calculator className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Calculadora
+              </h2>
+            </div>
+
+            {/* Tipo de Operação */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-3">
+                Tipo de Cálculo
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => setOperation('of')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    operation === 'of'
+                      ? 'bg-primary-600 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                  }`}
+                >
+                  X% de Y
+                </button>
+                <button
+                  onClick={() => setOperation('increase')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    operation === 'increase'
+                      ? 'bg-primary-600 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                  }`}
+                >
+                  Y + X%
+                </button>
+                <button
+                  onClick={() => setOperation('decrease')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    operation === 'decrease'
+                      ? 'bg-primary-600 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                  }`}
+                >
+                  Y - X%
+                </button>
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                  Porcentagem (%)
+                </label>
+                <input
+                  type="number"
+                  value={percentage}
+                  onChange={(e) => setPercentage(e.target.value)}
+                  placeholder="Ex: 15"
+                  className="input"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                  Valor (R$)
+                </label>
+                <input
+                  type="number"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="Ex: 1000"
+                  className="input"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={calculate}
+                className="btn-primary flex-1 flex items-center justify-center gap-2"
+                disabled={!value || !percentage}
+              >
+                <Calculator className="w-5 h-5" />
+                Calcular
+              </button>
+              <button
+                onClick={clear}
+                className="btn-secondary"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+
+          {/* Resultado */}
+          <div className="card">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-success-100 dark:bg-success-900/30 rounded-lg flex items-center justify-center">
+                <ArrowRight className="w-5 h-5 text-success-600 dark:text-success-400" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Resultado
+              </h2>
+            </div>
+
+            {result !== null ? (
+              <div className="space-y-6">
+                {/* Resultado Principal */}
+                <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl p-6 border-2 border-primary-200 dark:border-primary-800">
+                  <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
+                    {operation === 'of' && `${percentage}% de ${formatCurrency(parseFloat(value))}`}
+                    {operation === 'increase' && `${formatCurrency(parseFloat(value))} + ${percentage}%`}
+                    {operation === 'decrease' && `${formatCurrency(parseFloat(value))} - ${percentage}%`}
+                  </p>
+                  <p className="text-4xl font-bold text-primary-600 dark:text-primary-400">
+                    {formatCurrency(result)}
+                  </p>
+                </div>
+
+                {/* Detalhes */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+                    <span className="text-sm text-gray-600 dark:text-neutral-400">Valor Original</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {formatCurrency(parseFloat(value))}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+                    <span className="text-sm text-gray-600 dark:text-neutral-400">Porcentagem</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {percentage}%
+                    </span>
+                  </div>
+                  {operation !== 'of' && (
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+                      <span className="text-sm text-gray-600 dark:text-neutral-400">
+                        {operation === 'increase' ? 'Acréscimo' : 'Desconto'}
+                      </span>
+                      <span className={`font-semibold ${
+                        operation === 'increase' 
+                          ? 'text-success-600 dark:text-success-400' 
+                          : 'text-danger-600 dark:text-danger-400'
+                      }`}>
+                        {formatCurrency(Math.abs(result - parseFloat(value)))}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Percent className="w-16 h-16 text-gray-300 dark:text-neutral-700 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-neutral-400">
+                  Preencha os campos e clique em "Calcular"
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Exemplos */}
+        <div className="card">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            Exemplos de Uso
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">X% de Y</h4>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Calcule quanto é 15% de R$ 1.000,00
+              </p>
+              <p className="text-sm text-primary-600 dark:text-primary-400 mt-2 font-medium">
+                Resultado: R$ 150,00
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Y + X%</h4>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Adicione 10% a R$ 500,00
+              </p>
+              <p className="text-sm text-success-600 dark:text-success-400 mt-2 font-medium">
+                Resultado: R$ 550,00
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Y - X%</h4>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Subtraia 20% de R$ 800,00
+              </p>
+              <p className="text-sm text-danger-600 dark:text-danger-400 mt-2 font-medium">
+                Resultado: R$ 640,00
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageTransition>
+  )
+}
+
+export default PercentageCalculator

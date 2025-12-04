@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5000",
+  "backendAuthType": "basic token",
+  "backendUsername": "pedrocastro767@gmail.com",
+  "backendPassword": "qActive4@#",
+  "executionArgs": {
+    "projectName": "Controle de Gastos",
+    "projectPath": "d:\\CURSOR\\Controle de Gastos",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-jAa0K7c2rrQCfaBcKY_2ZA9pl122PDvOuzmb-SbrAwDC6P2LkS2_weRsMI6DBIrnbH8PU09Wm-ai_GJhHoypapU7EDZcpM4OXP3RkPpAfmyXEKeA3DPfUjSIashwMUTMymc"
+    }
+  },
+  "proxy": "http://306bf196-f09c-4501-af30-75ed3768a50e:iN7C1jns9T3mbplIU5dtklxVbQGpCR4Q@tun.testsprite.com:8080"
+}

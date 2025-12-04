@@ -1,0 +1,402 @@
+﻿import { useState } from 'react'
+import { useFinancialStore } from '@/store/financialStore'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { 
+  Plus, 
+  Pencil, 
+  Trash2,
+  X,
+  TrendingUp,
+  TrendingDown,
+} from 'lucide-react'
+import IconPicker from '@/components/common/IconPicker'
+import CategoryIcon from '@/components/common/CategoryIcon'
+import { type IconName } from '@/utils/iconMapping'
+
+const categorySchema = z.object({
+  name: z.string().min(3, 'Nome deve ter no minimo 3 caracteres'),
+  type: z.enum(['income', 'expense']),
+  color: z.string().min(1, 'Cor e obrigatoria'),
+  icon: z.string().min(1, 'Icone e obrigatorio'),
+})
+
+type CategoryFormData = z.infer<typeof categorySchema>
+
+const COLOR_OPTIONS = [
+  { value: '#22c55e', label: 'Verde', group: 'success' },
+  { value: '#10b981', label: 'Verde Escuro', group: 'success' },
+  { value: '#14b8a6', label: 'Turquesa', group: 'success' },
+  { value: '#06b6d4', label: 'Ciano', group: 'info' },
+  { value: '#0ea5e9', label: 'Azul Claro', group: 'info' },
+  { value: '#3b82f6', label: 'Azul', group: 'primary' },
+  { value: '#6366f1', label: 'Indigo', group: 'primary' },
+  { value: '#8b5cf6', label: 'Roxo', group: 'primary' },
+  { value: '#a855f7', label: 'Purpura', group: 'secondary' },
+  { value: '#ec4899', label: 'Rosa', group: 'secondary' },
+  { value: '#f43f5e', label: 'Rosa Escuro', group: 'danger' },
+  { value: '#ef4444', label: 'Vermelho', group: 'danger' },
+  { value: '#dc2626', label: 'Vermelho Escuro', group: 'danger' },
+  { value: '#f97316', label: 'Laranja', group: 'warning' },
+  { value: '#f59e0b', label: 'Amarelo Escuro', group: 'warning' },
+  { value: '#84cc16', label: 'Lima', group: 'success' },
+  { value: '#64748b', label: 'Cinza', group: 'neutral' },
+  { value: '#475569', label: 'Cinza Escuro', group: 'neutral' },
+]
+
+const Categories = () => {
+  const { categories, addCategory, updateCategory, deleteCategory } = useFinancialStore()
+  const [showModal, setShowModal] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      type: 'expense',
+      color: '#22c55e',
+      icon: 'DollarSign',
+    },
+  })
+
+  const selectedColor = watch('color')
+  const selectedIcon = watch('icon')
+  const selectedType = watch('type')
+
+  const filteredCategories = categories.filter(
+    (cat) => filterType === 'all' || cat.type === filterType
+  )
+
+  const handleOpenModal = (category?: any) => {
+    if (category) {
+      setEditingId(category.id)
+      reset({
+        name: category.name,
+        type: category.type,
+        color: category.color,
+        icon: category.icon,
+      })
+    } else {
+      setEditingId(null)
+      reset({
+        name: '',
+        type: 'expense',
+        color: '#ef4444',
+        icon: 'Package',
+      })
+    }
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setEditingId(null)
+    reset()
+  }
+
+  const onSubmit = (data: CategoryFormData) => {
+    if (editingId) {
+      updateCategory(editingId, data)
+    } else {
+      addCategory({ ...data, userId: '1' })
+    }
+    handleCloseModal()
+  }
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta categoria?')) {
+      deleteCategory(id)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
+          <p className="text-gray-600 dark:text-neutral-400 mt-1">
+            Organize suas transacoes em categorias personalizadas
+          </p>
+        </div>
+        <button
+          onClick={() => handleOpenModal()}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          Nova Categoria
+        </button>
+      </div>
+
+      {/* Filtros */}
+      <div className="card">
+        <div className="flex gap-3">
+          <button
+            onClick={() => setFilterType('all')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              filterType === 'all'
+                ? 'bg-primary-600 dark:bg-primary-500 text-white'
+                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+            }`}
+          >
+            Todas ({categories.length})
+          </button>
+          <button
+            onClick={() => setFilterType('income')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              filterType === 'income'
+                ? 'bg-success-600 dark:bg-success-500 text-white'
+                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+            }`}
+          >
+            Receitas ({categories.filter(c => c.type === 'income').length})
+          </button>
+          <button
+            onClick={() => setFilterType('expense')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              filterType === 'expense'
+                ? 'bg-danger-600 dark:bg-danger-500 text-white'
+                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+            }`}
+          >
+            Despesas ({categories.filter(c => c.type === 'expense').length})
+          </button>
+        </div>
+      </div>
+
+      {/* Grid de Categorias */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredCategories.map((category) => (
+          <div
+            key={category.id}
+            className="card hover:shadow-md dark:hover:shadow-dark transition-all group"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div
+                className="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ backgroundColor: `${category.color}20` }}
+              >
+                <CategoryIcon
+                  icon={category.icon as IconName}
+                  color={category.color}
+                  size="lg"
+                />
+              </div>
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => handleOpenModal(category)}
+                  className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                  title="Editar"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDelete(category.id)}
+                  className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+                  title="Excluir"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {category.name}
+            </h3>
+
+            <div className="flex items-center gap-2">
+              {category.type === 'income' ? (
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  Receita
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
+                  <TrendingDown className="w-3.5 h-3.5" />
+                  Despesa
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filteredCategories.length === 0 && (
+        <div className="card text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center">
+            <Plus className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
+          </div>
+          <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            Nenhuma categoria encontrada
+          </p>
+          <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6">
+            Crie sua primeira categoria para comecar a organizar suas financas
+          </p>
+          <button
+            onClick={() => handleOpenModal()}
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Criar Categoria
+          </button>
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {editingId ? 'Editar Categoria' : 'Nova Categoria'}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-colors text-gray-600 dark:text-neutral-400"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
+              <div>
+                <label className="label">Nome da Categoria</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Alimentacao, Transporte, Salario..."
+                  {...register('name')}
+                  className={`input-field ${errors.name ? 'input-error' : ''}`}
+                />
+                {errors.name && (
+                  <p className="error-message">{errors.name.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="label">Tipo</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                    <input
+                      type="radio"
+                      value="income"
+                      {...register('type')}
+                      className="sr-only"
+                    />
+                    <div className="text-center">
+                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
+                    </div>
+                  </label>
+                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                    <input
+                      type="radio"
+                      value="expense"
+                      {...register('type')}
+                      className="sr-only"
+                    />
+                    <div className="text-center">
+                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Icone</label>
+                <IconPicker
+                  selectedIcon={selectedIcon as IconName}
+                  onSelectIcon={(icon) => setValue('icon', icon)}
+                  type={selectedType}
+                />
+                {errors.icon && (
+                  <p className="error-message">{errors.icon.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="label">Cor</label>
+                <div className="grid grid-cols-9 gap-2">
+                  {COLOR_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setValue('color', option.value)}
+                      className={`w-full aspect-square rounded-lg transition-all hover:scale-110 ${
+                        selectedColor === option.value
+                          ? 'ring-2 ring-offset-2 dark:ring-offset-black ring-gray-900 dark:ring-white scale-110'
+                          : 'hover:ring-2 hover:ring-offset-2 dark:hover:ring-offset-black hover:ring-gray-300 dark:hover:ring-neutral-600'
+                      }`}
+                      style={{ backgroundColor: option.value }}
+                      title={option.label}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-2">
+                  Selecione uma cor que represente esta categoria
+                </p>
+              </div>
+
+              {/* Preview */}
+              <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
+                <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
+                  Visualizacao
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${selectedColor}20` }}
+                  >
+                    <CategoryIcon
+                      icon={selectedIcon as IconName}
+                      color={selectedColor}
+                      size="lg"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {watch('name') || 'Nome da Categoria'}
+                    </p>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      selectedType === 'income'
+                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
+                        : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                    }`}>
+                      {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                      {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 btn-secondary"
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="flex-1 btn-primary">
+                  {editingId ? 'Salvar Alteracoes' : 'Criar Categoria'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default Categories

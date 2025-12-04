@@ -1,0 +1,107 @@
+﻿import { NavLink } from 'react-router-dom'
+import { 
+  LayoutDashboard, 
+  ArrowLeftRight, 
+  FolderOpen, 
+  BarChart3, 
+  Settings,
+  Wallet,
+  Moon,
+  Sun
+} from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
+
+const Sidebar = () => {
+  const { theme, toggleTheme } = useTheme()
+
+  const menuItems = [
+    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/transactions', icon: ArrowLeftRight, label: 'Transacoes' },
+    { path: '/categories', icon: FolderOpen, label: 'Categorias' },
+    { path: '/reports', icon: BarChart3, label: 'Relatorios' },
+    { path: '/settings', icon: Settings, label: 'Configuracoes' },
+  ]
+
+  return (
+    <aside className="w-64 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 flex flex-col transition-colors duration-300">
+      <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center transition-colors">
+            <Wallet className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">FinControl</h1>
+            <p className="text-xs text-gray-500 dark:text-neutral-400">Controle Financeiro</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary-50 dark:bg-primary-600/20 text-primary-700 dark:text-primary-400 font-medium'
+                        : 'text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:text-gray-900 dark:hover:text-white'
+                    }`
+                  }
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </NavLink>
+              </li>
+            )
+          })}
+        </ul>
+
+        {/* Dark Mode Toggle */}
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-neutral-800">
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-200"
+            title={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
+          >
+            <div className="flex items-center gap-3">
+              {theme === 'light' ? (
+                <Moon className="w-5 h-5" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-400" />
+              )}
+              <span className="font-medium">
+                {theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
+              </span>
+            </div>
+            
+            {/* Toggle Switch Visual */}
+            <div className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+              theme === 'dark' ? 'bg-primary-600' : 'bg-gray-300'
+            }`}>
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${
+                theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
+              }`} />
+            </div>
+          </button>
+        </div>
+      </nav>
+
+      <div className="p-4 border-t border-gray-200 dark:border-neutral-800">
+        <div className="bg-primary-50 dark:bg-neutral-900 rounded-lg p-4 transition-colors border border-transparent dark:border-neutral-800">
+          <h3 className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+            Dica do Dia
+          </h3>
+          <p className="text-xs text-gray-600 dark:text-neutral-400">
+            Organize suas financas categorizando todas as transacoes.
+          </p>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+export default Sidebar

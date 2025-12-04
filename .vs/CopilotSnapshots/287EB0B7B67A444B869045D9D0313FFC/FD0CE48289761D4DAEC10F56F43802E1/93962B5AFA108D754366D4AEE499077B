@@ -1,0 +1,188 @@
+﻿import { useState } from 'react'
+import { Search, X } from 'lucide-react'
+import { iconCategories, getIcon, type IconName } from '@/utils/iconMapping'
+
+interface IconPickerProps {
+  selectedIcon: IconName
+  onSelectIcon: (icon: IconName) => void
+  type?: 'income' | 'expense'
+}
+
+type IconItem = { name: string; label: string }
+
+const IconPicker = ({ selectedIcon, onSelectIcon, type }: IconPickerProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  
+  const SelectedIcon = getIcon(selectedIcon)
+
+  // Get categories to show based on type
+  const getCategoriesToShow = () => {
+    if (type === 'income') {
+      return { 'Receitas': iconCategories.income }
+    }
+    
+    return {
+      'Alimentação': iconCategories.foodAndDining,
+      'Transporte': iconCategories.transportation,
+      'Moradia': iconCategories.housing,
+      'Lazer': iconCategories.entertainment,
+      'Saúde': iconCategories.health,
+      'Educação': iconCategories.education,
+      'Contas': iconCategories.bills,
+      'Pessoal': iconCategories.personal,
+      'Pets': iconCategories.pets,
+      'Outros': iconCategories.other,
+    }
+  }
+
+  const categoriesToShow = getCategoriesToShow()
+
+  // Filter icons based on search
+  const getFilteredIcons = () => {
+    if (!searchTerm) return categoriesToShow
+
+    const filtered: Record<string, readonly IconItem[]> = {}
+    
+    Object.entries(categoriesToShow).forEach(([categoryName, icons]) => {
+      const matchingIcons = icons.filter((icon: IconItem) =>
+        icon.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      if (matchingIcons.length > 0) {
+        filtered[categoryName] = matchingIcons
+      }
+    })
+
+    return filtered
+  }
+
+  const filteredCategories = getFilteredIcons()
+
+  const handleSelectIcon = (iconName: IconName) => {
+    onSelectIcon(iconName)
+    setIsOpen(false)
+    setSearchTerm('')
+  }
+
+  return (
+    <div className="relative">
+      {/* Selected Icon Display */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200">
+          <SelectedIcon className="w-5 h-5 text-gray-700" />
+        </div>
+        <span className="text-sm text-gray-700 font-medium">
+          Selecionar Ícone
+        </span>
+      </button>
+
+      {/* Icon Picker Modal */}
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-30 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Modal Content */}
+          <div className="absolute left-0 top-full mt-2 w-[400px] max-h-[500px] bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+            {/* Header with Search */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Escolher Ícone
+                </h3>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Search Input */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar ícone..."
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Icons Grid */}
+            <div className="p-4 overflow-y-auto max-h-[400px]">
+              {Object.keys(filteredCategories).length === 0 ? (
+                <div className="text-center py-8 text-gray-500 text-sm">
+                  Nenhum ícone encontrado
+                </div>
+              ) : (
+                Object.entries(filteredCategories).map(([categoryName, icons]) => (
+                  <div key={categoryName} className="mb-6 last:mb-0">
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">
+                      {categoryName}
+                    </h4>
+                    <div className="grid grid-cols-6 gap-2">
+                      {icons.map((iconData: IconItem) => {
+                        const Icon = getIcon(iconData.name as IconName)
+                        const isSelected = selectedIcon === iconData.name
+                        
+                        return (
+                          <button
+                            key={iconData.name}
+                            type="button"
+                            onClick={() => handleSelectIcon(iconData.name as IconName)}
+                            className={`
+                              group relative w-full aspect-square flex items-center justify-center
+                              rounded-lg border-2 transition-all
+                              ${isSelected
+                                ? 'border-primary-500 bg-primary-50'
+                                : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50'
+                              }
+                            `}
+                            title={iconData.label}
+                          >
+                            <Icon
+                              className={`w-5 h-5 transition-colors ${
+                                isSelected
+                                  ? 'text-primary-600'
+                                  : 'text-gray-600 group-hover:text-primary-600'
+                              }`}
+                            />
+                            {isSelected && (
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary-500 rounded-full flex items-center justify-center">
+                                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                            {/* Tooltip on hover */}
+                            <div className="absolute bottom-full mb-2 hidden group-hover:block pointer-events-none">
+                              <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+                                {iconData.label}
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+export default IconPicker

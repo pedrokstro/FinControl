@@ -1,0 +1,45 @@
+===========================================
+EXECUTAR MIGRATION - TRANSAÇÕES RECORRENTES
+===========================================
+
+PASSO 1: Abrir DBeaver
+-----------------------
+1. Abra o DBeaver
+2. Conecte ao banco: fincontrol_db
+3. Clique com botão direito na conexão
+4. Selecione: SQL Editor -> New SQL Script
+
+PASSO 2: Copiar SQL
+-------------------
+1. Abra o arquivo:
+   backend/migrations-sql/004-add-recurring-transactions.sql
+
+2. Copie TODO o conteúdo do arquivo
+
+PASSO 3: Executar
+-----------------
+1. Cole o SQL no editor do DBeaver
+2. Clique em "Execute SQL Statement" (Ctrl+Enter)
+3. Aguarde a execução
+
+PASSO 4: Verificar
+------------------
+Você deve ver no resultado:
+- 5 colunas adicionadas
+- 3 índices criados
+- Comentários nas colunas
+
+PASSO 5: Reiniciar Backend
+---------------------------
+1. Pare o backend (Ctrl+C no terminal)
+2. Inicie novamente: npm run dev
+
+PASSO 6: Verificar Logs
+------------------------
+Você deve ver:
+⏰ Premium plan expiration job scheduled
+⏰ Recurring transactions job scheduled (daily at 00:05)
+
+===========================================
+MIGRATION EXECUTADA COM SUCESSO!
+===========================================

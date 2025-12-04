@@ -1,0 +1,66 @@
+Implementar Backend Real
+
+Para completar o backend, você precisa criar:
+
+Controllers (5 arquivos) - auth, user, category, transaction, dashboard
+Services restantes (3 arquivos) - user, category, transaction
+Routes (6 arquivos) - auth, user, category, transaction, dashboard, index 
+Migrations - TypeORM migrations
+Seeders - Dados de exemplo
+--------------------------------------------------------------------------------
+PARA ONTEM - Validação de premium no backend
+ Endpoint de verificação de plano
+ Testes automatizados
+
+
+Substituir mock data por API REST
+Autenticação JWT real
+Persistência em banco de dados
+Testes E2E
+Adicionar Playwright ou Cypress
+Cobertura de fluxos principais
+
+Melhorias Futuras:
+PWA (Progressive Web App)
+Service Workers
+Offline-first
+Instalável
+Internacionalização (i18n)
+Suporte multi-idioma
+Português com acentos corretos
+Inglês, Espanhol
+
+Features Avançadas
+Orçamentos e metas
+Notificações push
+Exportação PDF
+Integração bancária (Open Banking)
+Previsões com IA
+Performance melhorar
+Code splitting otimizado
+Lazy loading de componentes
+Otimização de imagens
+
+------------------------------
+Fase 2: URL Externa (2-3 horas)
+Criar componente URLIconTab
+Implementar input de URL
+Adicionar validação de formato
+Implementar preview de imagem
+Adicionar tratamento de erros
+Testar com diferentes URLs
+------------------------------------------
+Fase 3: Bibliotecas Externas (3-4 horas)
+Documentar integração Font Awesome
+Criar guia para Flaticon
+Criar guia para Icons8
+Implementar renderização de cada tipo
+Testar compatibilidade
+-----------------------------------------------
+Fase 4: Migração e Testes (2-3 horas)
+Atualizar tipos TypeScript
+Criar componente IconRenderer universal
+Atualizar CategoryIcon para suportar todos os tipos
+Migrar dados existentes
+Testes completos
+Documentação de uso

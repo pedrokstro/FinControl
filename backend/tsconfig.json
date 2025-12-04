@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"],
+      "@config/*": ["config/*"],
+      "@controllers/*": ["controllers/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@models/*": ["models/*"],
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"],
+      "@validators/*": ["validators/*"],
+      "@types/*": ["types/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+}

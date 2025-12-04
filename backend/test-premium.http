@@ -1,0 +1,187 @@
+### 🧪 TESTES DO SISTEMA PREMIUM
+### Execute cada requisição em ordem
+
+### Variáveis
+@baseUrl = http://localhost:5000/api/v1
+@token = SEU_TOKEN_AQUI
+
+
+### ========================================
+### 1️⃣ LOGIN - Obter Token
+### ========================================
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@financeiro.com",
+  "password": "demo123"
+}
+
+### 📝 COPIE o accessToken da resposta e cole na variável @token acima!
+
+
+### ========================================
+### 2️⃣ VERIFICAR STATUS (Deve ser FREE)
+### ========================================
+GET {{baseUrl}}/subscription/status
+Authorization: Bearer {{token}}
+
+### Resposta esperada:
+### {
+###   "planType": "free",
+###   "isPremium": false,
+###   "isActive": false
+### }
+
+
+### ========================================
+### 3️⃣ TESTAR BLOQUEIO - Emojis Premium (Deve dar 403)
+### ========================================
+GET {{baseUrl}}/categories/premium/emojis
+Authorization: Bearer {{token}}
+
+### Resposta esperada: 403 Forbidden
+### {
+###   "code": "FEATURE_PREMIUM_REQUIRED",
+###   "message": "Acesso negado..."
+### }
+
+
+### ========================================
+### 4️⃣ ATIVAR PLANO PREMIUM
+### ========================================
+POST {{baseUrl}}/subscription/activate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "durationMonths": 1
+}
+
+### Resposta esperada:
+### {
+###   "success": true,
+###   "message": "Plano Premium ativado com sucesso!",
+###   "data": {
+###     "planType": "premium",
+###     "isPremium": true
+###   }
+### }
+
+
+### ========================================
+### 5️⃣ VERIFICAR STATUS NOVAMENTE (Deve ser PREMIUM)
+### ========================================
+GET {{baseUrl}}/subscription/status
+Authorization: Bearer {{token}}
+
+### Resposta esperada:
+### {
+###   "planType": "premium",
+###   "isPremium": true,
+###   "isActive": true,
+###   "daysRemaining": 30,
+###   "features": [
+###     "basic_categories",
+###     "basic_transactions",
+###     "basic_reports",
+###     "advanced_emojis",      ← NOVO!
+###     "custom_categories",     ← NOVO!
+###     "advanced_reports",      ← NOVO!
+###     "export_unlimited",      ← NOVO!
+###     "priority_support"       ← NOVO!
+###   ]
+### }
+
+
+### ========================================
+### 6️⃣ TESTAR ACESSO PERMITIDO - Emojis Premium (Deve dar 200)
+### ========================================
+GET {{baseUrl}}/categories/premium/emojis
+Authorization: Bearer {{token}}
+
+### Resposta esperada: 200 OK
+### {
+###   "success": true,
+###   "data": {
+###     "emojis": ["🎯", "🎨", "🎭", ...],
+###     "isPremium": true
+###   }
+### }
+
+
+### ========================================
+### 7️⃣ OBTER FEATURES DISPONÍVEIS
+### ========================================
+GET {{baseUrl}}/subscription/features
+Authorization: Bearer {{token}}
+
+### Resposta esperada:
+### {
+###   "features": [...todas as features premium...],
+###   "isPremium": true
+### }
+
+
+### ========================================
+### 8️⃣ RENOVAR PLANO (Adicionar 3 meses)
+### ========================================
+POST {{baseUrl}}/subscription/renew
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "durationMonths": 3
+}
+
+### Resposta esperada:
+### {
+###   "message": "Plano Premium renovado com sucesso!",
+###   "data": {
+###     "planEndDate": "2025-05-07..." ← 4 meses no total
+###   }
+### }
+
+
+### ========================================
+### 9️⃣ CANCELAR PLANO PREMIUM
+### ========================================
+POST {{baseUrl}}/subscription/cancel
+Authorization: Bearer {{token}}
+
+### Resposta esperada:
+### {
+###   "message": "Plano Premium cancelado com sucesso",
+###   "data": {
+###     "planType": "free",
+###     "isPremium": false
+###   }
+### }
+
+
+### ========================================
+### 🔟 VERIFICAR BLOQUEIO APÓS CANCELAMENTO (Deve dar 403)
+### ========================================
+GET {{baseUrl}}/categories/premium/emojis
+Authorization: Bearer {{token}}
+
+### Resposta esperada: 403 Forbidden
+### {
+###   "code": "FEATURE_PREMIUM_REQUIRED",
+###   "message": "Acesso negado..."
+### }
+
+
+### ========================================
+### ✅ CHECKLIST DE VALIDAÇÃO
+### ========================================
+### [ ] 1. Login funcionou e retornou token
+### [ ] 2. Status inicial é "free"
+### [ ] 3. Rota premium bloqueada (403) para usuário free
+### [ ] 4. Ativação de premium funcionou
+### [ ] 5. Status mudou para "premium"
+### [ ] 6. Rota premium permitida (200) para usuário premium
+### [ ] 7. Features premium listadas corretamente
+### [ ] 8. Renovação estendeu data de expiração
+### [ ] 9. Cancelamento voltou para "free"
+### [ ] 10. Rota premium bloqueada (403) após cancelamento

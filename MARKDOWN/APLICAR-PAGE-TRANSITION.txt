@@ -1,0 +1,40 @@
+# Guia para Aplicar PageTransition nas Páginas
+
+## Páginas que precisam do PageTransition:
+- [x] Dashboard (já tem inline)
+- [x] Transactions (✅ aplicado)
+- [ ] Categories
+- [ ] Reports  
+- [ ] Settings
+- [ ] Profile
+- [ ] Admin
+- [ ] Plans
+- [ ] ManageSubscription
+
+## Como aplicar:
+
+### 1. Adicionar import:
+```tsx
+import PageTransition from '@/components/common/PageTransition'
+```
+
+### 2. Envolver o return:
+```tsx
+return (
+  <PageTransition>
+    <div className="space-y-6">
+      {/* conteúdo existente */}
+    </div>
+  </PageTransition>
+)
+```
+
+## Páginas de Auth (não precisam):
+- Login
+- Register
+- ForgotPassword
+- ResetPassword
+- VerifyEmail
+- Checkout
+
+Essas já têm animações próprias ou são páginas simples.

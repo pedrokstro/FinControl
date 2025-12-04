@@ -1,0 +1,122 @@
+### Variáveis
+@baseUrl = http://localhost:5000/api/v1
+@email = teste.verificacao@email.com
+@password = senha123
+@name = Usuário Teste
+
+### ========================================
+### FLUXO 1: REGISTRO COM VERIFICAÇÃO
+### ========================================
+
+### 1. Registrar novo usuário (envia código por email)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "{{name}}",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 2. Verificar email com código (substituir 123456 pelo código recebido)
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "code": "123456"
+}
+
+### 3. Reenviar código de verificação (se expirou)
+POST {{baseUrl}}/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}
+
+### ========================================
+### FLUXO 2: RECUPERAÇÃO DE SENHA
+### ========================================
+
+### 4. Solicitar código de recuperação de senha
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}
+
+### 5. Redefinir senha com código (substituir 654321 pelo código recebido)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "code": "654321",
+  "newPassword": "novaSenha456"
+}
+
+### ========================================
+### FLUXO 3: LOGIN APÓS VERIFICAÇÃO
+### ========================================
+
+### 6. Fazer login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### ========================================
+### TESTES ADICIONAIS
+### ========================================
+
+### 7. Testar com código inválido
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "code": "000000"
+}
+
+### 8. Testar com código expirado (após 15 minutos)
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "code": "999999"
+}
+
+### 9. Testar recuperação de senha com email inexistente
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "naoexiste@email.com"
+}
+
+### ========================================
+### USUÁRIO DEMO (para testes)
+### ========================================
+
+### 10. Login com usuário demo
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@financeiro.com",
+  "password": "demo123"
+}
+
+### 11. Solicitar recuperação de senha para demo
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "demo@financeiro.com"
+}

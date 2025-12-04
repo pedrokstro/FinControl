@@ -1,0 +1,317 @@
+{
+  "meta": {
+    "project": "FinControl - Personal Finance Management System",
+    "date": "2025-11-14",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "FinControl is a modern web application for personal financial management enabling users to track finances, view detailed reports, set saving goals, and make informed financial decisions with an intuitive and secure platform.",
+  "core_goals": [
+    "Provide an intuitive and easy-to-use interface for managing personal finances.",
+    "Enable users to track income, expenses, and transactions effectively with powerful filtering and categorization.",
+    "Offer comprehensive financial dashboards and reports with visualizations to aid decision-making.",
+    "Allow users to set and track savings goals with progress visualization.",
+    "Ensure data security and privacy through robust authentication and authorization mechanisms.",
+    "Support export of financial data in multiple formats for backup and analysis.",
+    "Provide subscription plans including a free and premium tier with checkout integration.",
+    "Maintain high performance, accessibility, and responsiveness across devices."
+  ],
+  "key_features": [
+    "Complete Authentication System with login, registration, email verification, password reset, and JWT token management.",
+    "Dashboard displaying financial overview, interactive charts, recent transactions, and quick actions.",
+    "Transaction Management with CRUD operations, advanced filters, recurring transactions, and virtual scrolling for performance.",
+    "Category Management allowing custom income and expense categories with icons, emojis, and colors.",
+    "Comprehensive Financial Reports featuring charts, tables, and data export options including PDF and Excel.",
+    "Savings Goal module to create, track progress, and manage deadlines of savings targets.",
+    "User Settings for profile management, theme preferences, notifications, and account security.",
+    "Data Export functionality supporting JSON, CSV, Excel, and PDF formats with filtering capabilities.",
+    "Secure Account Deletion process with OTP verification and data cleanup.",
+    "Subscription Management with plan selection, subscription checkout, and management.",
+    "Real-time Notification System with dropdown and management.",
+    "Built-in Financial Calculators for percentage and compound interest calculations.",
+    "Admin Panel for system and user management.",
+    "Theme System supporting Dark and Light modes with context provider."
+  ],
+  "user_flow_summary": [
+    "User registers and verifies email through the authentication system.",
+    "User logs in and is directed to the Dashboard showing an overview of finances.",
+    "User creates, edits, and deletes transactions with categories and filters applied.",
+    "User manages income and expense categories with custom icons and colors.",
+    "User views detailed financial reports and exports data as needed.",
+    "User sets, tracks, and adjusts savings goals with progress feedback.",
+    "User manages profile settings, preferences, and engages with notification system.",
+    "User subscribes to premium plans and manages subscriptions through integrated checkout.",
+    "User uses financial calculators for precise financial planning.",
+    "User can delete account securely using OTP verification followed by data cleanup."
+  ],
+  "validation_criteria": [
+    "All authentication flows including registration, login, email verification, password reset, and token management work securely and reliably.",
+    "Financial dashboard loads data quickly and visualizations display correctly.",
+    "Transaction management supports CRUD with validation and performant virtual scrolling.",
+    "Category customization persists correctly with icon, emoji, and color selections.",
+    "Financial reports generate accurate data visualizations and export files are correctly formatted.",
+    "Savings goals track progress accurately and notify users appropriately.",
+    "User settings save changes persistently and reflect in UI including theme changes.",
+    "Data export produces files in requested formats with correct filtered data.",
+    "Account deletion requires OTP validation and removes all user data securely.",
+    "Subscription processes complete successfully with proper plan handling.",
+    "Notifications are delivered in real-time and can be managed through UI.",
+    "Financial calculators return correct results with various input scenarios.",
+    "Admin panel features restrict access properly and provide required system controls.",
+    "Dark and Light theme toggle functions correctly across the application."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+      "Zustand",
+      "PostgreSQL",
+      "Nodejs",
+      "ESLint"
+    ],
+    "features": [
+      {
+        "name": "Authentication System",
+        "description": "Complete authentication system with login, register, email verification, password reset, and JWT token management",
+        "files": [
+          "src/pages/Login.tsx",
+          "src/pages/Register.tsx",
+          "src/pages/VerifyEmail.tsx",
+          "src/pages/ForgotPassword.tsx",
+          "src/pages/ResetPassword.tsx",
+          "src/store/authStore.ts",
+          "src/services/authService.ts"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Minimal dashboard with financial overview, charts, recent transactions, and quick actions",
+        "files": [
+          "src/pages/Dashboard.tsx",
+          "src/services/dashboardService.ts",
+          "src/components/charts/MemoizedCharts.tsx"
+        ]
+      },
+      {
+        "name": "Transaction Management",
+        "description": "Create, read, update, delete transactions with categories, filters, and virtual scrolling for performance",
+        "files": [
+          "src/pages/Transactions.tsx",
+          "src/services/transactionService.ts",
+          "src/components/transactions/VirtualTransactionList.tsx"
+        ]
+      },
+      {
+        "name": "Category Management",
+        "description": "Manage income and expense categories with custom icons, emojis, and colors",
+        "files": [
+          "src/pages/Categories.tsx",
+          "src/services/categoryService.ts",
+          "src/components/common/CategoriesIcon.tsx",
+          "src/components/common/EmojiPicker.tsx",
+          "src/components/common/ColorPicker.tsx",
+          "src/components/common/IconPicker.tsx"
+        ]
+      },
+      {
+        "name": "Financial Reports",
+        "description": "Comprehensive financial reports with charts, tables, and data visualization for income, expenses, and trends",
+        "files": [
+          "src/pages/Reports.tsx",
+          "src/components/charts/MemoizedChart.tsx"
+        ]
+      },
+      {
+        "name": "Savings Goal",
+        "description": "Set and track savings goals with progress visualization and deadline management",
+        "files": [
+          "src/services/savingsGoalService.ts",
+          "src/components/modals/SavingsGoalModal.tsx",
+          "src/components/modals/DeleteGoalModal.tsx"
+        ]
+      },
+      {
+        "name": "User Settings",
+        "description": "User profile management, preferences, theme settings, and account security",
+        "files": [
+          "src/pages/Settings.tsx",
+          "src/services/userService.ts",
+          "src/services/userPreferencesService.ts",
+          "src/components/modals/VerifyEmailChangeModal.tsx",
+          "src/components/modals/VerifyPasswordChangeModal.tsx"
+        ]
+      },
+      {
+        "name": "Data Export",
+        "description": "Export financial data in multiple formats (JSON, CSV, Excel, PDF)",
+        "files": [
+          "src/services/exportService.ts",
+          "src/components/modals/ExportDataModal.tsx"
+        ]
+      },
+      {
+        "name": "Account Deletion",
+        "description": "Secure account deletion with OTP verification and data cleanup",
+        "files": [
+          "src/components/modals/DeleteAccountModal.tsx",
+          "src/pages/Goodbye.tsx"
+        ]
+      },
+      {
+        "name": "Subscription Management",
+        "description": "Manage subscription plans, checkout, and subscription management",
+        "files": [
+          "src/pages/Subscription.tsx",
+          "src/services/subscriptionService.ts"
+        ]
+      },
+      {
+        "name": "Notification System",
+        "description": "Real-time notification system with dropdown and management",
+        "files": [
+          "src/components/notifications/Notification.tsx",
+          "src/services/notificationService.ts"
+        ]
+      },
+      {
+        "name": "Financial Calculator",
+        "description": "Built-in calculators for percentage and compound interest calculations",
+        "files": [
+          "src/pages/PercentageCalculator.tsx",
+          "src/pages/CompoundInterestCalculator.tsx",
+          "src/components/calculators/Calculator.tsx"
+        ]
+      },
+      {
+        "name": "Admin Panel",
+        "description": "Administrative dashboard for system management",
+        "files": [
+          "src/Admin.tsx"
+        ]
+      },
+      {
+        "name": "Theme System",
+        "description": "Dark/Light theme support with context provider",
+        "files": [
+          "src/context/ThemeContext.tsx"
+        ]
+      },
+      {
+        "name": "Layout Components",
+        "description": "Reusable layout components including header, sidebar, footer, and main layout",
+        "files": [
+          "src/components/layout/Header.tsx",
+          "src/components/layout/Sidebar.tsx",
+          "src/components/layout/Footer.tsx",
+          "src/components/layout/MainLayout.tsx"
+        ]
+      },
+      {
+        "name": "Common UI Components",
+        "description": "Reusable UI components for consistent design",
+        "files": [
+          "src/components/common/Alert.tsx",
+          "src/components/common/Loading.tsx",
+          "src/components/common/LoadingSkeleton.tsx",
+          "src/components/common/EmptyState.tsx",
+          "src/components/common/AnimatedPage.tsx",
+          "src/components/common/PageTransition.tsx",
+          "src/components/common/OptimizedImage.tsx",
+          "src/components/common/VirtualList.tsx"
+        ]
+      },
+      {
+        "name": "Modal Components",
+        "description": "Modal dialogs for confirmations and user interaction",
+        "files": [
+          "src/components/modals/ConfirmDeleteModal.tsx",
+          "src/components/modals/ConfirmCancelReturnModal.tsx",
+          "src/components/modals/DeleteGoalModal.tsx"
+        ]
+      },
+      {
+        "name": "State Management",
+        "description": "Zustand stores for authentication and financial data",
+        "files": [
+          "src/store/authStore.ts",
+          "src/store/financialStore.ts"
+        ]
+      },
+      {
+        "name": "API Integration",
+        "description": "Axios-based API client with interceptors and error handling",
+        "files": [
+          "src/services/api.ts",
+          "src/config/api.ts"
+        ]
+      },
+      {
+        "name": "Custom Hooks",
+        "description": "Reusable React hooks for caching, memoization, and pagination",
+        "files": [
+          "src/hooks/useCache.ts",
+          "src/hooks/useMemoizeValue.ts",
+          "src/hooks/usePageTransition.ts",
+          "src/hooks/index.ts"
+        ]
+      },
+      {
+        "name": "Database Migrations",
+        "description": "PostgreSQL database migration system with backup and restore",
+        "files": [
+          "scripts/run-migrations.js",
+          "scripts/create-migration.js",
+          "scripts/migration-status.js",
+          "scripts/backup-database.js",
+          "scripts/test-connection.js"
+        ]
+      },
+      {
+        "name": "CI/CD Pipeline",
+        "description": "GitHub Actions workflow for automated deployment and integration",
+        "files": [
+          ".github/workflows/deploy.yml"
+        ]
+      },
+      {
+        "name": "Static Pages",
+        "description": "Static pages for about, privacy, and support",
+        "files": [
+          "src/pages/About.tsx",
+          "src/pages/Privacy.tsx",
+          "src/pages/Terms.tsx",
+          "src/pages/Support.tsx"
+        ]
+      },
+      {
+        "name": "Testing Infrastructure",
+        "description": "Vitest setup with testing library for unit and integration tests",
+        "files": [
+          "src/test/setup.ts"
+        ]
+      },
+      {
+        "name": "Type Definitions",
+        "description": "TypeScript type definitions for the application",
+        "files": [
+          "src/types/index.ts"
+        ]
+      },
+      {
+        "name": "Utility Functions",
+        "description": "Helper functions for formatting, validation, and common operations",
+        "files": [
+          "src/utils/index.ts"
+        ]
+      },
+      {
+        "name": "Mock Data",
+        "description": "Mock data for development and testing",
+        "files": [
+          "src/data/mockData.ts"
+        ]
+      }
+    ]
+  }
+}

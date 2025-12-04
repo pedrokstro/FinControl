@@ -1,0 +1,490 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "React 18",
+    "Vite",
+    "React Router v6",
+    "Zustand (State Management)",
+    "Axios",
+    "Framer Motion",
+    "Recharts",
+    "React Hook Form",
+    "Zod",
+    "TailwindCSS",
+    "PostgreSQL",
+    "Node.js",
+    "Express",
+    "TypeORM",
+    "JWT",
+    "ESLint",
+    "Vitest"
+  ],
+  "features": [
+    {
+      "name": "Authentication System",
+      "description": "Complete authentication system with login, register, email verification, password reset, and JWT token management",
+      "files": [
+        "src/pages/Login.tsx",
+        "src/pages/Register.tsx",
+        "src/pages/VerifyEmail.tsx",
+        "src/pages/ForgotPassword.tsx",
+        "src/pages/ResetPassword.tsx",
+        "src/store/authStore.ts",
+        "src/services/auth.service.ts"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/auth/register",
+            "method": "POST",
+            "description": "Register a new user",
+            "body": {
+              "name": "string",
+              "email": "string",
+              "password": "string"
+            }
+          },
+          {
+            "path": "/auth/login",
+            "method": "POST",
+            "description": "Login user",
+            "body": {
+              "email": "string",
+              "password": "string"
+            }
+          },
+          {
+            "path": "/auth/verify-email",
+            "method": "POST",
+            "description": "Verify email with code",
+            "body": {
+              "email": "string",
+              "code": "string"
+            }
+          },
+          {
+            "path": "/auth/resend-verification",
+            "method": "POST",
+            "description": "Resend verification code",
+            "body": {
+              "email": "string"
+            }
+          },
+          {
+            "path": "/auth/forgot-password",
+            "method": "POST",
+            "description": "Request password reset",
+            "body": {
+              "email": "string"
+            }
+          },
+          {
+            "path": "/auth/reset-password",
+            "method": "POST",
+            "description": "Reset password with code",
+            "body": {
+              "email": "string",
+              "code": "string",
+              "newPassword": "string"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dashboard",
+      "description": "Main dashboard with financial overview, charts, recent transactions, and quick actions",
+      "files": [
+        "src/pages/Dashboard.tsx",
+        "src/services/dashboard.service.ts",
+        "src/components/charts/MemoizedCharts.tsx"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/dashboard",
+            "method": "GET",
+            "description": "Get dashboard data",
+            "headers": {
+              "Authorization": "Bearer {token}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Transaction Management",
+      "description": "Create, read, update, delete transactions with categories, filters, and virtual scrolling for performance",
+      "files": [
+        "src/pages/Transactions.tsx",
+        "src/services/transaction.service.ts",
+        "src/components/transactions/VirtualTransactionList.tsx"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/transactions",
+            "method": "GET",
+            "description": "Get all transactions",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/transactions",
+            "method": "POST",
+            "description": "Create transaction",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"type": "income|expense", "amount": "number", "categoryId": "string", "description": "string", "date": "YYYY-MM-DD"}
+          },
+          {
+            "path": "/transactions/:id",
+            "method": "PUT",
+            "description": "Update transaction",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/transactions/:id",
+            "method": "DELETE",
+            "description": "Delete transaction",
+            "headers": {"Authorization": "Bearer {token}"}
+          }
+        ]
+      }
+    },
+    {
+      "name": "Category Management",
+      "description": "Manage income and expense categories with custom icons, emojis, and colors",
+      "files": [
+        "src/pages/Categories.tsx",
+        "src/services/category.service.ts",
+        "src/components/common/CategoryIcon.tsx",
+        "src/components/common/EmojiPickerTab.tsx",
+        "src/components/common/ColorPicker.tsx",
+        "src/components/common/IconPicker.tsx"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/categories",
+            "method": "GET",
+            "description": "Get all categories",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/categories",
+            "method": "POST",
+            "description": "Create category",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"name": "string", "type": "income|expense", "icon": "string", "color": "string"}
+          },
+          {
+            "path": "/categories/:id",
+            "method": "PUT",
+            "description": "Update category",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/categories/:id",
+            "method": "DELETE",
+            "description": "Delete category",
+            "headers": {"Authorization": "Bearer {token}"}
+          }
+        ]
+      }
+    },
+    {
+      "name": "Financial Reports",
+      "description": "Comprehensive reports with charts, graphs, and data visualization for income, expenses, and trends",
+      "files": [
+        "src/pages/Reports.tsx",
+        "src/components/charts/MemoizedCharts.tsx"
+      ]
+    },
+    {
+      "name": "Savings Goals",
+      "description": "Set and track savings goals with progress visualization and deadline management",
+      "files": [
+        "src/services/savingsGoal.service.ts",
+        "src/components/modals/SetSavingsGoalModal.tsx",
+        "src/components/modals/ConfirmDeleteGoalModal.tsx"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/savings-goals",
+            "method": "GET",
+            "description": "Get all savings goals",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/savings-goals",
+            "method": "POST",
+            "description": "Create savings goal",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"name": "string", "targetAmount": "number", "currentAmount": "number", "deadline": "YYYY-MM-DD"}
+          },
+          {
+            "path": "/savings-goals/:id",
+            "method": "PUT",
+            "description": "Update savings goal",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/savings-goals/:id",
+            "method": "DELETE",
+            "description": "Delete savings goal",
+            "headers": {"Authorization": "Bearer {token}"}
+          }
+        ]
+      }
+    },
+    {
+      "name": "User Settings",
+      "description": "User profile management, preferences, theme settings, and account security",
+      "files": [
+        "src/pages/Settings.tsx",
+        "src/services/user.service.ts",
+        "src/services/userPreference.service.ts",
+        "src/components/modals/VerifyEmailChangeModal.tsx",
+        "src/components/modals/VerifyPasswordChangeModal.tsx"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/users/profile",
+            "method": "GET",
+            "description": "Get user profile",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/users/profile",
+            "method": "PUT",
+            "description": "Update user profile",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"name": "string", "avatar": "string"}
+          },
+          {
+            "path": "/users/change-password",
+            "method": "POST",
+            "description": "Change password",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"currentPassword": "string", "newPassword": "string"}
+          },
+          {
+            "path": "/users/delete",
+            "method": "DELETE",
+            "description": "Delete account",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"code": "string"}
+          }
+        ]
+      }
+    },
+    {
+      "name": "Data Export",
+      "description": "Export financial data in multiple formats (JSON, CSV, Excel, PDF)",
+      "files": [
+        "src/services/exportService.ts",
+        "src/components/modals/ExportDataModal.tsx"
+      ]
+    },
+    {
+      "name": "Account Deletion",
+      "description": "Secure account deletion with OTP verification and data cleanup",
+      "files": [
+        "src/components/modals/DeleteAccountModal.tsx",
+        "src/pages/Goodbye.tsx"
+      ]
+    },
+    {
+      "name": "Subscription Management",
+      "description": "Premium plans, checkout, and subscription management",
+      "files": [
+        "src/pages/Plans.tsx",
+        "src/pages/Checkout.tsx",
+        "src/pages/ManageSubscription.tsx",
+        "src/services/subscription.service.ts"
+      ],
+      "api_doc": {
+        "baseUrl": "http://localhost:5000/api/v1",
+        "endpoints": [
+          {
+            "path": "/subscription/plans",
+            "method": "GET",
+            "description": "Get subscription plans"
+          },
+          {
+            "path": "/subscription/checkout",
+            "method": "POST",
+            "description": "Create checkout session",
+            "headers": {"Authorization": "Bearer {token}"},
+            "body": {"planId": "string"}
+          },
+          {
+            "path": "/subscription/current",
+            "method": "GET",
+            "description": "Get current subscription",
+            "headers": {"Authorization": "Bearer {token}"}
+          },
+          {
+            "path": "/subscription/cancel",
+            "method": "POST",
+            "description": "Cancel subscription",
+            "headers": {"Authorization": "Bearer {token}"}
+          }
+        ]
+      }
+    },
+    {
+      "name": "Notifications",
+      "description": "Real-time notifications system with dropdown and management",
+      "files": [
+        "src/components/NotificationDropdown.tsx",
+        "src/services/notification.service.ts"
+      ]
+    },
+    {
+      "name": "Financial Calculators",
+      "description": "Built-in calculators for percentage and compound interest calculations",
+      "files": [
+        "src/pages/PercentageCalculator.tsx",
+        "src/pages/CompoundInterestCalculator.tsx",
+        "src/components/Calculator.tsx"
+      ]
+    },
+    {
+      "name": "Admin Panel",
+      "description": "Administrative dashboard for system management",
+      "files": [
+        "src/pages/Admin.tsx"
+      ]
+    },
+    {
+      "name": "Theme System",
+      "description": "Dark/Light theme support with context provider",
+      "files": [
+        "src/contexts/ThemeContext.tsx"
+      ]
+    },
+    {
+      "name": "Layout Components",
+      "description": "Reusable layout components including header, sidebar, footer, and main layout",
+      "files": [
+        "src/components/layout/Header.tsx",
+        "src/components/layout/Sidebar.tsx",
+        "src/components/layout/Footer.tsx",
+        "src/components/layout/MainLayout.tsx"
+      ]
+    },
+    {
+      "name": "Common UI Components",
+      "description": "Reusable UI components for consistent design",
+      "files": [
+        "src/components/common/Alert.tsx",
+        "src/components/common/Loading.tsx",
+        "src/components/common/LoadingSkeleton.tsx",
+        "src/components/common/EmptyState.tsx",
+        "src/components/common/AnimatedPage.tsx",
+        "src/components/common/PageTransition.tsx",
+        "src/components/common/OptimizedImage.tsx",
+        "src/components/common/VirtualList.tsx"
+      ]
+    },
+    {
+      "name": "Modal Components",
+      "description": "Modal dialogs for confirmations and user interactions",
+      "files": [
+        "src/components/modals/ConfirmDeleteModal.tsx",
+        "src/components/modals/ConfirmCancelRecurrenceModal.tsx",
+        "src/components/modals/ConfirmDeleteGoalModal.tsx"
+      ]
+    },
+    {
+      "name": "State Management",
+      "description": "Zustand stores for authentication and financial data",
+      "files": [
+        "src/store/authStore.ts",
+        "src/store/financialStore.ts"
+      ]
+    },
+    {
+      "name": "API Integration",
+      "description": "Axios-based API client with interceptors and error handling",
+      "files": [
+        "src/services/api.ts",
+        "src/config/api.ts"
+      ]
+    },
+    {
+      "name": "Custom Hooks",
+      "description": "Reusable React hooks for caching, memoization, and page transitions",
+      "files": [
+        "src/hooks/useCache.ts",
+        "src/hooks/useMemoizedValue.ts",
+        "src/hooks/usePageTransition.ts",
+        "src/hooks/index.ts"
+      ]
+    },
+    {
+      "name": "Database Migrations",
+      "description": "PostgreSQL database migration system with backup and restore",
+      "files": [
+        "scripts/run-migrations.js",
+        "scripts/create-migration.js",
+        "scripts/migration-status.js",
+        "scripts/backup-database.js",
+        "scripts/test-connection.js"
+      ]
+    },
+    {
+      "name": "Static Pages",
+      "description": "Information pages for about, privacy, terms, and support",
+      "files": [
+        "src/pages/About.tsx",
+        "src/pages/Privacy.tsx",
+        "src/pages/Terms.tsx",
+        "src/pages/Support.tsx"
+      ]
+    },
+    {
+      "name": "Testing Infrastructure",
+      "description": "Vitest setup with testing library for unit and integration tests",
+      "files": [
+        "src/test/setup.ts"
+      ]
+    },
+    {
+      "name": "Type Definitions",
+      "description": "TypeScript type definitions for the application",
+      "files": [
+        "src/types/index.ts"
+      ]
+    },
+    {
+      "name": "Utility Functions",
+      "description": "Helper functions for formatting, validation, and common operations",
+      "files": [
+        "src/utils/"
+      ]
+    },
+    {
+      "name": "CI/CD Pipeline",
+      "description": "GitHub Actions workflow for automated deployment and integration",
+      "files": [
+        ".github/workflows/deploy.yml"
+      ]
+    },
+    {
+      "name": "Mock Data",
+      "description": "Mock data for development and testing",
+      "files": [
+        "src/data/mockData.ts"
+      ]
+    }
+  ]
+}
