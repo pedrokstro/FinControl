@@ -15,6 +15,10 @@ yarn-debug.log*
 pnpm-debug.log*
 *.log
 logs/
+backend/logs/
+
+# Backups
+backups/
 
 # Environment variables
 .env
@@ -39,3 +43,6 @@ Thumbs.db
 *.tmp
 *.temp
 **/.cache/
+
+# Uploads
+backend/uploads/
