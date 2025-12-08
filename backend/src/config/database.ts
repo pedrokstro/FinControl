@@ -20,8 +20,8 @@ console.log('🔍 Database Config:', {
 
 // Configuração explícita para pooler
 const poolerConfig = isUsingPooler ? {
-  host: 'aws-1-us-east-1.pooler.supabase.com',
-  port: 5432,
+  host: 'aws-0-us-east-1.pooler.supabase.com',
+  port: 6543,
   username: 'postgres.hzazlkgpamawlqmvxyii',
   password: 'YZAP2IMKvmE0S2lU',
   database: 'postgres',
