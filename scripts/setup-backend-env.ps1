@@ -2,9 +2,9 @@
 
 Write-Host "`n=== Configurar Backend .env - FinControl ===`n" -ForegroundColor Cyan
 
-# Credenciais do Supabase (conexão direta para desenvolvimento local)
-# Senha local: 360106 | Senha Render: YZAP2IMKvmE0S2lU
-$DATABASE_URL = "postgresql://postgres:360106@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres"
+# Credenciais do Supabase (usando pooler para desenvolvimento e produção)
+# Pooler funciona melhor com DNS e IPv4
+$DATABASE_URL = "postgresql://postgres.hzazlkgpamawlqmvxyii:YZAP2IMKvmE0S2lU@aws-1-us-east-1.pooler.supabase.com:5432/postgres"
 
 # Gerar JWT secrets
 $JWT_SECRET = -join ((1..128) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
@@ -70,7 +70,7 @@ Write-Host "[OK] Arquivo backend/.env criado com sucesso!" -ForegroundColor Gree
 
 Write-Host "`n" + ("=" * 60) -ForegroundColor Gray
 Write-Host "`nCredenciais configuradas:" -ForegroundColor Cyan
-Write-Host "  - DATABASE_URL: postgresql://postgres:***@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres" -ForegroundColor Gray
+Write-Host "  - DATABASE_URL: postgresql://postgres.***@aws-1-us-east-1.pooler.supabase.com:5432/postgres" -ForegroundColor Gray
 Write-Host "  - RESEND_API_KEY: Configurada" -ForegroundColor Gray
 Write-Host "  - JWT_SECRET: Gerado automaticamente" -ForegroundColor Gray
 Write-Host "  - JWT_REFRESH_SECRET: Gerado automaticamente" -ForegroundColor Gray
