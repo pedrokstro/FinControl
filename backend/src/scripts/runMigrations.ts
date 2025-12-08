@@ -5,7 +5,7 @@ async function sleep(ms: number) {
 }
 
 async function runMigrations() {
-  const maxRetries = 3;
+  const maxRetries = 1; // Reduzir para 1 tentativa para evitar múltiplas conexões
   let attempt = 0;
 
   while (attempt < maxRetries) {
