@@ -1,9 +1,33 @@
-# ?? FinControl - Sistema de Controle Financeiro
+<div align="center">
 
-![React](https://img.shields.io/badge/React-18.2-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)
-![Vite](https://img.shields.io/badge/Vite-5.0-purple)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-cyan)
+# 💰 FinControl
+
+![Version](https://img.shields.io/badge/version-1.8.0-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)
+
+### Stack Tecnológica
+
+![React](https://img.shields.io/badge/React-18.2-61dafb?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.0-646cff?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169e1?style=for-the-badge&logo=postgresql&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-0.3-fe0902?style=for-the-badge&logo=typeorm&logoColor=white)
+
+### Qualidade & Ferramentas
+
+![ESLint](https://img.shields.io/badge/ESLint-8.x-4b32c3?style=for-the-badge&logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-3.x-f7b93e?style=for-the-badge&logo=prettier&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-1.x-6e9f18?style=for-the-badge&logo=vitest&logoColor=white)
+
+---
+
+</div>
 
 Sistema completo de controle financeiro pessoal desenvolvido com React, TypeScript e Tailwind CSS.
 
