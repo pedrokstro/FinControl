@@ -7,6 +7,12 @@
 ![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)
 
+### CI/CD & Qualidade
+
+![CI/CD](https://github.com/pedrokstro/FinControl/actions/workflows/ci.yml/badge.svg)
+![Release](https://github.com/pedrokstro/FinControl/actions/workflows/release.yml/badge.svg)
+![Dependency Review](https://github.com/pedrokstro/FinControl/actions/workflows/dependency-review.yml/badge.svg)
+
 ### Stack Tecnológica
 
 ![React](https://img.shields.io/badge/React-18.2-61dafb?style=for-the-badge&logo=react&logoColor=white)
@@ -308,7 +314,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 👨‍💻 Autor
 
-Desenvolvido com ❤️ por [Seu Nome]
+Desenvolvido por PEDRO KSTRO
 
 ## 🙏 Agradecimentos
 
