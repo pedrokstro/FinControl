@@ -5,6 +5,11 @@ VARIAVEIS DE AMBIENTE PARA RENDER - BACKEND
 Copie e cole cada variavel abaixo no Render:
 (Clique em "Advanced" > "Add Environment Variable")
 
+IMPORTANTE: Se der timeout, verifique no Supabase:
+1. Settings > Database > Connection Pooling
+2. Desabilitar "Restrict connections to trusted IPs only"
+3. Ou adicionar IPs do Render na whitelist
+
 =================================================================
 
 NODE_ENV=production

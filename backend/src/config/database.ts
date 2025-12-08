@@ -67,12 +67,17 @@ export const AppDataSource = new DataSource({
   extra: {
     // Configurar timezone para UTC
     timezone: 'UTC',
-    // Forçar IPv4 para evitar problemas de conexão no Render
+    // Aumentar timeouts para produção
     ...(process.env.NODE_ENV === 'production' && {
-      connectionTimeoutMillis: 10000,
-      query_timeout: 10000,
+      connectionTimeoutMillis: 30000, // 30 segundos
+      query_timeout: 30000,
+      statement_timeout: 30000,
+      idle_in_transaction_session_timeout: 30000,
     }),
   },
+  // Configurações de pool de conexões
+  poolSize: process.env.NODE_ENV === 'production' ? 10 : 5,
+  connectTimeoutMS: 30000, // 30 segundos
 });
 
 export const initializeDatabase = async (): Promise<void> => {
