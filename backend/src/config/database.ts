@@ -32,6 +32,11 @@ export const AppDataSource = new DataSource({
   extra: {
     // Configurar timezone para UTC
     timezone: 'UTC',
+    // Forçar IPv4 para evitar problemas de conexão no Render
+    ...(process.env.NODE_ENV === 'production' && {
+      connectionTimeoutMillis: 10000,
+      query_timeout: 10000,
+    }),
   },
 });
 
