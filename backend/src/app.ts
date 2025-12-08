@@ -22,25 +22,39 @@ app.use(helmet({
 
 // CORS configuration
 const corsOrigin = config.cors.origin;
-app.use(
-  cors({
-    origin: corsOrigin === '*' 
-      ? true // Permite todas as origens
-      : (origin, callback) => {
-          const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
-          if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-          } else {
-            callback(new Error('Not allowed by CORS'));
-          }
-        },
-    credentials: true, // Sempre permitir credentials
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: 600, // 10 minutos
-  })
-);
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Permitir requisições sem origin (ex: Postman, mobile apps)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (corsOrigin === '*') {
+      return callback(null, true);
+    }
+    
+    const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked origin:', origin);
+      console.log('✅ Allowed origins:', allowedOrigins);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 
 // Rate limiting (apenas em produção)
 if (config.nodeEnv === 'production') {
