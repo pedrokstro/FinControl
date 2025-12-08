@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TrendingUp, Calculator } from 'lucide-react'
+import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Calendar } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -146,75 +146,103 @@ const CompoundInterestCalculator = () => {
         <div className="card">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Investimento Inicial */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Inicial
               </label>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600 dark:text-neutral-400 text-sm">R$</span>
-                <input
-                  type="number"
-                  value={initialValue}
-                  onChange={(e) => setInitialValue(e.target.value)}
-                  className="input flex-1"
-                  step="0.01"
-                />
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 via-sky-400 to-primary-300 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                  <input
+                    type="number"
+                    value={initialValue}
+                    onChange={(e) => setInitialValue(e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    placeholder="Ex: 10.000"
+                    step="0.01"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Taxa de Juros Anual */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Taxa de Juros Anual
               </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
-                  className="input flex-1"
-                  step="0.01"
-                />
-                <span className="text-gray-600 dark:text-neutral-400 text-sm">%</span>
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-cyan-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300">
+                    <Percent className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="number"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    placeholder="Ex: 8"
+                    step="0.01"
+                  />
+                  <span className="text-sm font-semibold text-success-600 dark:text-success-300">%</span>
+                </div>
               </div>
             </div>
 
             {/* Investimento Contínuo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Contínuo
               </label>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600 dark:text-neutral-400 text-sm">R$</span>
-                <input
-                  type="number"
-                  value={monthlyContribution}
-                  onChange={(e) => setMonthlyContribution(e.target.value)}
-                  className="input flex-1"
-                  step="0.01"
-                />
-                <span className="text-gray-600 dark:text-neutral-400 text-sm w-16">
-                  {compoundFrequency === 'Mensal' ? 'Mensal' : 'Anual'}
-                </span>
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400 via-primary-500 to-violet-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300">
+                    <Wallet className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                  <input
+                    type="number"
+                    value={monthlyContribution}
+                    onChange={(e) => setMonthlyContribution(e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    placeholder="Ex: 400"
+                    step="0.01"
+                  />
+                  <span className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide">
+                    {compoundFrequency === 'Mensal' ? 'Mensal' : 'Anual'}
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Duração */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group lg:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Duração
               </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={period}
-                  onChange={(e) => setPeriod(e.target.value)}
-                  className="input flex-1"
-                  min="1"
-                />
-                <span className="text-gray-600 dark:text-neutral-400 text-sm w-16">
-                  {compoundFrequency === 'Mensal' ? 'Mês' : 'Ano'}
-                </span>
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-primary-500 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent overflow-hidden">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="number"
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    placeholder="Ex: 10"
+                    min="1"
+                  />
+                  <span className="text-[11px] font-semibold text-gray-600 dark:text-neutral-300 uppercase tracking-wide flex-shrink-0 whitespace-nowrap px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-full">
+                    {compoundFrequency === 'Mensal' ? 'Meses' : 'Anos'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -222,11 +250,12 @@ const CompoundInterestCalculator = () => {
           {/* Segunda linha */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {/* Composto */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Composto
               </label>
-              <div className="relative">
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
                 <select
                   value={compoundFrequency}
                   onChange={(e) => {
@@ -242,12 +271,12 @@ const CompoundInterestCalculator = () => {
                       setPeriod(String(Math.ceil(parseInt(period) / 12)))
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer appearance-none pr-10"
+                  className="relative w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl text-gray-900 dark:text-white focus:outline-none focus:ring-0 appearance-none pr-12 font-semibold"
                 >
                   <option value="Anual">Anual</option>
                   <option value="Mensal">Mensal</option>
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-neutral-400">
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-neutral-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -256,16 +285,24 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Data de Início */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Data de Início
               </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="input w-full"
-              />
+              <div className="relative rounded-2xl">
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-300">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Botões Calcular e Limpar */}

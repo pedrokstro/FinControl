@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Search, X, Package, Smile } from 'lucide-react'
-import { iconCategories, getIcon, type IconName } from '@/utils/iconMapping'
+import { iconCategories, type IconName, type IconCategoryItem } from '@/utils/iconMapping'
 import EmojiPickerTab from './EmojiPickerTab'
+import CategoryIcon from './CategoryIcon'
 
 interface IconPickerProps {
   selectedIcon: IconName | string
   onSelectIcon: (icon: IconName | string, isEmoji?: boolean) => void
-  type?: 'income' | 'expense'
+  type?: 'income' | 'expense' | 'other'
   isPremium?: boolean
   onUpgradeClick?: () => void
 }
@@ -23,32 +24,30 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
     return /\p{Emoji}/u.test(icon) && icon.length <= 4
   }
   
-  const SelectedIcon = isEmoji(selectedIcon as string) ? null : getIcon(selectedIcon as IconName)
-
   // Get categories to show based on type
   const getCategoriesToShow = () => {
-    if (type === 'income') {
-      return {
-        'Financeiro': iconCategories.income.financial,
-        'Trabalho & Negocios': iconCategories.income.workAndBusiness,
-        'Investimentos': iconCategories.income.investments,
-        'Renda Extra': iconCategories.income.sideIncome,
-        'Renda Passiva': iconCategories.income.passiveIncome,
-      }
-    }
-    
-    return {
-      'Alimentacao': iconCategories.foodAndDining,
-      'Transporte': iconCategories.transportation,
-      'Moradia': iconCategories.housing,
-      'Lazer': iconCategories.entertainment,
-      'Saude': iconCategories.health,
-      'Educacao': iconCategories.education,
-      'Contas': iconCategories.bills,
-      'Pessoal': iconCategories.personal,
-      'Pets': iconCategories.pets,
-      'Outros': iconCategories.other,
-    }
+    return type === 'income'
+      ? {
+          'Financeiro': iconCategories.income.financial,
+          'Trabalho & Negocios': iconCategories.income.workAndBusiness,
+          'Investimentos': iconCategories.income.investments,
+          'Renda Extra': iconCategories.income.sideIncome,
+          'Renda Passiva': iconCategories.income.passiveIncome,
+          'Exclusivos': iconCategories.exclusive,
+        }
+      : {
+          'Alimentacao': iconCategories.foodAndDining,
+          'Transporte': iconCategories.transportation,
+          'Moradia': iconCategories.housing,
+          'Lazer': iconCategories.entertainment,
+          'Saude': iconCategories.health,
+          'Educacao': iconCategories.education,
+          'Contas': iconCategories.bills,
+          'Pessoal': iconCategories.personal,
+          'Pets': iconCategories.pets,
+          'Outros': iconCategories.other,
+          'Exclusivos': iconCategories.exclusive,
+        }
   }
 
   const categoriesToShow = getCategoriesToShow()
@@ -73,7 +72,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
 
   const filteredCategories = getFilteredIcons()
 
-  const handleSelectIcon = (iconName: IconName) => {
+  const handleSelectIcon = (iconName: IconName | string) => {
     onSelectIcon(iconName, false)
     setIsOpen(false)
     setSearchTerm('')
@@ -104,7 +103,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
           {isEmoji(selectedIcon as string) ? (
             <span className="text-2xl">{selectedIcon}</span>
           ) : (
-            SelectedIcon && <SelectedIcon className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
+            <CategoryIcon icon={selectedIcon} size="md" className="text-gray-700 dark:text-neutral-300" />
           )}
         </div>
         <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
@@ -138,6 +137,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
                 >
@@ -148,6 +148,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
               {/* Tabs */}
               <div className="flex gap-2 mb-3">
                 <button
+                  type="button"
                   onClick={() => setActiveTab('icons')}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     activeTab === 'icons'
@@ -159,6 +160,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                   <span className="text-sm">Ícones</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('emojis')}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     activeTab === 'emojis'
@@ -219,8 +221,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                       </span>
                     </div>
                     <div className="grid grid-cols-7 gap-2">
-                      {icons.map((iconData: IconItem) => {
-                        const Icon = getIcon(iconData.name as IconName)
+                      {icons.map((iconData: IconCategoryItem) => {
                         const isSelected = selectedIcon === iconData.name
                         
                         return (
@@ -238,12 +239,11 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                             `}
                             title={iconData.label}
                           >
-                            <Icon
-                              className={`w-5 h-5 transition-colors ${
-                                isSelected
-                                  ? 'text-primary-600 dark:text-primary-400'
-                                  : 'text-gray-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400'
-                              }`}
+                            <CategoryIcon
+                              icon={iconData.name}
+                              size="md"
+                              className="transition-transform group-hover:scale-105"
+                              color={isSelected ? '#2563eb' : '#4b5563'}
                             />
                             {isSelected && (
                               <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 dark:bg-primary-400 rounded-full flex items-center justify-center shadow-lg">

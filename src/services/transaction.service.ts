@@ -33,6 +33,7 @@ export interface CreateTransactionData {
   isRecurring?: boolean;
   recurrenceType?: 'daily' | 'weekly' | 'monthly' | 'yearly';
   recurrenceEndDate?: string;
+  recurrenceMonths?: number;
 }
 
 export interface TransactionFilters {
@@ -73,14 +74,15 @@ class TransactionService {
     return response.data.data;
   }
 
-  async create(data: CreateTransactionData): Promise<Transaction> {
+  async create(data: CreateTransactionData): Promise<Transaction | Transaction[]> {
     // Garantir que a data seja sempre string no formato YYYY-MM-DD
     const dataToSend = {
       ...data,
       date: typeof data.date === 'string' ? data.date : data.date,
       recurrenceEndDate: data.recurrenceEndDate && typeof data.recurrenceEndDate === 'string' 
         ? data.recurrenceEndDate 
-        : data.recurrenceEndDate
+        : data.recurrenceEndDate,
+      recurrenceMonths: data.recurrenceMonths,
     };
     
     console.log('📤 [FRONTEND] Enviando para API:', dataToSend);

@@ -1,4 +1,5 @@
-import { getIcon, type IconName } from '@/utils/iconMapping'
+import { getIcon, getExclusiveImageIcon, type IconName } from '@/utils/iconMapping'
+import { Icon as IconifyIcon } from '@iconify/react'
 
 interface CategoryIconProps {
   icon: IconName | string
@@ -21,16 +22,16 @@ const emojiSizeClasses = {
   xl: 'text-3xl',
 }
 
-const CategoryIcon = ({ 
-  icon, 
-  color = '#6b7280', 
-  size = 'md', 
-  className = '' 
+const CategoryIcon = ({
+  icon,
+  color = '#6b7280',
+  size = 'md',
+  className = '',
 }: CategoryIconProps) => {
   // Verificar se é emoji
-  const isEmoji = (str: string) => {
-    return /\p{Emoji}/u.test(str) && str.length <= 4
-  }
+  const isEmoji = (str: string) => /\p{Emoji}/u.test(str) && str.length <= 4
+  const isIconifyIcon = typeof icon === 'string' && icon.includes(':')
+  const isExclusiveIcon = typeof icon === 'string' && icon.startsWith('exclusive:')
 
   // Se for emoji, renderizar como texto
   if (isEmoji(icon as string)) {
@@ -42,6 +43,29 @@ const CategoryIcon = ({
       >
         {icon}
       </span>
+    )
+  }
+
+  if (isExclusiveIcon) {
+    const imgIcon = getExclusiveImageIcon(icon as string)
+    if (!imgIcon) return null
+
+    return (
+      <img
+        src={imgIcon.src}
+        alt={imgIcon.label}
+        className={`${sizeClasses[size]} ${className} object-contain`}
+      />
+    )
+  }
+
+  if (isIconifyIcon) {
+    return (
+      <IconifyIcon
+        icon={icon as string}
+        className={`${sizeClasses[size]} ${className}`}
+        style={{ color }}
+      />
     )
   }
 

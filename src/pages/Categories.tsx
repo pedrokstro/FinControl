@@ -23,6 +23,7 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import ColorPicker from '@/components/common/ColorPicker'
 import { type IconName } from '@/utils/iconMapping'
 import PageTransition from '@/components/common/PageTransition'
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 
 const categorySchema = z.object({
   name: z.string().min(3, 'Nome deve ter no minimo 3 caracteres'),
@@ -34,15 +35,25 @@ const categorySchema = z.object({
 type CategoryFormData = z.infer<typeof categorySchema>
 
 const Categories = () => {
-  const { categories, addCategory, updateCategory, deleteCategory } = useFinancialStore()
+  const { categories, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState<{
+    id: string
+    name: string
+    type: 'income' | 'expense'
+    color: string
+  } | null>(null)
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false)
   
   // View mode state
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | null>(null)
+  const [isViewModeLoading, setIsViewModeLoading] = useState(true)
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false)
 
   // Obter status premium do usuário autenticado
   const { user } = useAuthStore()
@@ -62,14 +73,39 @@ const Categories = () => {
         const mode = await userPreferenceService.get('categoriesViewMode')
         if (mode && (mode === 'grid' || mode === 'list')) {
           setViewMode(mode as 'grid' | 'list')
+        } else {
+          setViewMode('grid')
         }
       } catch (error) {
         console.error('Erro ao carregar modo de visualização:', error)
+        setViewMode('grid')
+      } finally {
+        setIsViewModeLoading(false)
       }
     }
 
     loadViewMode()
   }, [])
+
+  // Garantir que categorias sejam carregadas quando a página abre
+  useEffect(() => {
+    const loadCategories = async () => {
+      if (categories.length > 0) {
+        setIsCategoriesLoading(false)
+        return
+      }
+      try {
+        setIsCategoriesLoading(true)
+        await fetchCategories()
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error)
+      } finally {
+        setIsCategoriesLoading(false)
+      }
+    }
+
+    loadCategories()
+  }, [categories.length, fetchCategories])
 
   // Salvar preferência de visualização no backend
   const handleViewModeChange = async (mode: 'grid' | 'list') => {
@@ -154,13 +190,34 @@ const Categories = () => {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta categoria?')) {
-      try {
-        await deleteCategory(id)
-      } catch (error) {
-        console.error('Erro ao excluir categoria:', error)
-      }
+  const handleDelete = (category: {
+    id: string
+    name: string
+    type: 'income' | 'expense'
+    color: string
+  }) => {
+    setCategoryToDelete(category)
+    setShowDeleteModal(true)
+  }
+
+  const handleCloseDeleteModal = () => {
+    if (isDeletingCategory) return
+    setShowDeleteModal(false)
+    setCategoryToDelete(null)
+  }
+
+  const confirmDeleteCategory = async () => {
+    if (!categoryToDelete) return
+
+    try {
+      setIsDeletingCategory(true)
+      await deleteCategory(categoryToDelete.id)
+    } catch (error) {
+      console.error('Erro ao excluir categoria:', error)
+    } finally {
+      setIsDeletingCategory(false)
+      setShowDeleteModal(false)
+      setCategoryToDelete(null)
     }
   }
 
@@ -180,22 +237,24 @@ const Categories = () => {
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
             <button
               onClick={() => handleViewModeChange('grid')}
+              disabled={isViewModeLoading}
               className={`p-2 rounded-md transition-all ${
                 viewMode === 'grid'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
+              } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
               title="Visualização em Grade"
             >
               <Grid3x3 className="w-5 h-5" />
             </button>
             <button
               onClick={() => handleViewModeChange('list')}
+              disabled={isViewModeLoading}
               className={`p-2 rounded-md transition-all ${
                 viewMode === 'list'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
+              } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
               title="Visualização em Lista"
             >
               <List className="w-5 h-5" />
@@ -290,9 +349,29 @@ const Categories = () => {
         </div>
       </div>
 
-      {/* Grid View */}
-      {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {(isViewModeLoading || isCategoriesLoading) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-grid-cols-4 gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={`skeleton-${index}`}
+              className="card animate-pulse border border-transparent dark:border-neutral-800"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-neutral-800" />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
+                </div>
+              </div>
+              <div className="h-5 bg-gray-200 dark:bg-neutral-800 rounded w-3/4 mb-3" />
+              <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {viewMode === 'grid' && !isViewModeLoading && !isCategoriesLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-grid-cols-4 gap-6">
           {filteredCategories.map((category) => (
             <div
               key={category.id}
@@ -318,7 +397,7 @@ const Categories = () => {
                     <Pencil className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleDelete(category)}
                     className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
                     title="Excluir"
                   >
@@ -350,7 +429,7 @@ const Categories = () => {
       )}
 
       {/* List View */}
-      {viewMode === 'list' && (
+      {viewMode === 'list' && !isViewModeLoading && !isCategoriesLoading && (
         <div className="card divide-y divide-gray-200 dark:divide-neutral-800">
           {filteredCategories.map((category) => (
             <div
@@ -407,7 +486,7 @@ const Categories = () => {
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(category.id)}
+                  onClick={() => handleDelete(category)}
                   className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
                   title="Excluir"
                 >
@@ -616,6 +695,16 @@ const Categories = () => {
           </div>
         </div>
       )}
+      {/* Delete Category Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onConfirm={confirmDeleteCategory}
+        title="Excluir Categoria"
+        description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+        itemName={categoryToDelete?.name}
+        isLoading={isDeletingCategory}
+      />
     </div>
     </PageTransition>
   )

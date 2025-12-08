@@ -17,24 +17,92 @@ import {
   ChevronRight,
   Calendar,
   Repeat,
-  XCircle
+  XCircle,
+  Loader2,
 } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
+import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO, differenceInMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
 import PageTransition from '@/components/common/PageTransition'
+import CategoryIcon from '@/components/common/CategoryIcon'
 
-const transactionSchema = z.object({
-  type: z.enum(['income', 'expense']),
-  amount: z.string().min(1, 'Valor e obrigatorio'),
-  categoryId: z.string().min(1, 'Categoria e obrigatoria'),
-  description: z.string().min(3, 'Descricao deve ter no minimo 3 caracteres'),
-  date: z.string().min(1, 'Data e obrigatoria'),
-  isRecurring: z.boolean().optional(),
-  recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
-  recurrenceEndDate: z.string().optional(),
-})
+const calculateRecurrenceMonths = (start?: string, end?: string) => {
+  if (!start || !end) return null
+  const startDate = parseISO(start)
+  const endDate = parseISO(end)
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate < startDate) {
+    return null
+  }
+  const diff = differenceInMonths(endDate, startDate)
+  const months = diff + 1
+  return months > 0 ? Math.min(months, 60) : null
+}
+
+const transactionSchema = z
+  .object({
+    type: z.enum(['income', 'expense']),
+    amount: z.string().min(1, 'Valor e obrigatorio'),
+    categoryId: z.string().min(1, 'Categoria e obrigatoria'),
+    description: z.string().min(3, 'Descricao deve ter no minimo 3 caracteres'),
+    date: z.string().min(1, 'Data e obrigatoria'),
+    isRecurring: z.boolean().optional(),
+    recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
+    recurrenceEndDate: z.string().optional(),
+    recurrenceStartDate: z.string().optional(),
+    recurrenceMonths: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.isRecurring) {
+      if (!data.recurrenceType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceType'],
+          message: 'Selecione a frequência',
+        })
+      }
+      if (!data.recurrenceStartDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceStartDate'],
+          message: 'Data inicial é obrigatória',
+        })
+      }
+      if (!data.recurrenceEndDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceEndDate'],
+          message: 'Data final é obrigatória',
+        })
+      }
+      if (data.recurrenceStartDate && data.recurrenceEndDate) {
+        const start = parseISO(data.recurrenceStartDate)
+        const end = parseISO(data.recurrenceEndDate)
+        if (end < start) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['recurrenceEndDate'],
+            message: 'Data final deve ser depois da data inicial',
+          })
+        } else {
+          const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
+          if (!months) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ['recurrenceEndDate'],
+              message: 'Período inválido',
+            })
+          } else if (months > 60) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ['recurrenceEndDate'],
+              message: 'Limite máximo de 60 meses',
+            })
+          }
+        }
+      }
+    }
+  })
 
 type TransactionFormData = z.infer<typeof transactionSchema>
 
@@ -46,7 +114,8 @@ const Transactions = () => {
     updateTransaction, 
     deleteTransaction,
     syncWithBackend,
-    isLoading
+    isLoading,
+    isCreatingTransaction,
   } = useFinancialStore()
 
   const [showModal, setShowModal] = useState(false)
@@ -71,16 +140,52 @@ const Transactions = () => {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
-  } = useForm<TransactionFormData>( {
+  } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: 'expense',
       date: format(new Date(), 'yyyy-MM-dd'),
+      recurrenceStartDate: format(new Date(), 'yyyy-MM-dd'),
+      recurrenceEndDate: undefined,
     },
   })
 
   const transactionType = watch('type')
+  const recurrenceStartDate = watch('recurrenceStartDate')
+  const recurrenceEndDate = watch('recurrenceEndDate')
+  const computedRecurrenceMonths = useMemo(
+    () => calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate),
+    [recurrenceStartDate, recurrenceEndDate]
+  )
+
+  useEffect(() => {
+    if (isRecurring && recurrenceStartDate) {
+      setValue('date', recurrenceStartDate)
+    }
+  }, [isRecurring, recurrenceStartDate, setValue])
+
+  useEffect(() => {
+    if (isRecurring && recurrenceStartDate && recurrenceEndDate) {
+      const months = calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate)
+      if (months) {
+        setValue('recurrenceMonths', months.toString())
+      } else {
+        setValue('recurrenceMonths', undefined)
+      }
+    } else {
+      setValue('recurrenceMonths', undefined)
+    }
+  }, [isRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
+
+  const categoryIconMap = useMemo(() => {
+    const map = new Map<string, { icon: string; name: string; color?: string }>()
+    categories.forEach((cat) => {
+      map.set(cat.id, { icon: cat.icon, name: cat.name, color: cat.color })
+    })
+    return map
+  }, [categories])
 
   const handlePreviousMonth = () => {
     setSelectedMonth(prev => subMonths(prev, 1))
@@ -176,6 +281,7 @@ const Transactions = () => {
         categoryId: transaction.categoryId,
         description: transaction.description,
         date: transactionDate,
+        recurrenceStartDate: transactionDate,
         isRecurring: transaction.isRecurring || false,
         recurrenceType: transaction.recurrenceType || undefined,
         recurrenceEndDate: recurrenceEndDate,
@@ -189,6 +295,7 @@ const Transactions = () => {
         categoryId: '',
         description: '',
         date: format(selectedMonth, 'yyyy-MM-dd'),
+        recurrenceStartDate: format(selectedMonth, 'yyyy-MM-dd'),
         isRecurring: false,
         recurrenceType: undefined,
         recurrenceEndDate: undefined,
@@ -216,7 +323,9 @@ const Transactions = () => {
       // Adicionar campos de recorrência se marcado
       isRecurring: isRecurring,
       recurrenceType: isRecurring ? data.recurrenceType : undefined,
+      recurrenceStartDate: isRecurring ? data.recurrenceStartDate : undefined,
       recurrenceEndDate: isRecurring && data.recurrenceEndDate ? data.recurrenceEndDate : undefined,
+      recurrenceMonths: isRecurring && data.recurrenceMonths ? Number(data.recurrenceMonths) : undefined,
     }
     
     if (editingId) {
@@ -465,8 +574,15 @@ const Transactions = () => {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300">
-                        {transaction.category}
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300">
+                        {categoryIconMap.get(transaction.categoryId) && (
+                          <CategoryIcon 
+                            icon={categoryIconMap.get(transaction.categoryId)!.icon}
+                            color={categoryIconMap.get(transaction.categoryId)!.color}
+                            size="sm"
+                          />
+                        )}
+                        <span>{transaction.category}</span>
                       </span>
                     </td>
                     <td className="py-3 px-4">
@@ -554,7 +670,15 @@ const Transactions = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-neutral-950 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-transparent dark:border-neutral-800">
+          <div className="relative bg-white dark:bg-neutral-950 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-transparent dark:border-neutral-800">
+            {isCreatingTransaction && (
+              <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10">
+                <Loader2 className="w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin" />
+                <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
+                  Criando transação e gerando parcelas...
+                </p>
+              </div>
+            )}
             <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -570,6 +694,7 @@ const Transactions = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
+              <input type="hidden" {...register('recurrenceMonths')} />
               <div>
                 <label className="label">Tipo</label>
                 <div className="grid grid-cols-2 gap-3">
@@ -665,14 +790,16 @@ const Transactions = () => {
                     id="isRecurring"
                     checked={isRecurring}
                     onChange={(e) => {
-                      setIsRecurring(e.target.checked)
-                      if (!e.target.checked) {
-                        // Limpar campos de recorrência quando desmarcar
-                        reset({
-                          ...watch(),
-                          recurrenceType: undefined,
-                          recurrenceEndDate: undefined,
-                        })
+                      const checked = e.target.checked
+                      setIsRecurring(checked)
+                      if (checked) {
+                        const currentDate = watch('date')
+                        setValue('recurrenceStartDate', currentDate)
+                      } else {
+                        setValue('recurrenceType', undefined)
+                        setValue('recurrenceStartDate', undefined)
+                        setValue('recurrenceEndDate', undefined)
+                        setValue('recurrenceMonths', undefined)
                       }
                     }}
                     className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
@@ -685,6 +812,36 @@ const Transactions = () => {
 
                 {isRecurring && (
                   <div className="space-y-4 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                    <div>
+                      <label className="label">Data Inicial</label>
+                      <input
+                        type="date"
+                        {...register('recurrenceStartDate')}
+                        className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
+                      />
+                      {errors.recurrenceStartDate && (
+                        <p className="error-message">{errors.recurrenceStartDate.message}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="label">Data Final</label>
+                      <input
+                        type="date"
+                        {...register('recurrenceEndDate')}
+                        className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
+                      />
+                      {errors.recurrenceEndDate && (
+                        <p className="error-message">{errors.recurrenceEndDate.message}</p>
+                      )}
+                    </div>
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
+                      {computedRecurrenceMonths
+                        ? (
+                          <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
+                        ) : (
+                          <p>Selecione datas válidas (máx. 60 meses) para gerar as parcelas.</p>
+                        )}
+                    </div>
                     <div>
                       <label className="label">Frequência</label>
                       <select
@@ -702,22 +859,6 @@ const Transactions = () => {
                       )}
                     </div>
 
-                    <div>
-                      <label className="label">Data Final (opcional)</label>
-                      <input
-                        type="date"
-                        {...register('recurrenceEndDate')}
-                        className="input-field"
-                        placeholder="Deixe em branco para recorrência indefinida"
-                      />
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-                        Deixe em branco para recorrência indefinida
-                      </p>
-                      {errors.recurrenceEndDate && (
-                        <p className="error-message">{errors.recurrenceEndDate.message}</p>
-                      )}
-                    </div>
-
                     <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
                       <p className="text-xs text-primary-700 dark:text-primary-300">
                         <strong>ℹ️ Como funciona:</strong> Esta transação será automaticamente criada na frequência selecionada. Você pode cancelar a recorrência a qualquer momento.
@@ -732,11 +873,23 @@ const Transactions = () => {
                   type="button"
                   onClick={handleCloseModal}
                   className="flex-1 btn-secondary"
+                  disabled={isCreatingTransaction}
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="flex-1 btn-primary">
-                  {editingId ? 'Salvar' : 'Adicionar'}
+                <button
+                  type="submit"
+                  className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={isCreatingTransaction}
+                >
+                  {isCreatingTransaction ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    editingId ? 'Salvar' : 'Adicionar'
+                  )}
                 </button>
               </div>
             </form>

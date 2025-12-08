@@ -8,7 +8,7 @@ const transactionService = new TransactionService();
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
-    const { isRecurring, recurrenceType, recurrenceEndDate, ...transactionData } = req.body;
+    const { isRecurring, recurrenceType, recurrenceEndDate, recurrenceMonths, ...transactionData } = req.body;
 
     let transaction;
 
@@ -17,7 +17,8 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       transaction = await recurrenceService.createRecurringTransaction(
         { ...transactionData, userId },
         recurrenceType,
-        recurrenceEndDate ? new Date(recurrenceEndDate) : undefined
+        recurrenceEndDate ? new Date(recurrenceEndDate) : undefined,
+        recurrenceMonths
       );
     } else {
       // Criar transação normal

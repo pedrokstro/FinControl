@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Percent, Calculator, ArrowRight } from 'lucide-react'
+import { Percent, Calculator, ArrowRight, Wallet } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
 
 const PercentageCalculator = () => {
@@ -117,33 +117,57 @@ const PercentageCalculator = () => {
             </div>
 
             {/* Inputs */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+            <div className="space-y-5">
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                   Porcentagem (%)
                 </label>
-                <input
-                  type="number"
-                  value={percentage}
-                  onChange={(e) => setPercentage(e.target.value)}
-                  placeholder="Ex: 15"
-                  className="input"
-                  step="0.01"
-                />
+                <div className="relative rounded-2xl">
+                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 via-primary-400 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                  <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                      <Percent className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="number"
+                      value={percentage}
+                      onChange={(e) => setPercentage(e.target.value)}
+                      placeholder="Ex: 15"
+                      className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                      step="0.01"
+                    />
+                    <span className="text-sm font-semibold text-primary-600 dark:text-primary-300">%</span>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                  Informe a porcentagem com até duas casas decimais
+                </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                   Valor (R$)
                 </label>
-                <input
-                  type="number"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  placeholder="Ex: 1000"
-                  className="input"
-                  step="0.01"
-                />
+                <div className="relative rounded-2xl">
+                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-amber-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+                  <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300">
+                      <Wallet className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                    <input
+                      type="number"
+                      value={value}
+                      onChange={(e) => setValue(e.target.value)}
+                      placeholder="Ex: 1000,00"
+                      className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                  Use vírgula ou ponto para separar as casas decimais
+                </p>
               </div>
             </div>
 

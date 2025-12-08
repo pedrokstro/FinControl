@@ -3,7 +3,7 @@ import { Transaction, RecurrenceType } from '@/models/Transaction';
 import { logger } from '@/utils/logger';
 import { LessThanOrEqual } from 'typeorm';
 
-export class RecurrenceService {
+class RecurrenceService {
   private transactionRepository = AppDataSource.getRepository(Transaction);
 
   /**
@@ -50,6 +50,13 @@ export class RecurrenceService {
 
       for (const transaction of recurringTransactions) {
         try {
+          if (!transaction.nextOccurrence) {
+            logger.info(`⏸️  Recurring transaction ${transaction.id} has no next occurrence defined, skipping`);
+            transaction.isRecurring = false;
+            await this.transactionRepository.save(transaction);
+            continue;
+          }
+
           // Verificar se ainda está dentro do período de recorrência
           if (transaction.recurrenceEndDate && new Date(transaction.recurrenceEndDate) < now) {
             logger.info(`⏹️  Recurring transaction ${transaction.id} has ended, skipping`);
@@ -106,82 +113,78 @@ export class RecurrenceService {
   async createRecurringTransaction(
     transactionData: Partial<Transaction>,
     recurrenceType: RecurrenceType,
-    recurrenceEndDate?: Date
-  ): Promise<Transaction> {
-    // Log para debug
+    recurrenceEndDate?: Date,
+    recurrenceMonths: number = 1
+  ): Promise<Transaction[]> {
     console.log('🔄 [DEBUG] Data recebida (recorrente):', transactionData.date, 'Tipo:', typeof transactionData.date);
-    
-    // ADICIONAR 2 DIAS para compensar o timezone do PostgreSQL
-    let transactionDate: string;
-    let firstOccurrenceForCalc: Date;
-    
-    if (transactionData.date) {
-      const dateValue = transactionData.date as any;
-      if (typeof dateValue === 'string') {
-        // Adicionar 2 dias à data
-        const [year, month, day] = dateValue.split('-').map(Number);
-        const dateObj = new Date(year, month - 1, day);
-        dateObj.setDate(dateObj.getDate() + 2); // ADICIONAR 2 DIAS
-        
-        const newYear = dateObj.getFullYear();
-        const newMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const newDay = String(dateObj.getDate()).padStart(2, '0');
-        transactionDate = `${newYear}-${newMonth}-${newDay}`;
-        
-        // Usar data original para calcular nextOccurrence
-        firstOccurrenceForCalc = new Date(year, month - 1, day);
-        
-        console.log('🔄 [DEBUG] Data original:', dateValue);
-        console.log('🔄 [DEBUG] Data +2 dias:', transactionDate);
-      } else {
-        const dateObj = new Date(dateValue);
-        firstOccurrenceForCalc = new Date(dateValue);
-        
-        dateObj.setDate(dateObj.getDate() + 2); // ADICIONAR 2 DIAS
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        transactionDate = `${year}-${month}-${day}`;
-      }
-    } else {
-      const today = new Date();
-      firstOccurrenceForCalc = new Date(today);
-      
-      today.setDate(today.getDate() + 2); // ADICIONAR 2 DIAS
-      transactionDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    const baseDate = this.parseInputDate(transactionData.date as any);
+    const totalMonths = Math.max(1, recurrenceMonths || 1);
+
+    const finalEndDate =
+      recurrenceEndDate ??
+      this.addMonths(baseDate, totalMonths > 0 ? totalMonths - 1 : 0);
+
+    const amount =
+      typeof transactionData.amount === 'string'
+        ? parseFloat(transactionData.amount)
+        : transactionData.amount;
+
+    if (!transactionData.type || !transactionData.categoryId || !transactionData.userId || amount === undefined) {
+      throw new Error('Missing data to create recurring transaction');
     }
-    
-    const nextOccurrence = this.calculateNextOccurrence(firstOccurrenceForCalc, recurrenceType);
 
-    // Usar query SQL direta para garantir que a data seja salva corretamente
-    const result = await this.transactionRepository.query(
-      `INSERT INTO transactions (type, amount, description, date, "categoryId", "userId", "isRecurring", "recurrenceType", "recurrenceEndDate", "nextOccurrence")
-       VALUES ($1, $2, $3, $4::date, $5, $6, $7, $8, $9, $10)
-       RETURNING id`,
-      [
-        transactionData.type,
-        transactionData.amount,
-        transactionData.description,
-        transactionDate, // String no formato YYYY-MM-DD
-        transactionData.categoryId,
-        transactionData.userId,
-        true, // isRecurring
-        recurrenceType,
-        recurrenceEndDate || null,
-        nextOccurrence
-      ]
-    );
-    
-    const transactionId = result[0].id;
-    logger.info(`✅ Created recurring transaction ${transactionId} (${recurrenceType})`);
+    const parentEntity = this.transactionRepository.create({
+      type: transactionData.type,
+      amount,
+      description: transactionData.description || '',
+      date: this.applyStorageOffset(baseDate),
+      categoryId: transactionData.categoryId,
+      userId: transactionData.userId,
+      isRecurring: true,
+      recurrenceType,
+      recurrenceEndDate: finalEndDate || null,
+      nextOccurrence: null,
+    });
 
-    // Buscar a transação criada com as relações
-    const transaction = await this.transactionRepository.findOne({
-      where: { id: transactionId },
+    const savedParent = await this.transactionRepository.save(parentEntity);
+    logger.info(`✅ Created recurring transaction ${savedParent.id} (${recurrenceType})`);
+
+    const transactionsWithRelations: Transaction[] = [];
+    const parentWithRelations = await this.transactionRepository.findOne({
+      where: { id: savedParent.id },
       relations: ['category'],
     });
 
-    return transaction!;
+    if (parentWithRelations) {
+      transactionsWithRelations.push(parentWithRelations);
+    }
+
+    for (let installment = 1; installment < totalMonths; installment++) {
+      const occurrenceDate = this.addMonths(baseDate, installment);
+      const childEntity = this.transactionRepository.create({
+        type: transactionData.type,
+        amount,
+        description: transactionData.description || '',
+        date: this.applyStorageOffset(occurrenceDate),
+        categoryId: transactionData.categoryId,
+        userId: transactionData.userId,
+        isRecurring: false,
+        parentTransactionId: savedParent.id,
+      });
+
+      const savedChild = await this.transactionRepository.save(childEntity);
+      const childWithRelations = await this.transactionRepository.findOne({
+        where: { id: savedChild.id },
+        relations: ['category'],
+      });
+
+      if (childWithRelations) {
+        transactionsWithRelations.push(childWithRelations);
+      }
+    }
+
+    return transactionsWithRelations;
   }
 
   /**
@@ -239,6 +242,44 @@ export class RecurrenceService {
       where: { parentTransactionId },
       order: { date: 'DESC' },
     });
+  }
+
+  private parseInputDate(value: any): Date {
+    if (!value) {
+      const today = new Date();
+      return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    }
+
+    if (typeof value === 'string') {
+      const [year, month, day] = value.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    if (value instanceof Date) {
+      return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+    }
+
+    const dateValue = new Date(value);
+    return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private applyStorageOffset(date: Date): string {
+    const adjusted = new Date(date);
+    adjusted.setDate(adjusted.getDate() + 2);
+    return this.formatDate(adjusted);
+  }
+
+  private addMonths(date: Date, months: number): Date {
+    const copy = new Date(date);
+    copy.setMonth(copy.getMonth() + months);
+    return copy;
   }
 }
 

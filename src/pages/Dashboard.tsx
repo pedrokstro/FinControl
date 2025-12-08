@@ -11,13 +11,13 @@ import {
   ArrowDownRight,
   BarChart3,
   Plus,
-  Minus,
   X,
   Calculator as CalculatorIcon,
   Target,
   Edit3,
   Trash2,
-  Repeat
+  Repeat,
+  Loader2,
 } from 'lucide-react'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
@@ -25,7 +25,7 @@ import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import { toast } from 'react-hot-toast'
-import { 
+import {
   AreaChart, 
   Area, 
   PieChart, 
@@ -45,21 +45,136 @@ import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import { type IconName } from '@/utils/iconMapping'
 
-const transactionSchema = z.object({
-  type: z.enum(['income', 'expense']),
-  amount: z.string().min(1, 'Valor e obrigatorio'),
-  categoryId: z.string().min(1, 'Categoria e obrigatoria'),
-  description: z.string().min(3, 'Descricao deve ter no minimo 3 caracteres'),
-  date: z.string().min(1, 'Data e obrigatoria'),
-  isRecurring: z.boolean().optional(),
-  recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
-  recurrenceEndDate: z.string().optional(),
-})
+const RADIAN = Math.PI / 180
+
+type PieLabelProps = {
+  cx: number
+  cy: number
+  midAngle: number
+  outerRadius: number
+  percent?: number
+  name?: string
+  fill?: string
+  payload?: {
+    name?: string
+    color?: string
+  }
+}
+
+const renderCategoryLabel = ({
+  cx,
+  cy,
+  midAngle,
+  outerRadius,
+  percent = 0,
+  name = '',
+  fill = '#111827',
+  payload,
+}: PieLabelProps) => {
+  const resolvedName = payload?.name ?? name
+  const textColor = payload?.color ?? fill
+  const radius = outerRadius + (percent < 0.08 ? 28 : 18)
+  const x = cx + radius * Math.cos(-midAngle * RADIAN)
+  const y = cy + radius * Math.sin(-midAngle * RADIAN)
+  const isRightSide = x > cx
+  const anchor = isRightSide ? 'start' : 'end'
+  const percentLabel = percent > 0 ? `${(percent * 100).toFixed(0)}%` : ''
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill={textColor}
+      textAnchor={anchor}
+      dominantBaseline="middle"
+      fontSize={12}
+      fontWeight={600}
+    >
+      <tspan x={x} dy="-0.3em">
+        {resolvedName}
+      </tspan>
+      {percentLabel && (
+        <tspan x={x} dy="1.2em" fill="#111827">
+          {percentLabel}
+        </tspan>
+      )}
+    </text>
+  )
+}
+
+const calculateRecurrenceMonths = (start?: string, end?: string) => {
+  if (!start || !end) return null
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate < startDate) {
+    return null
+  }
+  const diff =
+    endDate.getFullYear() * 12 + endDate.getMonth() -
+    (startDate.getFullYear() * 12 + startDate.getMonth())
+  const months = diff + 1
+  return months > 0 ? Math.min(months, 60) : null
+}
+
+const transactionSchema = z
+  .object({
+    type: z.enum(['income', 'expense']),
+    amount: z.string().min(1, 'Valor e obrigatorio'),
+    categoryId: z.string().min(1, 'Categoria e obrigatoria'),
+    description: z.string().min(3, 'Descricao deve ter no minimo 3 caracteres'),
+    date: z.string().min(1, 'Data e obrigatoria'),
+    isRecurring: z.boolean().optional(),
+    recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
+    recurrenceStartDate: z.string().optional(),
+    recurrenceEndDate: z.string().optional(),
+    recurrenceMonths: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.isRecurring) {
+      if (!data.recurrenceType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceType'],
+          message: 'Selecione a frequência',
+        })
+      }
+      if (!data.recurrenceStartDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceStartDate'],
+          message: 'Data inicial é obrigatória',
+        })
+      }
+      if (!data.recurrenceEndDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['recurrenceEndDate'],
+          message: 'Data final é obrigatória',
+        })
+      }
+      if (data.recurrenceStartDate && data.recurrenceEndDate) {
+        const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
+        if (!months) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['recurrenceEndDate'],
+            message: 'Período inválido',
+          })
+        } else if (months > 60) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['recurrenceEndDate'],
+            message: 'Limite máximo de 60 meses',
+          })
+        }
+      }
+    }
+  })
 
 type TransactionFormData = z.infer<typeof transactionSchema>
 
 const Dashboard = () => {
-  const { transactions, categories, addTransaction, syncWithBackend } = useFinancialStore()
+  const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const [showFabMenu, setShowFabMenu] = useState(false)
   const [showCalculator, setShowCalculator] = useState(false)
@@ -70,12 +185,13 @@ const Dashboard = () => {
   const [isDeletingGoal, setIsDeletingGoal] = useState(false)
   const [isQuickAddRecurring, setIsQuickAddRecurring] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [showIncomeModal, setShowIncomeModal] = useState(false)
+  const [showExpenseModal, setShowExpenseModal] = useState(false)
   
   // Sincronizar com backend ao carregar o dashboard
   useEffect(() => {
     const loadData = async () => {
-      await syncWithBackend()
-      await loadCurrentGoal()
+      await Promise.all([syncWithBackend(), loadCurrentGoal()])
       // Pequeno delay para garantir renderização suave
       setTimeout(() => setIsInitialLoad(false), 100)
     }
@@ -131,13 +247,37 @@ const Dashboard = () => {
     defaultValues: {
       type: 'expense',
       date: (() => {
-        const today = new Date();
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const today = new Date()
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
       })(),
+      recurrenceStartDate: (() => {
+        const today = new Date()
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+      })(),
+      recurrenceEndDate: undefined,
     },
   })
 
   const transactionType = watch('type')
+  const recurrenceStartDate = watch('recurrenceStartDate')
+  const recurrenceEndDate = watch('recurrenceEndDate')
+  const computedRecurrenceMonths = useMemo(
+    () => calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate),
+    [recurrenceStartDate, recurrenceEndDate]
+  )
+
+  useEffect(() => {
+    if (isQuickAddRecurring && recurrenceStartDate && recurrenceEndDate) {
+      const months = calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate)
+      if (months) {
+        setValue('recurrenceMonths', months.toString())
+      } else {
+        setValue('recurrenceMonths', undefined)
+      }
+    } else {
+      setValue('recurrenceMonths', undefined)
+    }
+  }, [isQuickAddRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
 
   const openQuickAdd = (type: 'income' | 'expense' = 'expense') => {
     // Obter data de hoje sem timezone
@@ -152,6 +292,8 @@ const Dashboard = () => {
       categoryId: '',
       description: '',
       date: todayString,
+      recurrenceStartDate: todayString,
+      recurrenceEndDate: undefined,
     })
     setShowQuickAdd(true)
     setShowFabMenu(false)
@@ -176,6 +318,7 @@ const Dashboard = () => {
       isRecurring: false,
       recurrenceType: undefined,
       recurrenceEndDate: undefined,
+      recurrenceMonths: undefined,
     })
   }
 
@@ -216,6 +359,7 @@ const Dashboard = () => {
       isRecurring: isQuickAddRecurring,
       recurrenceType: isQuickAddRecurring ? data.recurrenceType : undefined,
       recurrenceEndDate: recurrenceEndDateString,
+      recurrenceMonths: isQuickAddRecurring && data.recurrenceMonths ? Number(data.recurrenceMonths) : undefined,
     })
     
     closeQuickAdd()
@@ -260,20 +404,11 @@ const Dashboard = () => {
   }, [showQuickAdd, showCalculator])
 
   const financialSummary = useMemo(() => {
-    const now = new Date()
-    const monthStart = startOfMonth(now)
-    const monthEnd = endOfMonth(now)
-
-    const monthTransactions = transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate >= monthStart && tDate <= monthEnd
-    })
-
-    const monthIncome = monthTransactions
+    const monthIncome = currentMonthTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
 
-    const monthExpense = monthTransactions
+    const monthExpense = currentMonthTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0)
 
@@ -284,7 +419,19 @@ const Dashboard = () => {
       monthExpense,
       monthBalance,
     }
-  }, [transactions])
+  }, [currentMonthTransactions])
+
+  const incomeTransactions = useMemo(() => {
+    return [...currentMonthTransactions]
+      .filter((t) => t.type === 'income')
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [currentMonthTransactions])
+
+  const expenseTransactions = useMemo(() => {
+    return [...currentMonthTransactions]
+      .filter((t) => t.type === 'expense')
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [currentMonthTransactions])
 
   const monthlyData = useMemo(() => {
     const data = []
@@ -294,7 +441,7 @@ const Dashboard = () => {
       const monthEnd = endOfMonth(date)
 
       const monthTransactions = transactions.filter((t) => {
-        const tDate = new Date(t.date)
+        const tDate = parseISO(t.date)
         return tDate >= monthStart && tDate <= monthEnd
       })
 
@@ -318,6 +465,7 @@ const Dashboard = () => {
   // Novo: Dados para o grafico de barras mensal completo
   const yearlyMonthlyData = useMemo(() => {
     const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+    const currentYear = new Date().getFullYear()
     
     // Agrupar transacoes por mes
     const monthlyTotals: { [key: number]: { income: number; expense: number } } = {}
@@ -330,9 +478,12 @@ const Dashboard = () => {
     // Calcular totais de cada mes
     transactions.forEach((t) => {
       const tDate = parseISO(t.date)
+      if (tDate.getFullYear() !== currentYear) {
+        return
+      }
       const tMonth = getMonth(tDate)
       
-      // Agrupar por mes independente do ano
+      // Agrupar apenas meses do ano atual
       if (t.type === 'income') {
         monthlyTotals[tMonth].income += t.amount
       } else {
@@ -350,19 +501,8 @@ const Dashboard = () => {
   }, [transactions])
 
   const categoryData = useMemo(() => {
-    const now = new Date()
-    const monthStart = startOfMonth(now)
-    const monthEnd = endOfMonth(now)
-
-    // Filtrar apenas transacoes do mes atual
-    const monthTransactions = transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate >= monthStart && tDate <= monthEnd
-    })
-
-    // Obter todas as categorias (receitas e despesas)
     const allCategories = categories.map((cat) => {
-      const transactions_by_category = monthTransactions.filter(
+      const transactions_by_category = currentMonthTransactions.filter(
         (t) => t.categoryId === cat.id && t.type === cat.type
       )
       
@@ -377,19 +517,61 @@ const Dashboard = () => {
     }).filter((item) => item.value > 0)
     
     return allCategories
-  }, [transactions, categories])
+  }, [currentMonthTransactions, categories])
 
   const recentTransactions = useMemo(() => {
-    return [...transactions]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5)
-  }, [transactions])
+    const sorted = [...currentMonthTransactions].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
+    const grouped: any[] = []
+    const seen = new Set<string>()
+
+    sorted.forEach((transaction) => {
+      const isPartOfRecurrence = transaction.isRecurring || !!transaction.parentTransactionId
+      if (isPartOfRecurrence) {
+        const groupId = transaction.parentTransactionId || transaction.id
+        if (seen.has(groupId)) {
+          return
+        }
+
+        const installments = sorted.filter(
+          (t) =>
+            (t.parentTransactionId === groupId || t.id === groupId) &&
+            t.description === transaction.description &&
+            t.amount === transaction.amount &&
+            t.type === transaction.type
+        )
+
+        grouped.push({
+          ...transaction,
+          recurrenceInstallments: installments.length,
+        })
+        seen.add(groupId)
+      } else if (!transaction.parentTransactionId) {
+        grouped.push(transaction)
+      }
+    })
+
+    const listToDisplay = grouped.length > 0 ? grouped : sorted
+    const limit = Math.min(currentMonthTransactions.length, 6)
+
+    return listToDisplay.slice(0, limit || 5)
+  }, [currentMonthTransactions])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     }).format(value)
+  }
+
+  const formatDate = (value: string) => {
+    try {
+      return format(parseISO(value), 'dd/MM/yyyy', { locale: ptBR })
+    } catch {
+      return value
+    }
   }
 
   return (
@@ -402,35 +584,6 @@ const Dashboard = () => {
           </p>
         </div>
         
-        {/* Quick Action Buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => openQuickAdd('income')}
-            className="flex items-center gap-2 px-4 py-2 bg-success-600 hover:bg-success-700 dark:bg-success-500 dark:hover:bg-success-600 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-            title="Adicionar Receita (Atalho: +)"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Receita</span>
-          </button>
-          
-          <button
-            onClick={() => openQuickAdd('expense')}
-            className="flex items-center gap-2 px-4 py-2 bg-danger-600 hover:bg-danger-700 dark:bg-danger-500 dark:hover:bg-danger-600 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-            title="Adicionar Despesa (Atalho: -)"
-          >
-            <Minus className="w-4 h-4" />
-            <span className="hidden sm:inline">Despesa</span>
-          </button>
-          
-          <button
-            onClick={() => setShowCalculator(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-            title="Abrir Calculadora (Atalho: C)"
-          >
-            <CalculatorIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Calculadora</span>
-          </button>
-        </div>
       </div>
       
       {/* Keyboard Shortcuts Hint - Movido para baixo */}
@@ -465,7 +618,17 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card">
+        <div
+          className="card cursor-pointer hover:shadow-lg transition-all"
+          onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && incomeTransactions.length) {
+              setShowIncomeModal(true)
+            }
+          }}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Receitas do Mes</p>
@@ -485,7 +648,17 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card">
+        <div
+          className="card cursor-pointer hover:shadow-lg transition-all"
+          onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && expenseTransactions.length) {
+              setShowExpenseModal(true)
+            }
+          }}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Despesas do Mes</p>
@@ -764,7 +937,7 @@ const Dashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={renderCategoryLabel}
                     outerRadius={100}
                     innerRadius={0}
                     fill="#8884d8"
@@ -1093,10 +1266,16 @@ const Dashboard = () => {
                     id="quickAddRecurring"
                     checked={isQuickAddRecurring}
                     onChange={(e) => {
-                      setIsQuickAddRecurring(e.target.checked)
-                      if (!e.target.checked) {
+                      const checked = e.target.checked
+                      setIsQuickAddRecurring(checked)
+                      if (checked) {
+                        const currentDate = watch('date')
+                        setValue('recurrenceStartDate', currentDate)
+                      } else {
                         setValue('recurrenceType', undefined)
+                        setValue('recurrenceStartDate', undefined)
                         setValue('recurrenceEndDate', undefined)
+                        setValue('recurrenceMonths', undefined)
                       }
                     }}
                     className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
@@ -1109,6 +1288,44 @@ const Dashboard = () => {
 
                 {isQuickAddRecurring && (
                   <div className="space-y-3 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                        Data Inicial
+                      </label>
+                      <input
+                        type="date"
+                        {...register('recurrenceStartDate')}
+                        className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceStartDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                      />
+                      {errors.recurrenceStartDate && (
+                        <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                          {errors.recurrenceStartDate.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                        Data Final
+                      </label>
+                      <input
+                        type="date"
+                        {...register('recurrenceEndDate')}
+                        className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceEndDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                      />
+                      {errors.recurrenceEndDate && (
+                        <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                          {errors.recurrenceEndDate.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
+                      {computedRecurrenceMonths
+                        ? (
+                          <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
+                        ) : (
+                          <p>Selecione datas válidas (máx. 60 meses) para gerar as parcelas.</p>
+                        )}
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                         Frequência
@@ -1125,25 +1342,9 @@ const Dashboard = () => {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                        Data Final (opcional)
-                      </label>
-                      <input
-                        {...register('recurrenceEndDate', {
-                          setValueAs: (value) => {
-                            // Garantir que sempre retorne string, não Date
-                            if (value instanceof Date) {
-                              return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
-                            }
-                            return value;
-                          }
-                        })}
-                        type="date"
-                        className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-                      />
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-                        Deixe em branco para recorrência indefinida
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                      <p className="text-xs text-primary-700 dark:text-primary-300">
+                        <strong>ℹ️ Como funciona:</strong> As parcelas serão criadas imediatamente e você poderá cancelar a recorrência quando quiser.
                       </p>
                     </div>
                   </div>
@@ -1160,10 +1361,20 @@ const Dashboard = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 text-white bg-primary-600 dark:bg-primary-500 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-600 transition-all flex items-center justify-center gap-2"
+                  disabled={isCreatingTransaction}
+                  className="flex-1 px-4 py-2.5 text-white bg-primary-600 dark:bg-primary-500 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-600 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <Plus className="w-5 h-5" />
-                  Adicionar
+                  {isCreatingTransaction ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-5 h-5" />
+                      Adicionar
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -1190,6 +1401,156 @@ const Dashboard = () => {
         goalAmount={currentGoal?.targetAmount || 0}
         isLoading={isDeletingGoal}
       />
+
+      {/* Income Transactions Modal */}
+      {showIncomeModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
+          <div
+            className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-success-600 dark:text-success-400 font-medium">Receitas do Mês</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {formatCurrency(financialSummary.monthIncome)}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                  {incomeTransactions.length} {incomeTransactions.length === 1 ? 'receita' : 'receitas'} registradas
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowIncomeModal(false)}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto max-h-[60vh]">
+              {incomeTransactions.length === 0 ? (
+                <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+                  Nenhuma receita registrada neste mês.
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                  {incomeTransactions.map((transaction) => {
+                    const category = categories.find((cat) => cat.id === transaction.categoryId)
+                    return (
+                      <div key={transaction.id} className="p-4 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
+                          <CategoryIcon
+                            icon={(category?.icon as IconName) || 'Wallet'}
+                            color={category?.color || '#22c55e'}
+                            size="md"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
+                          <p className="text-sm text-gray-500 dark:text-neutral-400">
+                            {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-success-600 dark:text-success-400">
+                            {formatCurrency(transaction.amount)}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowIncomeModal(false)}
+                className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expense Transactions Modal */}
+      {showExpenseModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
+          <div
+            className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-danger-600 dark:text-danger-400 font-medium">Despesas do Mês</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {formatCurrency(financialSummary.monthExpense)}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                  {expenseTransactions.length} {expenseTransactions.length === 1 ? 'despesa' : 'despesas'} registradas
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowExpenseModal(false)}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto max-h-[60vh]">
+              {expenseTransactions.length === 0 ? (
+                <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+                  Nenhuma despesa registrada neste mês.
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                  {expenseTransactions.map((transaction) => {
+                    const category = categories.find((cat) => cat.id === transaction.categoryId)
+                    return (
+                      <div key={transaction.id} className="p-4 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
+                          <CategoryIcon
+                            icon={(category?.icon as IconName) || 'Wallet'}
+                            color={category?.color || '#ef4444'}
+                            size="md"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
+                          <p className="text-sm text-gray-500 dark:text-neutral-400">
+                            {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-danger-600 dark:text-danger-400">
+                            {formatCurrency(transaction.amount)}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowExpenseModal(false)}
+                className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-12">

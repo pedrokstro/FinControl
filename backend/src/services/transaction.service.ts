@@ -233,6 +233,13 @@ export class TransactionService {
 
   async delete(id: string, userId: string) {
     const transaction = await this.findById(id, userId);
+
+    // Se for uma transação recorrente "pai", remover também as parcelas geradas
+    if (transaction.isRecurring) {
+      console.log(`🗑️ [DELETE] Removendo parcelas geradas da recorrência ${transaction.id}`);
+      await this.transactionRepository.delete({ parentTransactionId: transaction.id });
+    }
+
     await this.transactionRepository.remove(transaction);
   }
 

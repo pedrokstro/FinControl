@@ -3,8 +3,10 @@ const { Client } = require('pg');
 async function testSupabase() {
   console.log('🔍 Testando conexão com Supabase...\n');
   
-  // Usar connectionString completa
-  const connectionString = 'postgresql://postgres:cfJT36rKu9g3vTIK@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres';
+  // Usar connectionString completa (prioriza env)
+  const connectionString =
+    process.env.DATABASE_URL ||
+    'postgresql://postgres.hzazlkgpamawlqmvxyii:CqgJUNmn1TQTYp40@aws-1-us-east-1.pooler.supabase.com:5432/postgres';
   
   const config = {
     connectionString: connectionString,

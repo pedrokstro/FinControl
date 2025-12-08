@@ -16,9 +16,16 @@ app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
+const allowedOrigins = config.cors.origin.split(',').map(origin => origin.trim());
 app.use(
   cors({
-    origin: config.cors.origin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );

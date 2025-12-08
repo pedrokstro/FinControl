@@ -27,9 +27,11 @@ export interface Transaction {
   userId: string
   isRecurring?: boolean
   recurrenceType?: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  recurrenceStartDate?: string
   recurrenceEndDate?: string
   nextOccurrence?: string
   parentTransactionId?: string
+  recurrenceMonths?: number
 }
 
 export interface Category {
@@ -69,6 +71,9 @@ export interface TransactionFormData {
   categoryId: string
   description: string
   date: string
+  recurrenceMonths?: string
+  recurrenceStartDate?: string
+  recurrenceEndDate?: string
 }
 
 export interface CategoryFormData {

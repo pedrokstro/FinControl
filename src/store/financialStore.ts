@@ -4,12 +4,53 @@ import { Transaction, Category, FilterOptions } from '@/types'
 import toast from 'react-hot-toast'
 import transactionService from '@/services/transaction.service'
 import categoryService from '@/services/category.service'
+import { parseISO } from 'date-fns'
+
+const normalizeDate = (value: any): string | undefined => {
+  if (!value) return undefined
+
+  if (typeof value === 'string') {
+    return value.includes('T') ? value.split('T')[0] : value
+  }
+
+  const date =
+    value instanceof Date
+      ? value
+      : new Date(value)
+
+  if (isNaN(date.getTime())) {
+    return undefined
+  }
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const normalizeTransaction = (tx: any) => ({
+  ...tx,
+  amount: Number(tx.amount),
+  category: typeof tx.category === 'string' ? tx.category : tx.category?.name || '',
+  date: normalizeDate(tx.date),
+})
+
+const getCurrentMonthRange = () => {
+  const now = new Date()
+  return {
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+  }
+}
 
 interface FinancialState {
   transactions: Transaction[]
+  currentMonthTransactions: Transaction[]
   categories: Category[]
   currentUserId: string | null
   isLoading: boolean
+  isCreatingTransaction: boolean
+  isSyncingAllTransactions: boolean
   addTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>
   updateTransaction: (id: string, transaction: Partial<Transaction>) => Promise<void>
   deleteTransaction: (id: string) => Promise<void>
@@ -20,6 +61,7 @@ interface FinancialState {
   setUserId: (userId: string | null) => void
   clearUserData: () => void
   fetchTransactions: () => Promise<void>
+  syncAllTransactions: () => Promise<void>
   fetchCategories: () => Promise<void>
   syncWithBackend: () => Promise<void>
 }
@@ -30,14 +72,17 @@ export const useFinancialStore = create<FinancialState>()(
   persist(
     (set, get) => ({
       transactions: [],
+      currentMonthTransactions: [],
       categories: [],
       currentUserId: null,
       isLoading: false,
+      isCreatingTransaction: false,
+      isSyncingAllTransactions: false,
 
 
       addTransaction: async (transaction) => {
         try {
-          set({ isLoading: true })
+          set({ isLoading: true, isCreatingTransaction: true })
           
           // Garantir que a data seja sempre string no formato YYYY-MM-DD
           const dateValue: any = transaction.date;
@@ -62,19 +107,18 @@ export const useFinancialStore = create<FinancialState>()(
           console.log('💾 [STORE] Enviando transação:', transactionData);
           
           const result = await transactionService.create(transactionData)
-          // Converter category de objeto para string e amount para número
-          const newTransaction = {
-            ...result,
-            amount: Number(result.amount),
-            category: typeof result.category === 'string' ? result.category : result.category?.name || '',
-          }
+          const createdTransactions = Array.isArray(result) ? result : [result]
+
+          const normalizedTransactions = createdTransactions.map(normalizeTransaction)
+
           set((state) => ({
-            transactions: [newTransaction as any, ...state.transactions],
+            transactions: [...normalizedTransactions as any, ...state.transactions],
             isLoading: false,
+            isCreatingTransaction: false,
           }))
           toast.success('Transação adicionada com sucesso')
         } catch (error) {
-          set({ isLoading: false })
+          set({ isLoading: false, isCreatingTransaction: false })
           toast.error('Erro ao adicionar transação')
           throw error
         }
@@ -268,24 +312,89 @@ export const useFinancialStore = create<FinancialState>()(
       fetchTransactions: async () => {
         try {
           set({ isLoading: true })
-          console.log('🔄 Buscando transações do backend...')
-          const data = await transactionService.getAll()
-          console.log('📦 Transações recebidas do backend:', data.transactions.length)
-          
-          // Converter transações do backend para o formato do store
-          const transactions = data.transactions.map(t => ({
-            ...t,
-            amount: Number(t.amount), // Converter string para número
-            category: t.category.name, // Converter objeto category para string
-          }))
-          
-          console.log('✅ Transações processadas:', transactions.length)
-          console.log('📋 IDs das transações:', transactions.map(t => t.id))
-          
-          set({ transactions: transactions as any, isLoading: false })
+          console.log('🔄 Buscando transações recentes do backend (todas)...')
+
+          const data = await transactionService.getAll({
+            page: 1,
+            limit: 100,
+            sortBy: 'date',
+            sortOrder: 'desc',
+          })
+
+          const normalizedTransactions = data.transactions.map(normalizeTransaction)
+          const { month, year } = getCurrentMonthRange()
+          const monthTransactions = normalizedTransactions.filter((tx) => {
+            if (!tx.date) return false
+            const date = parseISO(tx.date)
+            return date.getFullYear() === year && date.getMonth() + 1 === month
+          })
+
+          console.log(`✅ Transações retornadas: ${normalizedTransactions.length} (mês atual: ${monthTransactions.length})`)
+
+          set({
+            transactions: normalizedTransactions as any,
+            currentMonthTransactions: monthTransactions as any,
+            isLoading: false,
+          })
+
+          // Buscar restante em background (todas as páginas)
+          get().syncAllTransactions().catch((error) => {
+            console.error('❌ Erro ao sincronizar todas as transações:', error)
+          })
         } catch (error) {
           console.error('❌ Erro ao buscar transações:', error)
           set({ isLoading: false })
+        }
+      },
+
+      syncAllTransactions: async () => {
+        const state = get()
+        if (state.isSyncingAllTransactions) {
+          return
+        }
+
+        try {
+          set({ isSyncingAllTransactions: true })
+          console.log('🔄 Sincronizando todas as transações em segundo plano...')
+
+          const pageSize = 100
+          let currentPage = 1
+          let totalPages = 1
+          const allTransactions: any[] = []
+
+          while (currentPage <= totalPages) {
+            const data = await transactionService.getAll({
+              page: currentPage,
+              limit: pageSize,
+              sortBy: 'date',
+              sortOrder: 'desc',
+            })
+
+            console.log(`📦 Página ${currentPage}/${data.totalPages} recebida com ${data.transactions.length} itens`)
+
+            totalPages = data.totalPages || 1
+            currentPage++
+
+            allTransactions.push(...data.transactions.map(normalizeTransaction))
+          }
+          
+          console.log('✅ Total de transações sincronizadas:', allTransactions.length)
+          set(() => {
+            const { month, year } = getCurrentMonthRange()
+            const filteredMonth = allTransactions.filter((tx) => {
+              const date = parseISO(tx.date)
+              return date.getFullYear() === year && date.getMonth() + 1 === month
+            })
+
+            return {
+              transactions: allTransactions.length > 0 ? (allTransactions as any) : get().transactions,
+              currentMonthTransactions: filteredMonth.length > 0 ? (filteredMonth as any) : get().currentMonthTransactions,
+              isSyncingAllTransactions: false,
+            }
+          })
+        } catch (error) {
+          console.error('❌ Erro ao sincronizar todas as transações:', error)
+          set({ isSyncingAllTransactions: false })
         }
       },
 

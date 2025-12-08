@@ -35,6 +35,15 @@ export const createTransactionSchema = Joi.object({
   recurrenceEndDate: Joi.date().iso().optional().messages({
     'date.base': 'Data final da recorrência inválida',
   }),
+  recurrenceMonths: Joi.number()
+    .integer()
+    .min(1)
+    .max(60)
+    .when('isRecurring', {
+      is: true,
+      then: Joi.optional(),
+      otherwise: Joi.optional(),
+    }),
 });
 
 export const updateTransactionSchema = Joi.object({

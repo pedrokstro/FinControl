@@ -43,6 +43,7 @@ const EmojiPickerTab = ({
               <span className="text-sm font-semibold">Recurso Premium</span>
             </div>
             <button
+              type="button"
               onClick={() => setShowUpgradeModal(true)}
               className="text-xs bg-white text-orange-600 px-3 py-1 rounded-full font-semibold hover:bg-orange-50 transition-colors"
             >
@@ -229,12 +230,14 @@ const EmojiPickerTab = ({
               {/* Actions */}
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={() => setShowUpgradeModal(false)}
                   className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all"
                 >
                   Agora Não
                 </button>
                 <button
+                  type="button"
                   onClick={handleUpgrade}
                   className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
