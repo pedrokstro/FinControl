@@ -258,7 +258,7 @@ npm run test:ui
 npm run test:coverage
 ```
 
-## ?? Deploy
+## 🚀 Deploy
 
 ### Build de Produção
 ```bash
@@ -281,7 +281,7 @@ npm i -g netlify-cli
 netlify deploy --prod
 ```
 
-## ?? Contribuindo
+## 🤝 Contribuindo
 
 1. Fork o projeto
 2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
@@ -289,7 +289,7 @@ netlify deploy --prod
 4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
 
-## ?? Roadmap
+## 🗺️ Roadmap
 
 - [ ] Integração com API backend real
 - [ ] Autenticação com OAuth (Google, Facebook)
@@ -302,15 +302,15 @@ netlify deploy --prod
 - [ ] Lembretes e notificações push
 - [ ] Aplicativo mobile (React Native)
 
-## ?? Licença
+## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## ????? Autor
+## 👨‍💻 Autor
 
-Desenvolvido com ?? por [Seu Nome]
+Desenvolvido com ❤️ por [Seu Nome]
 
-## ?? Agradecimentos
+## 🙏 Agradecimentos
 
 - React Team
 - Tailwind CSS
@@ -320,4 +320,4 @@ Desenvolvido com ?? por [Seu Nome]
 
 ---
 
-? Se este projeto te ajudou, considere dar uma estrela!
+⭐ Se este projeto te ajudou, considere dar uma estrela!
