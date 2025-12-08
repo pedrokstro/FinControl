@@ -50,9 +50,11 @@ LOG_LEVEL=info
 
 LOG_DIR=logs
 
-RESEND_API_KEY=re_HK3Ub5qF_JuXoVVZpVVacENR42xwKMHC3
+GMAIL_USER=suportfincontrol@gmail.com
 
-EMAIL_FROM=FinControl suportfincontrol@gmail.com
+GMAIL_APP_PASSWORD=ahezxtofpatxfosm
+
+EMAIL_FROM=FinControl <suportfincontrol@gmail.com>
 
 =================================================================
 CONFIGURACOES DE BUILD

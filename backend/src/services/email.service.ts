@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { config } from '../config/env';
 
 interface EmailOptions {
@@ -9,17 +9,24 @@ interface EmailOptions {
 }
 
 class EmailService {
-  private resend: Resend | null = null;
+  private transporter: nodemailer.Transporter | null = null;
 
   constructor() {
-    // Configurar Resend se a API key estiver disponível
-    const apiKey = process.env.RESEND_API_KEY;
+    // Configurar Nodemailer com Gmail
+    const gmailUser = process.env.GMAIL_USER;
+    const gmailPass = process.env.GMAIL_APP_PASSWORD;
     
-    if (apiKey) {
-      this.resend = new Resend(apiKey);
-      console.log('✅ Resend configurado para envio de emails');
+    if (gmailUser && gmailPass) {
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+      });
+      console.log('✅ Nodemailer configurado para envio de emails via Gmail');
     } else {
-      console.warn('⚠️  RESEND_API_KEY não configurada. Emails não serão enviados.');
+      console.warn('⚠️  GMAIL_USER ou GMAIL_APP_PASSWORD não configuradas. Emails não serão enviados.');
     }
   }
 
@@ -27,30 +34,25 @@ class EmailService {
    * Enviar email genérico
    */
   async sendEmail(options: EmailOptions): Promise<void> {
-    if (!this.resend) {
-      console.warn('⚠️  Email não enviado (Resend não configurado):', options.subject);
+    if (!this.transporter) {
+      console.warn('⚠️  Email não enviado (Nodemailer não configurado):', options.subject);
       return;
     }
 
     try {
-      // Usar EMAIL_FROM do .env ou fallback para onboarding@resend.dev
-      const fromEmail = process.env.EMAIL_FROM || 'FinControl <onboarding@resend.dev>';
+      const fromEmail = process.env.EMAIL_FROM || process.env.GMAIL_USER || 'noreply@fincontrol.com';
       
       console.log('📧 Enviando email de:', fromEmail, 'para:', options.to);
       
-      const { data, error } = await this.resend.emails.send({
+      const info = await this.transporter.sendMail({
         from: fromEmail,
-        to: [options.to],
+        to: options.to,
         subject: options.subject,
         html: options.html,
+        text: options.text,
       });
 
-      if (error) {
-        console.error('❌ Erro ao enviar email:', error);
-        throw new Error(`Erro ao enviar email: ${JSON.stringify(error)}`);
-      }
-
-      console.log('✅ Email enviado com sucesso! ID:', data?.id);
+      console.log('✅ Email enviado com sucesso! ID:', info.messageId);
     } catch (error) {
       console.error('❌ Erro ao enviar email:', error);
       throw new Error('Erro ao enviar email');
