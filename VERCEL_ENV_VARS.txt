@@ -6,7 +6,7 @@ Clique em "Environment Variables" e adicione cada variavel:
 
 =================================================================
 
-VITE_API_URL=https://SEU-BACKEND.onrender.com/api/v1
+VITE_API_URL=https://fincontrol-735h.onrender.com/api/v1
 
 VITE_APP_NAME=FinControl
 
