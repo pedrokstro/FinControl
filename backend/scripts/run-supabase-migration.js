@@ -2,9 +2,14 @@ const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-// IMPORTANTE: Substitua pelo seu host real do Supabase
+// IMPORTANTE: Configure DATABASE_URL nas variáveis de ambiente
 // Você pode encontrar em: Supabase Dashboard > Settings > Database > Connection string
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:360106@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres';
+if (!process.env.DATABASE_URL) {
+  console.error('❌ ERRO: DATABASE_URL não configurado!');
+  console.error('Configure a variável de ambiente DATABASE_URL ou crie um arquivo .env');
+  process.exit(1);
+}
+const connectionString = process.env.DATABASE_URL;
 
 async function runMigration() {
   console.log('📋 Informações de Conexão:');
