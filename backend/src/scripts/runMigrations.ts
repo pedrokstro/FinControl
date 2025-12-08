@@ -8,6 +8,10 @@ async function runMigrations() {
   const maxRetries = 1; // Reduzir para 1 tentativa para evitar múltiplas conexões
   let attempt = 0;
 
+  // Aguardar 3 segundos antes de tentar conectar (dar tempo para o Supabase estar pronto)
+  console.log('⏳ Aguardando 3s antes de conectar ao banco...');
+  await sleep(3000);
+
   while (attempt < maxRetries) {
     try {
       attempt++;
