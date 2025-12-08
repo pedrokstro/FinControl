@@ -23,7 +23,7 @@ const poolerConfig = isUsingPooler ? {
   host: 'aws-1-us-east-1.pooler.supabase.com',
   port: 5432,
   username: 'postgres.hzazlkgpamawlqmvxyii',
-  password: '360106',
+  password: 'YZAP2IMKvmE0S2lU',
   database: 'postgres',
 } : {};
 

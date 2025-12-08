@@ -4,7 +4,7 @@ Write-Host "`n=== Configurar Backend .env - FinControl ===`n" -ForegroundColor C
 
 # Credenciais do Supabase (conexão direta para desenvolvimento local)
 # Para produção (Render), usar o pooler
-$DATABASE_URL = "postgresql://postgres:360106@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres"
+$DATABASE_URL = "postgresql://postgres:YZAP2IMKvmE0S2lU@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres"
 
 # Gerar JWT secrets
 $JWT_SECRET = -join ((1..128) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
