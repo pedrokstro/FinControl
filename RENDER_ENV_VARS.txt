@@ -15,11 +15,11 @@ NODE_OPTIONS=--dns-result-order=ipv4first
 
 API_PREFIX=/api/v1
 
-DATABASE_URL=postgresql://postgres.hzazlkgpamawlqmvxyii:YZAP2IMKvmE0S2lU@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://postgres.hzazlkgpamawlqmvxyii:YZAP2IMKvmE0S2lU@aws-1-us-east-1.pooler.supabase.com:5432/postgres
 
-DB_HOST=aws-0-us-east-1.pooler.supabase.com
+DB_HOST=aws-1-us-east-1.pooler.supabase.com
 
-DB_PORT=6543
+DB_PORT=5432
 
 DB_USERNAME=postgres.hzazlkgpamawlqmvxyii
 

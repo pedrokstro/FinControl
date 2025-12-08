@@ -20,8 +20,8 @@ console.log('🔍 Database Config:', {
 
 // Configuração explícita para pooler
 const poolerConfig = isUsingPooler ? {
-  host: 'aws-0-us-east-1.pooler.supabase.com',
-  port: 6543,
+  host: 'aws-1-us-east-1.pooler.supabase.com',
+  port: 5432,
   username: 'postgres.hzazlkgpamawlqmvxyii',
   password: 'YZAP2IMKvmE0S2lU',
   database: 'postgres',
@@ -64,22 +64,14 @@ export const AppDataSource = new DataSource({
   ssl: (shouldUseSsl || process.env.NODE_ENV === 'production' || isUsingPooler)
     ? { rejectUnauthorized: false }
     : false,
-  // Configurações de pool para produção
-  poolSize: 10,
-  connectTimeoutMS: 30000,
   extra: {
     // Configurar timezone para UTC
     timezone: 'UTC',
-    // Pool de conexões otimizado para Supabase pooler
-    max: 10,
-    min: 2,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 30000,
-    query_timeout: 30000,
-    statement_timeout: 30000,
-    // Keepalive para manter conexões ativas
-    keepAlive: true,
-    keepAliveInitialDelayMillis: 10000,
+    // Forçar IPv4 para evitar problemas de conexão no Render
+    ...(process.env.NODE_ENV === 'production' && {
+      connectionTimeoutMillis: 10000,
+      query_timeout: 10000,
+    }),
   },
 });
 
