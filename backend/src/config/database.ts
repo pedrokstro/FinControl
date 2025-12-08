@@ -19,11 +19,12 @@ console.log('🔍 Database Config:', {
 });
 
 // Configuração explícita para pooler
+// Senha vem da DATABASE_URL ou DB_PASSWORD do ambiente
 const poolerConfig = isUsingPooler ? {
   host: 'aws-1-us-east-1.pooler.supabase.com',
   port: 5432,
   username: 'postgres.hzazlkgpamawlqmvxyii',
-  password: 'YZAP2IMKvmE0S2lU',
+  password: process.env.DB_PASSWORD || config.db.password || '',
   database: 'postgres',
 } : {};
 
