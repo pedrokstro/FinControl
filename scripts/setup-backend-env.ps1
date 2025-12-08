@@ -2,8 +2,9 @@
 
 Write-Host "`n=== Configurar Backend .env - FinControl ===`n" -ForegroundColor Cyan
 
-# Credenciais do Supabase
-$DATABASE_URL = "postgresql://postgres:360106@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres"
+# Credenciais do Supabase (usando Connection Pooler)
+# Nota: sslmode=no-verify para aceitar certificados auto-assinados em desenvolvimento
+$DATABASE_URL = "postgresql://postgres.hzazlkgpamawlqmvxyii:360106@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
 
 # Gerar JWT secrets
 $JWT_SECRET = -join ((1..128) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
@@ -18,13 +19,14 @@ NODE_ENV=development
 PORT=5000
 API_PREFIX=/api/v1
 
-# Database (PostgreSQL - Supabase)
+# Database (PostgreSQL - Supabase Connection Pooler)
+# Usando apenas DATABASE_URL para evitar conflitos
 DATABASE_URL=$DATABASE_URL
-DB_HOST=db.hzazlkgpamawlqmvxyii.supabase.co
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=360106
-DB_DATABASE=postgres
+# DB_HOST=aws-1-us-east-1.pooler.supabase.com
+# DB_PORT=6543
+# DB_USERNAME=postgres.hzazlkgpamawlqmvxyii
+# DB_PASSWORD=360106
+# DB_DATABASE=postgres
 
 # JWT
 JWT_SECRET=$JWT_SECRET
@@ -48,7 +50,11 @@ ALLOWED_FILE_TYPES=image/jpeg,image/png,image/webp
 LOG_LEVEL=info
 LOG_DIR=logs
 
-# Email - Verificacao e Recuperacao de Senha
+# Email - Resend
+RESEND_API_KEY=re_HK3Ub5qF_JuXoVVZpVVacENR42xwKMHC3
+EMAIL_FROM=FinControl suportfincontrol@gmail.com
+
+# Email - SMTP Alternativo (Opcional)
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
 
@@ -64,7 +70,8 @@ Write-Host "[OK] Arquivo backend/.env criado com sucesso!" -ForegroundColor Gree
 
 Write-Host "`n" + ("=" * 60) -ForegroundColor Gray
 Write-Host "`nCredenciais configuradas:" -ForegroundColor Cyan
-Write-Host "  - DATABASE_URL: postgresql://postgres:***@db.hzazlkgpamawlqmvxyii.supabase.co:5432/postgres" -ForegroundColor Gray
+Write-Host "  - DATABASE_URL: postgresql://postgres.***@aws-1-us-east-1.pooler.supabase.com:6543/postgres" -ForegroundColor Gray
+Write-Host "  - RESEND_API_KEY: Configurada" -ForegroundColor Gray
 Write-Host "  - JWT_SECRET: Gerado automaticamente" -ForegroundColor Gray
 Write-Host "  - JWT_REFRESH_SECRET: Gerado automaticamente" -ForegroundColor Gray
 

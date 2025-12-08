@@ -9,6 +9,7 @@ import { VerificationCode } from '@/entities/VerificationCode';
 import { Notification } from '@/models/Notification';
 
 const shouldUseSsl = Boolean(process.env.DATABASE_URL);
+const isUsingPooler = process.env.DATABASE_URL?.includes('pooler.supabase.com');
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -26,7 +27,7 @@ export const AppDataSource = new DataSource({
     : ['src/database/migrations/**/*.ts'],
   migrationsRun: false, // Migrations rodadas via script separado
   subscribers: [],
-  ssl: shouldUseSsl || process.env.NODE_ENV === 'production'
+  ssl: (shouldUseSsl || process.env.NODE_ENV === 'production' || isUsingPooler)
     ? { rejectUnauthorized: false }
     : false,
   extra: {
