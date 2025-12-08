@@ -72,7 +72,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="mailto:suporte@fincontrol.com"
+                  href="mailto:suportfincontrol@gmail.com"
                   className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
                 >
                   <Mail className="w-4 h-4" />
@@ -130,7 +130,7 @@ const Footer = () => {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="mailto:suporte@fincontrol.com"
+                href="mailto:suportfincontrol@gmail.com"
                 className="text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 aria-label="Email"
               >

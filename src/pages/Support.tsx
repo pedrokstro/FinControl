@@ -90,7 +90,7 @@ const Support = () => {
             Nossa equipe de suporte está pronta para ajudar você
           </p>
           <a
-            href="mailto:pedrocastro767@gmail.com"
+            href="mailto:suportfincontrol@gmail.com"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg"
           >
             <Mail className="w-5 h-5" />

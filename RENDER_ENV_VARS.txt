@@ -56,11 +56,11 @@ GMAIL_APP_PASSWORD=ahezxtofpatxfosm
 
 EMAIL_FROM=FinControl <suportfincontrol@gmail.com>
 
-CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_CLOUD_NAME=dpbwp3tsj
 
-CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_KEY=219274858727869
 
-CLOUDINARY_API_SECRET=sua_api_secret
+CLOUDINARY_API_SECRET=e91IRrBYmlJ3D0WVl5ItI4PYrj8
 
 =================================================================
 CONFIGURACOES DE BUILD
