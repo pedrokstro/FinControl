@@ -33,8 +33,13 @@ class EmailService {
     }
 
     try {
+      // Usar EMAIL_FROM do .env ou fallback para onboarding@resend.dev
+      const fromEmail = process.env.EMAIL_FROM || 'FinControl <onboarding@resend.dev>';
+      
+      console.log('📧 Enviando email de:', fromEmail, 'para:', options.to);
+      
       const { data, error } = await this.resend.emails.send({
-        from: 'FinControl <onboarding@resend.dev>',
+        from: fromEmail,
         to: [options.to],
         subject: options.subject,
         html: options.html,
@@ -42,10 +47,10 @@ class EmailService {
 
       if (error) {
         console.error('❌ Erro ao enviar email:', error);
-        throw new Error('Erro ao enviar email');
+        throw new Error(`Erro ao enviar email: ${JSON.stringify(error)}`);
       }
 
-      console.log('📧 Email enviado:', data?.id);
+      console.log('✅ Email enviado com sucesso! ID:', data?.id);
     } catch (error) {
       console.error('❌ Erro ao enviar email:', error);
       throw new Error('Erro ao enviar email');

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Fundo branco arredondado -->
+  <rect width="48" height="48" rx="8" fill="white"/>
+  
+  <!-- Wallet Icon em azul -->
+  <g transform="translate(10, 10)">
+    <rect x="0" y="0" width="28" height="20" rx="2" fill="none" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="0" y="8" width="28" height="12" rx="2" fill="#0EA5E9"/>
+    <circle cx="22" cy="14" r="3" fill="white"/>
+  </g>
+</svg>

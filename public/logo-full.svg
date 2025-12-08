@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 320 80" fill="none">
+  <!-- Background (opcional - remova se quiser fundo transparente) -->
+  <rect width="320" height="80" fill="#0EA5E9" rx="8"/>
+  
+  <!-- Ícone da Wallet -->
+  <g transform="translate(20, 16)">
+    <!-- Fundo branco do ícone -->
+    <rect width="48" height="48" rx="8" fill="white"/>
+    
+    <!-- Wallet Icon -->
+    <g transform="translate(10, 10)">
+      <rect x="0" y="0" width="28" height="20" rx="2" fill="none" stroke="#0EA5E9" stroke-width="2"/>
+      <rect x="0" y="8" width="28" height="12" rx="2" fill="#0EA5E9"/>
+      <circle cx="22" cy="14" r="3" fill="white"/>
+    </g>
+  </g>
+  
+  <!-- Texto "FinControl" -->
+  <text x="85" y="50" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white">
+    FinControl
+  </text>
+</svg>
