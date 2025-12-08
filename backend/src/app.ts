@@ -15,7 +15,10 @@ const app: Application = express();
 app.set('trust proxy', 1);
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 
 // CORS configuration
 const corsOrigin = config.cors.origin;
@@ -31,7 +34,11 @@ app.use(
             callback(new Error('Not allowed by CORS'));
           }
         },
-    credentials: corsOrigin !== '*', // Desabilita credentials quando origin é *
+    credentials: true, // Sempre permitir credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 600, // 10 minutos
   })
 );
 
