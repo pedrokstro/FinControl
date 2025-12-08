@@ -20,38 +20,9 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 
-// CORS configuration
-const corsOrigin = config.cors.origin;
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Permitir requisições sem origin (ex: Postman, mobile apps)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    if (corsOrigin === '*') {
-      return callback(null, true);
-    }
-    
-    const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
-    const originTrimmed = origin.trim();
-    
-    // Comparação case-insensitive e normalizada
-    const isAllowed = allowedOrigins.some(allowed => 
-      allowed.toLowerCase() === originTrimmed.toLowerCase()
-    );
-    
-    if (isAllowed) {
-      console.log('✅ CORS allowed origin:', originTrimmed);
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked origin:', originTrimmed);
-      console.log('📋 Allowed origins:', allowedOrigins);
-      console.log('🔍 Origin bytes:', Buffer.from(originTrimmed).toString('hex'));
-      console.log('🔍 First allowed bytes:', Buffer.from(allowedOrigins[0]).toString('hex'));
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+// CORS configuration - Simplificado para permitir todas as origens temporariamente
+app.use(cors({
+  origin: true, // Permite TODAS as origens
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -59,12 +30,10 @@ const corsOptions = {
   maxAge: 600,
   preflightContinue: false,
   optionsSuccessStatus: 204
-};
-
-app.use(cors(corsOptions));
+}));
 
 // Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
+app.options('*', cors());
 
 // Rate limiting (apenas em produção)
 if (config.nodeEnv === 'production') {
