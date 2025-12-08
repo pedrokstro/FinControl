@@ -34,11 +34,21 @@ const corsOptions = {
     }
     
     const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
-    if (allowedOrigins.includes(origin)) {
+    const originTrimmed = origin.trim();
+    
+    // Comparação case-insensitive e normalizada
+    const isAllowed = allowedOrigins.some(allowed => 
+      allowed.toLowerCase() === originTrimmed.toLowerCase()
+    );
+    
+    if (isAllowed) {
+      console.log('✅ CORS allowed origin:', originTrimmed);
       callback(null, true);
     } else {
-      console.log('❌ CORS blocked origin:', origin);
-      console.log('✅ Allowed origins:', allowedOrigins);
+      console.log('❌ CORS blocked origin:', originTrimmed);
+      console.log('📋 Allowed origins:', allowedOrigins);
+      console.log('🔍 Origin bytes:', Buffer.from(originTrimmed).toString('hex'));
+      console.log('🔍 First allowed bytes:', Buffer.from(allowedOrigins[0]).toString('hex'));
       callback(new Error('Not allowed by CORS'));
     }
   },
