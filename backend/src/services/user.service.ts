@@ -1,10 +1,8 @@
 import { AppDataSource } from '@/config/database';
 import { User } from '@/models/User';
 import { NotFoundError, ConflictError, UnauthorizedError } from '@/utils/errors';
-// import sharp from 'sharp'; // Temporariamente desabilitado
-import path from 'path';
+import cloudinary from '@/config/cloudinary';
 import fs from 'fs/promises';
-import { config } from '@/config/env';
 
 export class UserService {
   private userRepository = AppDataSource.getRepository(User);
@@ -55,33 +53,42 @@ export class UserService {
       throw new NotFoundError('Usuário não encontrado');
     }
 
-    // TODO: Processar imagem com sharp (temporariamente desabilitado)
-    // Por enquanto, apenas salva o arquivo original
-    const filename = `avatar-${userId}-${Date.now()}${path.extname(file.originalname)}`;
-    const avatarDir = path.join(config.upload.dir, 'avatars');
-    const outputPath = path.join(avatarDir, filename);
+    try {
+      // Upload para Cloudinary
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: 'fincontrol/avatars',
+        public_id: `avatar-${userId}`,
+        overwrite: true,
+        transformation: [
+          { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+          { quality: 'auto', fetch_format: 'auto' }
+        ]
+      });
 
-    // Copiar arquivo para o destino
-    await fs.copyFile(file.path, outputPath);
-    
-    // Deletar arquivo original
-    await fs.unlink(file.path);
+      // Deletar arquivo temporário
+      await fs.unlink(file.path);
 
-    // Deletar avatar anterior se existir
-    if (user.avatar) {
-      try {
-        const oldAvatarPath = path.join(config.upload.dir, user.avatar);
-        await fs.unlink(oldAvatarPath);
-      } catch (error) {
-        // Ignora se arquivo não existir
+      // Deletar avatar anterior do Cloudinary se existir e for diferente
+      if (user.avatar && user.avatar.includes('cloudinary')) {
+        try {
+          const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
+          await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+          console.log('Erro ao deletar avatar anterior:', error);
+        }
       }
-    }
 
-    // Salvar apenas o caminho relativo com barras normais (/)
-    const relativePath = `avatars/${filename}`;
-    user.avatar = relativePath;
-    await this.userRepository.save(user);
-    return user.toJSON();
+      // Salvar URL do Cloudinary
+      user.avatar = result.secure_url;
+      await this.userRepository.save(user);
+      return user.toJSON();
+    } catch (error) {
+      // Deletar arquivo temporário em caso de erro
+      try {
+        await fs.unlink(file.path);
+      } catch {}
+      throw error;
+    }
   }
 
   async deleteAccount(userId: string, password: string) {
@@ -96,13 +103,13 @@ export class UserService {
       throw new Error('Senha incorreta');
     }
 
-    // Deletar avatar se existir
-    if (user.avatar) {
+    // Deletar avatar do Cloudinary se existir
+    if (user.avatar && user.avatar.includes('cloudinary')) {
       try {
-        const avatarPath = path.join(config.upload.dir, user.avatar);
-        await fs.unlink(avatarPath);
+        const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
       } catch (error) {
-        // Ignora se arquivo não existir
+        console.log('Erro ao deletar avatar:', error);
       }
     }
 
