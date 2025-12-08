@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { VerificationCode, VerificationCodeType } from '../entities/VerificationCode';
-import { resendService } from './resend.service';
+import emailService from './email.service';
 
 class VerificationService {
   private repository: Repository<VerificationCode>;
@@ -61,11 +61,11 @@ class VerificationService {
     // Tentar enviar email (não bloquear se falhar)
     try {
       if (type === 'email_verification') {
-        await resendService.sendVerificationEmail(email, code);
+        await emailService.sendVerificationCode(email, code, userName);
       } else if (type === 'password_reset') {
-        await resendService.sendPasswordResetEmail(email, code);
+        await emailService.sendPasswordResetCode(email, code, userName);
       }
-      console.log('✅ Email enviado com sucesso via Resend!');
+      console.log('✅ Email enviado com sucesso via Nodemailer!');
     } catch (error) {
       console.error('❌ Erro ao enviar email:', error);
       console.log('⚠️  Email não enviado (modo desenvolvimento - use o código acima)');
