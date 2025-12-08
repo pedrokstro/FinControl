@@ -6,30 +6,29 @@ param(
     [string]$DatabasePassword = ""
 )
 
-Write-Host "`n🔐 Setup de GitHub Secrets - FinControl`n" -ForegroundColor Cyan
-Write-Host "━" * 60 -ForegroundColor Gray
+Write-Host "`n=== Setup de GitHub Secrets - FinControl ===`n" -ForegroundColor Cyan
 
 # Verificar se GitHub CLI está instalado
 $ghInstalled = Get-Command gh -ErrorAction SilentlyContinue
 if (-not $ghInstalled) {
-    Write-Host "❌ GitHub CLI não encontrado!" -ForegroundColor Red
-    Write-Host "`n📥 Instale com: winget install GitHub.cli" -ForegroundColor Yellow
+    Write-Host "[ERRO] GitHub CLI nao encontrado!" -ForegroundColor Red
+    Write-Host "`nInstale com: winget install GitHub.cli" -ForegroundColor Yellow
     Write-Host "Ou baixe em: https://cli.github.com/`n" -ForegroundColor Yellow
     exit 1
 }
 
 # Verificar autenticação
-Write-Host "`n🔍 Verificando autenticação..." -ForegroundColor Yellow
+Write-Host "Verificando autenticacao..." -ForegroundColor Yellow
 $authStatus = gh auth status 2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Não autenticado no GitHub!" -ForegroundColor Red
-    Write-Host "`n🔑 Execute: gh auth login`n" -ForegroundColor Yellow
+    Write-Host "[ERRO] Nao autenticado no GitHub!" -ForegroundColor Red
+    Write-Host "`nExecute: gh auth login`n" -ForegroundColor Yellow
     exit 1
 }
-Write-Host "✅ Autenticado com sucesso!" -ForegroundColor Green
+Write-Host "[OK] Autenticado com sucesso!`n" -ForegroundColor Green
 
 # Gerar secrets
-Write-Host "`n🔑 Gerando secrets seguros..." -ForegroundColor Yellow
+Write-Host "Gerando secrets seguros..." -ForegroundColor Yellow
 
 # Gerar JWT_SECRET (64 bytes = 128 chars hex)
 $jwtSecret = -join ((1..128) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
@@ -40,25 +39,25 @@ $sessionSecret = -join ((1..64) | ForEach-Object { '{0:x}' -f (Get-Random -Maxim
 # Gerar ENCRYPTION_KEY (32 bytes = 64 chars hex)
 $encryptionKey = -join ((1..64) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
 
-Write-Host "✅ Secrets gerados!" -ForegroundColor Green
+Write-Host "[OK] Secrets gerados!`n" -ForegroundColor Green
 
 # Solicitar DATABASE_URL se não fornecido
 if ([string]::IsNullOrWhiteSpace($DatabaseUrl)) {
-    Write-Host "`n📊 Configure o banco de dados PostgreSQL:" -ForegroundColor Cyan
+    Write-Host "Configure o banco de dados PostgreSQL:" -ForegroundColor Cyan
     Write-Host "Formato: postgresql://usuario:senha@host:5432/database`n" -ForegroundColor Gray
     $DatabaseUrl = Read-Host "DATABASE_URL"
 }
 
 # Solicitar DATABASE_PASSWORD se não fornecido
 if ([string]::IsNullOrWhiteSpace($DatabasePassword)) {
-    Write-Host "`n🔒 Digite a senha do banco de dados:" -ForegroundColor Cyan
+    Write-Host "`nDigite a senha do banco de dados:" -ForegroundColor Cyan
     $securePassword = Read-Host "DATABASE_PASSWORD" -AsSecureString
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
     $DatabasePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 }
 
-Write-Host "`n━" * 60 -ForegroundColor Gray
-Write-Host "`n📤 Enviando secrets para GitHub...`n" -ForegroundColor Yellow
+Write-Host "`n" + ("=" * 60) -ForegroundColor Gray
+Write-Host "`nEnviando secrets para GitHub...`n" -ForegroundColor Yellow
 
 # Função para adicionar secret
 function Add-GitHubSecret {
@@ -67,19 +66,19 @@ function Add-GitHubSecret {
         [string]$Value
     )
     
-    Write-Host "  📝 Adicionando $Name..." -NoNewline
+    Write-Host "  Adicionando $Name..." -NoNewline
     
     try {
         $Value | gh secret set $Name 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
-            Write-Host " ✅" -ForegroundColor Green
+            Write-Host " [OK]" -ForegroundColor Green
             return $true
         } else {
-            Write-Host " ❌" -ForegroundColor Red
+            Write-Host " [ERRO]" -ForegroundColor Red
             return $false
         }
     } catch {
-        Write-Host " ❌ Erro: $_" -ForegroundColor Red
+        Write-Host " [ERRO]: $_" -ForegroundColor Red
         return $false
     }
 }
@@ -106,27 +105,27 @@ $total++
 if (Add-GitHubSecret "ENCRYPTION_KEY" $encryptionKey) { $success++ }
 
 # Resumo
-Write-Host "`n━" * 60 -ForegroundColor Gray
-Write-Host "`n📊 Resumo:" -ForegroundColor Cyan
-Write-Host "  ✅ Secrets adicionados: $success/$total" -ForegroundColor Green
+Write-Host "`n" + ("=" * 60) -ForegroundColor Gray
+Write-Host "`nResumo:" -ForegroundColor Cyan
+Write-Host "  Secrets adicionados: $success/$total" -ForegroundColor Green
 
 if ($success -eq $total) {
-    Write-Host "`n🎉 Todos os secrets foram configurados com sucesso!" -ForegroundColor Green
+    Write-Host "`n[OK] Todos os secrets foram configurados com sucesso!" -ForegroundColor Green
 } else {
-    Write-Host "`n⚠️  Alguns secrets falharam. Verifique as mensagens acima." -ForegroundColor Yellow
+    Write-Host "`n[AVISO] Alguns secrets falharam. Verifique as mensagens acima." -ForegroundColor Yellow
 }
 
 # Listar secrets configurados
-Write-Host "`n📋 Secrets configurados no repositório:" -ForegroundColor Cyan
+Write-Host "`nSecrets configurados no repositorio:" -ForegroundColor Cyan
 gh secret list
 
-Write-Host "`n━" * 60 -ForegroundColor Gray
-Write-Host "`n💾 Salvando cópia local dos secrets (NÃO COMMITAR!)..." -ForegroundColor Yellow
+Write-Host "`n" + ("=" * 60) -ForegroundColor Gray
+Write-Host "`nSalvando copia local dos secrets (NAO COMMITAR!)..." -ForegroundColor Yellow
 
 # Criar arquivo .env.local com os secrets (para desenvolvimento)
 $envContent = @"
 # Secrets gerados em $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-# ⚠️ NÃO COMMITAR ESTE ARQUIVO!
+# NAO COMMITAR ESTE ARQUIVO!
 
 # Backend
 DATABASE_URL=$DatabaseUrl
@@ -151,4 +150,4 @@ Write-Host "  - Secrets: https://github.com/pedrokstro/FinControl/settings/secre
 Write-Host "  - Actions: https://github.com/pedrokstro/FinControl/actions" -ForegroundColor Gray
 Write-Host "  - Releases: https://github.com/pedrokstro/FinControl/releases" -ForegroundColor Gray
 
-Write-Host "`nConfiguracao concluida!`n" -ForegroundColor Green
+Write-Host "`n[OK] Configuracao concluida!`n" -ForegroundColor Green
