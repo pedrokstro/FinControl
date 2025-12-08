@@ -11,14 +11,48 @@ import { Notification } from '@/models/Notification';
 const shouldUseSsl = Boolean(process.env.DATABASE_URL);
 const isUsingPooler = process.env.DATABASE_URL?.includes('pooler.supabase.com');
 
-export const AppDataSource = new DataSource({
-  type: 'postgres',
+// Debug: Log da configuração
+console.log('🔍 Database Config:', {
+  hasUrl: Boolean(process.env.DATABASE_URL),
+  isPooler: isUsingPooler,
+  urlPreview: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 50) + '...' : 'none'
+});
+
+// Configuração explícita para pooler
+const poolerConfig = isUsingPooler ? {
+  host: 'aws-1-us-east-1.pooler.supabase.com',
+  port: 5432,
+  username: 'postgres.hzazlkgpamawlqmvxyii',
+  password: '360106',
+  database: 'postgres',
+} : {};
+
+console.log('🔧 Connection Config:', {
+  usingPooler: isUsingPooler,
+  host: isUsingPooler ? poolerConfig.host : 'from URL or config',
+  username: isUsingPooler ? poolerConfig.username : 'from URL or config',
+  port: isUsingPooler ? poolerConfig.port : 'from URL or config'
+});
+
+const connectionConfig = isUsingPooler ? {
+  type: 'postgres' as const,
+  host: poolerConfig.host,
+  port: poolerConfig.port,
+  username: poolerConfig.username,
+  password: poolerConfig.password,
+  database: poolerConfig.database,
+} : {
+  type: 'postgres' as const,
   url: process.env.DATABASE_URL || undefined,
   host: process.env.DATABASE_URL ? undefined : config.db.host,
   port: process.env.DATABASE_URL ? undefined : config.db.port,
   username: process.env.DATABASE_URL ? undefined : config.db.username,
   password: process.env.DATABASE_URL ? undefined : (config.db.password || undefined),
   database: process.env.DATABASE_URL ? undefined : config.db.database,
+};
+
+export const AppDataSource = new DataSource({
+  ...connectionConfig,
   synchronize: false, // DESABILITADO - Usar migrations
   logging: config.nodeEnv === 'development',
   entities: [User, Category, Transaction, RefreshToken, UserPreference, VerificationCode, Notification],
