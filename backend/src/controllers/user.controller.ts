@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { UserService } from '@/services/user.service';
 import { sendSuccess } from '@/utils/response';
 import verificationService from '@/services/verification.service';
+import { NotificationService } from '@/services/notification.service';
 
 const userService = new UserService();
+const notificationService = new NotificationService();
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -146,6 +148,15 @@ export const confirmPasswordChange = async (req: Request, res: Response, next: N
     
     // Alterar senha
     await userService.changePassword(userId, currentPassword, newPassword);
+    
+    // Criar notificação de sucesso
+    await notificationService.create(
+      userId,
+      '🔒 Senha Alterada',
+      'Sua senha foi alterada com sucesso. Se você não fez essa alteração, entre em contato com o suporte imediatamente.',
+      'success',
+      'system'
+    );
     
     sendSuccess(res, null, 'Senha alterada com sucesso');
   } catch (error) {
