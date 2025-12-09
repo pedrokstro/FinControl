@@ -182,6 +182,36 @@ export class TransactionService {
   async update(id: string, userId: string, data: Partial<Transaction>) {
     const transaction = await this.findById(id, userId);
     
+    // Se for uma transação recorrente "pai", atualizar também as parcelas geradas
+    if (transaction.isRecurring) {
+      console.log(`🔄 [UPDATE] Atualizando parcelas geradas da recorrência ${transaction.id}`);
+      
+      // Buscar todas as parcelas geradas desta recorrência
+      const childTransactions = await this.transactionRepository.find({
+        where: { parentTransactionId: transaction.id }
+      });
+      
+      console.log(`📝 [UPDATE] Encontradas ${childTransactions.length} parcelas para atualizar`);
+      
+      // Atualizar cada parcela com os novos dados (exceto data e isRecurring)
+      for (const child of childTransactions) {
+        const updateData: Partial<Transaction> = {};
+        
+        // Atualizar campos permitidos (não atualizar data nem isRecurring)
+        if (data.description !== undefined) updateData.description = data.description;
+        if (data.amount !== undefined) updateData.amount = data.amount;
+        if (data.type !== undefined) updateData.type = data.type;
+        if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+        
+        if (Object.keys(updateData).length > 0) {
+          Object.assign(child, updateData);
+          await this.transactionRepository.save(child);
+        }
+      }
+      
+      console.log(`✅ [UPDATE] ${childTransactions.length} parcelas atualizadas`);
+    }
+    
     // Se a data foi alterada, aplicar o mesmo ajuste de timezone
     if (data.date) {
       console.log('📅 [UPDATE DEBUG] Data recebida:', data.date, 'Tipo:', typeof data.date);
