@@ -99,6 +99,21 @@ const AnimatedRoutes = () => {
             <About />
           </Suspense>
         } />
+        <Route path="/privacy" element={
+          <Suspense fallback={<PageLoader />}>
+            <Privacy />
+          </Suspense>
+        } />
+        <Route path="/terms" element={
+          <Suspense fallback={<PageLoader />}>
+            <Terms />
+          </Suspense>
+        } />
+        <Route path="/support" element={
+          <Suspense fallback={<PageLoader />}>
+            <Support />
+          </Suspense>
+        } />
         
         <Route
           path="/"
@@ -155,21 +170,6 @@ const AnimatedRoutes = () => {
             </Suspense>
           } />
           <Route path="profile" element={<Navigate to="/settings" replace />} />
-          <Route path="privacy" element={
-            <Suspense fallback={<PageLoader />}>
-              <Privacy />
-            </Suspense>
-          } />
-          <Route path="terms" element={
-            <Suspense fallback={<PageLoader />}>
-              <Terms />
-            </Suspense>
-          } />
-          <Route path="support" element={
-            <Suspense fallback={<PageLoader />}>
-              <Support />
-            </Suspense>
-          } />
           <Route path="calculadora-porcentagem" element={
             <Suspense fallback={<PageLoader />}>
               <PercentageCalculator />
