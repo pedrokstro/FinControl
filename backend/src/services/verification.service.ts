@@ -60,14 +60,25 @@ class VerificationService {
 
     // Tentar enviar email (não bloquear se falhar)
     try {
+      console.log(`📧 [VERIFICATION] Tentando enviar email do tipo: ${type}`);
+      console.log(`📧 [VERIFICATION] Email destino: ${email}`);
+      console.log(`📧 [VERIFICATION] Nome do usuário: ${userName}`);
+      
       if (type === 'email_verification') {
         await emailService.sendVerificationCode(email, code, userName);
       } else if (type === 'password_reset') {
         await emailService.sendPasswordResetCode(email, code, userName);
+      } else if (type === 'password_change') {
+        console.log(`🔑 [VERIFICATION] Chamando sendPasswordChangeCode...`);
+        await emailService.sendPasswordChangeCode(email, code, userName);
+        console.log(`✅ [VERIFICATION] sendPasswordChangeCode executado com sucesso`);
+      } else if (type === 'email_change') {
+        await emailService.sendEmailChangeCode(email, code, userName);
       }
       console.log('✅ Email enviado com sucesso via Nodemailer!');
     } catch (error) {
       console.error('❌ Erro ao enviar email:', error);
+      console.error('❌ Stack trace:', (error as Error).stack);
       console.log('⚠️  Email não enviado (modo desenvolvimento - use o código acima)');
     }
   }
