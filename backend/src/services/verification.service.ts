@@ -92,24 +92,56 @@ class VerificationService {
     type: VerificationCodeType
   ): Promise<boolean> {
     const verificationCode = await this.repository.findOne({
-      where: { email, code, type },
+      where: { email, code, type, isUsed: false }, // Adicionar filtro para códigos não usados
       order: { createdAt: 'DESC' },
     });
 
     if (!verificationCode) {
+      console.log('❌ Código não encontrado ou já foi usado');
       return false;
     }
 
-    // Verificar se o código é válido
-    if (!verificationCode.isValid()) {
+    // Verificar se o código está expirado
+    if (new Date() >= verificationCode.expiresAt) {
+      console.log('❌ Código expirado');
       return false;
     }
 
-    // Marcar como usado
+    // Marcar como usado IMEDIATAMENTE para evitar uso simultâneo
     verificationCode.isUsed = true;
     await this.repository.save(verificationCode);
-
+    
+    console.log('✅ Código validado e marcado como usado');
     return true;
+  }
+
+  /**
+   * Invalidar código manualmente (marcar como usado)
+   */
+  async invalidateCode(
+    email: string,
+    code: string,
+    type: VerificationCodeType
+  ): Promise<void> {
+    await this.repository.update(
+      { email, code, type, isUsed: false },
+      { isUsed: true }
+    );
+    console.log(`🔒 Código invalidado manualmente: ${code}`);
+  }
+
+  /**
+   * Invalidar todos os códigos de um usuário por tipo
+   */
+  async invalidateAllCodesByType(
+    email: string,
+    type: VerificationCodeType
+  ): Promise<void> {
+    await this.repository.update(
+      { email, type, isUsed: false },
+      { isUsed: true }
+    );
+    console.log(`🔒 Todos os códigos do tipo ${type} invalidados para: ${email}`);
   }
 
   /**
