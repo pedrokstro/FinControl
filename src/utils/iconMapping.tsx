@@ -125,44 +125,64 @@ const exclusiveIconModules = import.meta.glob('../assets/icons/exclusive/*.png',
 }) as Record<string, string>
 
 const friendlyExclusiveLabels: Record<string, string> = {
+  // Transporte
   'carrinho-de-compras': 'Carrinho Luxo',
   carrinho: 'Carrinho Neon',
   carro: 'Carro Executivo',
   'carro-novo': 'Carro Novo',
-  'cartao-de-credito': 'Cartão Black',
-  dinheiro: 'Notas Premium',
-  emprestimo: 'Carteira de Empréstimo',
-  'energia-eletrica': 'Energia Elétrica',
-  energico: 'Modo Energia',
-  'globo-terrestre': 'Expansão Global',
-  gotas: 'Serviços de Água',
-  goticula: 'Consumo Sustentável',
-  'real-brasileiro': 'Real Brasileiro',
-  'sinal-wifi': 'Conexão Premium',
   aviao: 'Avião Prime',
   aviao1: 'Voo Executivo',
   'caminhao-de-entrega': 'Entrega VIP',
-  capacete: 'Segurança Industrial',
-  casa: 'Casa Moderna',
-  'cruz-vermelha': 'Saúde Solidária',
-  drogas: 'Medicamentos Premium',
-  dumbell: 'Treino Pesado',
-  educacao: 'Educação Plus',
-  educacao1: 'Pós-graduação',
   'entrega-rapida': 'Entrega Rápida',
-  halterofilista: 'Performance Elite',
-  'icons8-amazon-prime-video-240': 'Prime Video',
+  
+  // Finanças
+  'cartao-de-credito': 'Cartão Black',
+  dinheiro: 'Notas Premium',
+  emprestimo: 'Carteira de Empréstimo',
+  'real-brasileiro': 'Real Brasileiro',
+  'bitcoin-seeklogo': 'Bitcoin',
+  
+  // Casa & Utilidades
+  casa: 'Casa Moderna',
   mansao: 'Mansão Luxo',
-  mulheres: 'Rede Feminina',
-  netflix: 'Netflix',
-  netflix1: 'Netflix Plus',
-  'notas-musicais': 'Notas Musicais',
+  'energia-eletrica': 'Energia Elétrica',
   'painel-solar': 'Painel Solar',
   'painel-solar1': 'Energia Solar',
+  'sinal-wifi': 'Conexão Premium',
+  gotas: 'Serviços de Água',
+  goticula: 'Consumo Sustentável',
+  
+  // Saúde & Educação
+  'cruz-vermelha': 'Saúde Solidária',
+  drogas: 'Medicamentos Premium',
   saude: 'Saúde Premium',
-  spotifi: 'Spotifi',
+  educacao: 'Educação Plus',
+  educacao1: 'Pós-graduação',
+  
+  // Fitness
+  dumbell: 'Treino Pesado',
+  energico: 'Modo Energia',
+  halterofilista: 'Performance Elite',
+  
+  // Entretenimento & Streaming
+  netflix: 'Netflix',
+  netflix1: 'Netflix Plus',
   spotify: 'Spotify',
+  spotifi: 'Spotifi',
+  'icons8-amazon-prime-video-240': 'Prime Video',
   'vecteezy_youtube-logo-png-youtube-icon-transparent_18930572': 'YouTube Premium',
+  'notas-musicais': 'Notas Musicais',
+  
+  // E-commerce & Produtividade
+  'mercadolivreicon': 'Mercado Livre',
+  'shopee-icon-symbol_28766370': 'Shopee',
+  'microsoft-365-2022-seeklogo': 'Microsoft 365',
+  'microsoft-365-copilot-seeklogo': 'Microsoft Copilot',
+  
+  // Outros
+  capacete: 'Segurança Industrial',
+  'globo-terrestre': 'Expansão Global',
+  mulheres: 'Rede Feminina',
 }
 
 const slugifyExclusiveIcon = (fileName: string) => {
