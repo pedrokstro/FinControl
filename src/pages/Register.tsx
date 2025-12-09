@@ -342,13 +342,13 @@ const Register = () => {
                   />
                   <span className="text-sm text-gray-600 dark:text-neutral-400">
                     Eu concordo com os{' '}
-                    <a href="#" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
+                    <Link to="/terms" target="_blank" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
                       Termos de Serviço
-                    </a>{' '}
+                    </Link>{' '}
                     e{' '}
-                    <a href="#" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
+                    <Link to="/privacy" target="_blank" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
                       Política de Privacidade
-                    </a>
+                    </Link>
                   </span>
                 </label>
                 {errors.acceptTerms && (
