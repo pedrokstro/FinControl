@@ -186,22 +186,79 @@ export class TransactionService {
     if (transaction.isRecurring) {
       console.log(`🔄 [UPDATE] Atualizando parcelas geradas da recorrência ${transaction.id}`);
       
-      // Buscar todas as parcelas geradas desta recorrência
+      // Buscar todas as parcelas geradas desta recorrência, ordenadas por data
       const childTransactions = await this.transactionRepository.find({
-        where: { parentTransactionId: transaction.id }
+        where: { parentTransactionId: transaction.id },
+        order: { date: 'ASC' }
       });
       
       console.log(`📝 [UPDATE] Encontradas ${childTransactions.length} parcelas para atualizar`);
       
-      // Atualizar cada parcela com os novos dados (exceto data e isRecurring)
-      for (const child of childTransactions) {
+      // Se a data foi alterada, recalcular datas de todas as parcelas
+      let newBaseDate: Date | null = null;
+      if (data.date) {
+        // Parse da nova data
+        if (typeof data.date === 'string') {
+          if (data.date.includes('/')) {
+            const [day, month, year] = data.date.split('/').map(Number);
+            newBaseDate = new Date(year, month - 1, day);
+          } else {
+            const [year, month, day] = data.date.split('-').map(Number);
+            newBaseDate = new Date(year, month - 1, day);
+          }
+        } else {
+          newBaseDate = new Date(data.date);
+        }
+        
+        console.log(`📅 [UPDATE] Nova data base para recorrência: ${newBaseDate.toISOString()}`);
+      }
+      
+      // Atualizar cada parcela
+      for (let i = 0; i < childTransactions.length; i++) {
+        const child = childTransactions[i];
         const updateData: Partial<Transaction> = {};
         
-        // Atualizar campos permitidos (não atualizar data nem isRecurring)
+        // Atualizar campos permitidos
         if (data.description !== undefined) updateData.description = data.description;
         if (data.amount !== undefined) updateData.amount = data.amount;
         if (data.type !== undefined) updateData.type = data.type;
         if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+        
+        // Se a data base mudou, recalcular a data desta parcela
+        if (newBaseDate && transaction.recurrenceType) {
+          const parcela = i + 1; // Primeira parcela é 1, segunda é 2, etc.
+          const parcelaDate = new Date(newBaseDate);
+          
+          // Calcular data baseada no tipo de recorrência
+          switch (transaction.recurrenceType) {
+            case 'daily':
+              parcelaDate.setDate(parcelaDate.getDate() + parcela);
+              break;
+            case 'weekly':
+              parcelaDate.setDate(parcelaDate.getDate() + (parcela * 7));
+              break;
+            case 'monthly':
+              parcelaDate.setMonth(parcelaDate.getMonth() + parcela);
+              break;
+            case 'yearly':
+              parcelaDate.setFullYear(parcelaDate.getFullYear() + parcela);
+              break;
+          }
+          
+          // Aplicar offset de timezone
+          const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
+          if (timezoneOffset > 0) {
+            parcelaDate.setDate(parcelaDate.getDate() + timezoneOffset);
+          }
+          
+          // Formatar data
+          const year = parcelaDate.getUTCFullYear();
+          const month = String(parcelaDate.getUTCMonth() + 1).padStart(2, '0');
+          const day = String(parcelaDate.getUTCDate()).padStart(2, '0');
+          updateData.date = `${year}-${month}-${day}` as any;
+          
+          console.log(`📅 [UPDATE] Parcela ${parcela}: ${updateData.date}`);
+        }
         
         if (Object.keys(updateData).length > 0) {
           Object.assign(child, updateData);
