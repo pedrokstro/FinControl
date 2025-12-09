@@ -177,8 +177,8 @@ const Terms = () => {
             </h3>
             <p className="text-gray-600 dark:text-neutral-400 text-sm">
               Entre em contato conosco em{' '}
-              <a href="mailto:legal@fincontrol.com" className="text-primary-600 dark:text-primary-400 hover:underline">
-                contato@fincontrol.com
+              <a href="mailto:suportfincontrol@gmail.com" className="text-primary-600 dark:text-primary-400 hover:underline">
+                suportfincontrol@gmail.com
               </a>
             </p>
           </div>
