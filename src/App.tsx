@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { Toaster, toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { useAuthStore } from './store/authStore'
 import { ThemeProvider } from './contexts/ThemeContext'
 import LoadingSkeleton from './components/common/LoadingSkeleton'
@@ -220,6 +221,7 @@ function App() {
           },
         }}
       />
+      <Analytics />
       </Router>
     </ThemeProvider>
   )
