@@ -157,7 +157,7 @@ const friendlyExclusiveLabels: Record<string, string> = {
   drogas: 'Medicamentos Premium',
   saude: 'Saúde Premium',
   educacao: 'Educação Plus',
-  educacao1: 'Pós-graduação',
+  educacao1: 'Pós-graduação', // educação1.png (slugified)
   
   // Fitness
   dumbell: 'Treino Pesado',
