@@ -3,6 +3,7 @@ import { Toaster, toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense } from 'react'
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useAuthStore } from './store/authStore'
 import { ThemeProvider } from './contexts/ThemeContext'
 import LoadingSkeleton from './components/common/LoadingSkeleton'
@@ -222,6 +223,7 @@ function App() {
         }}
       />
       <Analytics />
+      <SpeedInsights />
       </Router>
     </ThemeProvider>
   )
