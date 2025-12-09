@@ -1,6 +1,6 @@
 import { AppDataSource } from '@/config/database';
 import { User } from '@/models/User';
-import { NotFoundError, ConflictError, UnauthorizedError } from '@/utils/errors';
+import { NotFoundError, ConflictError, UnauthorizedError, BadRequestError } from '@/utils/errors';
 import cloudinary from '@/config/cloudinary';
 import fs from 'fs/promises';
 
@@ -39,9 +39,28 @@ export class UserService {
       throw new NotFoundError('Usuário não encontrado');
     }
 
+    // Verificar senha atual
     if (!(await user.comparePassword(currentPassword))) {
       throw new UnauthorizedError('Senha atual incorreta');
     }
+
+    // Verificar se a nova senha é diferente da atual
+    if (currentPassword === newPassword) {
+      throw new BadRequestError('A nova senha deve ser diferente da senha atual');
+    }
+
+    // Validar força da nova senha
+    const { PasswordValidator } = await import('@/utils/passwordValidator');
+    const validation = PasswordValidator.validate(newPassword);
+    
+    if (!validation.isValid) {
+      throw new BadRequestError(validation.errors.join('. '));
+    }
+
+    // Calcular e logar força da senha
+    const strength = PasswordValidator.calculateStrength(newPassword);
+    const description = PasswordValidator.getStrengthDescription(strength);
+    console.log(`🔐 Nova senha: ${description} (${strength}%)`);
 
     user.password = newPassword;
     await this.userRepository.save(user);

@@ -2,12 +2,21 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '@/services/auth.service';
 import { sendSuccess, sendCreated } from '@/utils/response';
 import verificationService from '@/services/verification.service';
+import { PasswordValidator } from '@/utils/passwordValidator';
+import { BadRequestError } from '@/utils/errors';
 
 const authService = new AuthService();
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
+    
+    // Validar força da senha
+    const validation = PasswordValidator.validate(password);
+    if (!validation.isValid) {
+      throw new BadRequestError(validation.errors.join('. '));
+    }
+    
     const result = await authService.register(name, email, password);
     
     // Enviar código de verificação de email (não aguardar para não travar)
@@ -94,6 +103,12 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, code, newPassword } = req.body;
+    
+    // Validar força da senha
+    const validation = PasswordValidator.validate(newPassword);
+    if (!validation.isValid) {
+      throw new BadRequestError(validation.errors.join('. '));
+    }
     
     const isValid = await verificationService.verifyCode(email, code, 'password_reset');
     
