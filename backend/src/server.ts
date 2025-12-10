@@ -51,6 +51,11 @@ const startServer = async (): Promise<void> => {
     scheduleRecurringTransactionsJob();
     logger.info('⏰ Recurring transactions job scheduled');
 
+    // Iniciar jobs de notificações inteligentes
+    const { startNotificationJobs } = await import('./jobs/notificationJobs');
+    startNotificationJobs();
+    logger.info('⏰ Smart notification jobs scheduled');
+
     // Iniciar servidor HTTP
     const server = app.listen(config.port, () => {
       logger.info('='.repeat(50));

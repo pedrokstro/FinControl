@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { TransactionService } from '@/services/transaction.service';
 import recurrenceService from '@/services/recurrence.service';
+import smartNotificationService from '@/services/smartNotification.service';
 import { sendSuccess, sendCreated, sendPaginated } from '@/utils/response';
 
 const transactionService = new TransactionService();
@@ -24,6 +25,10 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       // Criar transação normal
       transaction = await transactionService.create(userId, transactionData);
     }
+
+    // Enviar notificações inteligentes (não aguardar para não travar)
+    smartNotificationService.analyzeTransaction(userId, transaction)
+      .catch(err => console.error('Erro ao enviar notificações:', err));
 
     sendCreated(res, transaction, 'Transação criada com sucesso');
   } catch (error) {
