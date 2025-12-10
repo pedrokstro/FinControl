@@ -9,6 +9,7 @@ import userPreferenceRoutes from './userPreference.routes';
 import savingsGoalRoutes from './savingsGoal.routes';
 import notificationRoutes from './notification.routes';
 import adminRoutes from './admin.routes';
+import analyticsRoutes from './analytics.routes';
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/user-preferences', userPreferenceRoutes);
 router.use('/savings-goals', savingsGoalRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
+router.use('/analytics', analyticsRoutes);
 
 export default router;
