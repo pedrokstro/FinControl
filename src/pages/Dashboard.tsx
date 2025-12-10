@@ -24,6 +24,14 @@ import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
 import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
+import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
+import {
+  CashFlowChart,
+  TopExpensesChart,
+  SavingsRateChart,
+  ExpensesByWeekdayChart,
+  BudgetVsActualChart,
+} from '@/components/charts/AdvancedCharts'
 import { toast } from 'react-hot-toast'
 import {
   AreaChart, 
@@ -187,11 +195,26 @@ const Dashboard = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [showIncomeModal, setShowIncomeModal] = useState(false)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
   
+  // Carregar dados de analytics
+  const loadAnalytics = async () => {
+    try {
+      setIsLoadingAnalytics(true)
+      const data = await analyticsService.getAll()
+      setAnalytics(data)
+    } catch (error) {
+      console.error('Erro ao carregar analytics:', error)
+    } finally {
+      setIsLoadingAnalytics(false)
+    }
+  }
+
   // Sincronizar com backend ao carregar o dashboard
   useEffect(() => {
     const loadData = async () => {
-      await Promise.all([syncWithBackend(), loadCurrentGoal()])
+      await Promise.all([syncWithBackend(), loadCurrentGoal(), loadAnalytics()])
       // Pequeno delay para garantir renderização suave
       setTimeout(() => setIsInitialLoad(false), 100)
     }
@@ -1073,6 +1096,70 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Gráficos Avançados de Analytics */}
+      {!isLoadingAnalytics && analytics && (
+        <>
+          {/* Seção de Analytics */}
+          <div className="mt-8 mb-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Análises Avançadas
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">
+                  Insights detalhados sobre suas finanças
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 1. Fluxo de Caixa Diário */}
+          <CashFlowChart 
+            data={analytics.dailyCashFlow} 
+            formatCurrency={formatCurrency} 
+          />
+
+          {/* 2. Taxa de Poupança */}
+          <SavingsRateChart 
+            data={analytics.savingsRate} 
+            formatCurrency={formatCurrency} 
+          />
+
+          {/* 3. Top 10 Maiores Despesas + Despesas por Dia da Semana */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TopExpensesChart 
+              data={analytics.topExpenses} 
+              formatCurrency={formatCurrency} 
+            />
+            <ExpensesByWeekdayChart 
+              data={analytics.expensesByWeekday} 
+              formatCurrency={formatCurrency} 
+            />
+          </div>
+
+          {/* 4. Orçamento vs Real */}
+          <BudgetVsActualChart 
+            data={analytics.budgetVsActual} 
+            formatCurrency={formatCurrency} 
+          />
+        </>
+      )}
+
+      {/* Loading Analytics */}
+      {isLoadingAnalytics && (
+        <div className="card">
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" />
+            <span className="ml-3 text-gray-600 dark:text-neutral-400">
+              Carregando análises...
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Quick Action Floating Button Menu */}
       <div className="fixed bottom-8 right-8 z-40">
