@@ -55,14 +55,15 @@ export class SavingsGoalService {
    */
   async updateCurrentAmount(userId: string, month: number, year: number): Promise<void> {
     // Calcular saldo do mês (receitas - despesas)
+    // Usar CAST para converter date (VARCHAR) para DATE
     const transactionsQuery = `
       SELECT 
         COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as income,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expense
       FROM transactions
       WHERE "userId" = $1
-        AND EXTRACT(MONTH FROM date) = $2
-        AND EXTRACT(YEAR FROM date) = $3
+        AND EXTRACT(MONTH FROM CAST(date AS DATE)) = $2
+        AND EXTRACT(YEAR FROM CAST(date AS DATE)) = $3
     `;
 
     const transactionsResult = await AppDataSource.manager.query(transactionsQuery, [userId, month, year]);
