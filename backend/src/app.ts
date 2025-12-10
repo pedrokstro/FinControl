@@ -23,6 +23,7 @@ app.use(helmet({
 // CORS configuration - Permitir origens específicas incluindo Expo
 const allowedOrigins = [
   // Frontend Web
+  'https://fin-control-tan.nu.vercel.app',
   'https://fin-control-tan.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
