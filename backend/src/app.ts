@@ -20,9 +20,48 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 
-// CORS configuration - Simplificado para permitir todas as origens temporariamente
+// CORS configuration - Permitir origens específicas incluindo Expo
+const allowedOrigins = [
+  // Frontend Web
+  'https://fin-control-tan.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  
+  // Backend (para testes)
+  'https://fincontrol-735h.onrender.com',
+  
+  // Expo / React Native (desenvolvimento)
+  'http://localhost:8081',  // Metro Bundler
+  'http://localhost:19000', // Expo Dev Tools
+  'http://localhost:19001', // Expo Dev Tools
+  'http://localhost:19002', // Expo Dev Tools
+];
+
 app.use(cors({
-  origin: true, // Permite TODAS as origens
+  origin: (origin, callback) => {
+    // Permitir requisições sem origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    
+    // Permitir origens específicas
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Permitir origens Expo (exp://, exps://)
+    if (origin.startsWith('exp://') || origin.startsWith('exps://')) {
+      return callback(null, true);
+    }
+    
+    // Permitir IPs locais para desenvolvimento mobile
+    if (origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/) || 
+        origin.match(/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/) ||
+        origin.match(/^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:\d+$/)) {
+      return callback(null, true);
+    }
+    
+    // Rejeitar outras origens
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
