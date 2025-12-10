@@ -36,18 +36,23 @@ export class SavingsGoalController {
   async getCurrentGoal(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.userId;
+      console.log('📊 Buscando meta atual para usuário:', userId);
 
       const goal = await savingsGoalService.getCurrentGoal(userId);
+      console.log('📊 Meta encontrada:', goal);
 
       if (goal) {
         // Atualizar valor atual antes de retornar
         await savingsGoalService.updateCurrentAmount(userId, goal.month, goal.year);
         const updatedGoal = await savingsGoalService.getGoalByMonthYear(userId, goal.month, goal.year);
+        console.log('📊 Meta atualizada:', updatedGoal);
         return sendSuccess(res, updatedGoal);
       } else {
+        console.log('📊 Nenhuma meta encontrada para o mês atual');
         return res.status(404).json({ message: 'Nenhuma meta definida para o mês atual' });
       }
     } catch (error) {
+      console.error('❌ Erro ao buscar meta atual:', error);
       next(error);
     }
   }

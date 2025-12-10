@@ -112,14 +112,14 @@ export class SavingsGoalService {
   private mapToSavingsGoal(row: any): SavingsGoal {
     return {
       id: row.id,
-      userId: row.userId,
-      targetAmount: parseFloat(row.targetAmount),
-      currentAmount: parseFloat(row.currentAmount || 0),
-      month: row.month,
-      year: row.year,
+      userId: row.userId || row.userid, // Supabase pode retornar em lowercase
+      targetAmount: parseFloat(row.targetAmount || row.targetamount || 0),
+      currentAmount: parseFloat(row.currentAmount || row.currentamount || 0),
+      month: parseInt(row.month),
+      year: parseInt(row.year),
       description: row.description,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
+      createdAt: row.createdAt || row.createdat,
+      updatedAt: row.updatedAt || row.updatedat,
     };
   }
 }
