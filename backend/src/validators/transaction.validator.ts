@@ -32,17 +32,17 @@ export const createTransactionSchema = Joi.object({
     }),
     otherwise: Joi.optional(),
   }),
-  recurrenceEndDate: Joi.date().iso().optional().messages({
-    'date.base': 'Data final da recorrência inválida',
-  }),
-  recurrenceMonths: Joi.number()
+  totalInstallments: Joi.number()
     .integer()
-    .min(1)
-    .max(60)
-    .when('isRecurring', {
-      is: true,
-      then: Joi.optional(),
-      otherwise: Joi.optional(),
+    .min(2)
+    .max(360)
+    .optional()
+    .allow(null)
+    .messages({
+      'number.base': 'Número de parcelas deve ser um número',
+      'number.integer': 'Número de parcelas deve ser um número inteiro',
+      'number.min': 'Mínimo de 2 parcelas',
+      'number.max': 'Máximo de 360 parcelas',
     }),
 });
 
