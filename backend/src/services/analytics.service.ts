@@ -62,7 +62,7 @@ export class AnalyticsService {
           id,
           description,
           amount,
-          category,
+          "categoryId",
           date,
           CAST(date AS DATE) as transaction_date
         FROM transactions
@@ -80,7 +80,7 @@ export class AnalyticsService {
         id: row.id,
         description: row.description,
         amount: parseFloat(row.amount),
-        category: row.category,
+        categoryId: row.categoryId,
         date: row.transaction_date,
       }));
     } catch (error) {
@@ -173,50 +173,41 @@ export class AnalyticsService {
     try {
       const query = `
         SELECT 
-          category,
-          COALESCE(SUM(amount), 0) as actual
-        FROM transactions
-        WHERE "userId" = $1
-          AND type = 'expense'
-          AND EXTRACT(MONTH FROM CAST(date AS DATE)) = $2
-          AND EXTRACT(YEAR FROM CAST(date AS DATE)) = $3
-        GROUP BY category
+          c.name as category_name,
+          c.type as category_type,
+          COALESCE(SUM(t.amount), 0) as actual
+        FROM transactions t
+        INNER JOIN categories c ON t."categoryId" = c.id
+        WHERE t."userId" = $1
+          AND t.type = 'expense'
+          AND EXTRACT(MONTH FROM CAST(t.date AS DATE)) = $2
+          AND EXTRACT(YEAR FROM CAST(t.date AS DATE)) = $3
+        GROUP BY c.name, c.type
         ORDER BY actual DESC
       `;
 
       const result = await AppDataSource.manager.query(query, [userId, month, year]);
       
       const defaultBudgets: Record<string, number> = {
-        food: 800,
-        transport: 500,
-        entertainment: 300,
-        shopping: 400,
-        health: 300,
-        education: 500,
-        bills: 1000,
-        others: 500,
-      };
-
-      const categoryNames: Record<string, string> = {
-        food: 'Alimentação',
-        transport: 'Transporte',
-        entertainment: 'Entretenimento',
-        shopping: 'Compras',
-        health: 'Saúde',
-        education: 'Educação',
-        bills: 'Contas',
-        others: 'Outros',
+        'Alimentação': 800,
+        'Transporte': 500,
+        'Entretenimento': 300,
+        'Compras': 400,
+        'Saúde': 300,
+        'Educação': 500,
+        'Contas': 1000,
+        'Outros': 500,
       };
 
       return result.map((row: any) => {
-        const category = row.category;
+        const categoryName = row.category_name;
         const actual = parseFloat(row.actual);
-        const budget = defaultBudgets[category] || 500;
+        const budget = defaultBudgets[categoryName] || 500;
         const percentage = budget > 0 ? (actual / budget) * 100 : 0;
 
         return {
-          category: categoryNames[category] || category,
-          categoryKey: category,
+          category: categoryName,
+          categoryKey: categoryName.toLowerCase(),
           budget,
           actual,
           difference: actual - budget,
