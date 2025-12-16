@@ -48,9 +48,11 @@ const transactionSchema = z
     date: z.string().min(1, 'Data e obrigatoria'),
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
+    recurrenceMode: z.enum(['date', 'installments', 'infinite']).optional(),
     recurrenceEndDate: z.string().optional(),
     recurrenceStartDate: z.string().optional(),
     recurrenceMonths: z.string().optional(),
+    totalInstallments: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isRecurring) {
@@ -61,46 +63,74 @@ const transactionSchema = z
           message: 'Selecione a frequência',
         })
       }
-      if (!data.recurrenceStartDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['recurrenceStartDate'],
-          message: 'Data inicial é obrigatória',
-        })
-      }
-      if (!data.recurrenceEndDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['recurrenceEndDate'],
-          message: 'Data final é obrigatória',
-        })
-      }
-      if (data.recurrenceStartDate && data.recurrenceEndDate) {
-        const start = parseISO(data.recurrenceStartDate)
-        const end = parseISO(data.recurrenceEndDate)
-        if (end < start) {
+      
+      // Validação baseada no modo escolhido
+      if (data.recurrenceMode === 'date') {
+        if (!data.recurrenceStartDate) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['recurrenceStartDate'],
+            message: 'Data inicial é obrigatória',
+          })
+        }
+        if (!data.recurrenceEndDate) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['recurrenceEndDate'],
-            message: 'Data final deve ser depois da data inicial',
+            message: 'Data final é obrigatória',
+          })
+        }
+        if (data.recurrenceStartDate && data.recurrenceEndDate) {
+          const start = parseISO(data.recurrenceStartDate)
+          const end = parseISO(data.recurrenceEndDate)
+          if (end < start) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ['recurrenceEndDate'],
+              message: 'Data final deve ser depois da data inicial',
+            })
+          } else {
+            const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
+            if (!months) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['recurrenceEndDate'],
+                message: 'Período inválido',
+              })
+            } else if (months > 60) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['recurrenceEndDate'],
+                message: 'Limite máximo de 60 meses',
+              })
+            }
+          }
+        }
+      } else if (data.recurrenceMode === 'installments') {
+        if (!data.totalInstallments) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['totalInstallments'],
+            message: 'Número de parcelas é obrigatório',
           })
         } else {
-          const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
-          if (!months) {
+          const installments = parseInt(data.totalInstallments)
+          if (isNaN(installments) || installments < 2) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              path: ['recurrenceEndDate'],
-              message: 'Período inválido',
+              path: ['totalInstallments'],
+              message: 'Mínimo de 2 parcelas',
             })
-          } else if (months > 60) {
+          } else if (installments > 360) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              path: ['recurrenceEndDate'],
-              message: 'Limite máximo de 60 meses',
+              path: ['totalInstallments'],
+              message: 'Máximo de 360 parcelas',
             })
           }
         }
       }
+      // Modo 'infinite' não precisa de validações adicionais
     }
   })
 
