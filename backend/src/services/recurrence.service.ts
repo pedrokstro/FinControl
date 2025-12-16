@@ -57,11 +57,29 @@ class RecurrenceService {
             continue;
           }
 
-          // Verificar se ainda está dentro do período de recorrência
+          // Verificar se foi cancelada manualmente (modo infinito)
+          if (transaction.isCancelled) {
+            logger.info(`❌ Recurring transaction ${transaction.id} was cancelled by user`);
+            transaction.isRecurring = false;
+            transaction.nextOccurrence = null;
+            await this.transactionRepository.save(transaction);
+            continue;
+          }
+
+          // MODO 1: Verificar se atingiu limite de parcelas
+          if (transaction.totalInstallments && transaction.currentInstallment) {
+            if (transaction.currentInstallment >= transaction.totalInstallments) {
+              logger.info(`✅ Recurring transaction ${transaction.id} completed all ${transaction.totalInstallments} installments`);
+              transaction.isRecurring = false;
+              transaction.nextOccurrence = null;
+              await this.transactionRepository.save(transaction);
+              continue;
+            }
+          }
+
+          // MODO 2: Verificar se ainda está dentro do período de recorrência (data fim)
           if (transaction.recurrenceEndDate && new Date(transaction.recurrenceEndDate) < now) {
-            logger.info(`⏹️  Recurring transaction ${transaction.id} has ended, skipping`);
-            
-            // Desativar recorrência
+            logger.info(`⏹️  Recurring transaction ${transaction.id} has ended (recurrenceEndDate)`);
             transaction.isRecurring = false;
             transaction.nextOccurrence = null;
             await this.transactionRepository.save(transaction);
@@ -72,6 +90,8 @@ class RecurrenceService {
           const nextDate = new Date(transaction.nextOccurrence!);
           const dateString = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
           
+          const currentInstallment = (transaction.currentInstallment || 0) + 1;
+          
           const newTransaction = this.transactionRepository.create({
             type: transaction.type,
             amount: transaction.amount,
@@ -79,14 +99,21 @@ class RecurrenceService {
             date: dateString,
             categoryId: transaction.categoryId,
             userId: transaction.userId,
-            isRecurring: false, // Transações geradas não são recorrentes
+            isRecurring: false,
             parentTransactionId: transaction.id,
+            currentInstallment,
+            totalInstallments: transaction.totalInstallments,
           });
 
           await this.transactionRepository.save(newTransaction);
-          logger.info(`✅ Created new transaction from recurring ${transaction.id}`);
+          
+          const installmentInfo = transaction.totalInstallments 
+            ? `${currentInstallment}/${transaction.totalInstallments}` 
+            : 'infinito';
+          logger.info(`✅ Created installment ${installmentInfo} from recurring ${transaction.id}`);
 
-          // Atualizar próxima ocorrência
+          // Atualizar próxima ocorrência e contador de parcelas
+          transaction.currentInstallment = currentInstallment;
           transaction.nextOccurrence = this.calculateNextOccurrence(
             transaction.nextOccurrence!,
             transaction.recurrenceType!
@@ -226,11 +253,19 @@ class RecurrenceService {
       throw new Error('Transaction not found');
     }
 
+    if (!transaction.isRecurring) {
+      throw new Error('Transaction is not recurring');
+    }
+
+    // Marcar como cancelada (para histórico)
+    transaction.isCancelled = true;
+    transaction.cancelledAt = new Date();
     transaction.isRecurring = false;
     transaction.nextOccurrence = null;
+    
     await this.transactionRepository.save(transaction);
 
-    logger.info(`⏹️  Cancelled recurrence for transaction ${transactionId}`);
+    logger.info(`❌ Cancelled recurrence for transaction ${transactionId}`);
     return transaction;
   }
 
