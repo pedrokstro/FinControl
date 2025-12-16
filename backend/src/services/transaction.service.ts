@@ -127,15 +127,18 @@ export class TransactionService {
       where.categoryId = categoryId;
     }
 
-    // Filtro por mês/ano
+    // Filtro por mês/ano (usando strings YYYY-MM-DD)
     if (month && year) {
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+      const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+      const lastDay = new Date(year, month, 0).getDate();
+      const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
       where.date = Between(startDate, endDate);
+      console.log('🔍 [DEBUG] Filtro de data:', { startDate, endDate });
     } else if (year) {
-      const startDate = new Date(year, 0, 1);
-      const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+      const startDate = `${year}-01-01`;
+      const endDate = `${year}-12-31`;
       where.date = Between(startDate, endDate);
+      console.log('🔍 [DEBUG] Filtro de ano:', { startDate, endDate });
     }
 
     const [transactions, total] = await this.transactionRepository.findAndCount({
