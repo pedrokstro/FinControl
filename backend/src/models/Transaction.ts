@@ -64,16 +64,16 @@ export class Transaction {
   recurrenceType: RecurrenceType | null;
 
   @Column({ type: 'integer', nullable: true, comment: 'Número total de parcelas (null = recorrência infinita)' })
-  totalInstallments: number | null;
+  totalInstallments?: number | null;
 
   @Column({ type: 'integer', nullable: true, default: 1, comment: 'Parcela atual' })
-  currentInstallment: number | null;
+  currentInstallment?: number | null;
 
   @Column({ type: 'boolean', default: false, comment: 'Indica se a recorrência foi cancelada' })
-  isCancelled: boolean;
+  isCancelled?: boolean;
 
   @Column({ type: 'timestamp', nullable: true, comment: 'Data de cancelamento' })
-  cancelledAt: Date | null;
+  cancelledAt?: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
   nextOccurrence: Date | null;

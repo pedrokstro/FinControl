@@ -64,7 +64,7 @@ export class TransactionService {
     console.log('  - Descrição:', data.description);
     
     // Criar transação usando TypeORM
-    const transaction = this.transactionRepository.create({
+    const transactionData: any = {
       type: data.type,
       amount: data.amount,
       description: data.description,
@@ -73,13 +73,25 @@ export class TransactionService {
       userId: userId,
       isRecurring: data.isRecurring || false,
       recurrenceType: data.recurrenceType || null,
-      totalInstallments: data.totalInstallments || null,
-      currentInstallment: data.currentInstallment || 1,
-      isCancelled: false,
-      cancelledAt: null,
       nextOccurrence: data.nextOccurrence || null,
       parentTransactionId: data.parentTransactionId || null,
-    });
+    };
+
+    // Adicionar campos novos apenas se estiverem disponíveis (após migration)
+    if (data.totalInstallments !== undefined) {
+      transactionData.totalInstallments = data.totalInstallments || null;
+    }
+    if (data.currentInstallment !== undefined) {
+      transactionData.currentInstallment = data.currentInstallment || 1;
+    }
+    if (data.isCancelled !== undefined) {
+      transactionData.isCancelled = false;
+    }
+    if (data.cancelledAt !== undefined) {
+      transactionData.cancelledAt = null;
+    }
+
+    const transaction = this.transactionRepository.create(transactionData);
     
     const savedTransaction = await this.transactionRepository.save(transaction);
     
