@@ -93,7 +93,7 @@ export class TransactionService {
 
     const transaction = this.transactionRepository.create(transactionData);
     
-    const savedTransaction = await this.transactionRepository.save(transaction);
+    const savedTransaction = await this.transactionRepository.save(transaction) as unknown as Transaction;
     
     console.log('✅ [DEBUG] Transação criada com ID:', savedTransaction.id);
     console.log('📦 [DEBUG] Parcelas:', data.totalInstallments ? `${data.currentInstallment}/${data.totalInstallments}` : 'Recorrência infinita');
