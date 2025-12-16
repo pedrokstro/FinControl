@@ -173,8 +173,10 @@ const Dashboard = () => {
   const loadAnalytics = async () => {
     try {
       setIsLoadingAnalytics(true)
-      const data = await analyticsService.getAll()
-      setAnalytics(data)
+      // Temporariamente desabilitado para debug
+      // const data = await analyticsService.getAll()
+      // setAnalytics(data)
+      console.log('Analytics temporariamente desabilitado')
     } catch (error) {
       console.error('Erro ao carregar analytics:', error)
     } finally {
