@@ -64,7 +64,7 @@ export class TransactionService {
     console.log('  - Descrição:', data.description);
     
     // Criar transação usando TypeORM
-    const transactionData: any = {
+    const transaction = this.transactionRepository.create({
       type: data.type,
       amount: data.amount,
       description: data.description,
@@ -73,30 +73,14 @@ export class TransactionService {
       userId: userId,
       isRecurring: data.isRecurring || false,
       recurrenceType: data.recurrenceType || null,
+      recurrenceEndDate: data.recurrenceEndDate || null,
       nextOccurrence: data.nextOccurrence || null,
       parentTransactionId: data.parentTransactionId || null,
-    };
-
-    // Adicionar campos novos apenas se estiverem disponíveis (após migration)
-    if (data.totalInstallments !== undefined) {
-      transactionData.totalInstallments = data.totalInstallments || null;
-    }
-    if (data.currentInstallment !== undefined) {
-      transactionData.currentInstallment = data.currentInstallment || 1;
-    }
-    if (data.isCancelled !== undefined) {
-      transactionData.isCancelled = false;
-    }
-    if (data.cancelledAt !== undefined) {
-      transactionData.cancelledAt = null;
-    }
-
-    const transaction = this.transactionRepository.create(transactionData);
+    });
     
-    const savedTransaction = await this.transactionRepository.save(transaction) as unknown as Transaction;
+    const savedTransaction = await this.transactionRepository.save(transaction);
     
     console.log('✅ [DEBUG] Transação criada com ID:', savedTransaction.id);
-    console.log('📦 [DEBUG] Parcelas:', data.totalInstallments ? `${data.currentInstallment}/${data.totalInstallments}` : 'Recorrência infinita');
     
     return this.transactionRepository.findOne({
       where: { id: savedTransaction.id },
@@ -127,18 +111,15 @@ export class TransactionService {
       where.categoryId = categoryId;
     }
 
-    // Filtro por mês/ano (usando strings YYYY-MM-DD)
+    // Filtro por mês/ano
     if (month && year) {
-      const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
-      const lastDay = new Date(year, month, 0).getDate();
-      const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
       where.date = Between(startDate, endDate);
-      console.log('🔍 [DEBUG] Filtro de data:', { startDate, endDate });
     } else if (year) {
-      const startDate = `${year}-01-01`;
-      const endDate = `${year}-12-31`;
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
       where.date = Between(startDate, endDate);
-      console.log('🔍 [DEBUG] Filtro de ano:', { startDate, endDate });
     }
 
     const [transactions, total] = await this.transactionRepository.findAndCount({
@@ -347,28 +328,6 @@ export class TransactionService {
     }
 
     await this.transactionRepository.remove(transaction);
-  }
-
-  async cancelRecurrence(id: string, userId: string) {
-    const transaction = await this.findById(id, userId);
-
-    if (!transaction.isRecurring) {
-      throw new Error('Esta transação não é recorrente');
-    }
-
-    if (transaction.isCancelled) {
-      throw new Error('Esta recorrência já foi cancelada');
-    }
-
-    // Marcar como cancelada
-    transaction.isCancelled = true;
-    transaction.cancelledAt = new Date();
-
-    await this.transactionRepository.save(transaction);
-
-    console.log(`❌ [CANCEL] Recorrência ${transaction.id} cancelada`);
-
-    return transaction;
   }
 
   async getDashboardData(userId: string, month?: number, year?: number) {
