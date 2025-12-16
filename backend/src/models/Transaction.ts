@@ -72,6 +72,19 @@ export class Transaction {
   @Column({ type: 'uuid', nullable: true })
   parentTransactionId: string | null;
 
+  // Installments fields (novos campos opcionais)
+  @Column({ type: 'integer', nullable: true, comment: 'Número total de parcelas (null = infinito ou usa recurrenceEndDate)' })
+  totalInstallments?: number | null;
+
+  @Column({ type: 'integer', nullable: true, default: 1, comment: 'Parcela atual' })
+  currentInstallment?: number | null;
+
+  @Column({ type: 'boolean', default: false, comment: 'Recorrência cancelada' })
+  isCancelled?: boolean;
+
+  @Column({ type: 'timestamp', nullable: true, comment: 'Data de cancelamento' })
+  cancelledAt?: Date | null;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
