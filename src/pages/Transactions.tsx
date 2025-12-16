@@ -134,6 +134,7 @@ const Transactions = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
+  const [recurrenceMode, setRecurrenceMode] = useState<'date' | 'installments' | 'infinite'>('date')
 
   const {
     register,
@@ -812,36 +813,7 @@ const Transactions = () => {
 
                 {isRecurring && (
                   <div className="space-y-4 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
-                    <div>
-                      <label className="label">Data Inicial</label>
-                      <input
-                        type="date"
-                        {...register('recurrenceStartDate')}
-                        className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
-                      />
-                      {errors.recurrenceStartDate && (
-                        <p className="error-message">{errors.recurrenceStartDate.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="label">Data Final</label>
-                      <input
-                        type="date"
-                        {...register('recurrenceEndDate')}
-                        className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
-                      />
-                      {errors.recurrenceEndDate && (
-                        <p className="error-message">{errors.recurrenceEndDate.message}</p>
-                      )}
-                    </div>
-                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
-                      {computedRecurrenceMonths
-                        ? (
-                          <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
-                        ) : (
-                          <p>Selecione datas válidas (máx. 60 meses) para gerar as parcelas.</p>
-                        )}
-                    </div>
+                    {/* Frequência */}
                     <div>
                       <label className="label">Frequência</label>
                       <select
@@ -859,11 +831,117 @@ const Transactions = () => {
                       )}
                     </div>
 
-                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                      <p className="text-xs text-primary-700 dark:text-primary-300">
-                        <strong>ℹ️ Como funciona:</strong> Esta transação será automaticamente criada na frequência selecionada. Você pode cancelar a recorrência a qualquer momento.
-                      </p>
+                    {/* Modo de Recorrência */}
+                    <div>
+                      <label className="label">Modo de Recorrência</label>
+                      <div className="space-y-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="date"
+                            checked={recurrenceMode === 'date'}
+                            onChange={() => {
+                              setRecurrenceMode('date')
+                              setValue('recurrenceMode', 'date')
+                            }}
+                            className="w-4 h-4 text-primary-600"
+                          />
+                          <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="installments"
+                            checked={recurrenceMode === 'installments'}
+                            onChange={() => {
+                              setRecurrenceMode('installments')
+                              setValue('recurrenceMode', 'installments')
+                            }}
+                            className="w-4 h-4 text-primary-600"
+                          />
+                          <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="infinite"
+                            checked={recurrenceMode === 'infinite'}
+                            onChange={() => {
+                              setRecurrenceMode('infinite')
+                              setValue('recurrenceMode', 'infinite')
+                            }}
+                            className="w-4 h-4 text-primary-600"
+                          />
+                          <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
+                        </label>
+                      </div>
                     </div>
+
+                    {/* Campos baseados no modo */}
+                    {recurrenceMode === 'date' && (
+                      <>
+                        <div>
+                          <label className="label">Data Inicial</label>
+                          <input
+                            type="date"
+                            {...register('recurrenceStartDate')}
+                            className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
+                          />
+                          {errors.recurrenceStartDate && (
+                            <p className="error-message">{errors.recurrenceStartDate.message}</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="label">Data Final</label>
+                          <input
+                            type="date"
+                            {...register('recurrenceEndDate')}
+                            className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
+                          />
+                          {errors.recurrenceEndDate && (
+                            <p className="error-message">{errors.recurrenceEndDate.message}</p>
+                          )}
+                        </div>
+                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
+                          {computedRecurrenceMonths
+                            ? <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
+                            : <p>Selecione datas válidas (máx. 60 meses).</p>
+                          }
+                        </div>
+                      </>
+                    )}
+
+                    {recurrenceMode === 'installments' && (
+                      <>
+                        <div>
+                          <label className="label">Número de Parcelas</label>
+                          <input
+                            type="number"
+                            min="2"
+                            max="360"
+                            placeholder="Ex: 12"
+                            {...register('totalInstallments')}
+                            className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
+                          />
+                          {errors.totalInstallments && (
+                            <p className="error-message">{errors.totalInstallments.message}</p>
+                          )}
+                        </div>
+                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                          <p className="text-xs text-primary-700 dark:text-primary-300">
+                            <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {recurrenceMode === 'infinite' && (
+                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                        <p className="text-xs text-primary-700 dark:text-primary-300">
+                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
