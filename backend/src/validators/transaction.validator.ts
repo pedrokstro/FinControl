@@ -44,6 +44,19 @@ export const createTransactionSchema = Joi.object({
       then: Joi.optional(),
       otherwise: Joi.optional(),
     }),
+  // Novos campos para sistema de parcelas
+  totalInstallments: Joi.number()
+    .integer()
+    .min(2)
+    .max(360)
+    .optional()
+    .allow(null)
+    .messages({
+      'number.base': 'Número de parcelas deve ser um número',
+      'number.integer': 'Número de parcelas deve ser inteiro',
+      'number.min': 'Mínimo de 2 parcelas',
+      'number.max': 'Máximo de 360 parcelas',
+    }),
 });
 
 export const updateTransactionSchema = Joi.object({
