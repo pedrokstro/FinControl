@@ -9,7 +9,7 @@ const transactionService = new TransactionService();
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
-    const { isRecurring, recurrenceType, recurrenceEndDate, recurrenceMonths, ...transactionData } = req.body;
+    const { isRecurring, recurrenceType, totalInstallments, ...transactionData } = req.body;
 
     let transaction;
 
@@ -18,8 +18,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       transaction = await recurrenceService.createRecurringTransaction(
         { ...transactionData, userId },
         recurrenceType,
-        recurrenceEndDate ? new Date(recurrenceEndDate) : undefined,
-        recurrenceMonths
+        totalInstallments
       );
     } else {
       // Criar transação normal
@@ -92,8 +91,9 @@ export const remove = async (req: Request, res: Response, next: NextFunction) =>
 // Cancelar recorrência de uma transação
 export const cancelRecurrence = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const userId = req.user!.userId;
     const { id } = req.params;
-    const transaction = await recurrenceService.cancelRecurrence(id);
+    const transaction = await transactionService.cancelRecurrence(id, userId);
     sendSuccess(res, transaction, 'Recorrência cancelada com sucesso');
   } catch (error) {
     next(error);

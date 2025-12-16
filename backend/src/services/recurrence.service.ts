@@ -38,10 +38,11 @@ class RecurrenceService {
       const now = new Date();
       let processedCount = 0;
 
-      // Buscar transações recorrentes que precisam gerar nova ocorrência
+      // Buscar transações recorrentes ativas que precisam gerar nova ocorrência
       const recurringTransactions = await this.transactionRepository.find({
         where: {
           isRecurring: true,
+          isCancelled: false,
           nextOccurrence: LessThanOrEqual(now),
         },
       });
@@ -57,20 +58,28 @@ class RecurrenceService {
             continue;
           }
 
-          // Verificar se ainda está dentro do período de recorrência
-          if (transaction.recurrenceEndDate && new Date(transaction.recurrenceEndDate) < now) {
-            logger.info(`⏹️  Recurring transaction ${transaction.id} has ended, skipping`);
-            
-            // Desativar recorrência
-            transaction.isRecurring = false;
-            transaction.nextOccurrence = null;
-            await this.transactionRepository.save(transaction);
+          // Verificar se foi cancelada
+          if (transaction.isCancelled) {
+            logger.info(`❌ Recurring transaction ${transaction.id} was cancelled, skipping`);
             continue;
+          }
+
+          // Verificar se atingiu o limite de parcelas
+          if (transaction.totalInstallments && transaction.currentInstallment) {
+            if (transaction.currentInstallment >= transaction.totalInstallments) {
+              logger.info(`✅ Recurring transaction ${transaction.id} completed all installments (${transaction.totalInstallments})`);
+              transaction.isRecurring = false;
+              transaction.nextOccurrence = null;
+              await this.transactionRepository.save(transaction);
+              continue;
+            }
           }
 
           // Criar nova transação baseada na recorrente
           const nextDate = new Date(transaction.nextOccurrence!);
           const dateString = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+          
+          const currentInstallment = (transaction.currentInstallment || 0) + 1;
           
           const newTransaction = this.transactionRepository.create({
             type: transaction.type,
@@ -79,14 +88,17 @@ class RecurrenceService {
             date: dateString,
             categoryId: transaction.categoryId,
             userId: transaction.userId,
-            isRecurring: false, // Transações geradas não são recorrentes
+            isRecurring: false,
             parentTransactionId: transaction.id,
+            currentInstallment,
+            totalInstallments: transaction.totalInstallments,
           });
 
           await this.transactionRepository.save(newTransaction);
-          logger.info(`✅ Created new transaction from recurring ${transaction.id}`);
+          logger.info(`✅ Created installment ${currentInstallment}${transaction.totalInstallments ? `/${transaction.totalInstallments}` : ''} from recurring ${transaction.id}`);
 
-          // Atualizar próxima ocorrência
+          // Atualizar próxima ocorrência e parcela atual
+          transaction.currentInstallment = currentInstallment;
           transaction.nextOccurrence = this.calculateNextOccurrence(
             transaction.nextOccurrence!,
             transaction.recurrenceType!
@@ -113,17 +125,11 @@ class RecurrenceService {
   async createRecurringTransaction(
     transactionData: Partial<Transaction>,
     recurrenceType: RecurrenceType,
-    recurrenceEndDate?: Date,
-    recurrenceMonths: number = 1
-  ): Promise<Transaction[]> {
+    totalInstallments?: number
+  ): Promise<Transaction> {
     console.log('🔄 [DEBUG] Data recebida (recorrente):', transactionData.date, 'Tipo:', typeof transactionData.date);
 
     const baseDate = this.parseInputDate(transactionData.date as any);
-    const totalMonths = Math.max(1, recurrenceMonths || 1);
-
-    const finalEndDate =
-      recurrenceEndDate ??
-      this.addMonths(baseDate, totalMonths > 0 ? totalMonths - 1 : 0);
 
     const amount =
       typeof transactionData.amount === 'string'
@@ -134,6 +140,9 @@ class RecurrenceService {
       throw new Error('Missing data to create recurring transaction');
     }
 
+    // Calcular próxima ocorrência
+    const nextOccurrence = this.calculateNextOccurrence(baseDate, recurrenceType);
+
     const parentEntity = this.transactionRepository.create({
       type: transactionData.type,
       amount,
@@ -143,48 +152,27 @@ class RecurrenceService {
       userId: transactionData.userId,
       isRecurring: true,
       recurrenceType,
-      recurrenceEndDate: finalEndDate || null,
-      nextOccurrence: null,
+      totalInstallments: totalInstallments || null,
+      currentInstallment: 1,
+      isCancelled: false,
+      cancelledAt: null,
+      nextOccurrence,
     });
 
     const savedParent = await this.transactionRepository.save(parentEntity);
-    logger.info(`✅ Created recurring transaction ${savedParent.id} (${recurrenceType})`);
+    
+    const installmentInfo = totalInstallments 
+      ? `${totalInstallments} parcelas` 
+      : 'recorrência infinita';
+    
+    logger.info(`✅ Created recurring transaction ${savedParent.id} (${recurrenceType}, ${installmentInfo})`);
 
-    const transactionsWithRelations: Transaction[] = [];
     const parentWithRelations = await this.transactionRepository.findOne({
       where: { id: savedParent.id },
       relations: ['category'],
     });
 
-    if (parentWithRelations) {
-      transactionsWithRelations.push(parentWithRelations);
-    }
-
-    for (let installment = 1; installment < totalMonths; installment++) {
-      const occurrenceDate = this.addMonths(baseDate, installment);
-      const childEntity = this.transactionRepository.create({
-        type: transactionData.type,
-        amount,
-        description: transactionData.description || '',
-        date: this.applyStorageOffset(occurrenceDate),
-        categoryId: transactionData.categoryId,
-        userId: transactionData.userId,
-        isRecurring: false,
-        parentTransactionId: savedParent.id,
-      });
-
-      const savedChild = await this.transactionRepository.save(childEntity);
-      const childWithRelations = await this.transactionRepository.findOne({
-        where: { id: savedChild.id },
-        relations: ['category'],
-      });
-
-      if (childWithRelations) {
-        transactionsWithRelations.push(childWithRelations);
-      }
-    }
-
-    return transactionsWithRelations;
+    return parentWithRelations!;
   }
 
   /**

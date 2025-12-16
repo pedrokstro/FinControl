@@ -73,7 +73,10 @@ export class TransactionService {
       userId: userId,
       isRecurring: data.isRecurring || false,
       recurrenceType: data.recurrenceType || null,
-      recurrenceEndDate: data.recurrenceEndDate || null,
+      totalInstallments: data.totalInstallments || null,
+      currentInstallment: data.currentInstallment || 1,
+      isCancelled: false,
+      cancelledAt: null,
       nextOccurrence: data.nextOccurrence || null,
       parentTransactionId: data.parentTransactionId || null,
     });
@@ -81,6 +84,7 @@ export class TransactionService {
     const savedTransaction = await this.transactionRepository.save(transaction);
     
     console.log('✅ [DEBUG] Transação criada com ID:', savedTransaction.id);
+    console.log('📦 [DEBUG] Parcelas:', data.totalInstallments ? `${data.currentInstallment}/${data.totalInstallments}` : 'Recorrência infinita');
     
     return this.transactionRepository.findOne({
       where: { id: savedTransaction.id },
@@ -328,6 +332,28 @@ export class TransactionService {
     }
 
     await this.transactionRepository.remove(transaction);
+  }
+
+  async cancelRecurrence(id: string, userId: string) {
+    const transaction = await this.findById(id, userId);
+
+    if (!transaction.isRecurring) {
+      throw new Error('Esta transação não é recorrente');
+    }
+
+    if (transaction.isCancelled) {
+      throw new Error('Esta recorrência já foi cancelada');
+    }
+
+    // Marcar como cancelada
+    transaction.isCancelled = true;
+    transaction.cancelledAt = new Date();
+
+    await this.transactionRepository.save(transaction);
+
+    console.log(`❌ [CANCEL] Recorrência ${transaction.id} cancelada`);
+
+    return transaction;
   }
 
   async getDashboardData(userId: string, month?: number, year?: number) {
