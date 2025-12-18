@@ -128,9 +128,9 @@ const CompoundInterestCalculator = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="responsive-header">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
               <TrendingUp className="w-8 h-8 text-primary-600 dark:text-primary-400" />
@@ -143,15 +143,15 @@ const CompoundInterestCalculator = () => {
         </div>
 
         {/* Formulário */}
-        <div className="card">
+        <div className="card space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Investimento Inicial */}
             <div className="group">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Inicial
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 via-sky-400 to-primary-300 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500 via-sky-400 to-primary-300 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                     <DollarSign className="w-4 h-4" />
@@ -174,8 +174,8 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Taxa de Juros Anual
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-cyan-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-cyan-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300">
                     <Percent className="w-4 h-4" />
@@ -198,8 +198,8 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Contínuo
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400 via-primary-500 to-violet-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-400 via-primary-500 to-violet-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300">
                     <Wallet className="w-4 h-4" />
@@ -225,8 +225,8 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Duração
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-primary-500 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-primary-500 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent overflow-hidden">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300">
                     <Clock className="w-4 h-4" />
@@ -248,14 +248,14 @@ const CompoundInterestCalculator = () => {
           </div>
 
           {/* Segunda linha */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Composto */}
             <div className="group">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Composto
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <select
                   value={compoundFrequency}
                   onChange={(e) => {
@@ -289,8 +289,8 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Data de Início
               </label>
-              <div className="relative rounded-2xl">
-                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
+              <div className="relative rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-300">
                     <Calendar className="w-4 h-4" />
@@ -306,17 +306,17 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Botões Calcular e Limpar */}
-            <div className="flex items-end gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:col-span-2 lg:col-span-1">
               <button
                 onClick={calculate}
-                className="btn-primary flex-1 flex items-center justify-center gap-2"
+                className="btn-primary flex-1 flex items-center justify-center gap-2 w-full"
               >
                 <Calculator className="w-5 h-5" />
                 Calcular
               </button>
               <button
                 onClick={clear}
-                className="btn-secondary flex items-center justify-center gap-2"
+                className="btn-secondary flex items-center justify-center gap-2 flex-1 sm:flex-none w-full"
               >
                 Limpar
               </button>
@@ -335,7 +335,7 @@ const CompoundInterestCalculator = () => {
               <p className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-4">
                 {formatCurrency(result.finalAmount)}
               </p>
-              <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-gray-600 dark:text-neutral-400">Investimento Inicial</p>
                   <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(parseFloat(initialValue) || 0)}</p>

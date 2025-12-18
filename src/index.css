@@ -257,6 +257,46 @@
     @apply bg-gray-900 text-white rounded-lg shadow-lg;
     @apply dark:bg-white dark:text-gray-900;
   }
+
+  .responsive-page {
+    @apply space-y-6;
+  }
+
+  .responsive-header {
+    @apply flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .responsive-toolbar {
+    @apply flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center;
+  }
+
+  .table-wrapper {
+    @apply -mx-4 sm:mx-0 overflow-x-auto;
+  }
+
+  .table-wrapper table {
+    min-width: 640px;
+  }
+
+  .filter-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4;
+  }
+
+  .mobile-scroll-buttons {
+    @apply flex gap-2 overflow-x-auto pb-2;
+  }
+
+  .mobile-scroll-buttons::-webkit-scrollbar {
+    display: none;
+  }
+
+  .section-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
 }
 
 @layer utilities {

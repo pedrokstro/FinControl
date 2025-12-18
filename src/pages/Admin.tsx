@@ -153,9 +153,9 @@ const Admin = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="responsive-header">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <Shield className="w-8 h-8 text-primary-600 dark:text-primary-400" />
@@ -206,20 +206,22 @@ const Admin = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Formulário de Envio */}
         <div className="card">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
               <Send className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Enviar Notificação
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Envie avisos para os usuários
-              </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Enviar Notificação
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">
+                  Envie avisos para os usuários
+                </p>
+              </div>
             </div>
           </div>
 

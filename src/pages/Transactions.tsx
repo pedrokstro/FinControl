@@ -10,7 +10,6 @@ import {
   Pencil, 
   Trash2, 
   Search, 
-  X,
   TrendingUp,
   TrendingDown,
   ChevronLeft,
@@ -26,6 +25,7 @@ import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
+import Modal from '@/components/common/Modal'
 
 const calculateRecurrenceMonths = (start?: string, end?: string) => {
   if (!start || !end) return null
@@ -423,6 +423,11 @@ const Transactions = () => {
     }).format(value)
   }
 
+  const handleSafeModalClose = () => {
+    if (isCreatingTransaction) return
+    handleCloseModal()
+  }
+
   const availableCategories = categories.filter(
     (c) => c.type === transactionType
   )
@@ -435,8 +440,8 @@ const Transactions = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="responsive-page">
+      <div className="responsive-header">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Transações</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
@@ -445,7 +450,7 @@ const Transactions = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <Plus className="w-5 h-5" />
           Nova Transacao
@@ -453,11 +458,11 @@ const Transactions = () => {
       </div>
 
       {/* Month Navigation */}
-      <div className="card">
-        <div className="flex items-center justify-between">
+      <div className="card space-y-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <button
             onClick={handlePreviousMonth}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors font-medium"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors font-medium"
           >
             <ChevronLeft className="w-5 h-5" />
             Anterior
@@ -490,7 +495,7 @@ const Transactions = () => {
         </div>
 
         {/* Month Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-neutral-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Total de Transacoes</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{monthSummary.count}</p>
@@ -518,7 +523,7 @@ const Transactions = () => {
 
       {/* Filters */}
       <div className="card">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="filter-grid">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
             <input
@@ -558,7 +563,7 @@ const Transactions = () => {
       {/* Transactions Table */}
       <div className="card">
         {filteredTransactions.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="table-wrapper">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-neutral-800">
@@ -698,312 +703,307 @@ const Transactions = () => {
         )}
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="relative bg-white dark:bg-neutral-950 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-transparent dark:border-neutral-800">
-            {isCreatingTransaction && (
-              <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10">
-                <Loader2 className="w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin" />
-                <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
-                  Criando transação e gerando parcelas...
-                </p>
-              </div>
-            )}
-            <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {editingId ? 'Editar Transacao' : 'Nova Transacao'}
-                </h2>
-                <button
-                  onClick={handleCloseModal}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-colors text-gray-600 dark:text-neutral-400"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+      <Modal
+        isOpen={showModal}
+        onClose={handleSafeModalClose}
+        title={editingId ? 'Editar Transação' : 'Nova Transação'}
+        size="md"
+        closeOnBackdrop={!isCreatingTransaction}
+        contentClassName="space-y-5"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="flex-1 btn-secondary"
+              disabled={isCreatingTransaction}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              form="transaction-form"
+              className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              disabled={isCreatingTransaction}
+            >
+              {isCreatingTransaction ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                editingId ? 'Salvar' : 'Adicionar'
+              )}
+            </button>
+          </div>
+        }
+      >
+        <div className="relative">
+          {isCreatingTransaction && (
+            <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10 rounded-xl">
+              <Loader2 className="w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin" />
+              <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
+                Criando transação e gerando parcelas...
+              </p>
+            </div>
+          )}
+
+          <form id="transaction-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <input type="hidden" {...register('recurrenceMonths')} />
+            <div>
+              <label className="label">Tipo</label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-success-500 has-[:checked]:bg-success-50">
+                  <input
+                    type="radio"
+                    value="income"
+                    {...register('type')}
+                    className="sr-only"
+                  />
+                  <div className="text-center">
+                    <TrendingUp className="w-6 h-6 mx-auto text-success-600 mb-1" />
+                    <span className="text-sm font-medium">Receita</span>
+                  </div>
+                </label>
+                <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50">
+                  <input
+                    type="radio"
+                    value="expense"
+                    {...register('type')}
+                    className="sr-only"
+                  />
+                  <div className="text-center">
+                    <TrendingDown className="w-6 h-6 mx-auto text-danger-600 mb-1" />
+                    <span className="text-sm font-medium">Despesa</span>
+                  </div>
+                </label>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-              <input type="hidden" {...register('recurrenceMonths')} />
-              <div>
-                <label className="label">Tipo</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-success-500 has-[:checked]:bg-success-50">
-                    <input
-                      type="radio"
-                      value="income"
-                      {...register('type')}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 mb-1" />
-                      <span className="text-sm font-medium">Receita</span>
-                    </div>
-                  </label>
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50">
-                    <input
-                      type="radio"
-                      value="expense"
-                      {...register('type')}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 mb-1" />
-                      <span className="text-sm font-medium">Despesa</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
+            <div>
+              <label className="label">Valor (R$)</label>
+              <input
+                type="number"
+                step="0.01"
+                inputMode="decimal"
+                pattern="[0-9]*"
+                placeholder="0,00"
+                {...register('amount')}
+                className={`input-field ${errors.amount ? 'input-error' : ''}`}
+              />
+              {errors.amount && (
+                <p className="error-message">{errors.amount.message}</p>
+              )}
+            </div>
 
-              <div>
-                <label className="label">Valor (R$)</label>
+            <div>
+              <label className="label">Categoria</label>
+              <select
+                {...register('categoryId')}
+                className={`input-field ${errors.categoryId ? 'input-error' : ''}`}
+              >
+                <option value="">Selecione uma categoria</option>
+                {availableCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              {errors.categoryId && (
+                <p className="error-message">{errors.categoryId.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="label">Descricao</label>
+              <input
+                type="text"
+                placeholder="Ex: Compra no supermercado"
+                {...register('description')}
+                className={`input-field ${errors.description ? 'input-error' : ''}`}
+              />
+              {errors.description && (
+                <p className="error-message">{errors.description.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="label">Data</label>
+              <input
+                type="date"
+                {...register('date')}
+                className={`input-field ${errors.date ? 'input-error' : ''}`}
+              />
+              {errors.date && (
+                <p className="error-message">{errors.date.message}</p>
+              )}
+            </div>
+
+            {/* Transação Recorrente */}
+            <div className="border-t border-gray-200 dark:border-neutral-800 pt-4">
+              <div className="flex items-center gap-2 mb-4">
                 <input
-                  type="number"
-                  step="0.01"
-                  placeholder="0,00"
-                  {...register('amount')}
-                  className={`input-field ${errors.amount ? 'input-error' : ''}`}
+                  type="checkbox"
+                  id="isRecurring"
+                  checked={isRecurring}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setIsRecurring(checked)
+                    if (checked) {
+                      const currentDate = watch('date')
+                      setValue('recurrenceStartDate', currentDate)
+                    } else {
+                      setValue('recurrenceType', undefined)
+                      setValue('recurrenceStartDate', undefined)
+                      setValue('recurrenceEndDate', undefined)
+                      setValue('recurrenceMonths', undefined)
+                    }
+                  }}
+                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
-                {errors.amount && (
-                  <p className="error-message">{errors.amount.message}</p>
-                )}
+                <label htmlFor="isRecurring" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
+                  <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  Transação Recorrente
+                </label>
               </div>
 
-              <div>
-                <label className="label">Categoria</label>
-                <select
-                  {...register('categoryId')}
-                  className={`input-field ${errors.categoryId ? 'input-error' : ''}`}
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {availableCategories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.categoryId && (
-                  <p className="error-message">{errors.categoryId.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="label">Descricao</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Compra no supermercado"
-                  {...register('description')}
-                  className={`input-field ${errors.description ? 'input-error' : ''}`}
-                />
-                {errors.description && (
-                  <p className="error-message">{errors.description.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="label">Data</label>
-                <input
-                  type="date"
-                  {...register('date')}
-                  className={`input-field ${errors.date ? 'input-error' : ''}`}
-                />
-                {errors.date && (
-                  <p className="error-message">{errors.date.message}</p>
-                )}
-              </div>
-
-              {/* Transação Recorrente */}
-              <div className="border-t border-gray-200 dark:border-neutral-800 pt-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="isRecurring"
-                    checked={isRecurring}
-                    onChange={(e) => {
-                      const checked = e.target.checked
-                      setIsRecurring(checked)
-                      if (checked) {
-                        const currentDate = watch('date')
-                        setValue('recurrenceStartDate', currentDate)
-                      } else {
-                        setValue('recurrenceType', undefined)
-                        setValue('recurrenceStartDate', undefined)
-                        setValue('recurrenceEndDate', undefined)
-                        setValue('recurrenceMonths', undefined)
-                      }
-                    }}
-                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="isRecurring" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
-                    <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                    Transação Recorrente
-                  </label>
-                </div>
-
-                {isRecurring && (
-                  <div className="space-y-4 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
-                    {/* Frequência */}
-                    <div>
-                      <label className="label">Frequência</label>
-                      <select
-                        {...register('recurrenceType')}
-                        className="input-field"
-                      >
-                        <option value="">Selecione a frequência...</option>
-                        <option value="daily">Diária</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensal</option>
-                        <option value="yearly">Anual</option>
-                      </select>
-                      {errors.recurrenceType && (
-                        <p className="error-message">{errors.recurrenceType.message}</p>
-                      )}
-                    </div>
-
-                    {/* Modo de Recorrência */}
-                    <div>
-                      <label className="label">Modo de Recorrência</label>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="date"
-                            checked={recurrenceMode === 'date'}
-                            onChange={() => {
-                              setRecurrenceMode('date')
-                              setValue('recurrenceMode', 'date')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="installments"
-                            checked={recurrenceMode === 'installments'}
-                            onChange={() => {
-                              setRecurrenceMode('installments')
-                              setValue('recurrenceMode', 'installments')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="infinite"
-                            checked={recurrenceMode === 'infinite'}
-                            onChange={() => {
-                              setRecurrenceMode('infinite')
-                              setValue('recurrenceMode', 'infinite')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Campos baseados no modo */}
-                    {recurrenceMode === 'date' && (
-                      <>
-                        <div>
-                          <label className="label">Data Inicial</label>
-                          <input
-                            type="date"
-                            {...register('recurrenceStartDate')}
-                            className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
-                          />
-                          {errors.recurrenceStartDate && (
-                            <p className="error-message">{errors.recurrenceStartDate.message}</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="label">Data Final</label>
-                          <input
-                            type="date"
-                            {...register('recurrenceEndDate')}
-                            className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
-                          />
-                          {errors.recurrenceEndDate && (
-                            <p className="error-message">{errors.recurrenceEndDate.message}</p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
-                          {computedRecurrenceMonths
-                            ? <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
-                            : <p>Selecione datas válidas (máx. 60 meses).</p>
-                          }
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'installments' && (
-                      <>
-                        <div>
-                          <label className="label">Número de Parcelas</label>
-                          <input
-                            type="number"
-                            min="2"
-                            max="360"
-                            placeholder="Ex: 12"
-                            {...register('totalInstallments')}
-                            className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
-                          />
-                          {errors.totalInstallments && (
-                            <p className="error-message">{errors.totalInstallments.message}</p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                          <p className="text-xs text-primary-700 dark:text-primary-300">
-                            <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'infinite' && (
-                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                        <p className="text-xs text-primary-700 dark:text-primary-300">
-                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
-                        </p>
-                      </div>
+              {isRecurring && (
+                <div className="space-y-4 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                  {/* Frequência */}
+                  <div>
+                    <label className="label">Frequência</label>
+                    <select
+                      {...register('recurrenceType')}
+                      className="input-field"
+                    >
+                      <option value="">Selecione a frequência...</option>
+                      <option value="daily">Diária</option>
+                      <option value="weekly">Semanal</option>
+                      <option value="monthly">Mensal</option>
+                      <option value="yearly">Anual</option>
+                    </select>
+                    {errors.recurrenceType && (
+                      <p className="error-message">{errors.recurrenceType.message}</p>
                     )}
                   </div>
-                )}
-              </div>
 
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="flex-1 btn-secondary"
-                  disabled={isCreatingTransaction}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                  disabled={isCreatingTransaction}
-                >
-                  {isCreatingTransaction ? (
+                  {/* Modo de Recorrência */}
+                  <div>
+                    <label className="label">Modo de Recorrência</label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="date"
+                          checked={recurrenceMode === 'date'}
+                          onChange={() => {
+                            setRecurrenceMode('date')
+                            setValue('recurrenceMode', 'date')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="installments"
+                          checked={recurrenceMode === 'installments'}
+                          onChange={() => {
+                            setRecurrenceMode('installments')
+                            setValue('recurrenceMode', 'installments')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="infinite"
+                          checked={recurrenceMode === 'infinite'}
+                          onChange={() => {
+                            setRecurrenceMode('infinite')
+                            setValue('recurrenceMode', 'infinite')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Campos baseados no modo */}
+                  {recurrenceMode === 'date' && (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Processando...
+                      <div>
+                        <label className="label">Data Inicial</label>
+                        <input
+                          type="date"
+                          {...register('recurrenceStartDate')}
+                          className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
+                        />
+                        {errors.recurrenceStartDate && (
+                          <p className="error-message">{errors.recurrenceStartDate.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="label">Data Final</label>
+                        <input
+                          type="date"
+                          {...register('recurrenceEndDate')}
+                          className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
+                        />
+                        {errors.recurrenceEndDate && (
+                          <p className="error-message">{errors.recurrenceEndDate.message}</p>
+                        )}
+                      </div>
+                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
+                        {computedRecurrenceMonths
+                          ? <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
+                          : <p>Selecione datas válidas (máx. 60 meses).</p>
+                        }
+                      </div>
                     </>
-                  ) : (
-                    editingId ? 'Salvar' : 'Adicionar'
                   )}
-                </button>
-              </div>
-            </form>
-          </div>
+
+                  {recurrenceMode === 'installments' && (
+                    <>
+                      <div>
+                        <label className="label">Número de Parcelas</label>
+                        <input
+                          type="number"
+                          min="2"
+                          max="360"
+                          placeholder="Ex: 12"
+                          {...register('totalInstallments')}
+                          className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
+                        />
+                        {errors.totalInstallments && (
+                          <p className="error-message">{errors.totalInstallments.message}</p>
+                        )}
+                      </div>
+                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                        <p className="text-xs text-primary-700 dark:text-primary-300">
+                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  {recurrenceMode === 'infinite' && (
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                      <p className="text-xs text-primary-700 dark:text-primary-300">
+                        <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </form>
         </div>
-      )}
+      </Modal>
 
       {/* Modal de Confirmação de Exclusão */}
       <ConfirmDeleteModal

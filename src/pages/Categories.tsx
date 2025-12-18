@@ -223,16 +223,16 @@ const Categories = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="responsive-header gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
             Organize suas transacoes em categorias personalizadas
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           {/* Toggle View Mode */}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
             <button
@@ -263,7 +263,7 @@ const Categories = () => {
           
           <button
             onClick={() => handleOpenModal()}
-            className="btn-primary flex items-center gap-2"
+            className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <Plus className="w-5 h-5" />
             Nova Categoria
@@ -315,7 +315,7 @@ const Categories = () => {
 
       {/* Filtros */}
       <div className="card">
-        <div className="flex gap-3">
+        <div className="mobile-scroll-buttons">
           <button
             onClick={() => setFilterType('all')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -350,7 +350,7 @@ const Categories = () => {
       </div>
 
       {(isViewModeLoading || isCategoriesLoading) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={`skeleton-${index}`}

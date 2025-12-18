@@ -1,24 +1,24 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { 
+  ArrowUpRight, 
+  ArrowDownRight, 
   TrendingUp, 
   TrendingDown, 
   Wallet, 
-  ArrowUpRight,
-  ArrowDownRight,
-  BarChart3,
-  Plus,
+  Target, 
+  Plus, 
   X,
-  Calculator as CalculatorIcon,
-  Target,
+  Loader2,
+  Repeat,
   Edit3,
   Trash2,
-  Repeat,
-  Loader2,
+  BarChart3
 } from 'lucide-react'
+import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
 import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
@@ -52,6 +52,9 @@ import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 
 import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import { type IconName } from '@/utils/iconMapping'
+import CurrentDateCard from '@/components/common/CurrentDateCard'
+import Modal from '@/components/common/Modal'
+import { useSearchParams } from 'react-router-dom'
 
 const RADIAN = Math.PI / 180
 
@@ -211,10 +214,54 @@ const transactionSchema = z
 
 type TransactionFormData = z.infer<typeof transactionSchema>
 
+const fallbackAnalyticsData: AnalyticsData = {
+  dailyCashFlow: [
+    { day: 1, dailyBalance: 500, cumulativeBalance: 500 },
+    { day: 5, dailyBalance: -200, cumulativeBalance: 300 },
+    { day: 10, dailyBalance: 800, cumulativeBalance: 1100 },
+    { day: 15, dailyBalance: -350, cumulativeBalance: 750 },
+    { day: 20, dailyBalance: 900, cumulativeBalance: 1650 },
+    { day: 25, dailyBalance: -150, cumulativeBalance: 1500 },
+    { day: 30, dailyBalance: 400, cumulativeBalance: 1900 },
+  ],
+  savingsRate: {
+    income: 12000,
+    expense: 8500,
+    savings: 3500,
+    savingsRate: 29,
+    goal: 25,
+  },
+  topExpenses: [
+    { id: '1', description: 'Aluguel', amount: 3000, category: 'Moradia', date: new Date().toISOString() },
+    { id: '2', description: 'Mercado', amount: 1200, category: 'Alimentação', date: new Date().toISOString() },
+    { id: '3', description: 'Transporte', amount: 650, category: 'Mobilidade', date: new Date().toISOString() },
+    { id: '4', description: 'Lazer', amount: 500, category: 'Entretenimento', date: new Date().toISOString() },
+    { id: '5', description: 'Saúde', amount: 450, category: 'Saúde', date: new Date().toISOString() },
+  ],
+  expensesByWeekday: [
+    { weekday: 'Seg', weekdayNumber: 1, total: 900 },
+    { weekday: 'Ter', weekdayNumber: 2, total: 750 },
+    { weekday: 'Qua', weekdayNumber: 3, total: 820 },
+    { weekday: 'Qui', weekdayNumber: 4, total: 680 },
+    { weekday: 'Sex', weekdayNumber: 5, total: 950 },
+    { weekday: 'Sáb', weekdayNumber: 6, total: 1200 },
+    { weekday: 'Dom', weekdayNumber: 7, total: 500 },
+  ],
+  budgetVsActual: [
+    { category: 'Moradia', categoryKey: 'housing', budget: 3200, actual: 3000, difference: 200, percentage: 94, status: 'good' },
+    { category: 'Alimentação', categoryKey: 'food', budget: 1500, actual: 1650, difference: -150, percentage: 110, status: 'warning' },
+    { category: 'Transporte', categoryKey: 'transport', budget: 800, actual: 650, difference: 150, percentage: 81, status: 'good' },
+    { category: 'Lazer', categoryKey: 'fun', budget: 600, actual: 720, difference: -120, percentage: 120, status: 'over' },
+    { category: 'Saúde', categoryKey: 'health', budget: 500, actual: 450, difference: 50, percentage: 90, status: 'good' },
+  ],
+  month: new Date().getMonth() + 1,
+  year: new Date().getFullYear(),
+}
+
 const Dashboard = () => {
   const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
-  const [showFabMenu, setShowFabMenu] = useState(false)
+  const isMobile = useIsMobile()
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
   const [showDeleteGoalModal, setShowDeleteGoalModal] = useState(false)
@@ -228,15 +275,22 @@ const Dashboard = () => {
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
   
   // Carregar dados de analytics
   const loadAnalytics = async () => {
     try {
       setIsLoadingAnalytics(true)
       const data = await analyticsService.getAll()
-      setAnalytics(data)
+      if (!data || !data.dailyCashFlow?.length) {
+        console.warn('[Analytics] Dados indisponíveis, usando fallback')
+        setAnalytics(fallbackAnalyticsData)
+      } else {
+        setAnalytics(data)
+      }
     } catch (error) {
       console.error('Erro ao carregar analytics:', error)
+      setAnalytics(fallbackAnalyticsData)
     } finally {
       setIsLoadingAnalytics(false)
     }
@@ -333,7 +387,7 @@ const Dashboard = () => {
     }
   }, [isQuickAddRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
 
-  const openQuickAdd = (type: 'income' | 'expense' = 'expense') => {
+  const openQuickAdd = useCallback((type: 'income' | 'expense' = 'expense') => {
     // Obter data de hoje sem timezone
     const today = new Date();
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -350,19 +404,28 @@ const Dashboard = () => {
       recurrenceEndDate: undefined,
     })
     setShowQuickAdd(true)
-    setShowFabMenu(false)
-  }
+  }, [reset])
+
+  useEffect(() => {
+    const quickAddParam = searchParams.get('quickAdd')
+    if (quickAddParam) {
+      const type = quickAddParam === 'income' ? 'income' : 'expense'
+      openQuickAdd(type)
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('quickAdd')
+      setSearchParams(newParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams, openQuickAdd])
+
+  const quickAmountPresets = [50, 100, 250, 500]
 
   const closeQuickAdd = () => {
     setShowQuickAdd(false)
     setIsQuickAddRecurring(false)
-    
-    // Obter data de hoje sem timezone
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
-    console.log('🔄 [DEBUG] Resetando formulário com data:', todayString);
-    
+
+    const today = new Date()
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
     reset({
       type: 'expense',
       amount: '',
@@ -374,6 +437,15 @@ const Dashboard = () => {
       recurrenceEndDate: undefined,
       recurrenceMonths: undefined,
     })
+  }
+
+  const handleQuickAddSafeClose = () => {
+    if (isCreatingTransaction) return
+    closeQuickAdd()
+  }
+
+  const handlePresetAmount = (value: number) => {
+    setValue('amount', value.toString(), { shouldDirty: true, shouldValidate: true })
   }
 
   const onSubmit = (data: TransactionFormData) => {
@@ -629,31 +701,34 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`space-y-6 transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="flex items-start justify-between">
+    <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
+      <div className="responsive-header">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
             Visao geral das suas financas
           </p>
         </div>
-        
       </div>
       
-      {/* Keyboard Shortcuts Hint - Movido para baixo */}
-      <div className="hidden lg:flex items-center gap-3 bg-gray-50 dark:bg-neutral-900 px-4 py-2 rounded-lg border border-gray-200 dark:border-neutral-800 w-fit">
-        <span className="text-xs text-gray-600 dark:text-neutral-400 font-medium">Atalhos de teclado:</span>
-        <div className="flex items-center gap-2">
-          <kbd className="px-2 py-1 text-xs font-semibold text-success-700 dark:text-success-300 bg-success-100 dark:bg-success-900/30 border border-success-300 dark:border-success-700 rounded">+</kbd>
-          <span className="text-xs text-gray-600 dark:text-neutral-400">Receita</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <kbd className="px-2 py-1 text-xs font-semibold text-danger-700 dark:text-danger-300 bg-danger-100 dark:bg-danger-900/30 border border-danger-300 dark:border-danger-700 rounded">-</kbd>
-          <span className="text-xs text-gray-600 dark:text-neutral-400">Despesa</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <kbd className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 border border-primary-300 dark:border-primary-700 rounded">C</kbd>
-          <span className="text-xs text-gray-600 dark:text-neutral-400">Calculadora</span>
+      <div className="section-grid">
+        <CurrentDateCard />
+        <div className="card hidden lg:flex items-center gap-3">
+          <span className="text-sm text-gray-600 dark:text-neutral-400 font-medium">Atalhos de teclado</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 text-xs font-semibold text-success-700 dark:text-success-300 bg-success-100 dark:bg-success-900/30 border border-success-300 dark:border-success-700 rounded">+</kbd>
+              <span className="text-xs text-gray-600 dark:text-neutral-400">Receita</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 text-xs font-semibold text-danger-700 dark:text-danger-300 bg-danger-100 dark:bg-danger-900/30 border border-danger-300 dark:border-danger-700 rounded">-</kbd>
+              <span className="text-xs text-gray-600 dark:text-neutral-400">Despesa</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 border border-primary-300 dark:border-primary-700 rounded">C</kbd>
+              <span className="text-xs text-gray-600 dark:text-neutral-400">Calculadora</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1192,396 +1267,372 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Quick Action Floating Button Menu */}
-      <div className="fixed bottom-8 right-8 z-40">
-        {/* Expandable Menu */}
-        {showFabMenu && (
-          <div className="absolute bottom-16 right-0 flex flex-col gap-3 mb-2">
+      <Modal
+        isOpen={showQuickAdd}
+        onClose={handleQuickAddSafeClose}
+        title={isMobile ? 'Adicionar transação rápida' : 'Nova Transação'}
+        description={isMobile ? 'Preencha os campos e toque em Adicionar para salvar.' : undefined}
+        size={isMobile ? 'lg' : 'sm'}
+        closeOnBackdrop={!isCreatingTransaction}
+        contentClassName={`space-y-4 ${isMobile ? 'px-2 sm:px-0' : ''}`}
+        footer={
+          <div className={`flex gap-3 ${isMobile ? 'flex-col-reverse' : 'flex-row'}`}>
             <button
-              onClick={() => {
-                setShowCalculator(true)
-                setShowFabMenu(false)
-              }}
-              className="flex items-center gap-3 bg-primary-600 dark:bg-primary-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-all transform hover:scale-105"
+              type="button"
+              onClick={handleQuickAddSafeClose}
+              className={`flex-1 btn-secondary ${isMobile ? 'w-full' : ''}`}
+              disabled={isCreatingTransaction}
             >
-              <CalculatorIcon className="w-5 h-5" />
-              <span className="font-semibold whitespace-nowrap">Calculadora</span>
+              Cancelar
             </button>
             <button
-              onClick={() => openQuickAdd('income')}
-              className="flex items-center gap-3 bg-success-600 dark:bg-success-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-success-700 dark:hover:bg-success-600 transition-all transform hover:scale-105"
+              type="submit"
+              form="quick-add-form"
+              disabled={isCreatingTransaction}
+              className={`flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
+                isMobile ? 'w-full' : ''
+              }`}
             >
-              <TrendingUp className="w-5 h-5" />
-              <span className="font-semibold whitespace-nowrap">Adicionar Receita</span>
-            </button>
-            <button
-              onClick={() => openQuickAdd('expense')}
-              className="flex items-center gap-3 bg-danger-600 dark:bg-danger-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-danger-700 dark:hover:bg-danger-600 transition-all transform hover:scale-105"
-            >
-              <TrendingDown className="w-5 h-5" />
-              <span className="font-semibold whitespace-nowrap">Adicionar Despesa</span>
+              {isCreatingTransaction ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Adicionar
+                </>
+              )}
             </button>
           </div>
-        )}
-
-        {/* Main FAB Button */}
-        <button
-          onClick={() => setShowFabMenu(!showFabMenu)}
-          className={`w-14 h-14 bg-primary-600 dark:bg-primary-500 text-white rounded-full shadow-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-all transform hover:scale-110 flex items-center justify-center ${
-            showFabMenu ? 'rotate-45' : ''
-          }`}
-        >
-          <Plus className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Quick Add Transaction Modal */}
-      {showQuickAdd && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div 
-            className="absolute inset-0 bg-black opacity-50" 
-            onClick={closeQuickAdd}
-          ></div>
-          <div className="bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4 z-10 transform transition-all">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                Nova Transacao
-              </h3>
-              <button 
-                onClick={closeQuickAdd}
-                className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+        }
+      >
+        <div className="relative">
+          {isCreatingTransaction && (
+            <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10 rounded-xl">
+              <Loader2 className="w-5 h-5 text-primary-600 dark:text-primary-400 animate-spin" />
+              <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
+                Criando transação e gerando parcelas...
+              </p>
             </div>
+          )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                  Tipo de Transacao
-                </label>
-                <div className="flex gap-3">
-                  <button 
-                    type="button" 
-                    onClick={() => setValue('type', 'income')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                      transactionType === 'income' 
-                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500' 
-                        : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
-                  >
-                    <TrendingUp className="w-5 h-5" />
-                    Receita
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setValue('type', 'expense')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                      transactionType === 'expense' 
-                        ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500' 
-                        : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
-                  >
-                    <TrendingDown className="w-5 h-5" />
-                    Despesa
-                  </button>
-                </div>
-                {errors.type && (
-                  <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                    {errors.type.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                  Categoria
-                </label>
-                <select
-                  {...register('categoryId')}
-                  className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {categories
-                    .filter(cat => cat.type === transactionType)
-                    .map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                </select>
-                {errors.categoryId && (
-                  <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                    {errors.categoryId.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                  Descricao
-                </label>
-                <input
-                  {...register('description')}
-                  type="text"
-                  className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
-                  placeholder="Ex: Compra no supermercado"
-                />
-                {errors.description && (
-                  <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                    {errors.description.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                  Valor (R$)
-                </label>
-                <input
-                  {...register('amount')}
-                  type="number"
-                  step="0.01"
-                  className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
-                  placeholder="0,00"
-                />
-                {errors.amount && (
-                  <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                    {errors.amount.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                  Data
-                </label>
-                <input
-                  {...register('date', { 
-                    setValueAs: (value) => {
-                      // Garantir que sempre retorne string, não Date
-                      if (value instanceof Date) {
-                        return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
-                      }
-                      return value;
-                    }
-                  })}
-                  type="date"
-                  className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-                />
-                {errors.date && (
-                  <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                    {errors.date.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Transação Recorrente */}
-              <div className="border-t border-gray-200 dark:border-neutral-800 pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <input
-                    type="checkbox"
-                    id="quickAddRecurring"
-                    checked={isQuickAddRecurring}
-                    onChange={(e) => {
-                      const checked = e.target.checked
-                      setIsQuickAddRecurring(checked)
-                      if (checked) {
-                        const currentDate = watch('date')
-                        setValue('recurrenceStartDate', currentDate)
-                      } else {
-                        setValue('recurrenceType', undefined)
-                        setValue('recurrenceStartDate', undefined)
-                        setValue('recurrenceEndDate', undefined)
-                        setValue('recurrenceMonths', undefined)
-                      }
-                    }}
-                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                  />
-                  <label htmlFor="quickAddRecurring" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
-                    <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                    Transação Recorrente
-                  </label>
-                </div>
-
-                {isQuickAddRecurring && (
-                  <div className="space-y-3 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
-                    {/* Frequência */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                        Frequência
-                      </label>
-                      <select
-                        {...register('recurrenceType')}
-                        className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="daily">Diária</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensal</option>
-                        <option value="yearly">Anual</option>
-                      </select>
-                    </div>
-
-                    {/* Modo de Recorrência */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                        Modo de Recorrência
-                      </label>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="date"
-                            checked={recurrenceMode === 'date'}
-                            onChange={(e) => {
-                              setRecurrenceMode('date')
-                              setValue('recurrenceMode', 'date')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="installments"
-                            checked={recurrenceMode === 'installments'}
-                            onChange={(e) => {
-                              setRecurrenceMode('installments')
-                              setValue('recurrenceMode', 'installments')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="infinite"
-                            checked={recurrenceMode === 'infinite'}
-                            onChange={(e) => {
-                              setRecurrenceMode('infinite')
-                              setValue('recurrenceMode', 'infinite')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Campos baseados no modo */}
-                    {recurrenceMode === 'date' && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                            Data Inicial
-                          </label>
-                          <input
-                            type="date"
-                            {...register('recurrenceStartDate')}
-                            className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceStartDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                          />
-                          {errors.recurrenceStartDate && (
-                            <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                              {errors.recurrenceStartDate.message}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                            Data Final
-                          </label>
-                          <input
-                            type="date"
-                            {...register('recurrenceEndDate')}
-                            className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceEndDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                          />
-                          {errors.recurrenceEndDate && (
-                            <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                              {errors.recurrenceEndDate.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
-                          {computedRecurrenceMonths
-                            ? <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
-                            : <p>Selecione datas válidas (máx. 60 meses).</p>
-                          }
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'installments' && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                            Número de Parcelas
-                          </label>
-                          <input
-                            type="number"
-                            min="2"
-                            max="360"
-                            placeholder="Ex: 12"
-                            {...register('totalInstallments')}
-                            className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                          />
-                          {errors.totalInstallments && (
-                            <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                              {errors.totalInstallments.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                          <p className="text-xs text-primary-700 dark:text-primary-300">
-                            <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'infinite' && (
-                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                        <p className="text-xs text-primary-700 dark:text-primary-300">
-                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-3 pt-2">
+          <form id="quick-add-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Tipo de Transação
+              </label>
+              <div className={`flex gap-3 ${isMobile ? 'flex-col' : ''}`}>
                 <button
                   type="button"
-                  onClick={closeQuickAdd}
-                  className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all"
+                  onClick={() => setValue('type', 'income')}
+                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                    transactionType === 'income'
+                      ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
+                  }`}
                 >
-                  Cancelar
+                  <TrendingUp className="w-5 h-5" />
+                  Receita
                 </button>
                 <button
-                  type="submit"
-                  disabled={isCreatingTransaction}
-                  className="flex-1 px-4 py-2.5 text-white bg-primary-600 dark:bg-primary-500 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-600 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={() => setValue('type', 'expense')}
+                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                    transactionType === 'expense'
+                      ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
+                  }`}
                 >
-                  {isCreatingTransaction ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-5 h-5" />
-                      Adicionar
-                    </>
-                  )}
+                  <TrendingDown className="w-5 h-5" />
+                  Despesa
                 </button>
               </div>
-            </form>
-          </div>
+              {errors.type && (
+                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                  {errors.type.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Categoria
+              </label>
+              <select
+                {...register('categoryId')}
+                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
+              >
+                <option value="">Selecione uma categoria</option>
+                {categories
+                  .filter((cat) => cat.type === transactionType)
+                  .map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+              </select>
+              {errors.categoryId && (
+                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                  {errors.categoryId.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Descrição
+              </label>
+              <input
+                {...register('description')}
+                type="text"
+                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
+                placeholder="Ex: Compra no supermercado"
+              />
+              {errors.description && (
+                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Valor (R$)
+              </label>
+              <input
+                {...register('amount')}
+                type="number"
+                step="0.01"
+                inputMode="decimal"
+                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
+                placeholder="0,00"
+              />
+              {errors.amount && (
+                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                  {errors.amount.message}
+                </p>
+              )}
+              {isMobile && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {quickAmountPresets.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => handlePresetAmount(preset)}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-full border border-primary-200 text-primary-700 bg-primary-50 dark:text-primary-200 dark:border-primary-800 dark:bg-primary-950/40 transition-colors"
+                    >
+                      R$ {preset.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Data
+              </label>
+              <input
+                {...register('date', {
+                  setValueAs: (value) => {
+                    if (value instanceof Date) {
+                      return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
+                    }
+                    return value
+                  },
+                })}
+                type="date"
+                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
+              />
+              {errors.date && (
+                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                  {errors.date.message}
+                </p>
+              )}
+            </div>
+
+            <div className={`border-t border-gray-200 dark:border-neutral-800 pt-4 ${isMobile ? 'mt-2' : ''}`}>
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  id="quickAddRecurring"
+                  checked={isQuickAddRecurring}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setIsQuickAddRecurring(checked)
+                    if (checked) {
+                      const currentDate = watch('date')
+                      setValue('recurrenceStartDate', currentDate)
+                    } else {
+                      setValue('recurrenceType', undefined)
+                      setValue('recurrenceStartDate', undefined)
+                      setValue('recurrenceEndDate', undefined)
+                      setValue('recurrenceMonths', undefined)
+                    }
+                  }}
+                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <label
+                  htmlFor="quickAddRecurring"
+                  className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer"
+                >
+                  <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  Transação Recorrente
+                </label>
+              </div>
+
+              {isQuickAddRecurring && (
+                <div className="space-y-3 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                      Frequência
+                    </label>
+                    <select
+                      {...register('recurrenceType')}
+                      className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="daily">Diária</option>
+                      <option value="weekly">Semanal</option>
+                      <option value="monthly">Mensal</option>
+                      <option value="yearly">Anual</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                      Modo de Recorrência
+                    </label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="date"
+                          checked={recurrenceMode === 'date'}
+                          onChange={() => {
+                            setRecurrenceMode('date')
+                            setValue('recurrenceMode', 'date')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="installments"
+                          checked={recurrenceMode === 'installments'}
+                          onChange={() => {
+                            setRecurrenceMode('installments')
+                            setValue('recurrenceMode', 'installments')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="infinite"
+                          checked={recurrenceMode === 'infinite'}
+                          onChange={() => {
+                            setRecurrenceMode('infinite')
+                            setValue('recurrenceMode', 'infinite')
+                          }}
+                          className="w-4 h-4 text-primary-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {recurrenceMode === 'date' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                          Data Inicial
+                        </label>
+                        <input
+                          type="date"
+                          {...register('recurrenceStartDate')}
+                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceStartDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                        />
+                        {errors.recurrenceStartDate && (
+                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                            {errors.recurrenceStartDate.message}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                          Data Final
+                        </label>
+                        <input
+                          type="date"
+                          {...register('recurrenceEndDate')}
+                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceEndDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                        />
+                        {errors.recurrenceEndDate && (
+                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                            {errors.recurrenceEndDate.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
+                        {computedRecurrenceMonths ? (
+                          <p>
+                            Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.
+                          </p>
+                        ) : (
+                          <p>Selecione datas válidas (máx. 60 meses).</p>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {recurrenceMode === 'installments' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                          Número de Parcelas
+                        </label>
+                        <input
+                          type="number"
+                          min="2"
+                          max="360"
+                          placeholder="Ex: 12"
+                          {...register('totalInstallments')}
+                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                        />
+                        {errors.totalInstallments && (
+                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                            {errors.totalInstallments.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                        <p className="text-xs text-primary-700 dark:text-primary-300">
+                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  {recurrenceMode === 'infinite' && (
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                      <p className="text-xs text-primary-700 dark:text-primary-300">
+                        <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </form>
         </div>
-      )}
+      </Modal>
 
       {/* Calculator Modal */}
       <Calculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />

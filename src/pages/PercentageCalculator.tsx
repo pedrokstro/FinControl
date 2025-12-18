@@ -51,9 +51,9 @@ const PercentageCalculator = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="responsive-header">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
               <Percent className="w-8 h-8 text-primary-600 dark:text-primary-400" />
@@ -65,7 +65,7 @@ const PercentageCalculator = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Formulário */}
           <div className="card">
             <div className="flex items-center gap-3 mb-6">
@@ -172,7 +172,7 @@ const PercentageCalculator = () => {
             </div>
 
             {/* Botões */}
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-col gap-3 mt-6 sm:flex-row">
               <button
                 onClick={calculate}
                 className="btn-primary flex-1 flex items-center justify-center gap-2"
@@ -183,7 +183,7 @@ const PercentageCalculator = () => {
               </button>
               <button
                 onClick={clear}
-                className="btn-secondary"
+                className="btn-secondary flex-1 sm:flex-none"
               >
                 Limpar
               </button>

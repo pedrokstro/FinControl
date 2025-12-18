@@ -24,7 +24,11 @@ import {
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuthStore } from '@/store/authStore'
 
-const Sidebar = () => {
+type SidebarProps = {
+  onNavigate?: () => void
+}
+
+const Sidebar = ({ onNavigate }: SidebarProps) => {
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const { user } = useAuthStore()
@@ -143,6 +147,7 @@ const Sidebar = () => {
               <li key={item.path}>
                 <NavLink
                   to={item.path}
+                  onClick={onNavigate}
                   className={({ isActive }) =>
                     `flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive
@@ -197,6 +202,7 @@ const Sidebar = () => {
                 <li>
                   <NavLink
                     to="/app/calculadora-porcentagem"
+                    onClick={onNavigate}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${
                         isActive
@@ -212,6 +218,7 @@ const Sidebar = () => {
                 <li>
                   <NavLink
                     to="/app/calculadora-juros"
+                    onClick={onNavigate}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${
                         isActive
@@ -241,6 +248,7 @@ const Sidebar = () => {
                   </div>
                   <NavLink
                     to="/app/calculadora-porcentagem"
+                    onClick={onNavigate}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
                         isActive
@@ -310,7 +318,10 @@ const Sidebar = () => {
           {!isPremium ? (
           /* Premium Banner */
           <button
-            onClick={() => navigate('/plans')}
+            onClick={() => {
+              navigate('/plans')
+              onNavigate?.()
+            }}
             className="w-full bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl p-4 transition-all duration-300 shadow-lg hover:shadow-xl group relative overflow-hidden"
           >
             {/* Animated Background */}
@@ -352,7 +363,10 @@ const Sidebar = () => {
               </div>
             </div>
             <button
-              onClick={() => navigate('/app/settings')}
+              onClick={() => {
+                navigate('/app/settings')
+                onNavigate?.()
+              }}
               className="w-full mt-2 text-xs text-amber-700 hover:text-amber-800 font-medium transition-colors text-left flex items-center gap-1"
             >
               Gerenciar assinatura →

@@ -105,7 +105,7 @@ const Register = () => {
 
   return (
     <AnimatedPage direction="right">
-      <div className="min-h-screen flex bg-gradient-to-br from-primary-500 to-primary-700">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-primary-500 to-primary-700">
       {/* Left Side - Decorative */}
       <div className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-between">
         <div className="flex items-center gap-3">
@@ -172,18 +172,21 @@ const Register = () => {
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8">
         <div className="w-full max-w-md">
           {/* Logo for mobile */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+          <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
               <Wallet className="w-7 h-7 text-primary-600" />
             </div>
-            <span className="text-3xl font-bold text-white">FinControl</span>
+            <div>
+              <span className="text-3xl font-bold block">FinControl</span>
+              <p className="text-primary-50 text-sm mt-1">Crie sua conta e organize suas finanças em minutos</p>
+            </div>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8">
-            <div className="mb-8">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-6 sm:p-8">
+            <div className="mb-6 sm:mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Criar sua conta
               </h2>
@@ -331,7 +334,7 @@ const Register = () => {
 
               {/* Termos de Serviço */}
               <div>
-                <label className="flex items-start gap-3 cursor-pointer">
+                <label className="flex items-start gap-3 cursor-pointer flex-col sm:flex-row sm:items-start">
                   <input
                     type="checkbox"
                     {...register('acceptTerms')}

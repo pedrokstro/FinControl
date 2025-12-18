@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { Calendar, Clock, ChevronDown } from 'lucide-react'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { ChevronDown, Menu } from 'lucide-react'
 import NotificationDropdown from '@/components/NotificationDropdown'
 
-const Header = () => {
+type HeaderProps = {
+  onToggleMobileSidebar?: () => void
+}
+
+const Header = ({ onToggleMobileSidebar }: HeaderProps) => {
   const { user, logout, loadAvatar } = useAuthStore()
   const [showDropdown, setShowDropdown] = useState(false)
-  const [currentDateTime, setCurrentDateTime] = useState(new Date())
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -27,15 +28,6 @@ const Header = () => {
     loadAvatar()
   }, [loadAvatar])
 
-  // Atualizar data e hora a cada segundo
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDateTime(new Date())
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
-
   // Função para obter saudação baseada na hora
   const getGreeting = () => {
     const hour = new Date().getHours()
@@ -45,27 +37,20 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-6 py-4 transition-colors duration-300">
-      <div className="flex items-center justify-between">
-        <div className="flex-1 max-w-md">
-          <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-primary-500 dark:text-primary-400" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {format(currentDateTime, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-              </span>
-            </div>
-            <div className="h-6 w-px bg-gray-300 dark:bg-neutral-700"></div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white tabular-nums">
-                {format(currentDateTime, 'HH:mm:ss')}
-              </span>
-            </div>
-          </div>
+    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-6 py-3 transition-colors duration-300 sticky top-0 z-30">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onToggleMobileSidebar?.()}
+            className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
+            aria-label="Abrir menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-3 sm:gap-4 flex-1">
           <NotificationDropdown />
 
           <div className="relative" ref={dropdownRef}>

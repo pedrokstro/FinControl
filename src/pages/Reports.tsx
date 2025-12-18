@@ -378,16 +378,16 @@ const Reports = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="responsive-header">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Relatórios</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
             Análise detalhada das suas finanças
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="responsive-toolbar justify-end">
           <button
             onClick={() => handleExport('pdf')}
             disabled={isExporting}

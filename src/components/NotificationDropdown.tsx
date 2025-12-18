@@ -4,6 +4,7 @@ import notificationService, { Notification } from '@/services/notification.servi
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { toast } from 'react-hot-toast'
+import { useIsMobile } from '@/hooks'
 
 const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -11,6 +12,7 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -107,6 +109,14 @@ const NotificationDropdown = () => {
     }
   }
 
+  const dropdownPositionClass = isMobile
+    ? 'fixed inset-x-4 top-24 w-auto max-w-none'
+    : 'absolute right-0 mt-2 w-96'
+
+  const dropdownContainerClass = `${dropdownPositionClass} bg-white dark:bg-neutral-900 rounded-2xl shadow-xl dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800 z-50 flex flex-col ${
+    isMobile ? 'max-h-[70vh]' : 'max-h-[600px]'
+  }`
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Button */}
@@ -123,8 +133,17 @@ const NotificationDropdown = () => {
       </button>
 
       {/* Dropdown */}
+      {/* Backdrop for mobile */}
+      {isOpen && isMobile && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-neutral-900 rounded-lg shadow-xl dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800 z-50 max-h-[600px] flex flex-col">
+        <div className={dropdownContainerClass}>
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
             <div>

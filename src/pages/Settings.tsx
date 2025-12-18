@@ -399,13 +399,15 @@ const Settings = () => {
   return (
     <>
     <PageTransition>
-      <div className="space-y-6">
+      <div className="responsive-page">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configurações</h1>
-        <p className="text-gray-600 dark:text-neutral-400 mt-1">
-          {getGreeting()}, <span className="font-medium">{user?.name?.split(' ')[0]}</span>! Gerencie suas preferências
-        </p>
+      <div className="responsive-header">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configurações</h1>
+          <p className="text-gray-600 dark:text-neutral-400 mt-1">
+            {getGreeting()}, <span className="font-medium">{user?.name?.split(' ')[0]}</span>! Gerencie suas preferências
+          </p>
+        </div>
       </div>
 
       {/* Subscription Card */}
@@ -417,7 +419,7 @@ const Settings = () => {
             : 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-600'
         }`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <div
               className={`w-14 h-14 rounded-xl flex items-center justify-center ${
@@ -439,7 +441,7 @@ const Settings = () => {
               </p>
             </div>
           </div>
-          <ArrowRight className={`w-6 h-6 ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'}`} />
+          <ArrowRight className={`w-6 h-6 flex-shrink-0 ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'}`} />
         </div>
       </button>
 
@@ -479,8 +481,8 @@ const Settings = () => {
               </h2>
 
               {/* Avatar com Upload */}
-              <div className="flex items-start gap-6 mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
-                <div className="relative group">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-center mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
+                <div className="relative group self-start">
                   <img
                     src={avatarPreview || user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                     alt={user?.name}
@@ -529,10 +531,10 @@ const Settings = () => {
                     {user?.email}
                   </p>
                   
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex flex-wrap gap-2 mt-4">
                     {avatarPreview ? (
                       <>
-                        <button 
+                        <button
                           onClick={handleSaveAvatar}
                           disabled={isSavingAvatar}
                           className="text-sm text-white bg-success-600 dark:bg-success-500 hover:bg-success-700 dark:hover:bg-success-600 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -546,7 +548,7 @@ const Settings = () => {
                             'Salvar foto'
                           )}
                         </button>
-                        <button 
+                        <button
                           onClick={handleCancelAvatar}
                           disabled={isSavingAvatar}
                           className="text-sm text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
@@ -556,7 +558,7 @@ const Settings = () => {
                       </>
                     ) : (
                       <>
-                        <button 
+                        <button
                           onClick={handleAvatarClick}
                           disabled={isUploadingAvatar || isSavingAvatar}
                           className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center gap-1 disabled:opacity-50"
@@ -565,7 +567,7 @@ const Settings = () => {
                           Alterar foto
                         </button>
                         {isCustomAvatar && (
-                          <button 
+                          <button
                             onClick={handleRemoveAvatar}
                             disabled={isSavingAvatar}
                             className="text-sm text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 font-medium flex items-center gap-1 disabled:opacity-50"
