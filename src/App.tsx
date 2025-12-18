@@ -90,6 +90,15 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landing />} />
+        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
+        <Route path="/categories" element={<Navigate to="/app/categories" replace />} />
+        <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
+        <Route path="/plans" element={<Navigate to="/app/plans" replace />} />
+        <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+        <Route path="/calculadora-porcentagem" element={<Navigate to="/app/calculadora-porcentagem" replace />} />
+        <Route path="/calculadora-juros" element={<Navigate to="/app/calculadora-juros" replace />} />
+        <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
