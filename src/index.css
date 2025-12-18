@@ -56,29 +56,83 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply dark:bg-primary-600 dark:hover:bg-primary-500;
+    @apply bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-4 rounded-lg;
+    @apply shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply transform transition-all duration-200 ease-out;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2;
+    @apply dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus-visible:ring-primary-400 dark:focus-visible:ring-offset-black;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-    @apply dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white;
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg;
+    @apply shadow-sm hover:shadow-lg transform transition-all duration-200 ease-out;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2;
+    @apply dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white dark:focus-visible:ring-neutral-700 dark:focus-visible:ring-offset-black;
   }
 
   .btn-danger {
-    @apply bg-danger-600 hover:bg-danger-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-    @apply dark:bg-danger-600 dark:hover:bg-danger-500;
+    @apply bg-danger-600 hover:bg-danger-500 text-white font-medium py-2 px-4 rounded-lg;
+    @apply shadow-md hover:shadow-xl transform transition-all duration-200 ease-out;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger-300 focus-visible:ring-offset-2;
+    @apply dark:bg-danger-600 dark:hover:bg-danger-500 dark:focus-visible:ring-danger-400 dark:focus-visible:ring-offset-black;
   }
   
   .btn-success {
-    @apply bg-success-600 hover:bg-success-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-    @apply dark:bg-success-600 dark:hover:bg-success-500;
+    @apply bg-success-600 hover:bg-success-500 text-white font-medium py-2 px-4 rounded-lg;
+    @apply shadow-md hover:shadow-xl transform transition-all duration-200 ease-out;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success-300 focus-visible:ring-offset-2;
+    @apply dark:bg-success-600 dark:hover:bg-success-500 dark:focus-visible:ring-success-400 dark:focus-visible:ring-offset-black;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+    @apply relative overflow-hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6;
     @apply dark:bg-neutral-900 dark:border-neutral-800;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    @apply transition-all duration-300 ease-out;
+    @apply hover:-translate-y-1 hover:shadow-2xl hover:border-primary-100;
+    @apply dark:hover:border-primary-900/30 dark:hover:shadow-primary-900/30;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at top, rgba(14, 165, 233, 0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .dark .card::after {
+    background: radial-gradient(circle at top, rgba(14, 165, 233, 0.25), transparent 60%);
+  }
+
+  .card:hover::after {
+    opacity: 1;
+  }
+
+  .card:active {
+    transform: translateY(0);
+  }
+
+  .card-pressable {
+    @apply cursor-pointer select-none;
+  }
+
+  .card-pressable:hover {
+    @apply border-primary-200 shadow-primary-200/50;
+  }
+
+  .dark .card-pressable:hover {
+    @apply border-primary-900/40;
+  }
+
+  .card-pressable:active {
+    transform: scale(0.995);
   }
 
   /* Animação apenas para cards que precisam */

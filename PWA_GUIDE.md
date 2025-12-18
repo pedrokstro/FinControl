@@ -103,6 +103,9 @@ O FinControl agora é um **Progressive Web App (PWA)** completo e otimizado, ofe
 └── shortcut-reports.png (96x96)
 ```
 
+> **Como gerar**: já incluímos todos os ícones na pasta acima e um script para regenerá-los sempre que necessário:  
+> `node scripts/generate-pwa-icons.js`
+
 ### **Outros Assets:**
 ```
 /public/
