@@ -855,41 +855,43 @@ const Reports = () => {
             </span>
           </div>
           {categoryData.income.length > 0 ? (
-            <div className="space-y-4">
-              {categoryData.income.map((item) => {
-                const totalIncome = categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0)
-                const percentage = (item.receitas / totalIncome) * 100
-                return (
-                  <div key={item.name}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-1">
+                {categoryData.income.map((item) => {
+                  const totalIncome = categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0)
+                  const percentage = (item.receitas / totalIncome) * 100
+                  return (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-4 h-4 rounded"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-success-600 dark:text-success-400">
+                            {formatCurrency(item.receitas)}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-neutral-400">
+                            {percentage.toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
                         <div
-                          className="w-4 h-4 rounded"
-                          style={{ backgroundColor: item.color }}
+                          className="h-2 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${percentage}%`,
+                            backgroundColor: item.color,
+                          }}
                         />
-                        <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-success-600 dark:text-success-400">
-                          {formatCurrency(item.receitas)}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-neutral-400">
-                          {percentage.toFixed(1)}%
-                        </p>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${percentage}%`,
-                          backgroundColor: item.color,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
               <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-900 dark:text-white">Total de Receitas</span>
@@ -918,41 +920,43 @@ const Reports = () => {
             </span>
           </div>
           {categoryData.expenses.length > 0 ? (
-            <div className="space-y-4">
-              {categoryData.expenses.map((item) => {
-                const totalExpense = categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0)
-                const percentage = (item.despesas / totalExpense) * 100
-                return (
-                  <div key={item.name}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-1">
+                {categoryData.expenses.map((item) => {
+                  const totalExpense = categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0)
+                  const percentage = (item.despesas / totalExpense) * 100
+                  return (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-4 h-4 rounded"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-danger-600 dark:text-danger-400">
+                            {formatCurrency(item.despesas)}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-neutral-400">
+                            {percentage.toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
                         <div
-                          className="w-4 h-4 rounded"
-                          style={{ backgroundColor: item.color }}
+                          className="h-2 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${percentage}%`,
+                            backgroundColor: item.color,
+                          }}
                         />
-                        <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-danger-600 dark:text-danger-400">
-                          {formatCurrency(item.despesas)}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-neutral-400">
-                          {percentage.toFixed(1)}%
-                        </p>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${percentage}%`,
-                          backgroundColor: item.color,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
               <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-900 dark:text-white">Total de Despesas</span>

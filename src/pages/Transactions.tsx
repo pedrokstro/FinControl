@@ -459,18 +459,28 @@ const Transactions = () => {
 
       {/* Month Navigation */}
       <div className="card space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <button
-            onClick={handlePreviousMonth}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors font-medium"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Anterior
-          </button>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <button
+              onClick={handlePreviousMonth}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-xl transition-colors font-medium"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Anterior
+            </button>
 
-          <div className="flex items-center gap-3">
+            <button
+              onClick={handleNextMonth}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-xl transition-colors font-medium"
+            >
+              Proximo
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 justify-center lg:justify-start">
             <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            <div className="text-center">
+            <div className="text-center lg:text-left">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
               </h2>
@@ -484,14 +494,6 @@ const Transactions = () => {
               )}
             </div>
           </div>
-
-          <button
-            onClick={handleNextMonth}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors font-medium"
-          >
-            Proximo
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Month Summary */}
@@ -686,7 +688,7 @@ const Transactions = () => {
               </table>
             </div>
 
-            <div className="md:hidden space-y-4">
+            <div className="md:hidden space-y-4 pb-24">
               {filteredTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
