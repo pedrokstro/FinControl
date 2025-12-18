@@ -7,6 +7,8 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useAuthStore } from './store/authStore'
 import { ThemeProvider } from './contexts/ThemeContext'
 import LoadingSkeleton from './components/common/LoadingSkeleton'
+import PWAInstallPrompt from './components/common/PWAInstallPrompt'
+import OfflineIndicator from './components/common/OfflineIndicator'
 
 // Auth Pages (não lazy - carregam rápido)
 import Login from './pages/Login'
@@ -224,6 +226,8 @@ function App() {
           },
         }}
       />
+      <PWAInstallPrompt />
+      <OfflineIndicator />
       <Analytics />
       <SpeedInsights />
       </Router>
