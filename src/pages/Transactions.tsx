@@ -563,127 +563,226 @@ const Transactions = () => {
       {/* Transactions Table */}
       <div className="card">
         {filteredTransactions.length > 0 ? (
-          <div className="table-wrapper">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-neutral-800">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Data
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Descricao
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Categoria
-                  </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Tipo
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Valor
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    Acoes
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.map((transaction) => (
-                  <tr
-                    key={transaction.id}
-                    className="border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
-                  >
-                    <td className="py-3 px-4 text-gray-600 dark:text-neutral-400">
-                      {format(new Date(transaction.date), 'dd/MM/yyyy')}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {transaction.description}
-                        </p>
-                        {transaction.isRecurring && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
-                            <Repeat className="w-3 h-3" />
-                            Recorrente
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300">
-                        {categoryIconMap.get(transaction.categoryId) && (
-                          <CategoryIcon 
-                            icon={categoryIconMap.get(transaction.categoryId)!.icon}
-                            color={categoryIconMap.get(transaction.categoryId)!.color}
-                            size="sm"
-                          />
-                        )}
-                        <span>{transaction.category}</span>
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+          <>
+            <div className="hidden md:block table-wrapper">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-neutral-800">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Data
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Descricao
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Categoria
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Tipo
+                    </th>
+                    <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Valor
+                    </th>
+                    <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      Acoes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTransactions.map((transaction) => (
+                    <tr
+                      key={transaction.id}
+                      className="border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
+                    >
+                      <td className="py-3 px-4 text-gray-600 dark:text-neutral-400">
+                        {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {transaction.description}
+                          </p>
+                          {transaction.isRecurring && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
+                              <Repeat className="w-3 h-3" />
+                              Recorrente
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300">
+                          {categoryIconMap.get(transaction.categoryId) && (
+                            <CategoryIcon 
+                              icon={categoryIconMap.get(transaction.categoryId)!.icon}
+                              color={categoryIconMap.get(transaction.categoryId)!.color}
+                              size="sm"
+                            />
+                          )}
+                          <span>{transaction.category}</span>
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                            transaction.type === 'income'
+                              ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
+                              : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                          }`}
+                        >
+                          {transaction.type === 'income' ? (
+                            <>
+                              <TrendingUp className="w-4 h-4" />
+                              Receita
+                            </>
+                          ) : (
+                            <>
+                              <TrendingDown className="w-4 h-4" />
+                              Despesa
+                            </>
+                          )}
+                        </span>
+                      </td>
+                      <td
+                        className={`py-3 px-4 text-right font-semibold ${
                           transaction.type === 'income'
-                            ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                            : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                            ? 'text-success-600 dark:text-success-400'
+                            : 'text-danger-600 dark:text-danger-400'
                         }`}
                       >
-                        {transaction.type === 'income' ? (
-                          <>
-                            <TrendingUp className="w-4 h-4" />
-                            Receita
-                          </>
-                        ) : (
-                          <>
-                            <TrendingDown className="w-4 h-4" />
-                            Despesa
-                          </>
-                        )}
-                      </span>
-                    </td>
-                    <td
-                      className={`py-3 px-4 text-right font-semibold ${
+                        {transaction.type === 'income' ? '+' : '-'}
+                        {formatCurrency(transaction.amount)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-end gap-2">
+                          {transaction.isRecurring && (
+                            <button
+                              onClick={() => handleCancelRecurrence(transaction)}
+                              className="p-2 text-warning-600 dark:text-warning-400 hover:bg-warning-50 dark:hover:bg-warning-900/20 rounded-lg transition-colors"
+                              title="Cancelar recorrência"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleOpenModal(transaction)}
+                            className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                            title="Editar"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(transaction)}
+                            className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+                            title="Deletar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="md:hidden space-y-4">
+              {filteredTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4 shadow-sm space-y-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-neutral-400">
+                        {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                      </p>
+                      <p className="text-base font-semibold text-gray-900 dark:text-white mt-0.5">
+                        {transaction.description}
+                      </p>
+                      {transaction.isRecurring && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 mt-1">
+                          <Repeat className="w-3 h-3" />
+                          Recorrente
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      className={`text-right font-semibold ${
                         transaction.type === 'income'
-                          ? 'text-success-600 dark:text-success-400'
-                          : 'text-danger-600 dark:text-danger-400'
+                          ? 'text-success-600 dark:text-success-300'
+                          : 'text-danger-600 dark:text-danger-300'
                       }`}
                     >
+                      <span className="block text-sm uppercase tracking-wide text-gray-400 dark:text-neutral-500">
+                        Valor
+                      </span>
                       {transaction.type === 'income' ? '+' : '-'}
                       {formatCurrency(transaction.amount)}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {transaction.isRecurring && (
-                          <button
-                            onClick={() => handleCancelRecurrence(transaction)}
-                            className="p-2 text-warning-600 dark:text-warning-400 hover:bg-warning-50 dark:hover:bg-warning-900/20 rounded-lg transition-colors"
-                            title="Cancelar recorrência"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleOpenModal(transaction)}
-                          className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-                          title="Editar"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(transaction)}
-                          className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
-                          title="Deletar"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-neutral-900 text-gray-700 dark:text-neutral-300">
+                      {categoryIconMap.get(transaction.categoryId) && (
+                        <CategoryIcon 
+                          icon={categoryIconMap.get(transaction.categoryId)!.icon}
+                          color={categoryIconMap.get(transaction.categoryId)!.color}
+                          size="sm"
+                        />
+                      )}
+                      {transaction.category}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full ${
+                        transaction.type === 'income'
+                          ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-300'
+                          : 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-300'
+                      }`}
+                    >
+                      {transaction.type === 'income' ? (
+                        <>
+                          <TrendingUp className="w-4 h-4" />
+                          Receita
+                        </>
+                      ) : (
+                        <>
+                          <TrendingDown className="w-4 h-4" />
+                          Despesa
+                        </>
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-1">
+                    {transaction.isRecurring && (
+                      <button
+                        onClick={() => handleCancelRecurrence(transaction)}
+                        className="p-2 rounded-full bg-warning-50 dark:bg-warning-900/20 text-warning-600 dark:text-warning-300"
+                        title="Cancelar recorrência"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleOpenModal(transaction)}
+                      className="p-2 rounded-full bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300"
+                      title="Editar"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(transaction)}
+                      className="p-2 rounded-full bg-danger-50 dark:bg-danger-900/20 text-danger-600 dark:text-danger-300"
+                      title="Deletar"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-12 text-gray-500 dark:text-neutral-400">
             <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-neutral-500" />
