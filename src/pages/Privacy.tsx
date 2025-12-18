@@ -1,38 +1,57 @@
-import { Shield, Lock, Eye, Database, UserCheck, AlertCircle } from 'lucide-react'
+import { Shield, Lock, Eye, Database, UserCheck, AlertCircle, Sparkles } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
+import { motion } from 'framer-motion'
 
 const Privacy = () => {
   return (
     <PageTransition>
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto">
-            <Shield className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
+          <div className="container mx-auto px-6 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center space-y-6 max-w-3xl mx-auto"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-medium">Sua Privacidade Importa</span>
+              </div>
+              <h1 className="text-5xl md:text-6xl font-bold">
+                Política de Privacidade
+              </h1>
+              <p className="text-xl text-primary-100">
+                Última atualização: {new Date().toLocaleDateString('pt-BR')}
+              </p>
+            </motion.div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            Política de Privacidade
-          </h1>
-          <p className="text-gray-600 dark:text-neutral-400">
-            Última atualização: {new Date().toLocaleDateString('pt-BR')}
-          </p>
         </div>
 
         {/* Content */}
-        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg border border-gray-200 dark:border-neutral-800 p-8 space-y-8">
-          {/* Section 1 */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Lock className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Compromisso com sua Privacidade
-              </h2>
-            </div>
-            <p className="text-gray-600 dark:text-neutral-400 leading-relaxed">
-              No FinControl, levamos sua privacidade a sério. Esta política descreve como coletamos, 
-              usamos e protegemos suas informações pessoais.
-            </p>
-          </section>
+        <div className="container mx-auto px-6 py-16">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-lg border border-neutral-200 dark:border-neutral-700"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center">
+                  <Lock className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Compromisso com sua Privacidade
+                </h2>
+              </div>
+              <p className="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                No FinControl, levamos sua privacidade a sério. Esta política descreve como coletamos, 
+                usamos e protegemos suas informações pessoais.
+              </p>
+            </motion.div>
 
           {/* Section 2 */}
           <section className="space-y-4">
@@ -131,17 +150,25 @@ const Privacy = () => {
             </p>
           </section>
 
-          {/* Contact */}
-          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-6 border border-primary-200 dark:border-primary-800">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              Dúvidas sobre Privacidade?
-            </h3>
-            <p className="text-gray-600 dark:text-neutral-400 text-sm">
-              Entre em contato conosco em{' '}
-              <a href="mailto:suportfincontrol@gmail.com" className="text-primary-600 dark:text-primary-400 hover:underline">
-                suportfincontrol@gmail.com
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl p-8 text-white shadow-xl"
+            >
+              <h3 className="text-2xl font-bold mb-2">
+                Dúvidas sobre Privacidade?
+              </h3>
+              <p className="text-primary-100 mb-4">
+                Nossa equipe está pronta para ajudar você
+              </p>
+              <a
+                href="mailto:suportfincontrol@gmail.com"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-colors"
+              >
+                Entrar em Contato
               </a>
-            </p>
+            </motion.div>
           </div>
         </div>
       </div>

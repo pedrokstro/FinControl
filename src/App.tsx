@@ -14,6 +14,7 @@ import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Landing from './pages/Landing'
 
 // Main Pages (lazy loading para melhor performance)
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -73,7 +74,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   if (!user?.isAdmin) {
     // Redirecionar para dashboard com mensagem de erro
     toast.error('Acesso negado! Você não tem permissão de administrador.')
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/app/dashboard" replace />
   }
   
   return <>{children}</>
@@ -86,6 +87,7 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
@@ -118,14 +120,14 @@ const AnimatedRoutes = () => {
         } />
         
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <MainLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={
             <Suspense fallback={<PageLoader />}>
               <Dashboard />
@@ -171,7 +173,7 @@ const AnimatedRoutes = () => {
               <ManageSubscription />
             </Suspense>
           } />
-          <Route path="profile" element={<Navigate to="/settings" replace />} />
+          <Route path="profile" element={<Navigate to="/app/settings" replace />} />
           <Route path="calculadora-porcentagem" element={
             <Suspense fallback={<PageLoader />}>
               <PercentageCalculator />

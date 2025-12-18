@@ -196,7 +196,7 @@ const Sidebar = () => {
               <ul className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
                 <li>
                   <NavLink
-                    to="/calculadora-porcentagem"
+                    to="/app/calculadora-porcentagem"
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${
                         isActive
@@ -211,7 +211,7 @@ const Sidebar = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/calculadora-juros"
+                    to="/app/calculadora-juros"
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${
                         isActive
@@ -240,7 +240,7 @@ const Sidebar = () => {
                     Cálculos
                   </div>
                   <NavLink
-                    to="/calculadora-porcentagem"
+                    to="/app/calculadora-porcentagem"
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
                         isActive
@@ -253,7 +253,7 @@ const Sidebar = () => {
                     <span>Calc. de Porcentagem</span>
                   </NavLink>
                   <NavLink
-                    to="/calculadora-juros"
+                    to="/app/calculadora-juros"
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
                         isActive
@@ -352,7 +352,7 @@ const Sidebar = () => {
               </div>
             </div>
             <button
-              onClick={() => navigate('/settings')}
+              onClick={() => navigate('/app/settings')}
               className="w-full mt-2 text-xs text-amber-700 hover:text-amber-800 font-medium transition-colors text-left flex items-center gap-1"
             >
               Gerenciar assinatura →

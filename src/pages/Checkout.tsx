@@ -103,7 +103,7 @@ const Checkout = () => {
       
       // Redirecionar para dashboard
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/app/dashboard');
       }, 1500);
       
     } catch (error: any) {

@@ -168,7 +168,7 @@ const Profile = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/app/dashboard')}
             className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
@@ -426,14 +426,14 @@ const Profile = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate('/app/settings')}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-900 dark:text-white font-medium"
               >
                 <Shield className="w-5 h-5" />
                 Configuracoes
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/app/dashboard')}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-900 dark:text-white font-medium"
               >
                 <ArrowLeft className="w-5 h-5" />

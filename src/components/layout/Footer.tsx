@@ -35,7 +35,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  to="/plans"
+                  to="/app/plans"
                   className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
                   Planos e Preços

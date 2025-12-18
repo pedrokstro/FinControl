@@ -25,7 +25,7 @@ const Login = () => {
     try {
       await login(email, password)
       toast.success('Login realizado com sucesso!')
-      navigate('/dashboard')
+      navigate('/app/dashboard')
     } catch (error) {
       toast.error('Email ou senha incorretos')
     } finally {

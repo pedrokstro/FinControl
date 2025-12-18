@@ -61,7 +61,7 @@ const Plans = () => {
       await subscriptionService.startTrial();
       await refreshPremiumStatus();
       toast.success('🎉 Teste grátis de 7 dias ativado com sucesso!');
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Erro ao iniciar teste grátis');
     } finally {
@@ -71,11 +71,11 @@ const Plans = () => {
 
   const handleUpgrade = () => {
     // Redirecionar para checkout com o plano selecionado
-    navigate(`/checkout?plan=${billingCycle}`);
+    navigate(`/app/checkout?plan=${billingCycle}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
       <div className="container-custom py-12">
         {/* Header */}
         <div className="text-center mb-12">

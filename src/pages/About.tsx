@@ -60,24 +60,22 @@ const About = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-neutral-900 dark:to-neutral-800">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
         {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-purple-500/10 dark:from-primary-900/20 dark:to-purple-900/20" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="text-center space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full">
-                <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
-                  Sobre o Projeto
-                </span>
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
+          <div className="container mx-auto px-6 relative">
+            <div className="text-center space-y-6 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-medium">Sobre o Projeto</span>
               </div>
               
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-5xl md:text-6xl font-bold">
                 FinControl
               </h1>
               
-              <p className="text-xl text-gray-600 dark:text-neutral-400 max-w-3xl mx-auto">
+              <p className="text-xl text-primary-100 max-w-3xl mx-auto">
                 Seu parceiro inteligente para controle financeiro pessoal. 
                 Transforme a maneira como você gerencia seu dinheiro.
               </p>
@@ -183,7 +181,7 @@ const About = () => {
 
             <div className="text-center mt-8">
               <Link
-                to="/plans"
+                to="/app/plans"
               >
                 Ver Planos
                 <TrendingUp className="w-5 h-5" />

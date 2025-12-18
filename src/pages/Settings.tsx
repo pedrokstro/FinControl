@@ -410,7 +410,7 @@ const Settings = () => {
 
       {/* Subscription Card */}
       <button
-        onClick={() => navigate('/settings/subscription')}
+        onClick={() => navigate('/app/settings/subscription')}
         className={`w-full text-left rounded-2xl p-6 transition-all duration-300 hover:shadow-lg ${
           isPremium
             ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-400 dark:border-amber-600 hover:border-amber-500 dark:hover:border-amber-500'
