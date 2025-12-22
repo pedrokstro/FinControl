@@ -30,7 +30,7 @@ const Login = () => {
         await refreshUserData()
         
         toast.success('Login realizado com sucesso!')
-        navigate('/app/dashboard')
+        navigate('/app/transactions')
       } else {
         toast.error('Email ou senha incorretos')
       }

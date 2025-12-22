@@ -1,12 +1,18 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, ArrowLeftRight, BarChart3, Settings, Plus } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, BarChart3, Settings, Plus, type LucideIcon } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 
 interface MobileNavBarProps {
   isSidebarOpen: boolean
 }
 
-const navItems = [
+type NavItem = {
+  path: string
+  label: string
+  icon: LucideIcon
+}
+
+const navItems: NavItem[] = [
   { path: '/app/dashboard', label: 'Início', icon: LayoutDashboard },
   { path: '/app/transactions', label: 'Transações', icon: ArrowLeftRight },
   { path: '/app/reports', label: 'Relatórios', icon: BarChart3 },
@@ -21,55 +27,48 @@ const MobileNavBar = ({ isSidebarOpen }: MobileNavBarProps) => {
     return null
   }
 
+  type NavStructureItem = NavItem | { type: 'add' }
+
+  const navStructure: NavStructureItem[] = [
+    ...navItems.slice(0, 2),
+    { type: 'add' as const },
+    ...navItems.slice(2),
+  ]
+
   return (
     <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none">
       <div className="mx-4 mb-4">
-        <div className="relative bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl px-5 py-3 flex items-center justify-between gap-3 pointer-events-auto">
-          {navItems.slice(0, 2).map((item) => {
-            const Icon = item.icon
+        <div className="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl px-5 py-3 flex items-center justify-between gap-3 pointer-events-auto">
+          {navStructure.map((item, index) => {
+            const baseClasses = ({ isActive }: { isActive: boolean }) =>
+              `flex flex-col items-center gap-1 text-[11px] font-medium transition-colors ${
+                isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'
+              }`
+
+            if ('type' in item && item.type === 'add') {
+              return (
+                <button
+                  key="mobile-add"
+                  type="button"
+                  onClick={() => navigate('/app/dashboard?quickAdd=expense')}
+                  className={`${baseClasses({ isActive: true })} text-primary-600 dark:text-primary-300`}
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Adicionar</span>
+                </button>
+              )
+            }
+
+            const navItem = item as NavItem
+            const Icon = navItem.icon
             return (
               <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 text-[11px] font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary-600 dark:text-primary-400'
-                      : 'text-gray-500 dark:text-neutral-400'
-                  }`
-                }
+                key={`${navItem.path}-${index}`}
+                to={navItem.path}
+                className={({ isActive }) => baseClasses({ isActive })}
               >
                 <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </NavLink>
-            )
-          })}
-
-          <button
-            type="button"
-            onClick={() => navigate('/app/dashboard?quickAdd=expense')}
-            className="absolute left-1/2 -translate-x-1/2 -top-6 w-14 h-14 rounded-full bg-primary-600 dark:bg-primary-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 border-4 border-white dark:border-neutral-950"
-          >
-            <Plus className="w-6 h-6" />
-            <span className="text-[10px] font-semibold">Adicionar</span>
-          </button>
-
-          {navItems.slice(2).map((item) => {
-            const Icon = item.icon
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 text-[11px] font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary-600 dark:text-primary-400'
-                      : 'text-gray-500 dark:text-neutral-400'
-                  }`
-                }
-              >
-                <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                <span>{navItem.label}</span>
               </NavLink>
             )
           })}

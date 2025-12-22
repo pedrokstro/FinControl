@@ -458,23 +458,39 @@ const Transactions = () => {
       </div>
 
       {/* Month Navigation */}
-      <div className="card space-y-4">
+      <div className="card space-y-3">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 w-full lg:w-auto">
             <button
               onClick={handlePreviousMonth}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-xl transition-colors font-medium"
+              className="w-full sm:w-auto flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl text-gray-900 dark:text-white shadow-sm hover:shadow transition-all active:scale-[0.99]"
+              aria-label="Ir para o mês anterior"
             >
-              <ChevronLeft className="w-5 h-5" />
-              Anterior
+              <div className="flex flex-col items-start text-left leading-tight">
+                <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-neutral-500">
+                  Período
+                </span>
+                <span className="text-sm font-semibold">Anterior</span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-300">
+                <ChevronLeft className="w-4 h-4" />
+              </div>
             </button>
 
             <button
               onClick={handleNextMonth}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-xl transition-colors font-medium"
+              className="w-full sm:w-auto flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl text-gray-900 dark:text-white shadow-sm hover:shadow transition-all active:scale-[0.99]"
+              aria-label="Ir para o próximo mês"
             >
-              Proximo
-              <ChevronRight className="w-5 h-5" />
+              <div className="flex flex-col items-start text-left leading-tight">
+                <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-neutral-500">
+                  Período
+                </span>
+                <span className="text-sm font-semibold">Próximo</span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-300">
+                <ChevronRight className="w-4 h-4" />
+              </div>
             </button>
           </div>
 
@@ -497,7 +513,7 @@ const Transactions = () => {
         </div>
 
         {/* Month Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Total de Transacoes</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{monthSummary.count}</p>
