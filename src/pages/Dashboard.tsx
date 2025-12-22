@@ -706,7 +706,7 @@ const Dashboard = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
-            Visao geral das suas financas
+            Visão geral das suas finanças
           </p>
         </div>
       </div>
@@ -736,7 +736,7 @@ const Dashboard = () => {
         <div className="card bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-primary-100 dark:text-primary-200 text-sm font-medium">Saldo do Mes</p>
+              <p className="text-primary-100 dark:text-primary-200 text-sm font-medium">Saldo do Mês</p>
               <h3 className="text-3xl font-bold mt-2">
                 {formatCurrency(financialSummary.monthBalance)}
               </h3>
@@ -760,7 +760,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Receitas do Mes</p>
+              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Receitas do Mês</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatCurrency(financialSummary.monthIncome)}
               </h3>
@@ -790,7 +790,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Despesas do Mes</p>
+              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Despesas do Mês</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatCurrency(financialSummary.monthExpense)}
               </h3>
@@ -909,7 +909,7 @@ const Dashboard = () => {
               Resumo Anual
             </h3>
             <p className="text-sm text-gray-600 dark:text-neutral-400">
-              Comparacao de receitas e despesas por mes
+              Comparação de receitas e despesas por mês
             </p>
           </div>
         </div>
@@ -972,19 +972,19 @@ const Dashboard = () => {
         {/* Resumo estatistico */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-neutral-800">
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Meses com Transacoes</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Meses com transações</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
               {yearlyMonthlyData.filter(m => m.receitas > 0 || m.despesas > 0).length}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Melhor Mes</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Melhor Mês</p>
             <p className="text-2xl font-bold text-success-600 dark:text-success-400">
               {yearlyMonthlyData.reduce((max, m) => m.saldo > max.saldo ? m : max, yearlyMonthlyData[0]).month}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Mes Mais Ativo</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Mês Mais Ativo</p>
             <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
               {yearlyMonthlyData.reduce((max, m) => (m.receitas + m.despesas) > (max.receitas + max.despesas) ? m : max, yearlyMonthlyData[0]).month}
             </p>
@@ -995,7 +995,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Historico Mensal
+            Histórico Mensal
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart 
@@ -1055,7 +1055,7 @@ const Dashboard = () => {
 
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Financas por Categoria
+            Finanças por Categoria
           </h3>
           {categoryData.length > 0 ? (
             <>
@@ -1125,7 +1125,7 @@ const Dashboard = () => {
             </>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
-              Nenhuma transacao registrada
+              Nenhuma transação registrada
             </div>
           )}
         </div>
@@ -1134,7 +1134,7 @@ const Dashboard = () => {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Transacoes Recentes
+            Transações Recentes
           </h3>
           <a href="/transactions" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
             Ver todas

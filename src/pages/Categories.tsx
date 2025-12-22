@@ -229,7 +229,7 @@ const Categories = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
-            Organize suas transacoes em categorias personalizadas
+            Organize suas transações em categorias personalizadas
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
@@ -507,7 +507,7 @@ const Categories = () => {
             Nenhuma categoria encontrada
           </p>
           <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6">
-            Crie sua primeira categoria para comecar a organizar suas financas
+            Crie sua primeira categoria para começar a organizar suas finanças
           </p>
           <button
             onClick={() => handleOpenModal()}

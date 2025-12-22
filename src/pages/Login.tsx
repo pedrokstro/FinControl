@@ -77,21 +77,21 @@ const Login = () => {
         
         <div className="text-white">
           <h1 className="text-4xl font-bold mb-4">
-            Gerencie suas financas com inteligencia
+            Gerencie suas finanças com inteligência
           </h1>
           <p className="text-primary-100 text-lg">
-            Controle completo de receitas, despesas e investimentos em um unico lugar.
+            Controle completo de receitas, despesas e investimentos em um único lugar.
           </p>
         </div>
 
         <div className="flex gap-8 text-white">
           <div>
             <div className="text-3xl font-bold mb-1">10k+</div>
-            <div className="text-primary-100">Usuarios ativos</div>
+            <div className="text-primary-100">Usuários ativos</div>
           </div>
           <div>
             <div className="text-3xl font-bold mb-1">50k+</div>
-            <div className="text-primary-100">Transacoes registradas</div>
+            <div className="text-primary-100">Transações registradas</div>
           </div>
         </div>
       </div>
