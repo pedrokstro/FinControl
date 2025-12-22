@@ -48,10 +48,9 @@ const Landing = () => {
       price: 'Grátis',
       description: 'Perfeito para começar',
       features: [
-        'Até 50 transações/mês',
-        'Relatórios básicos',
-        'Suporte por email',
-        'Acesso mobile'
+        'Até 10 transações/mês',
+        'Ícones básicos',
+        'Relatórios'
       ]
     },
     {
@@ -61,10 +60,10 @@ const Landing = () => {
       description: 'Para quem quer mais controle',
       features: [
         'Transações ilimitadas',
-        'Relatórios avançados',
-        'Suporte prioritário',
+        'Exportação de relatórios',
+        'Ícones exclusivos',
         'Exportação de dados',
-        'Múltiplas contas'
+        'Calculadoras'
       ],
       highlighted: true
     }
