@@ -101,8 +101,8 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/transactions', icon: ArrowLeftRight, label: 'Transações' },
     { path: '/categories', icon: FolderOpen, label: 'Categorias' },
-    { path: '/reports', icon: BarChart3, label: 'Relatorios' },
-    { path: '/settings', icon: Settings, label: 'Configuracoes' },
+    { path: '/reports', icon: BarChart3, label: 'Relatórios' },
+    { path: '/settings', icon: Settings, label: 'Configurações' },
   ]
 
   // Adicionar item Admin apenas se for administrador
