@@ -28,7 +28,13 @@ export class UserService {
       }
     }
 
-    Object.assign(user, data);
+    if (typeof data.name === 'string') {
+      user.name = data.name;
+    }
+
+    if (typeof data.email === 'string') {
+      user.email = data.email;
+    }
     await this.userRepository.save(user);
     return user.toJSON();
   }

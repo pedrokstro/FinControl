@@ -459,7 +459,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-neutral-800 text-center text-sm text-neutral-400">
-            <p>© 2024 FinControl. Todos os direitos reservados.</p>
+            <p>© 2025 FinControl. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
