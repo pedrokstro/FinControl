@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import AnimatedTextCycle from '@/components/ui/animated-text-cycle'
+import { MovingBorderButton } from '@/components/ui/moving-border'
 import { 
   TrendingUp, 
   PieChart, 
@@ -23,23 +25,27 @@ const Landing = () => {
     {
       icon: <PieChart className="w-8 h-8" />,
       title: 'Controle Completo',
-      description: 'Gerencie todas as suas finanças em um só lugar'
+      description: 'Gerencie todas as suas finanças em um só lugar',
+      glowClass: 'bg-[radial-gradient(var(--primary-400)_45%,transparent_70%)]',
     },
     {
       icon: <BarChart3 className="w-8 h-8" />,
       title: 'Relatórios Detalhados',
-      description: 'Visualize seus gastos com gráficos intuitivos'
+      description: 'Visualize seus gastos com gráficos intuitivos',
+      glowClass: 'bg-[radial-gradient(var(--info-400)_45%,transparent_70%)]',
     },
     {
       icon: <Target className="w-8 h-8" />,
       title: 'Metas Financeiras',
-      description: 'Defina e acompanhe suas metas de economia'
+      description: 'Defina e acompanhe suas metas de economia',
+      glowClass: 'bg-[radial-gradient(var(--success-400)_45%,transparent_70%)]',
     },
     {
       icon: <Shield className="w-8 h-8" />,
       title: 'Segurança Total',
-      description: 'Seus dados protegidos com criptografia de ponta'
-    }
+      description: 'Seus dados protegidos com criptografia de ponta',
+      glowClass: 'bg-[radial-gradient(var(--primary-500)_45%,transparent_70%)]',
+    },
   ]
 
   const plans = [
@@ -109,11 +115,12 @@ const Landing = () => {
             className="text-center"
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              Potencialize suas{' '}
-              <span className="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 bg-clip-text text-transparent">
-                Finanças
-              </span>
-              <br />
+              Potencialize seu{' '}
+              <AnimatedTextCycle
+                words={['Futuro', 'Patrimônio', 'Negócio', 'Bolso']}
+                interval={3000}
+                className="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 bg-clip-text text-transparent"
+              />{' '}
               com FinControl
             </h1>
             <p className="text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
@@ -184,17 +191,26 @@ const Landing = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-gradient-to-br from-neutral-50 to-white dark:from-neutral-800 dark:to-neutral-900 border border-neutral-200 dark:border-neutral-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="w-full"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center text-white mb-4">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-neutral-900 dark:text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  {feature.description}
-                </p>
+                <MovingBorderButton
+                  as="div"
+                  borderRadius="1.25rem"
+                  duration={3200 + index * 300}
+                  containerClassName="w-full h-full"
+                  borderClassName={feature.glowClass}
+                  className="rounded-[1.15rem] p-6 bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-900 dark:to-neutral-800 border border-white/40 dark:border-white/5 hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center text-white mb-4">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-neutral-900 dark:text-white">
+                    {feature.title}
+                  </h3>
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    {feature.description}
+                  </p>
+                </MovingBorderButton>
               </motion.div>
             ))}
           </div>
@@ -225,22 +241,31 @@ const Landing = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="p-8 rounded-3xl bg-gradient-to-br from-primary-600 to-primary-800 text-white"
+              className="w-full"
             >
-              <TrendingUp className="w-12 h-12 mb-4" />
-              <h3 className="text-2xl font-bold mb-4">Acompanhe sua evolução</h3>
-              <p className="text-primary-100 mb-6">
-                Visualize seu progresso financeiro com gráficos detalhados e insights personalizados
-              </p>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm">Este mês</span>
-                  <span className="text-success-400">+23%</span>
+              <MovingBorderButton
+                as="div"
+                borderRadius="1.75rem"
+                duration={2600}
+                containerClassName="w-full h-full"
+                borderClassName="bg-[radial-gradient(var(--primary-200)_40%,transparent_70%)]"
+                className="rounded-[1.6rem] p-8 bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-700/40"
+              >
+                <TrendingUp className="w-12 h-12 mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Acompanhe sua evolução</h3>
+                <p className="text-primary-100 mb-6">
+                  Visualize seu progresso financeiro com gráficos detalhados e insights personalizados
+                </p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm">Este mês</span>
+                    <span className="text-success-400">+23%</span>
+                  </div>
+                  <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                    <div className="h-full w-3/4 bg-success-400 rounded-full"></div>
+                  </div>
                 </div>
-                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full w-3/4 bg-success-400 rounded-full"></div>
-                </div>
-              </div>
+              </MovingBorderButton>
             </motion.div>
 
             <motion.div
@@ -248,25 +273,34 @@ const Landing = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="p-8 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700"
+              className="w-full"
             >
-              <CreditCard className="w-12 h-12 mb-4 text-primary-600" />
-              <h3 className="text-2xl font-bold mb-4 text-neutral-900 dark:text-white">
-                Controle total de gastos
-              </h3>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-                Categorize suas despesas e identifique oportunidades de economia
-              </p>
-              <div className="space-y-3">
-                {['Alimentação', 'Transporte', 'Lazer'].map((category, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
-                    <span className="text-sm font-medium text-neutral-900 dark:text-white">{category}</span>
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                      R$ {(Math.random() * 500 + 100).toFixed(2)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <MovingBorderButton
+                as="div"
+                borderRadius="1.75rem"
+                duration={3600}
+                containerClassName="w-full h-full"
+                borderClassName="bg-[radial-gradient(var(--info-400)_35%,transparent_70%)]"
+                className="rounded-[1.6rem] p-8 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white border border-neutral-100/80 dark:border-white/5 shadow-lg"
+              >
+                <CreditCard className="w-12 h-12 mb-4 text-primary-600" />
+                <h3 className="text-2xl font-bold mb-4 text-neutral-900 dark:text-white">
+                  Controle total de gastos
+                </h3>
+                <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+                  Categorize suas despesas e identifique oportunidades de economia
+                </p>
+                <div className="space-y-3">
+                  {['Alimentação', 'Transporte', 'Lazer'].map((category, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
+                      <span className="text-sm font-medium text-neutral-900 dark:text-white">{category}</span>
+                      <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                        R$ {(Math.random() * 500 + 100).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </MovingBorderButton>
             </motion.div>
           </div>
         </div>
@@ -291,59 +325,77 @@ const Landing = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`p-8 rounded-3xl border-2 transition-all duration-300 hover:-translate-y-2 ${
-                  plan.highlighted
-                    ? 'bg-gradient-to-br from-primary-600 to-primary-800 border-primary-400 text-white shadow-2xl shadow-primary-600/30 scale-105'
-                    : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700'
-                }`}
-              >
-                <h3 className={`text-2xl font-bold mb-2 ${plan.highlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
-                  {plan.name}
-                </h3>
-                <p className={`mb-6 ${plan.highlighted ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}`}>
-                  {plan.description}
-                </p>
-                <div className="mb-6">
-                  <span className={`text-5xl font-bold ${plan.highlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className={plan.highlighted ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}>
-                      {plan.period}
-                    </span>
-                  )}
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                        plan.highlighted ? 'text-success-400' : 'text-primary-600'
-                      }`} />
-                      <span className={plan.highlighted ? 'text-primary-50' : 'text-neutral-700 dark:text-neutral-300'}>
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => navigate('/register')}
-                  className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
-                    plan.highlighted
-                      ? 'bg-white text-primary-600 hover:bg-primary-50'
-                      : 'bg-primary-600 text-white hover:bg-primary-700'
-                  }`}
+            {plans.map((plan, index) => {
+              const isHighlighted = !!plan.highlighted
+              const borderGlow = isHighlighted
+                ? 'bg-[radial-gradient(var(--primary-400)_40%,transparent_70%)]'
+                : 'bg-[radial-gradient(var(--neutral-300)_40%,transparent_70%)]'
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="w-full"
                 >
-                  Começar Agora
-                </button>
-              </motion.div>
-            ))}
+                  <MovingBorderButton
+                    as="div"
+                    borderRadius="1.5rem"
+                    duration={isHighlighted ? 2500 : 4000}
+                    containerClassName="w-full h-full"
+                    borderClassName={borderGlow}
+                    className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 ${
+                      isHighlighted
+                        ? 'bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-600/30'
+                        : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700'
+                    }`}
+                  >
+                    <h3 className={`text-2xl font-bold mb-2 ${isHighlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
+                      {plan.name}
+                    </h3>
+                    <p className={`mb-6 ${isHighlighted ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}`}>
+                      {plan.description}
+                    </p>
+                    <div className="mb-6">
+                      <span className={`text-5xl font-bold ${isHighlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
+                        {plan.price}
+                      </span>
+                      {plan.period && (
+                        <span className={isHighlighted ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}>
+                          {plan.period}
+                        </span>
+                      )}
+                    </div>
+                    <ul className="space-y-3 mb-8 flex-1">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <CheckCircle2
+                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                              isHighlighted ? 'text-success-300' : 'text-primary-600'
+                            }`}
+                          />
+                          <span className={isHighlighted ? 'text-primary-50' : 'text-neutral-700 dark:text-neutral-300'}>
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => navigate('/register')}
+                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
+                        isHighlighted
+                          ? 'bg-white text-primary-600 hover:bg-primary-50'
+                          : 'bg-primary-600 text-white hover:bg-primary-700'
+                      }`}
+                    >
+                      Começar Agora
+                    </button>
+                  </MovingBorderButton>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>
