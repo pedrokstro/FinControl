@@ -117,7 +117,7 @@ const Landing = () => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
               Potencialize seu{' '}
               <AnimatedTextCycle
-                words={['Futuro', 'Patrimônio', 'Negócio', 'Bolso']}
+                words={['Futuro', 'Negócio', 'Bolso']}
                 interval={3000}
                 className="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 bg-clip-text text-transparent"
               />{' '}
