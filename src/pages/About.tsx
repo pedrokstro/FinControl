@@ -13,8 +13,20 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageTransition from '@/components/common/PageTransition'
+import { motion } from 'framer-motion'
 
 const About = () => {
+  const floatingShapes = [
+    { className: 'w-80 h-80 bg-primary-500/15 top-[-60px] right-[-30px]' },
+    { className: 'w-64 h-64 bg-primary-300/15 bottom-[-40px] left-[-10px]' },
+    { className: 'w-48 h-48 bg-white/10 top-1/4 left-10 hidden lg:block' },
+  ]
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+  }
+
   const features = [
     {
       icon: BarChart3,
@@ -60,7 +72,16 @@ const About = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
+      <div className="relative min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800 overflow-hidden">
+        {floatingShapes.map((shape, index) => (
+          <motion.span
+            key={index}
+            className={`absolute rounded-full blur-3xl ${shape.className}`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -25, 0] }}
+            transition={{ duration: 12 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        ))}
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
@@ -85,9 +106,18 @@ const About = () => {
 
         {/* Vision & Mission */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid md:grid-cols-2 gap-8">
+          <motion.div
+            className="grid md:grid-cols-2 gap-8"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            transition={{ staggerChildren: 0.1 }}
+          >
             {/* Vision */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-neutral-800">
+            <motion.div
+              variants={cardVariants}
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-neutral-800"
+            >
               <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center mb-6">
                 <Eye className="w-6 h-6 text-primary-600 dark:text-primary-400" />
               </div>
@@ -99,10 +129,13 @@ const About = () => {
                 capacitando pessoas a alcançarem seus objetivos financeiros através de 
                 tecnologia acessível e insights inteligentes.
               </p>
-            </div>
+            </motion.div>
 
             {/* Mission */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-neutral-800">
+            <motion.div
+              variants={cardVariants}
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-neutral-800"
+            >
               <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-6 h-6 text-primary-600 dark:text-primary-400" />
               </div>
@@ -114,8 +147,8 @@ const About = () => {
                 oferecendo uma solução moderna, segura e fácil de usar que ajuda pessoas 
                 a tomarem decisões financeiras mais inteligentes.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* Features Grid */}
@@ -131,8 +164,12 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
                 className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-neutral-800 hover:shadow-xl transition-shadow"
               >
                 <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4">
@@ -144,7 +181,7 @@ const About = () => {
                 <p className="text-gray-600 dark:text-neutral-400 text-sm">
                   {feature.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -169,23 +206,33 @@ const About = () => {
 
             <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
               {premiumFeatures.map((feature, index) => (
-                <div
+                <motion.div
                   key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
                   className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4"
                 >
                   <CheckCircle2 className="w-5 h-5 text-white flex-shrink-0" />
                   <span className="text-white text-sm">{feature}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
 
             <div className="text-center mt-8">
-              <Link
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+              >
+                <Link
                 to="/app/plans"
               >
                 Ver Planos
                 <TrendingUp className="w-5 h-5" />
               </Link>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -193,44 +240,79 @@ const About = () => {
         {/* Stats */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
               <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
                 10K+
               </div>
               <div className="text-gray-600 dark:text-neutral-400">
                 Usuários Ativos
               </div>
-            </div>
-            <div className="text-center">
+            </motion.div>
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
               <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
                 1M+
               </div>
               <div className="text-gray-600 dark:text-neutral-400">
                 Transações
               </div>
-            </div>
-            <div className="text-center">
+            </motion.div>
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
               <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
                 99.9%
               </div>
               <div className="text-gray-600 dark:text-neutral-400">
                 Uptime
               </div>
-            </div>
-            <div className="text-center">
+            </motion.div>
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
               <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
                 4.9★
               </div>
               <div className="text-gray-600 dark:text-neutral-400">
                 Avaliação
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl p-12 text-center">
+        <motion.div
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl p-12 text-center relative overflow-hidden">
+            <motion.span
+              className="absolute inset-0 bg-white/5"
+              animate={{ opacity: [0.1, 0.25, 0.1] }}
+              transition={{ duration: 6, repeat: Infinity }}
+            />
+            <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Pronto para Começar?
             </h2>
@@ -251,8 +333,9 @@ const About = () => {
                 Fazer Login
               </Link>
             </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </PageTransition>
   )

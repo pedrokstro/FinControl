@@ -1,11 +1,26 @@
-import { Shield, Lock, Eye, Database, UserCheck, AlertCircle, Sparkles } from 'lucide-react'
+import { Lock, Eye, Database, UserCheck, AlertCircle, Sparkles } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
 import { motion } from 'framer-motion'
 
 const Privacy = () => {
+  const floatingShapes = [
+    { className: 'w-70 h-70 bg-primary-500/12 top-[-30px] right-[-15px]' },
+    { className: 'w-60 h-60 bg-primary-300/12 bottom-[-40px] left-[-20px]' },
+    { className: 'w-44 h-44 bg-white/10 top-1/3 left-12 hidden lg:block' },
+  ]
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
+      <div className="relative min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800 overflow-hidden">
+        {floatingShapes.map((shape, index) => (
+          <motion.span
+            key={index}
+            className={`absolute rounded-full blur-3xl ${shape.className}`}
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -20, 0] }}
+            transition={{ duration: 12 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        ))}
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />

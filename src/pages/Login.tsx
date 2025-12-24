@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff, Wallet } from 'lucide-react'
 import toast from 'react-hot-toast'
 import AnimatedPage from '@/components/common/AnimatedPage'
+import { motion } from 'framer-motion'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -12,6 +13,12 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { login, refreshUserData } = useAuthStore()
+
+  const floatingShapes = [
+    { className: 'w-72 h-72 bg-primary-500/20 top-[-80px] right-[-40px]' },
+    { className: 'w-60 h-60 bg-primary-400/10 bottom-[-60px] left-[-20px]' },
+    { className: 'w-40 h-40 bg-white/10 top-1/2 right-10 hidden lg:block' },
+  ]
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -65,62 +72,93 @@ const Login = () => {
 
   return (
     <AnimatedPage direction="left">
-      <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-primary-500 to-primary-700">
-      {/* Left Side - Decorative */}
-      <div className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
-            <Wallet className="w-7 h-7 text-primary-600" />
-          </div>
-          <span className="text-3xl font-bold text-white">FinControl</span>
-        </div>
-        
-        <div className="text-white">
-          <h1 className="text-4xl font-bold mb-4">
-            Gerencie suas finanças com inteligência
-          </h1>
-          <p className="text-primary-100 text-lg">
-            Controle completo de receitas, despesas e investimentos em um único lugar.
-          </p>
-        </div>
+      <div className="relative min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-primary-500 to-primary-700 overflow-hidden">
+        {floatingShapes.map((shape, index) => (
+          <motion.span
+            key={index}
+            className={`absolute rounded-full blur-3xl ${shape.className}`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -30, 0] }}
+            transition={{ duration: 10 + index * 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        ))}
 
-        <div className="flex gap-8 text-white">
-          <div>
-            <div className="text-3xl font-bold mb-1">10k+</div>
-            <div className="text-primary-100">Usuários ativos</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold mb-1">50k+</div>
-            <div className="text-primary-100">Transações registradas</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8">
-        <div className="w-full max-w-md">
-          {/* Logo for mobile */}
-          <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
+        {/* Left Side - Decorative */}
+        <motion.div
+          className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-between relative z-10"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
               <Wallet className="w-7 h-7 text-primary-600" />
             </div>
-            <div>
-              <span className="text-3xl font-bold block">FinControl</span>
-              <p className="text-primary-50 text-sm mt-1">Gerencie suas finanças em qualquer lugar</p>
-            </div>
+            <span className="text-3xl font-bold text-white">FinControl</span>
+          </div>
+          
+          <div className="text-white">
+            <h1 className="text-4xl font-bold mb-4">
+              Gerencie suas finanças com inteligência
+            </h1>
+            <p className="text-primary-100 text-lg">
+              Controle completo de receitas, despesas e investimentos em um único lugar.
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Bem-vindo de volta!
-              </h2>
-              <p className="text-gray-600">
-                Entre com suas credenciais para continuar
-              </p>
+          <div className="flex gap-8 text-white">
+            <div>
+              <div className="text-3xl font-bold mb-1">10k+</div>
+              <div className="text-primary-100">Usuários ativos</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-1">50k+</div>
+              <div className="text-primary-100">Transações registradas</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right Side - Login Form */}
+        <motion.div
+          className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 relative z-10"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+        >
+          <div className="w-full max-w-md">
+            {/* Logo for mobile */}
+            <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                <Wallet className="w-7 h-7 text-primary-600" />
+              </div>
+              <div>
+                <span className="text-3xl font-bold block">FinControl</span>
+                <p className="text-primary-50 text-sm mt-1">Gerencie suas finanças em qualquer lugar</p>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <motion.div
+              className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <motion.span
+                className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent"
+                animate={{ opacity: [0.1, 0.3, 0.1] }}
+                transition={{ duration: 6, repeat: Infinity }}
+              />
+              <div className="relative z-10">
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Bem-vindo de volta!
+                  </h2>
+                  <p className="text-gray-600">
+                    Entre com suas credenciais para continuar
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -188,23 +226,24 @@ const Login = () => {
               </button>
             </form>
 
-            <div className="mt-6 text-center space-y-3">
-              <p className="text-sm text-gray-600">
-                Não tem uma conta?{' '}
-                <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
-                  Criar conta
-                </Link>
-              </p>
-              <p className="text-sm text-gray-600">
-                <Link to="/about" className="text-primary-600 hover:text-primary-700 font-medium">
-                  Saiba mais sobre o FinControl
-                </Link>
-              </p>
-            </div>
+                <div className="mt-6 text-center space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Não tem uma conta?{' '}
+                    <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+                      Criar conta
+                    </Link>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <Link to="/about" className="text-primary-600 hover:text-primary-700 font-medium">
+                      Saiba mais sobre o FinControl
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
     </AnimatedPage>
   )
 }
