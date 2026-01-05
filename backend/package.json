@@ -37,6 +37,7 @@
   "license": "MIT",
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
+    "@supabase/supabase-js": "^2.89.0",
     "@types/node": "^20.19.25",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",

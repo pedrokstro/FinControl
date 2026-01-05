@@ -33,6 +33,11 @@ interface Config {
     maxFileSize: number;
     allowedTypes: string[];
   };
+  supabase: {
+    url: string;
+    serviceRoleKey: string;
+    bucket: string;
+  };
   logging: {
     level: string;
     dir: string;
@@ -72,6 +77,12 @@ export const config: Config = {
     dir: process.env.UPLOAD_DIR || 'uploads',
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880', 10), // 5MB
     allowedTypes: (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/webp').split(','),
+  },
+  
+  supabase: {
+    url: process.env.SUPABASE_URL || '',
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    bucket: process.env.SUPABASE_STORAGE_BUCKET || 'avatars',
   },
   
   logging: {

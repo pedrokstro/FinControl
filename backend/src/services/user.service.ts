@@ -1,11 +1,33 @@
 import { AppDataSource } from '@/config/database';
 import { User } from '@/models/User';
 import { NotFoundError, ConflictError, UnauthorizedError, BadRequestError } from '@/utils/errors';
-import cloudinary from '@/config/cloudinary';
 import fs from 'fs/promises';
+import path from 'path';
+import { supabase } from '@/config/supabase';
+import { config } from '@/config/env';
 
 export class UserService {
   private userRepository = AppDataSource.getRepository(User);
+  private readonly bucket = config.supabase.bucket || 'avatars';
+
+  private getStoragePathFromUrl(url?: string | null) {
+    if (!url || !config.supabase.url) return null;
+    const normalizedUrl = config.supabase.url.replace(/\/$/, '');
+    const publicPrefix = `${normalizedUrl}/storage/v1/object/public/${this.bucket}/`;
+    if (url.startsWith(publicPrefix)) {
+      return url.replace(publicPrefix, '');
+    }
+    return null;
+  }
+
+  private async removeAvatarFromStorage(url?: string | null) {
+    const path = this.getStoragePathFromUrl(url);
+    if (!path) return;
+    const { error } = await supabase.storage.from(this.bucket).remove([path]);
+    if (error) {
+      console.warn('Erro ao remover avatar anterior do Supabase:', error.message);
+    }
+  }
 
   async getProfile(userId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -79,33 +101,44 @@ export class UserService {
     }
 
     try {
-      // Upload para Cloudinary
-      const result = await cloudinary.uploader.upload(file.path, {
-        folder: 'fincontrol/avatars',
-        public_id: `avatar-${userId}`,
-        overwrite: true,
-        transformation: [
-          { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-          { quality: 'auto', fetch_format: 'auto' }
-        ]
-      });
+      if (!config.supabase.url || !config.supabase.serviceRoleKey) {
+        throw new Error('Supabase Storage não configurado');
+      }
+
+      const fileExt = path.extname(file.originalname) || '.png';
+      const fileName = `avatar-${userId}-${Date.now()}${fileExt}`;
+      const filePath = `${userId}/${fileName}`;
+      const fileBuffer = await fs.readFile(file.path);
+
+      // Upload para Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from(this.bucket)
+        .upload(filePath, fileBuffer, {
+          upsert: true,
+          contentType: file.mimetype,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Obter URL pública
+      const { data: publicData } = supabase.storage.from(this.bucket).getPublicUrl(filePath);
+      const publicUrl = publicData?.publicUrl;
+
+      if (!publicUrl) {
+        throw new Error('Erro ao gerar URL pública do avatar');
+      }
+
+      // Remover avatar anterior se existia
+      await this.removeAvatarFromStorage(user.avatar);
+
+      user.avatar = publicUrl;
+      await this.userRepository.save(user);
 
       // Deletar arquivo temporário
       await fs.unlink(file.path);
 
-      // Deletar avatar anterior do Cloudinary se existir e for diferente
-      if (user.avatar && user.avatar.includes('cloudinary')) {
-        try {
-          const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
-          await cloudinary.uploader.destroy(publicId);
-        } catch (error) {
-          console.log('Erro ao deletar avatar anterior:', error);
-        }
-      }
-
-      // Salvar URL do Cloudinary
-      user.avatar = result.secure_url;
-      await this.userRepository.save(user);
       return user.toJSON();
     } catch (error) {
       // Deletar arquivo temporário em caso de erro
@@ -128,15 +161,8 @@ export class UserService {
       throw new Error('Senha incorreta');
     }
 
-    // Deletar avatar do Cloudinary se existir
-    if (user.avatar && user.avatar.includes('cloudinary')) {
-      try {
-        const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
-        await cloudinary.uploader.destroy(publicId);
-      } catch (error) {
-        console.log('Erro ao deletar avatar:', error);
-      }
-    }
+    // Deletar avatar armazenado no Supabase (se houver)
+    await this.removeAvatarFromStorage(user.avatar);
 
     // Deletar usuário (cascade vai deletar transações, categorias, etc)
     await this.userRepository.remove(user);
