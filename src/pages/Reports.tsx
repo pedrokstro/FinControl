@@ -28,6 +28,14 @@ const Reports = () => {
   const { user } = useAuthStore()
   const [period, setPeriod] = useState<'3' | '6' | '12'>('6')
   const [isExporting, setIsExporting] = useState(false)
+  const currentYear = new Date().getFullYear()
+
+  const currentYearTransactions = useMemo(() => {
+    return transactions.filter((t) => {
+      const tDate = new Date(t.date)
+      return tDate.getFullYear() === currentYear
+    })
+  }, [transactions, currentYear])
 
   // Dados para gráfico de evolução mensal
   const monthlyEvolution = useMemo(() => {
@@ -223,13 +231,13 @@ const Reports = () => {
     return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
   }
 
-  // Totais gerais de todos os meses
+  // Totais gerais do ano corrente
   const totalStats = useMemo(() => {
-    const totalIncome = transactions
+    const totalIncome = currentYearTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
     
-    const totalExpense = transactions
+    const totalExpense = currentYearTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0)
     
@@ -238,14 +246,14 @@ const Reports = () => {
       expense: totalExpense,
       balance: totalIncome - totalExpense,
     }
-  }, [transactions])
+  }, [currentYearTransactions])
 
   // Médias mensais
   const monthlyAverages = useMemo(() => {
     // Agrupar transações por mês
     const monthsMap = new Map<string, { income: number; expense: number }>()
     
-    transactions.forEach((t) => {
+    currentYearTransactions.forEach((t) => {
       const date = new Date(t.date)
       const monthKey = `${date.getFullYear()}-${date.getMonth()}`
       

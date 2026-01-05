@@ -214,50 +214,6 @@ const transactionSchema = z
 
 type TransactionFormData = z.infer<typeof transactionSchema>
 
-const fallbackAnalyticsData: AnalyticsData = {
-  dailyCashFlow: [
-    { day: 1, dailyBalance: 500, cumulativeBalance: 500 },
-    { day: 5, dailyBalance: -200, cumulativeBalance: 300 },
-    { day: 10, dailyBalance: 800, cumulativeBalance: 1100 },
-    { day: 15, dailyBalance: -350, cumulativeBalance: 750 },
-    { day: 20, dailyBalance: 900, cumulativeBalance: 1650 },
-    { day: 25, dailyBalance: -150, cumulativeBalance: 1500 },
-    { day: 30, dailyBalance: 400, cumulativeBalance: 1900 },
-  ],
-  savingsRate: {
-    income: 12000,
-    expense: 8500,
-    savings: 3500,
-    savingsRate: 29,
-    goal: 25,
-  },
-  topExpenses: [
-    { id: '1', description: 'Aluguel', amount: 3000, category: 'Moradia', date: new Date().toISOString() },
-    { id: '2', description: 'Mercado', amount: 1200, category: 'Alimentação', date: new Date().toISOString() },
-    { id: '3', description: 'Transporte', amount: 650, category: 'Mobilidade', date: new Date().toISOString() },
-    { id: '4', description: 'Lazer', amount: 500, category: 'Entretenimento', date: new Date().toISOString() },
-    { id: '5', description: 'Saúde', amount: 450, category: 'Saúde', date: new Date().toISOString() },
-  ],
-  expensesByWeekday: [
-    { weekday: 'Seg', weekdayNumber: 1, total: 900 },
-    { weekday: 'Ter', weekdayNumber: 2, total: 750 },
-    { weekday: 'Qua', weekdayNumber: 3, total: 820 },
-    { weekday: 'Qui', weekdayNumber: 4, total: 680 },
-    { weekday: 'Sex', weekdayNumber: 5, total: 950 },
-    { weekday: 'Sáb', weekdayNumber: 6, total: 1200 },
-    { weekday: 'Dom', weekdayNumber: 7, total: 500 },
-  ],
-  budgetVsActual: [
-    { category: 'Moradia', categoryKey: 'housing', budget: 3200, actual: 3000, difference: 200, percentage: 94, status: 'good' },
-    { category: 'Alimentação', categoryKey: 'food', budget: 1500, actual: 1650, difference: -150, percentage: 110, status: 'warning' },
-    { category: 'Transporte', categoryKey: 'transport', budget: 800, actual: 650, difference: 150, percentage: 81, status: 'good' },
-    { category: 'Lazer', categoryKey: 'fun', budget: 600, actual: 720, difference: -120, percentage: 120, status: 'over' },
-    { category: 'Saúde', categoryKey: 'health', budget: 500, actual: 450, difference: 50, percentage: 90, status: 'good' },
-  ],
-  month: new Date().getMonth() + 1,
-  year: new Date().getFullYear(),
-}
-
 const Dashboard = () => {
   const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
@@ -275,22 +231,45 @@ const Dashboard = () => {
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
+  const [analyticsEmpty, setAnalyticsEmpty] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   
   // Carregar dados de analytics
   const loadAnalytics = async () => {
     try {
       setIsLoadingAnalytics(true)
-      const data = await analyticsService.getAll()
-      if (!data || !data.dailyCashFlow?.length) {
-        console.warn('[Analytics] Dados indisponíveis, usando fallback')
-        setAnalytics(fallbackAnalyticsData)
-      } else {
+      setAnalytics(null)
+      setAnalyticsEmpty(false)
+
+      const now = new Date()
+      const currentMonth = now.getMonth() + 1
+      const currentYear = now.getFullYear()
+
+      const data = await analyticsService.getAll(currentMonth, currentYear)
+
+      const hasSavingsData =
+        !!data?.savingsRate &&
+        (data.savingsRate.income > 0 || data.savingsRate.expense > 0 || data.savingsRate.savings > 0 || data.savingsRate.savingsRate > 0)
+
+      const hasChartsData = Boolean(
+        data?.dailyCashFlow?.length ||
+          data?.topExpenses?.length ||
+          data?.expensesByWeekday?.length ||
+          data?.budgetVsActual?.length ||
+          hasSavingsData
+      )
+
+      if (hasChartsData) {
         setAnalytics(data)
+        setAnalyticsEmpty(false)
+      } else {
+        setAnalytics(null)
+        setAnalyticsEmpty(true)
       }
     } catch (error) {
       console.error('Erro ao carregar analytics:', error)
-      setAnalytics(fallbackAnalyticsData)
+      setAnalytics(null)
+      setAnalyticsEmpty(true)
     } finally {
       setIsLoadingAnalytics(false)
     }
@@ -1253,6 +1232,19 @@ const Dashboard = () => {
             formatCurrency={formatCurrency} 
           />
         </>
+      )}
+
+      {!isLoadingAnalytics && analyticsEmpty && (
+        <div className="card">
+          <div className="py-12 text-center">
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              Nenhum dado neste mês
+            </p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
+              Adicione transações no mês atual para visualizar estes gráficos.
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Loading Analytics */}
