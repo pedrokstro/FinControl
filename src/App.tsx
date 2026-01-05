@@ -17,6 +17,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Landing from './pages/Landing'
+import AuthCallback from './pages/AuthCallback'
 
 // Main Pages (lazy loading para melhor performance)
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -104,6 +105,7 @@ const AnimatedRoutes = () => {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/goodbye" element={
           <Suspense fallback={<PageLoader />}>
             <Goodbye />

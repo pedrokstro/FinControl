@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { imageStorage } from '@/utils/imageStorage'
 import { authService, userService } from '@/services/api'
+import { supabase } from '@/lib/supabaseClient'
 import { useFinancialStore } from './financialStore'
 
 interface User {
@@ -22,6 +23,8 @@ interface AuthState {
   refreshToken: string | null
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<boolean>
+  loginWithGoogle: () => Promise<void>
+  completeSocialLogin: (supabaseAccessToken: string) => Promise<boolean>
   logout: () => Promise<void>
   updateUser: (data: Partial<User>) => Promise<void>
   updateAvatar: (avatarUrl: string) => Promise<void>
@@ -128,6 +131,66 @@ export const useAuthStore = create<AuthState>()(
           }
           
           return false
+        }
+      },
+
+      loginWithGoogle: async () => {
+        const redirectTo =
+          import.meta.env.VITE_SUPABASE_REDIRECT_URL ||
+          `${window.location.origin}/auth/callback`
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo,
+            queryParams: {
+              prompt: 'select_account',
+            },
+          },
+        })
+
+        if (error) {
+          throw error
+        }
+      },
+
+      completeSocialLogin: async (supabaseAccessToken: string) => {
+        try {
+          const response = await authService.loginWithGoogle(supabaseAccessToken)
+
+          const user: User = {
+            id: response.user.id,
+            name: response.user.name,
+            email: response.user.email,
+            avatar: response.user.avatar || undefined,
+            isPremium: response.user.isPremium || false,
+            isTrial: (response.user as any).isTrial || false,
+            isAdmin: (response.user as any).isAdmin || false,
+            emailVerified: true,
+          }
+
+          set({
+            user,
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+            isAuthenticated: true,
+          })
+
+          useFinancialStore.getState().setUserId(user.id)
+
+          try {
+            const savedAvatar = await imageStorage.loadImage(user.id)
+            if (savedAvatar) {
+              set({ user: { ...user, avatar: savedAvatar } })
+            }
+          } catch (error) {
+            console.error('Erro ao carregar avatar do IndexedDB:', error)
+          }
+
+          return true
+        } catch (error) {
+          console.error('Erro ao concluir login social:', error)
+          throw error
         }
       },
 

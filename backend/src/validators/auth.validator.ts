@@ -32,3 +32,9 @@ export const refreshTokenSchema = Joi.object({
     'string.empty': 'Refresh token é obrigatório',
   }),
 });
+
+export const oauthLoginSchema = Joi.object({
+  accessToken: Joi.string().required().messages({
+    'string.empty': 'Token do Supabase é obrigatório',
+  }),
+});

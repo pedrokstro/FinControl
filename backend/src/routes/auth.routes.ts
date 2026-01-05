@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as authController from '@/controllers/auth.controller';
 import { validate } from '@/middlewares/validation.middleware';
-import { registerSchema, loginSchema, refreshTokenSchema } from '@/validators/auth.validator';
+import { registerSchema, loginSchema, refreshTokenSchema, oauthLoginSchema } from '@/validators/auth.validator';
 
 const router = Router();
 
@@ -85,6 +85,28 @@ router.post('/refresh', validate(refreshTokenSchema), authController.refresh);
  *         description: Logout realizado com sucesso
  */
 router.post('/logout', authController.logout);
+
+/**
+ * @swagger
+ * /auth/google:
+ *   post:
+ *     summary: Login com Google via Supabase
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               accessToken:
+ *                 type: string
+ *                 description: Token retornado pelo Supabase após OAuth
+ *     responses:
+ *       200:
+ *         description: Login social realizado com sucesso
+ */
+router.post('/google', validate(oauthLoginSchema), authController.loginWithGoogle);
 
 /**
  * @swagger

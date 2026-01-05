@@ -138,6 +138,11 @@ export const authService = {
     return response.data.data;
   },
 
+  async loginWithGoogle(accessToken: string): Promise<LoginResponse> {
+    const response = await api.post('/auth/google', { accessToken });
+    return response.data.data;
+  },
+
   async logout(refreshToken: string): Promise<void> {
     await api.post('/auth/logout', { refreshToken });
   },

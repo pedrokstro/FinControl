@@ -3,6 +3,7 @@ import { User } from '@/models/User';
 import { RefreshToken } from '@/models/RefreshToken';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '@/utils/jwt';
 import { ConflictError, UnauthorizedError, NotFoundError } from '@/utils/errors';
+import crypto from 'crypto';
 
 export class AuthService {
   private userRepository = AppDataSource.getRepository(User);
@@ -119,5 +120,36 @@ export class AuthService {
 
     user.password = newPassword;
     await this.userRepository.save(user);
+  }
+
+  async loginWithOAuth(data: { email: string; name?: string | null; avatar?: string | null }) {
+    let user = await this.userRepository.findOne({ where: { email: data.email } });
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      user = this.userRepository.create({
+        name: data.name || data.email.split('@')[0],
+        email: data.email,
+        password: randomPassword,
+        avatar: data.avatar || null,
+        emailVerified: true,
+        isActive: true,
+      });
+    } else {
+      if (data.name && user.name !== data.name) {
+        user.name = data.name;
+      }
+      if (data.avatar && user.avatar !== data.avatar) {
+        user.avatar = data.avatar;
+      }
+      if (!user.emailVerified) {
+        user.emailVerified = true;
+      }
+      user.isActive = true;
+    }
+
+    await this.userRepository.save(user);
+    const tokens = await this.generateTokens(user);
+    return { user: user.toJSON(), ...tokens };
   }
 }

@@ -3,7 +3,8 @@ import { AuthService } from '@/services/auth.service';
 import { sendSuccess, sendCreated } from '@/utils/response';
 import verificationService from '@/services/verification.service';
 import { PasswordValidator } from '@/utils/passwordValidator';
-import { BadRequestError } from '@/utils/errors';
+import { BadRequestError, UnauthorizedError } from '@/utils/errors';
+import { supabase } from '@/config/supabase';
 
 const authService = new AuthService();
 
@@ -152,6 +153,49 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     const { refreshToken } = req.body;
     await authService.logout(refreshToken);
     sendSuccess(res, null, 'Logout realizado com sucesso');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const loginWithGoogle = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { accessToken } = req.body;
+
+    if (!accessToken) {
+      throw new BadRequestError('Token do Supabase não fornecido');
+    }
+
+    const { data, error } = await supabase.auth.getUser(accessToken);
+
+    if (error || !data?.user) {
+      throw new UnauthorizedError('Token do Supabase inválido ou expirado');
+    }
+
+    const email = data.user.email;
+    if (!email) {
+      throw new BadRequestError('Conta do Google não forneceu email');
+    }
+
+    const metadata = data.user.user_metadata || {};
+    const name =
+      metadata.full_name ||
+      metadata.name ||
+      metadata.user_name ||
+      email.split('@')[0];
+    const avatar =
+      metadata.avatar_url ||
+      metadata.picture ||
+      metadata.avatar ||
+      null;
+
+    const result = await authService.loginWithOAuth({
+      email,
+      name,
+      avatar,
+    });
+
+    sendSuccess(res, result, 'Login social realizado com sucesso');
   } catch (error) {
     next(error);
   }

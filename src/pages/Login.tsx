@@ -11,8 +11,9 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const navigate = useNavigate()
-  const { login, refreshUserData } = useAuthStore()
+  const { login, refreshUserData, loginWithGoogle } = useAuthStore()
 
   const floatingShapes = [
     { className: 'w-72 h-72 bg-primary-500/20 top-[-80px] right-[-40px]' },
@@ -67,6 +68,19 @@ const Login = () => {
       }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    if (isGoogleLoading || isLoading) return
+
+    setIsGoogleLoading(true)
+    try {
+      await loginWithGoogle()
+    } catch (error: any) {
+      console.error('Erro no login com Google:', error)
+      toast.error(error?.message || 'Não foi possível iniciar o login com Google.')
+      setIsGoogleLoading(false)
     }
   }
 
@@ -219,12 +233,41 @@ const Login = () => {
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
                 className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {isLoading ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
+
+                <div className="my-6 flex items-center gap-4">
+                  <span className="h-px flex-1 bg-gray-200" />
+                  <span className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                    ou
+                  </span>
+                  <span className="h-px flex-1 bg-gray-200" />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={isGoogleLoading || isLoading}
+                  className="w-full border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="w-5 h-5 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 488 512"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 8 401.2 8 264S110.8 24 248 24c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C316.6 100.2 285 88 248 88c-97.2 0-176 78.8-176 176s78.8 176 176 176c89.9 0 147.3-51.6 153-123.9H248v-99.3h240c2.2 11.6 3.9 22.3 3.9 38z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                  {isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}
+                </button>
 
                 <div className="mt-6 text-center space-y-3">
                   <p className="text-sm text-gray-600">
