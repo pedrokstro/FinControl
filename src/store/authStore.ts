@@ -45,10 +45,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           // Tentar login via API
           const response = await authService.login({ email, password })
-          
+
           console.log('🔍 [AuthStore] Resposta do backend:', response.user)
           console.log('🔍 [AuthStore] isPremium do backend:', response.user.isPremium)
-          
+
           const user: User = {
             id: response.user.id,
             name: response.user.name,
@@ -71,11 +71,11 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('EMAIL_NOT_VERIFIED')
           }
 
-          set({ 
-            user, 
+          set({
+            user,
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
-            isAuthenticated: true 
+            isAuthenticated: true
           })
 
           // Definir userId no financialStore para isolar dados
@@ -94,13 +94,13 @@ export const useAuthStore = create<AuthState>()(
           return true
         } catch (error: any) {
           console.error('Erro no login:', error)
-          
+
           // Se for erro 401 (não autorizado), retornar false
           if (error.response?.status === 401) {
             console.log('Credenciais inválidas')
             return false
           }
-          
+
           // Fallback para login demo APENAS se a API não estiver disponível (erro de rede)
           if (!error.response && email === 'demo@financeiro.com' && password === 'demo123') {
             console.log('API indisponível, usando modo demo')
@@ -129,7 +129,7 @@ export const useAuthStore = create<AuthState>()(
 
             return true
           }
-          
+
           return false
         }
       },
@@ -148,6 +148,8 @@ export const useAuthStore = create<AuthState>()(
             },
           },
         })
+
+        console.log('🔗 [Auth] Iniciando OAuth Google com redirect para:', redirectTo)
 
         if (error) {
           throw error
@@ -196,7 +198,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         const state = get()
-        
+
         // Tentar fazer logout na API
         if (state.refreshToken && state.refreshToken !== 'demo-refresh') {
           try {
@@ -205,15 +207,15 @@ export const useAuthStore = create<AuthState>()(
             console.error('Erro ao fazer logout na API:', error)
           }
         }
-        
+
         // Limpar dados financeiros do usuário
         useFinancialStore.getState().clearUserData()
-        
-        set({ 
-          user: null, 
+
+        set({
+          user: null,
           accessToken: null,
           refreshToken: null,
-          isAuthenticated: false 
+          isAuthenticated: false
         })
       },
 
@@ -225,7 +227,7 @@ export const useAuthStore = create<AuthState>()(
           // Se não for demo, atualizar via API
           if (state.accessToken && state.accessToken !== 'demo-token') {
             console.log('🔄 Atualizando perfil via API...', data)
-            
+
             const updatedUser = await userService.updateProfile({
               name: data.name,
               email: data.email,
@@ -246,7 +248,7 @@ export const useAuthStore = create<AuthState>()(
           } else {
             // Modo demo: apenas atualizar localmente
             console.log('📝 Modo demo: atualizando localmente', data)
-            
+
             set((state) => ({
               user: state.user ? { ...state.user, ...data } : null,
             }))
@@ -279,10 +281,10 @@ export const useAuthStore = create<AuthState>()(
           if (avatarUrl.startsWith('data:image')) {
             const blob = await fetch(avatarUrl).then(r => r.blob())
             const file = new File([blob], 'avatar.png', { type: blob.type })
-            
+
             // Enviar para o backend
             const updatedUser = await userService.uploadAvatar(file)
-            
+
             // Atualizar com a resposta do backend (se retornou avatar)
             if (updatedUser.avatar) {
               set({
@@ -318,7 +320,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const userData = await userService.getProfile()
-          
+
           set((state) => ({
             user: state.user ? {
               ...state.user,
@@ -352,7 +354,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const userData = await userService.getProfile()
-          
+
           set((state) => ({
             user: state.user ? {
               ...state.user,
@@ -370,13 +372,13 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user
           ? {
-              id: state.user.id,
-              name: state.user.name,
-              email: state.user.email,
-              isPremium: state.user.isPremium,
-              isAdmin: state.user.isAdmin,
-              // avatar será carregado do IndexedDB
-            }
+            id: state.user.id,
+            name: state.user.name,
+            email: state.user.email,
+            isPremium: state.user.isPremium,
+            isAdmin: state.user.isAdmin,
+            // avatar será carregado do IndexedDB
+          }
           : null,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
