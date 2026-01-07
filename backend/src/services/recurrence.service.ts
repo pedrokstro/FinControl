@@ -89,9 +89,9 @@ class RecurrenceService {
           // Criar nova transação baseada na recorrente
           const nextDate = new Date(transaction.nextOccurrence!);
           const dateString = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
-          
+
           const currentInstallment = (transaction.currentInstallment || 0) + 1;
-          
+
           const newTransaction = this.transactionRepository.create({
             type: transaction.type,
             amount: transaction.amount,
@@ -106,9 +106,9 @@ class RecurrenceService {
           });
 
           await this.transactionRepository.save(newTransaction);
-          
-          const installmentInfo = transaction.totalInstallments 
-            ? `${currentInstallment}/${transaction.totalInstallments}` 
+
+          const installmentInfo = transaction.totalInstallments
+            ? `${currentInstallment}/${transaction.totalInstallments}`
             : 'infinito';
           logger.info(`✅ Created installment ${installmentInfo} from recurring ${transaction.id}`);
 
@@ -197,6 +197,11 @@ class RecurrenceService {
       transactionsWithRelations.push(parentWithRelations);
     }
 
+    // ATENÇÃO: Alteração solicitada pelo usuário.
+    // Não criar parcelas futuras antecipadamente. Deixar o Job processar mês a mês.
+    // O loop for abaixo foi removido para evitar criação de dados futuros no banco.
+
+    /*
     for (let installment = 1; installment < totalMonths; installment++) {
       const occurrenceDate = this.addMonths(baseDate, installment);
       const childEntity = this.transactionRepository.create({
@@ -220,6 +225,7 @@ class RecurrenceService {
         transactionsWithRelations.push(childWithRelations);
       }
     }
+    */
 
     return transactionsWithRelations;
   }
@@ -272,7 +278,7 @@ class RecurrenceService {
     transaction.cancelledAt = new Date();
     transaction.isRecurring = false;
     transaction.nextOccurrence = null;
-    
+
     await this.transactionRepository.save(transaction);
 
     logger.info(`❌ Cancelled recurrence for transaction ${transactionId}`);
