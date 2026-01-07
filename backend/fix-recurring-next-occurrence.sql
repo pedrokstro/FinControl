@@ -35,20 +35,21 @@ calc AS (
       WHEN 'yearly' THEN b.base_date + INTERVAL '1 year'
     END AS next_occurrence
   FROM base b
+),
+updated AS (
+  UPDATE transactions t
+  SET
+    "nextOccurrence" = (calc.next_occurrence AT TIME ZONE 'UTC'),
+    "currentInstallment" = GREATEST(
+      1,
+      COALESCE(t."currentInstallment", 0),
+      COALESCE(calc.max_child_installment, 0)
+    ),
+    "updatedAt" = NOW()
+  FROM calc
+  WHERE t.id = calc.id
+  RETURNING t.id
 )
-UPDATE transactions t
-SET
-  "nextOccurrence" = (calc.next_occurrence AT TIME ZONE 'UTC'),
-  "currentInstallment" = GREATEST(
-    1,
-    COALESCE(t."currentInstallment", 0),
-    COALESCE(calc.max_child_installment, 0)
-  ),
-  "updatedAt" = NOW()
-FROM calc
-WHERE t.id = calc.id;
-
--- Quantos registros foram afetados
-SELECT COUNT(*) AS fixed_transactions FROM calc;
+SELECT COUNT(*) AS fixed_transactions FROM updated;
 
 COMMIT;
