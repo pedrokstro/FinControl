@@ -41,9 +41,14 @@ export class SmartNotificationService {
     amount: number,
     description: string
   ): Promise<void> {
+    // Verificar se amount é válido antes de usar toFixed
+    if (amount === undefined || amount === null || isNaN(amount)) {
+      return; // Não notificar se não tiver valor válido
+    }
+
     const emoji = type === 'income' ? '💰' : '💸';
     const title = type === 'income' ? 'Nova Receita Registrada' : 'Nova Despesa Registrada';
-    const message = `${description} - R$ ${amount.toFixed(2)}`;
+    const message = `${description || 'Transação'} - R$ ${Number(amount).toFixed(2)}`;
 
     await notificationService.create(
       userId,

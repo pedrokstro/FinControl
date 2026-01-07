@@ -9,13 +9,13 @@ const transactionService = new TransactionService();
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
-    const { 
-      isRecurring, 
-      recurrenceType, 
-      recurrenceEndDate, 
-      recurrenceMonths, 
+    const {
+      isRecurring,
+      recurrenceType,
+      recurrenceEndDate,
+      recurrenceMonths,
       totalInstallments,
-      ...transactionData 
+      ...transactionData
     } = req.body;
 
     let transaction;
@@ -35,8 +35,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     }
 
     // Enviar notificações inteligentes (não aguardar para não travar)
-    smartNotificationService.analyzeTransaction(userId, transaction)
-      .catch(err => console.error('Erro ao enviar notificações:', err));
+    // Se for array (recorrente), pegar o primeiro. Se for objeto único, usar direto.
+    const transactionToNotify = Array.isArray(transaction) ? transaction[0] : transaction;
+    if (transactionToNotify) {
+      smartNotificationService.analyzeTransaction(userId, transactionToNotify)
+        .catch(err => console.error('Erro ao enviar notificações:', err));
+    }
 
     sendCreated(res, transaction, 'Transação criada com sucesso');
   } catch (error) {
@@ -49,7 +53,7 @@ export const findAll = async (req: Request, res: Response, next: NextFunction) =
     const userId = req.user!.userId;
     const filters = req.query;
     const result = await transactionService.findAll(userId, filters);
-    
+
     sendPaginated(
       res,
       result.transactions,
