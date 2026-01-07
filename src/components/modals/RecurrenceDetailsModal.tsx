@@ -1,14 +1,14 @@
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { 
-  X, 
-  Repeat, 
-  Calendar, 
-  CalendarCheck, 
-  CalendarX, 
-  Clock, 
-  Hash, 
-  TrendingUp, 
+import {
+  X,
+  Repeat,
+  Calendar,
+  CalendarCheck,
+  CalendarX,
+  Clock,
+  Hash,
+  TrendingUp,
   TrendingDown,
   Infinity,
   CircleDollarSign
@@ -35,7 +35,18 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Não definido'
     try {
-      return format(parseISO(dateString), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+      // Se a data vier no formato ISO com timezone (ex: 2026-08-01T00:00:00.000Z)
+      // Extraímos apenas a parte da data para evitar problemas de timezone
+      let dateToFormat = dateString
+      if (dateString.includes('T')) {
+        dateToFormat = dateString.split('T')[0]
+      }
+
+      // Criar a data usando os componentes para evitar timezone issues
+      const [year, month, day] = dateToFormat.split('-').map(Number)
+      const date = new Date(year, month - 1, day)
+
+      return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
     } catch {
       return 'Data inválida'
     }
@@ -80,7 +91,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
             onClick={onClose}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
           />
-          
+
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -91,11 +102,10 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
           >
             <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
               {/* Header */}
-              <div className={`px-6 py-4 ${
-                transaction.type === 'income' 
-                  ? 'bg-gradient-to-r from-success-500 to-success-600' 
-                  : 'bg-gradient-to-r from-danger-500 to-danger-600'
-              }`}>
+              <div className={`px-6 py-4 ${transaction.type === 'income'
+                ? 'bg-gradient-to-r from-success-500 to-success-600'
+                : 'bg-gradient-to-r from-danger-500 to-danger-600'
+                }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -142,11 +152,10 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 dark:text-neutral-400">Valor por parcela</p>
-                    <p className={`text-lg font-bold ${
-                      transaction.type === 'income' 
-                        ? 'text-success-600 dark:text-success-400' 
-                        : 'text-danger-600 dark:text-danger-400'
-                    }`}>
+                    <p className={`text-lg font-bold ${transaction.type === 'income'
+                      ? 'text-success-600 dark:text-success-400'
+                      : 'text-danger-600 dark:text-danger-400'
+                      }`}>
                       {formatCurrency(transaction.amount)}
                     </p>
                   </div>
@@ -235,11 +244,10 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                         <CircleDollarSign className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-600 dark:text-neutral-400">Valor total estimado</span>
                       </div>
-                      <span className={`text-sm font-bold ${
-                        transaction.type === 'income' 
-                          ? 'text-success-600 dark:text-success-400' 
-                          : 'text-danger-600 dark:text-danger-400'
-                      }`}>
+                      <span className={`text-sm font-bold ${transaction.type === 'income'
+                        ? 'text-success-600 dark:text-success-400'
+                        : 'text-danger-600 dark:text-danger-400'
+                        }`}>
                         {formatCurrency(transaction.amount * transaction.recurrenceMonths)}
                       </span>
                     </div>
