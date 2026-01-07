@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff, Wallet, User, CheckCircle2, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { authService } from '@/services/api'
@@ -38,6 +39,13 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const {
     register,
@@ -91,14 +99,14 @@ const Register = () => {
       })
 
       toast.success('Conta criada! Verifique seu email para ativar sua conta.')
-      
+
       // Redirecionar para verificação de email
       setTimeout(() => {
         navigate(`/verify-email?email=${encodeURIComponent(data.email)}`)
       }, 1500)
     } catch (error: any) {
       console.error('❌ Erro no cadastro:', error)
-      
+
       if (error.response?.status === 409) {
         toast.error('Este email já está cadastrado')
       } else {
@@ -238,9 +246,8 @@ const Register = () => {
                         id="name"
                         type="text"
                         {...register('name')}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${
-                          errors.name ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
+                          }`}
                         placeholder="João Silva"
                         disabled={isLoading}
                       />
@@ -264,9 +271,8 @@ const Register = () => {
                         id="email"
                         type="email"
                         {...register('email')}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${
-                          errors.email ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
+                          }`}
                         placeholder="seu@email.com"
                         disabled={isLoading}
                       />
@@ -290,9 +296,8 @@ const Register = () => {
                         id="password"
                         type={showPassword ? 'text' : 'password'}
                         {...register('password')}
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${
-                          errors.password ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                        }`}
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
+                          }`}
                         placeholder="Mínimo 6 caracteres"
                         disabled={isLoading}
                       />
@@ -340,9 +345,8 @@ const Register = () => {
                         id="confirmPassword"
                         type={showConfirmPassword ? 'text' : 'password'}
                         {...register('confirmPassword')}
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${
-                          errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                        }`}
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
+                          }`}
                         placeholder="Digite a senha novamente"
                         disabled={isLoading}
                       />
@@ -368,9 +372,8 @@ const Register = () => {
                       <input
                         type="checkbox"
                         {...register('acceptTerms')}
-                        className={`w-5 h-5 mt-0.5 text-primary-600 border-gray-300 dark:border-neutral-600 rounded focus:ring-primary-500 cursor-pointer ${
-                          errors.acceptTerms ? 'border-red-500' : ''
-                        }`}
+                        className={`w-5 h-5 mt-0.5 text-primary-600 border-gray-300 dark:border-neutral-600 rounded focus:ring-primary-500 cursor-pointer ${errors.acceptTerms ? 'border-red-500' : ''
+                          }`}
                         disabled={isLoading}
                       />
                       <span className="text-sm text-gray-600 dark:text-neutral-400">
@@ -412,16 +415,16 @@ const Register = () => {
                 <div className="mt-6 text-center space-y-3">
                   <p className="text-sm text-gray-600 dark:text-neutral-400">
                     Já tem uma conta?{' '}
-                    <Link 
-                      to="/login" 
+                    <Link
+                      to="/login"
                       className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
                     >
                       Fazer login
                     </Link>
                   </p>
                   <p className="text-sm text-gray-600 dark:text-neutral-400">
-                    <Link 
-                      to="/about" 
+                    <Link
+                      to="/about"
                       className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
                     >
                       Saiba mais sobre o FinControl

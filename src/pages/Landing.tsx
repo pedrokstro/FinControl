@@ -1,13 +1,15 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useAuthStore } from '@/store/authStore'
 import AnimatedTextCycle from '@/components/ui/animated-text-cycle'
 import { MovingBorderButton } from '@/components/ui/moving-border'
-import { 
-  TrendingUp, 
-  PieChart, 
-  CreditCard, 
-  Shield, 
-  Smartphone, 
+import {
+  TrendingUp,
+  PieChart,
+  CreditCard,
+  Shield,
+  Smartphone,
   BarChart3,
   Wallet,
   Target,
@@ -20,6 +22,13 @@ import {
 
 const Landing = () => {
   const navigate = useNavigate()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const features = [
     {
@@ -346,11 +355,10 @@ const Landing = () => {
                     duration={isHighlighted ? 2500 : 4000}
                     containerClassName="w-full h-full"
                     borderClassName={borderGlow}
-                    className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 ${
-                      isHighlighted
+                    className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 ${isHighlighted
                         ? 'bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-600/30'
                         : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700'
-                    }`}
+                      }`}
                   >
                     <h3 className={`text-2xl font-bold mb-2 ${isHighlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
                       {plan.name}
@@ -372,9 +380,8 @@ const Landing = () => {
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-3">
                           <CheckCircle2
-                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                              isHighlighted ? 'text-success-300' : 'text-primary-600'
-                            }`}
+                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isHighlighted ? 'text-success-300' : 'text-primary-600'
+                              }`}
                           />
                           <span className={isHighlighted ? 'text-primary-50' : 'text-neutral-700 dark:text-neutral-300'}>
                             {feature}
@@ -384,11 +391,10 @@ const Landing = () => {
                     </ul>
                     <button
                       onClick={() => navigate('/register')}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
-                        isHighlighted
+                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${isHighlighted
                           ? 'bg-white text-primary-600 hover:bg-primary-50'
                           : 'bg-primary-600 text-white hover:bg-primary-700'
-                      }`}
+                        }`}
                     >
                       Começar Agora
                     </button>
