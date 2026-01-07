@@ -212,10 +212,19 @@ const AnimatedRoutes = () => {
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
+  const isInitialized = useAuthStore((state) => state.isInitialized)
 
   useEffect(() => {
     initializeAuth()
   }, [initializeAuth])
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900">
+        <PageLoader />
+      </div>
+    )
+  }
 
   return (
     <ThemeProvider>

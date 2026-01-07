@@ -22,6 +22,7 @@ interface AuthState {
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
+  isInitialized: boolean // Novo estado para saber se a verificação inicial terminou
   login: (email: string, password: string) => Promise<boolean>
   loginWithGoogle: () => Promise<void>
   completeSocialLogin: (supabaseAccessToken: string) => Promise<boolean>
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      isInitialized: false, // Começa como falso
 
       login: async (email: string, password: string) => {
         try {
@@ -433,6 +435,8 @@ export const useAuthStore = create<AuthState>()(
 
         } catch (err) {
           console.error('Erro ao inicializar auth:', err)
+        } finally {
+          set({ isInitialized: true })
         }
       },
     }),
