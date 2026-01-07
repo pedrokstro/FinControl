@@ -11,6 +11,6 @@ export const supabase = createClient(supabaseUrl ?? '', supabaseAnonKey ?? '', {
   auth: {
     persistSession: true, // Necessário para OAuth PKCE funcionar (salva code_verifier)
     autoRefreshToken: true,
-    detectSessionInUrl: false, // Vamos lidar manualmente no AuthCallback
+    detectSessionInUrl: true, // SDK detecta e processa o código automaticamente
   },
 })
