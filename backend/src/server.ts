@@ -47,9 +47,13 @@ const startServer = async (): Promise<void> => {
     logger.info('⏰ Premium plan expiration job scheduled');
 
     // Iniciar job de transações recorrentes
-    const { scheduleRecurringTransactionsJob } = await import('./jobs/recurring-transactions.job');
-    scheduleRecurringTransactionsJob();
-    logger.info('⏰ Recurring transactions job scheduled');
+    try {
+      const { scheduleRecurringTransactionsJob } = await import('./jobs/recurring-transactions.job');
+      scheduleRecurringTransactionsJob();
+      logger.info('⏰ Recurring transactions job scheduled');
+    } catch (error) {
+      logger.error('❌ Failed to load recurring transactions job:', error);
+    }
 
     // Iniciar jobs de notificações inteligentes
     const { startNotificationJobs } = await import('./jobs/notificationJobs');
