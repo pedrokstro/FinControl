@@ -20,7 +20,7 @@ import {
   Loader2,
   Info,
 } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO, differenceInMonths } from 'date-fns'
+import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
@@ -30,17 +30,7 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 
-const calculateRecurrenceMonths = (start?: string, end?: string) => {
-  if (!start || !end) return null
-  const startDate = parseISO(start)
-  const endDate = parseISO(end)
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate < startDate) {
-    return null
-  }
-  const diff = differenceInMonths(endDate, startDate)
-  const months = diff + 1
-  return months > 0 ? Math.min(months, 60) : null
-}
+
 
 const transactionSchema = z
   .object({
@@ -51,10 +41,6 @@ const transactionSchema = z
     date: z.string().min(1, 'Data e obrigatoria'),
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
-    recurrenceMode: z.enum(['date', 'installments', 'infinite']).optional(),
-    recurrenceEndDate: z.string().optional(),
-    recurrenceStartDate: z.string().optional(),
-    recurrenceMonths: z.string().optional(),
     totalInstallments: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -67,73 +53,29 @@ const transactionSchema = z
         })
       }
 
-      // Validação baseada no modo escolhido
-      if (data.recurrenceMode === 'date') {
-        if (!data.recurrenceStartDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['recurrenceStartDate'],
-            message: 'Data inicial é obrigatória',
-          })
-        }
-        if (!data.recurrenceEndDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['recurrenceEndDate'],
-            message: 'Data final é obrigatória',
-          })
-        }
-        if (data.recurrenceStartDate && data.recurrenceEndDate) {
-          const start = parseISO(data.recurrenceStartDate)
-          const end = parseISO(data.recurrenceEndDate)
-          if (end < start) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ['recurrenceEndDate'],
-              message: 'Data final deve ser depois da data inicial',
-            })
-          } else {
-            const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
-            if (!months) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ['recurrenceEndDate'],
-                message: 'Período inválido',
-              })
-            } else if (months > 60) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ['recurrenceEndDate'],
-                message: 'Limite máximo de 60 meses',
-              })
-            }
-          }
-        }
-      } else if (data.recurrenceMode === 'installments') {
-        if (!data.totalInstallments) {
+      // Validação do número de parcelas
+      if (!data.totalInstallments) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['totalInstallments'],
+          message: 'Número de parcelas é obrigatório',
+        })
+      } else {
+        const installments = parseInt(data.totalInstallments)
+        if (isNaN(installments) || installments < 2) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['totalInstallments'],
-            message: 'Número de parcelas é obrigatório',
+            message: 'Mínimo de 2 parcelas',
           })
-        } else {
-          const installments = parseInt(data.totalInstallments)
-          if (isNaN(installments) || installments < 2) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ['totalInstallments'],
-              message: 'Mínimo de 2 parcelas',
-            })
-          } else if (installments > 360) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ['totalInstallments'],
-              message: 'Máximo de 360 parcelas',
-            })
-          }
+        } else if (installments > 360) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['totalInstallments'],
+            message: 'Máximo de 360 parcelas',
+          })
         }
       }
-      // Modo 'infinite' não precisa de validações adicionais
     }
   })
 
@@ -169,7 +111,6 @@ const Transactions = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
-  const [recurrenceMode, setRecurrenceMode] = useState<'date' | 'installments' | 'infinite'>('date')
 
   const {
     register,
@@ -183,37 +124,10 @@ const Transactions = () => {
     defaultValues: {
       type: 'expense',
       date: format(new Date(), 'yyyy-MM-dd'),
-      recurrenceStartDate: format(new Date(), 'yyyy-MM-dd'),
-      recurrenceEndDate: undefined,
     },
   })
 
   const transactionType = watch('type')
-  const recurrenceStartDate = watch('recurrenceStartDate')
-  const recurrenceEndDate = watch('recurrenceEndDate')
-  const computedRecurrenceMonths = useMemo(
-    () => calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate),
-    [recurrenceStartDate, recurrenceEndDate]
-  )
-
-  useEffect(() => {
-    if (isRecurring && recurrenceStartDate) {
-      setValue('date', recurrenceStartDate)
-    }
-  }, [isRecurring, recurrenceStartDate, setValue])
-
-  useEffect(() => {
-    if (isRecurring && recurrenceStartDate && recurrenceEndDate) {
-      const months = calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate)
-      if (months) {
-        setValue('recurrenceMonths', months.toString())
-      } else {
-        setValue('recurrenceMonths', undefined)
-      }
-    } else {
-      setValue('recurrenceMonths', undefined)
-    }
-  }, [isRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
 
   const categoryIconMap = useMemo(() => {
     const map = new Map<string, { icon: string; name: string; color?: string }>()
@@ -304,12 +218,7 @@ const Transactions = () => {
         ? transaction.date.split('T')[0]
         : transaction.date
 
-      // Formatar recurrenceEndDate se existir
-      const recurrenceEndDate = transaction.recurrenceEndDate
-        ? (transaction.recurrenceEndDate.includes('T')
-          ? transaction.recurrenceEndDate.split('T')[0]
-          : transaction.recurrenceEndDate)
-        : undefined
+
 
       reset({
         type: transaction.type,
@@ -317,10 +226,9 @@ const Transactions = () => {
         categoryId: transaction.categoryId,
         description: transaction.description,
         date: transactionDate,
-        recurrenceStartDate: transactionDate,
         isRecurring: transaction.isRecurring || false,
         recurrenceType: transaction.recurrenceType || undefined,
-        recurrenceEndDate: recurrenceEndDate,
+        totalInstallments: transaction.recurrenceMonths?.toString() || '',
       })
     } else {
       setEditingId(null)
@@ -331,10 +239,9 @@ const Transactions = () => {
         categoryId: '',
         description: '',
         date: format(selectedMonth, 'yyyy-MM-dd'),
-        recurrenceStartDate: format(selectedMonth, 'yyyy-MM-dd'),
         isRecurring: false,
         recurrenceType: undefined,
-        recurrenceEndDate: undefined,
+        totalInstallments: '',
       })
     }
     setShowModal(true)
@@ -355,13 +262,10 @@ const Transactions = () => {
       amount: parseFloat(data.amount),
       description: data.description,
       date: data.date,
-      categoryId: data.categoryId, // ✅ Enviar categoryId, não category
-      // Adicionar campos de recorrência se marcado
+      categoryId: data.categoryId,
       isRecurring: isRecurring,
       recurrenceType: isRecurring ? data.recurrenceType : undefined,
-      recurrenceStartDate: isRecurring ? data.recurrenceStartDate : undefined,
-      recurrenceEndDate: isRecurring && data.recurrenceEndDate ? data.recurrenceEndDate : undefined,
-      recurrenceMonths: isRecurring && data.recurrenceMonths ? Number(data.recurrenceMonths) : undefined,
+      recurrenceMonths: isRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
     }
 
     if (editingId) {
@@ -890,7 +794,6 @@ const Transactions = () => {
             )}
 
             <form id="transaction-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <input type="hidden" {...register('recurrenceMonths')} />
               <div>
                 <label className="label">Tipo</label>
                 <div className="grid grid-cols-2 gap-3">
@@ -990,14 +893,9 @@ const Transactions = () => {
                     onChange={(e) => {
                       const checked = e.target.checked
                       setIsRecurring(checked)
-                      if (checked) {
-                        const currentDate = watch('date')
-                        setValue('recurrenceStartDate', currentDate)
-                      } else {
+                      if (!checked) {
                         setValue('recurrenceType', undefined)
-                        setValue('recurrenceStartDate', undefined)
-                        setValue('recurrenceEndDate', undefined)
-                        setValue('recurrenceMonths', undefined)
+                        setValue('totalInstallments', '')
                       }
                     }}
                     className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
@@ -1028,117 +926,27 @@ const Transactions = () => {
                       )}
                     </div>
 
-                    {/* Modo de Recorrência */}
+                    {/* Número de Parcelas */}
                     <div>
-                      <label className="label">Modo de Recorrência</label>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="date"
-                            checked={recurrenceMode === 'date'}
-                            onChange={() => {
-                              setRecurrenceMode('date')
-                              setValue('recurrenceMode', 'date')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="installments"
-                            checked={recurrenceMode === 'installments'}
-                            onChange={() => {
-                              setRecurrenceMode('installments')
-                              setValue('recurrenceMode', 'installments')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="infinite"
-                            checked={recurrenceMode === 'infinite'}
-                            onChange={() => {
-                              setRecurrenceMode('infinite')
-                              setValue('recurrenceMode', 'infinite')
-                            }}
-                            className="w-4 h-4 text-primary-600"
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
-                        </label>
-                      </div>
+                      <label className="label">Número de Parcelas</label>
+                      <input
+                        type="number"
+                        min="2"
+                        max="360"
+                        placeholder="Ex: 12"
+                        {...register('totalInstallments')}
+                        className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
+                      />
+                      {errors.totalInstallments && (
+                        <p className="error-message">{errors.totalInstallments.message}</p>
+                      )}
                     </div>
 
-                    {/* Campos baseados no modo */}
-                    {recurrenceMode === 'date' && (
-                      <>
-                        <div>
-                          <label className="label">Data Inicial</label>
-                          <input
-                            type="date"
-                            {...register('recurrenceStartDate')}
-                            className={`input-field ${errors.recurrenceStartDate ? 'input-error' : ''}`}
-                          />
-                          {errors.recurrenceStartDate && (
-                            <p className="error-message">{errors.recurrenceStartDate.message}</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="label">Data Final</label>
-                          <input
-                            type="date"
-                            {...register('recurrenceEndDate')}
-                            className={`input-field ${errors.recurrenceEndDate ? 'input-error' : ''}`}
-                          />
-                          {errors.recurrenceEndDate && (
-                            <p className="error-message">{errors.recurrenceEndDate.message}</p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
-                          {computedRecurrenceMonths
-                            ? <p>Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.</p>
-                            : <p>Selecione datas válidas (máx. 60 meses).</p>
-                          }
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'installments' && (
-                      <>
-                        <div>
-                          <label className="label">Número de Parcelas</label>
-                          <input
-                            type="number"
-                            min="2"
-                            max="360"
-                            placeholder="Ex: 12"
-                            {...register('totalInstallments')}
-                            className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
-                          />
-                          {errors.totalInstallments && (
-                            <p className="error-message">{errors.totalInstallments.message}</p>
-                          )}
-                        </div>
-                        <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                          <p className="text-xs text-primary-700 dark:text-primary-300">
-                            <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    {recurrenceMode === 'infinite' && (
-                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                        <p className="text-xs text-primary-700 dark:text-primary-300">
-                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
-                        </p>
-                      </div>
-                    )}
+                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                      <p className="text-xs text-primary-700 dark:text-primary-300">
+                        <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente conforme a frequência selecionada até completar o total.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
