@@ -26,7 +26,7 @@ const Landing = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/app/dashboard', { replace: true })
+      navigate('/app/transactions', { replace: true })
     }
   }, [isAuthenticated, navigate])
 
@@ -356,8 +356,8 @@ const Landing = () => {
                     containerClassName="w-full h-full"
                     borderClassName={borderGlow}
                     className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 ${isHighlighted
-                        ? 'bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-600/30'
-                        : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700'
+                      ? 'bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-600/30'
+                      : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700'
                       }`}
                   >
                     <h3 className={`text-2xl font-bold mb-2 ${isHighlighted ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
@@ -392,8 +392,8 @@ const Landing = () => {
                     <button
                       onClick={() => navigate('/register')}
                       className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${isHighlighted
-                          ? 'bg-white text-primary-600 hover:bg-primary-50'
-                          : 'bg-primary-600 text-white hover:bg-primary-700'
+                        ? 'bg-white text-primary-600 hover:bg-primary-50'
+                        : 'bg-primary-600 text-white hover:bg-primary-700'
                         }`}
                     >
                       Começar Agora

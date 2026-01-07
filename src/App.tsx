@@ -140,7 +140,7 @@ const AnimatedRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/app/dashboard" replace />} />
+          <Route index element={<Navigate to="/app/transactions" replace />} />
           <Route path="dashboard" element={
             <Suspense fallback={<PageLoader />}>
               <Dashboard />
