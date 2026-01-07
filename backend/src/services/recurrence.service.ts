@@ -141,7 +141,8 @@ class RecurrenceService {
     transactionData: Partial<Transaction>,
     recurrenceType: RecurrenceType,
     recurrenceEndDate?: Date,
-    recurrenceMonths: number = 1
+    recurrenceMonths: number = 1,
+    totalInstallments?: number
   ): Promise<Transaction[]> {
     console.log('🔄 [DEBUG] Data recebida (recorrente):', transactionData.date, 'Tipo:', typeof transactionData.date);
 
@@ -161,6 +162,13 @@ class RecurrenceService {
       throw new Error('Missing data to create recurring transaction');
     }
 
+    const installmentsLimit =
+      totalInstallments ??
+      transactionData.totalInstallments ??
+      (recurrenceMonths > 1 ? recurrenceMonths : undefined);
+
+    const nextOccurrenceDate = this.calculateNextOccurrence(baseDate, recurrenceType);
+
     const parentEntity = this.transactionRepository.create({
       type: transactionData.type,
       amount,
@@ -171,7 +179,9 @@ class RecurrenceService {
       isRecurring: true,
       recurrenceType,
       recurrenceEndDate: finalEndDate || null,
-      nextOccurrence: null,
+      nextOccurrence: nextOccurrenceDate,
+      currentInstallment: transactionData.currentInstallment ?? 1,
+      totalInstallments: installmentsLimit ?? null,
     });
 
     const savedParent = await this.transactionRepository.save(parentEntity);
