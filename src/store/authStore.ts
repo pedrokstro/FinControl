@@ -31,6 +31,7 @@ interface AuthState {
   loadAvatar: () => Promise<void>
   refreshUserData: () => Promise<void>
   refreshPremiumStatus: () => Promise<void>
+  initializeAuth: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -363,6 +364,75 @@ export const useAuthStore = create<AuthState>()(
           }))
         } catch (error) {
           console.error('Erro ao atualizar status premium:', error)
+        }
+      },
+
+      initializeAuth: async () => {
+        console.log('🔄 Inicializando autenticação...')
+        try {
+          // Verificar sessão atual no Supabase (recupera do localStorage do Supabase)
+          const { data, error } = await supabase.auth.getSession()
+
+          if (error) {
+            console.warn('⚠️ Erro ao verificar sessão Supabase:', error)
+            return
+          }
+
+          if (data.session?.access_token) {
+            console.log('✅ Sessão Supabase encontrada/restaurada.')
+
+            // Se já temos estado local autenticado, verificamos se precisa atualizar token
+            const state = get()
+            if (state.isAuthenticated && state.user) {
+              // Apenas atualiza tokens se mudaram
+              if (state.accessToken !== data.session.access_token) {
+                console.log('♻️ Atualizando tokens no estado local')
+                set({
+                  accessToken: data.session.access_token,
+                  refreshToken: data.session.refresh_token,
+                })
+              }
+              return
+            }
+
+            // Se não temos estado local (ex: refresh com limpeza parcial), mas temos sessão do Supabase,
+            // precisamos "reconstituir" o login social
+            console.log('🔄 Sessão existe mas estado local vazio. Restaurando login...')
+            await get().completeSocialLogin(data.session.access_token)
+          } else {
+            // Sem sessão no Supabase. Se tinhamos estado local (exceto demo), devemos limpar
+            const state = get()
+            if (state.isAuthenticated && state.accessToken !== 'demo-token') {
+              console.log('⚠️ Sessão expirada. Fazendo logout local.')
+              set({
+                user: null,
+                accessToken: null,
+                refreshToken: null,
+                isAuthenticated: false
+              })
+            }
+          }
+
+          // Configurar listener para mudanças futuras de sessão (ex: refresh automatico de token)
+          supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log(`🔔 Auth state mudou: ${event}`)
+            if (event === 'TOKEN_REFRESHED' && session) {
+              set({
+                accessToken: session.access_token,
+                refreshToken: session.refresh_token,
+              })
+            } else if (event === 'SIGNED_OUT') {
+              set({
+                user: null,
+                accessToken: null,
+                refreshToken: null,
+                isAuthenticated: false
+              })
+            }
+          })
+
+        } catch (err) {
+          console.error('Erro ao inicializar auth:', err)
         }
       },
     }),

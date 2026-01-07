@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster, toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useAuthStore } from './store/authStore'
@@ -57,10 +57,10 @@ const PageLoader = () => (
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const accessToken = useAuthStore((state) => state.accessToken)
-  
+
   // Verificar se está autenticado E tem token válido
   const isValid = isAuthenticated && accessToken
-  
+
   return isValid ? <>{children}</> : <Navigate to="/login" replace />
 }
 
@@ -68,25 +68,25 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useAuthStore((state) => state.user)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  
+
   // Verificar se está autenticado E é admin
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  
+
   if (!user?.isAdmin) {
     // Redirecionar para dashboard com mensagem de erro
     toast.error('Acesso negado! Você não tem permissão de administrador.')
     return <Navigate to="/app/dashboard" replace />
   }
-  
+
   return <>{children}</>
 }
 
 // Animated Routes Component
 const AnimatedRoutes = () => {
   const location = useLocation()
-  
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -131,7 +131,7 @@ const AnimatedRoutes = () => {
             <Support />
           </Suspense>
         } />
-        
+
         <Route
           path="/app"
           element={
@@ -211,36 +211,42 @@ const AnimatedRoutes = () => {
 }
 
 function App() {
+  const initializeAuth = useAuthStore((state) => state.initializeAuth)
+
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
+
   return (
     <ThemeProvider>
       <Router>
         <AnimatedRoutes />
-        <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            iconTheme: {
-              primary: '#22c55e',
-              secondary: '#fff',
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
             },
-          },
-          error: {
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
+            success: {
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#fff',
+              },
             },
-          },
-        }}
-      />
-      <PWAInstallPrompt />
-      <OfflineIndicator />
-      <Analytics />
-      <SpeedInsights />
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        <PWAInstallPrompt />
+        <OfflineIndicator />
+        <Analytics />
+        <SpeedInsights />
       </Router>
     </ThemeProvider>
   )
