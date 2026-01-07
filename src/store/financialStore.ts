@@ -33,6 +33,14 @@ const normalizeTransaction = (tx: any) => ({
   amount: Number(tx.amount),
   category: typeof tx.category === 'string' ? tx.category : tx.category?.name || '',
   date: normalizeDate(tx.date),
+  // Manter campos de recorrência preservando o formato original (não normalizar datas de recorrência)
+  isRecurring: tx.isRecurring,
+  recurrenceType: tx.recurrenceType,
+  recurrenceStartDate: tx.recurrenceStartDate,
+  recurrenceEndDate: tx.recurrenceEndDate,
+  nextOccurrence: tx.nextOccurrence,
+  recurrenceMonths: tx.recurrenceMonths ? Number(tx.recurrenceMonths) : undefined,
+  parentTransactionId: tx.parentTransactionId,
 })
 
 const getCurrentMonthRange = () => {
@@ -83,29 +91,29 @@ export const useFinancialStore = create<FinancialState>()(
       addTransaction: async (transaction) => {
         try {
           set({ isLoading: true, isCreatingTransaction: true })
-          
+
           // Garantir que a data seja sempre string no formato YYYY-MM-DD
           const dateValue: any = transaction.date;
           const recurrenceEndDateValue: any = transaction.recurrenceEndDate;
-          
+
           const transactionData = {
             ...transaction,
-            date: typeof dateValue === 'string' 
-              ? dateValue 
+            date: typeof dateValue === 'string'
+              ? dateValue
               : dateValue instanceof Date
                 ? `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}-${String(dateValue.getDate()).padStart(2, '0')}`
                 : dateValue,
             recurrenceEndDate: recurrenceEndDateValue
               ? (typeof recurrenceEndDateValue === 'string'
-                  ? recurrenceEndDateValue
-                  : recurrenceEndDateValue instanceof Date
-                    ? `${recurrenceEndDateValue.getFullYear()}-${String(recurrenceEndDateValue.getMonth() + 1).padStart(2, '0')}-${String(recurrenceEndDateValue.getDate()).padStart(2, '0')}`
-                    : recurrenceEndDateValue)
+                ? recurrenceEndDateValue
+                : recurrenceEndDateValue instanceof Date
+                  ? `${recurrenceEndDateValue.getFullYear()}-${String(recurrenceEndDateValue.getMonth() + 1).padStart(2, '0')}-${String(recurrenceEndDateValue.getDate()).padStart(2, '0')}`
+                  : recurrenceEndDateValue)
               : undefined
           };
-          
+
           console.log('💾 [STORE] Enviando transação:', transactionData);
-          
+
           const result = await transactionService.create(transactionData)
           const createdTransactions = Array.isArray(result) ? result : [result]
 
@@ -152,31 +160,31 @@ export const useFinancialStore = create<FinancialState>()(
         try {
           set({ isLoading: true })
           console.log('🗑️ Excluindo transação:', id)
-          
+
           await transactionService.delete(id)
           console.log('✅ Transação excluída do backend')
-          
+
           set((state) => ({
             transactions: state.transactions.filter((t) => t.id !== id),
             isLoading: false,
           }))
           console.log('✅ Transação removida do store')
-          
+
           toast.success('Transação excluída com sucesso')
         } catch (error: any) {
           set({ isLoading: false })
-          
+
           console.error('❌ Erro ao excluir transação:', error)
           console.error('❌ Status:', error.response?.status)
           console.error('❌ Mensagem:', error.response?.data)
-          
+
           // Tratar erro 429 (Too Many Requests)
           if (error.response?.status === 429) {
             toast.error('Muitas requisições. Aguarde alguns segundos e tente novamente.')
           } else {
             toast.error('Erro ao excluir transação')
           }
-          
+
           throw error
         }
       },
@@ -185,10 +193,10 @@ export const useFinancialStore = create<FinancialState>()(
         try {
           set({ isLoading: true })
           console.log('➕ Criando categoria no backend:', category)
-          
+
           const newCategory = await categoryService.create(category)
           console.log('✅ Categoria criada:', newCategory)
-          
+
           set((state) => ({
             categories: [...state.categories, newCategory],
             isLoading: false,
@@ -206,10 +214,10 @@ export const useFinancialStore = create<FinancialState>()(
         try {
           set({ isLoading: true })
           console.log('✏️ Atualizando categoria no backend:', id, updatedData)
-          
+
           const updatedCategory = await categoryService.update(id, updatedData)
           console.log('✅ Categoria atualizada:', updatedCategory)
-          
+
           set((state) => ({
             categories: state.categories.map((c) =>
               c.id === id ? updatedCategory : c
@@ -229,7 +237,7 @@ export const useFinancialStore = create<FinancialState>()(
         try {
           const state = get()
           const hasTransactions = state.transactions.some(t => t.categoryId === id)
-          
+
           if (hasTransactions) {
             toast.error('Não é possível excluir uma categoria com transações')
             return
@@ -237,10 +245,10 @@ export const useFinancialStore = create<FinancialState>()(
 
           set({ isLoading: true })
           console.log('🗑️ Excluindo categoria do backend:', id)
-          
+
           await categoryService.delete(id)
           console.log('✅ Categoria excluída do backend')
-          
+
           set((state) => ({
             categories: state.categories.filter((c) => c.id !== id),
             isLoading: false,
@@ -288,7 +296,7 @@ export const useFinancialStore = create<FinancialState>()(
 
       setUserId: (userId) => {
         const state = get()
-        
+
         // Se mudou de usuário, limpar dados
         if (state.currentUserId && state.currentUserId !== userId) {
           set({
@@ -377,7 +385,7 @@ export const useFinancialStore = create<FinancialState>()(
 
             allTransactions.push(...data.transactions.map(normalizeTransaction))
           }
-          
+
           console.log('✅ Total de transações sincronizadas:', allTransactions.length)
           set(() => {
             const { month, year } = getCurrentMonthRange()
@@ -424,11 +432,11 @@ export const useFinancialStore = create<FinancialState>()(
         getItem: (name: string) => {
           const str = localStorage.getItem(name)
           if (!str) return null
-          
+
           try {
             const { state } = JSON.parse(str)
             const userId = state?.currentUserId
-            
+
             // Se não houver userId, retornar estado vazio
             if (!userId) {
               return {
@@ -439,15 +447,15 @@ export const useFinancialStore = create<FinancialState>()(
                 },
               }
             }
-            
+
             // Buscar dados específicos do usuário
             const userKey = `${name}_user_${userId}`
             const userStr = localStorage.getItem(userKey)
-            
+
             if (userStr) {
               return JSON.parse(userStr)
             }
-            
+
             // Se não houver dados do usuário, retornar estado vazio
             return {
               state: {
@@ -464,12 +472,12 @@ export const useFinancialStore = create<FinancialState>()(
           try {
             const state = value?.state || value
             const userId = state?.currentUserId
-            
+
             // Salvar currentUserId no storage principal
             localStorage.setItem(name, JSON.stringify({
               state: { currentUserId: userId },
             }))
-            
+
             // Se houver userId, salvar dados do usuário separadamente
             if (userId) {
               const userKey = `${name}_user_${userId}`
@@ -482,7 +490,7 @@ export const useFinancialStore = create<FinancialState>()(
         removeItem: (name: string) => {
           // Remover storage principal
           localStorage.removeItem(name)
-          
+
           // Remover todos os storages de usuários
           const keys = Object.keys(localStorage)
           keys.forEach(key => {

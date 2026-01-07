@@ -19,7 +19,9 @@ export interface Transaction {
   updatedAt: string;
   isRecurring?: boolean;
   recurrenceType?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  recurrenceStartDate?: string;
   recurrenceEndDate?: string;
+  recurrenceMonths?: number;
   nextOccurrence?: string;
   parentTransactionId?: string;
 }
@@ -79,16 +81,16 @@ class TransactionService {
     const dataToSend = {
       ...data,
       date: typeof data.date === 'string' ? data.date : data.date,
-      recurrenceEndDate: data.recurrenceEndDate && typeof data.recurrenceEndDate === 'string' 
-        ? data.recurrenceEndDate 
+      recurrenceEndDate: data.recurrenceEndDate && typeof data.recurrenceEndDate === 'string'
+        ? data.recurrenceEndDate
         : data.recurrenceEndDate,
       recurrenceMonths: data.recurrenceMonths,
     };
-    
+
     console.log('📤 [FRONTEND] Enviando para API:', dataToSend);
     console.log('📤 [FRONTEND] Tipo da data:', typeof dataToSend.date);
     console.log('📤 [FRONTEND] JSON.stringify:', JSON.stringify(dataToSend));
-    
+
     // Usar fetch ao invés de axios para ter controle total
     const authStorage = localStorage.getItem('auth-storage');
     let token = '';
@@ -96,7 +98,7 @@ class TransactionService {
       const { state } = JSON.parse(authStorage);
       token = state?.accessToken || '';
     }
-    
+
     const response = await fetch(`${api.defaults.baseURL}/transactions`, {
       method: 'POST',
       headers: {
@@ -105,7 +107,7 @@ class TransactionService {
       },
       body: JSON.stringify(dataToSend)
     });
-    
+
     const result = await response.json();
     return result.data;
   }
