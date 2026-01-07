@@ -214,6 +214,9 @@ export const useAuthStore = create<AuthState>()(
         // Limpar dados financeiros do usuário
         useFinancialStore.getState().clearUserData()
 
+        // Logout do Supabase (para remover sessão do localStorage/cookies)
+        await supabase.auth.signOut()
+
         set({
           user: null,
           accessToken: null,
