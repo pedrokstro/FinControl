@@ -9,7 +9,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl ?? '', supabaseAnonKey ?? '', {
   auth: {
-    persistSession: false,
-    detectSessionInUrl: true,
+    persistSession: true, // Necessário para OAuth PKCE funcionar (salva code_verifier)
+    autoRefreshToken: true,
+    detectSessionInUrl: false, // Vamos lidar manualmente no AuthCallback
   },
 })
