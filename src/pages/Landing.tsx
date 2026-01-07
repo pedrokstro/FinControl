@@ -11,7 +11,7 @@ import {
   Shield,
   Smartphone,
   BarChart3,
-  Wallet,
+
   Target,
   ArrowRight,
   CheckCircle2,
@@ -97,8 +97,8 @@ const Landing = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl">
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
                 FinControl
@@ -482,8 +482,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-400 rounded-lg flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-white p-0.5">
+                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-xl font-bold">FinControl</span>
               </div>

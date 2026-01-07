@@ -1,7 +1,7 @@
 import { useState, FormEvent, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Lock, Mail, Eye, EyeOff, Wallet } from 'lucide-react'
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import AnimatedPage from '@/components/common/AnimatedPage'
 import { motion } from 'framer-motion'
@@ -111,8 +111,8 @@ const Login = () => {
           transition={{ duration: 0.7 }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
-              <Wallet className="w-7 h-7 text-primary-600" />
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
             </div>
             <span className="text-3xl font-bold text-white">FinControl</span>
           </div>
@@ -148,8 +148,8 @@ const Login = () => {
           <div className="w-full max-w-md">
             {/* Logo for mobile */}
             <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                <Wallet className="w-7 h-7 text-primary-600" />
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <div>
                 <span className="text-3xl font-bold block">FinControl</span>
@@ -260,17 +260,12 @@ const Login = () => {
                   disabled={isGoogleLoading || isLoading}
                   className="w-full border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="w-5 h-5 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 488 512"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 8 401.2 8 264S110.8 24 248 24c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C316.6 100.2 285 88 248 88c-97.2 0-176 78.8-176 176s78.8 176 176 176c89.9 0 147.3-51.6 153-123.9H248v-99.3h240c2.2 11.6 3.9 22.3 3.9 38z"
-                        fill="currentColor"
-                      />
-                    </svg>
+                  <span className="w-6 h-6 flex items-center justify-center">
+                    <img
+                      src="/icons/icons8-google-logo-240.png"
+                      alt="Google Logo"
+                      className="w-full h-full object-contain"
+                    />
                   </span>
                   {isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}
                 </button>

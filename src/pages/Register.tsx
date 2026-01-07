@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuthStore } from '@/store/authStore'
-import { Lock, Mail, Eye, EyeOff, Wallet, User, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Lock, Mail, Eye, EyeOff, User, CheckCircle2, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { authService } from '@/services/api'
 import AnimatedPage from '@/components/common/AnimatedPage'
@@ -139,8 +139,8 @@ const Register = () => {
           transition={{ duration: 0.7 }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
-              <Wallet className="w-7 h-7 text-primary-600" />
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
             </div>
             <span className="text-3xl font-bold text-white">FinControl</span>
           </div>
@@ -204,8 +204,8 @@ const Register = () => {
         >
           <div className="w-full max-w-md">
             <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                <Wallet className="w-7 h-7 text-primary-600" />
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <div>
                 <span className="text-3xl font-bold block">FinControl</span>
