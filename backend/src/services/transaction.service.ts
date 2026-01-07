@@ -9,13 +9,13 @@ export class TransactionService {
   async create(userId: string, data: any) {
     // Log para debug - TIMEZONE FIX ATIVO
     console.log('📅 [DEBUG] Data recebida:', data.date, 'Tipo:', typeof data.date);
-    
+
     // Garantir que a data seja tratada corretamente
     // IMPORTANTE: Adicionar 1 dia para compensar o timezone do frontend (UTC-3)
     let transactionDate: string;
     if (data.date) {
       let dateObj: Date;
-      
+
       if (typeof data.date === 'string') {
         // Parse da string no formato YYYY-MM-DD ou DD/MM/YYYY
         if (data.date.includes('/')) {
@@ -29,9 +29,9 @@ export class TransactionService {
         console.log('📅 [DEBUG] Data recebida como objeto Date');
         dateObj = new Date(data.date);
       }
-      
+
       console.log('📅 [DEBUG] Data antes de ajuste:', dateObj.toISOString());
-      
+
       // ADICIONAR dias conforme configuração de timezone
       // Desenvolvimento (UTC-3): +1 dia
       // Produção (UTC+0): +0 dias
@@ -39,15 +39,15 @@ export class TransactionService {
       if (timezoneOffset > 0) {
         dateObj.setDate(dateObj.getDate() + timezoneOffset);
       }
-      
+
       console.log('📅 [DEBUG] Data depois de ajuste (+' + timezoneOffset + ' dia):', dateObj.toISOString());
-      
+
       // USAR UTC para evitar problemas de timezone
       const year = dateObj.getUTCFullYear();
       const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
       const day = String(dateObj.getUTCDate()).padStart(2, '0');
       transactionDate = `${year}-${month}-${day}`;
-      
+
       console.log('📅 [DEBUG] Data original:', data.date);
       console.log('📅 [DEBUG] Data final salva:', transactionDate);
     } else {
@@ -56,13 +56,13 @@ export class TransactionService {
       today.setDate(today.getDate() + 1);
       transactionDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     }
-    
+
     // Log dos parâmetros que serão enviados
     console.log('💾 [DEBUG] Salvando transação com parâmetros:');
     console.log('  - Data:', transactionDate);
     console.log('  - Tipo:', data.type);
     console.log('  - Descrição:', data.description);
-    
+
     // Criar transação usando TypeORM
     const transaction = this.transactionRepository.create({
       type: data.type,
@@ -77,11 +77,11 @@ export class TransactionService {
       nextOccurrence: data.nextOccurrence || null,
       parentTransactionId: data.parentTransactionId || null,
     });
-    
+
     const savedTransaction = await this.transactionRepository.save(transaction);
-    
+
     console.log('✅ [DEBUG] Transação criada com ID:', savedTransaction.id);
-    
+
     return this.transactionRepository.findOne({
       where: { id: savedTransaction.id },
       relations: ['category'],
@@ -90,23 +90,23 @@ export class TransactionService {
 
   async findAll(userId: string, filters: any) {
     console.log('🔍 [DEBUG] Buscando transações...');
-    const { 
-      month, 
-      year, 
-      type, 
-      categoryId, 
-      page = 1, 
-      limit = 10, 
-      sortBy = 'date', 
-      sortOrder = 'desc' 
+    const {
+      month,
+      year,
+      type,
+      categoryId,
+      page = 1,
+      limit = 10,
+      sortBy = 'date',
+      sortOrder = 'desc'
     } = filters;
-    
+
     const where: any = { userId };
-    
+
     if (type) {
       where.type = type;
     }
-    
+
     if (categoryId) {
       where.categoryId = categoryId;
     }
@@ -134,7 +134,7 @@ export class TransactionService {
     const transactionsWithFixedDates = transactions.map((t: any) => {
       let dateString: string;
       const dateValue = t.date;
-      
+
       if (typeof dateValue === 'string') {
         // Se já é string, extrair apenas YYYY-MM-DD
         dateString = dateValue.includes('T') ? dateValue.split('T')[0] : dateValue;
@@ -144,10 +144,31 @@ export class TransactionService {
       } else {
         dateString = String(dateValue);
       }
-      
+
+      // Serializar campos de recorrência (são timestamps no banco)
+      let recurrenceEndDateISO: string | null = null;
+      if (t.recurrenceEndDate) {
+        if (t.recurrenceEndDate instanceof Date) {
+          recurrenceEndDateISO = t.recurrenceEndDate.toISOString();
+        } else if (typeof t.recurrenceEndDate === 'string') {
+          recurrenceEndDateISO = t.recurrenceEndDate;
+        }
+      }
+
+      let nextOccurrenceISO: string | null = null;
+      if (t.nextOccurrence) {
+        if (t.nextOccurrence instanceof Date) {
+          nextOccurrenceISO = t.nextOccurrence.toISOString();
+        } else if (typeof t.nextOccurrence === 'string') {
+          nextOccurrenceISO = t.nextOccurrence;
+        }
+      }
+
       return {
         ...t,
-        date: dateString
+        date: dateString,
+        recurrenceEndDate: recurrenceEndDateISO,
+        nextOccurrence: nextOccurrenceISO,
       };
     });
 
@@ -155,12 +176,14 @@ export class TransactionService {
     if (transactionsWithFixedDates.length > 0) {
       console.log('  - Descrição:', transactionsWithFixedDates[0].description);
       console.log('  - Data:', transactionsWithFixedDates[0].date);
+      console.log('  - isRecurring:', transactionsWithFixedDates[0].isRecurring);
+      console.log('  - recurrenceEndDate:', transactionsWithFixedDates[0].recurrenceEndDate);
     }
 
-    return { 
-      transactions: transactionsWithFixedDates as any, 
-      total, 
-      page: Number(page), 
+    return {
+      transactions: transactionsWithFixedDates as any,
+      total,
+      page: Number(page),
       limit: Number(limit),
       totalPages: Math.ceil(total / limit)
     };
@@ -171,29 +194,29 @@ export class TransactionService {
       where: { id, userId },
       relations: ['category'],
     });
-    
+
     if (!transaction) {
       throw new NotFoundError('Transação não encontrada');
     }
-    
+
     return transaction;
   }
 
   async update(id: string, userId: string, data: Partial<Transaction>) {
     const transaction = await this.findById(id, userId);
-    
+
     // Se for uma transação recorrente "pai", atualizar também as parcelas geradas
     if (transaction.isRecurring) {
       console.log(`🔄 [UPDATE] Atualizando parcelas geradas da recorrência ${transaction.id}`);
-      
+
       // Buscar todas as parcelas geradas desta recorrência, ordenadas por data
       const childTransactions = await this.transactionRepository.find({
         where: { parentTransactionId: transaction.id },
         order: { date: 'ASC' }
       });
-      
+
       console.log(`📝 [UPDATE] Encontradas ${childTransactions.length} parcelas para atualizar`);
-      
+
       // Se a data foi alterada, recalcular datas de todas as parcelas
       let newBaseDate: Date | null = null;
       if (data.date) {
@@ -209,26 +232,26 @@ export class TransactionService {
         } else {
           newBaseDate = new Date(data.date);
         }
-        
+
         console.log(`📅 [UPDATE] Nova data base para recorrência: ${newBaseDate.toISOString()}`);
       }
-      
+
       // Atualizar cada parcela
       for (let i = 0; i < childTransactions.length; i++) {
         const child = childTransactions[i];
         const updateData: Partial<Transaction> = {};
-        
+
         // Atualizar campos permitidos
         if (data.description !== undefined) updateData.description = data.description;
         if (data.amount !== undefined) updateData.amount = data.amount;
         if (data.type !== undefined) updateData.type = data.type;
         if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
-        
+
         // Se a data base mudou, recalcular a data desta parcela
         if (newBaseDate && transaction.recurrenceType) {
           const parcela = i + 1; // Primeira parcela é 1, segunda é 2, etc.
           const parcelaDate = new Date(newBaseDate);
-          
+
           // Calcular data baseada no tipo de recorrência
           switch (transaction.recurrenceType) {
             case 'daily':
@@ -244,37 +267,37 @@ export class TransactionService {
               parcelaDate.setFullYear(parcelaDate.getFullYear() + parcela);
               break;
           }
-          
+
           // Aplicar offset de timezone
           const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
           if (timezoneOffset > 0) {
             parcelaDate.setDate(parcelaDate.getDate() + timezoneOffset);
           }
-          
+
           // Formatar data
           const year = parcelaDate.getUTCFullYear();
           const month = String(parcelaDate.getUTCMonth() + 1).padStart(2, '0');
           const day = String(parcelaDate.getUTCDate()).padStart(2, '0');
           updateData.date = `${year}-${month}-${day}` as any;
-          
+
           console.log(`📅 [UPDATE] Parcela ${parcela}: ${updateData.date}`);
         }
-        
+
         if (Object.keys(updateData).length > 0) {
           Object.assign(child, updateData);
           await this.transactionRepository.save(child);
         }
       }
-      
+
       console.log(`✅ [UPDATE] ${childTransactions.length} parcelas atualizadas`);
     }
-    
+
     // Se a data foi alterada, aplicar o mesmo ajuste de timezone
     if (data.date) {
       console.log('📅 [UPDATE DEBUG] Data recebida:', data.date, 'Tipo:', typeof data.date);
-      
+
       let dateObj: Date;
-      
+
       if (typeof data.date === 'string') {
         // Parse da string no formato YYYY-MM-DD ou DD/MM/YYYY
         if (data.date.includes('/')) {
@@ -287,31 +310,31 @@ export class TransactionService {
       } else {
         dateObj = new Date(data.date);
       }
-      
+
       console.log('📅 [UPDATE DEBUG] Data antes de ajuste:', dateObj.toISOString());
-      
+
       // ADICIONAR dias conforme configuração de timezone
       const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
       if (timezoneOffset > 0) {
         dateObj.setDate(dateObj.getDate() + timezoneOffset);
       }
-      
+
       console.log('📅 [UPDATE DEBUG] Data depois de ajuste (+' + timezoneOffset + ' dia):', dateObj.toISOString());
-      
+
       // USAR UTC para evitar problemas de timezone
       const year = dateObj.getUTCFullYear();
       const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
       const day = String(dateObj.getUTCDate()).padStart(2, '0');
       const adjustedDate = `${year}-${month}-${day}`;
-      
+
       console.log('📅 [UPDATE DEBUG] Data final salva:', adjustedDate);
-      
+
       data.date = adjustedDate as any;
     }
-    
+
     Object.assign(transaction, data);
     await this.transactionRepository.save(transaction);
-    
+
     return this.transactionRepository.findOne({
       where: { id: transaction.id },
       relations: ['category'],
@@ -334,7 +357,7 @@ export class TransactionService {
     const now = new Date();
     const targetMonth = month || now.getMonth() + 1;
     const targetYear = year || now.getFullYear();
-    
+
     // Criar strings de data no formato YYYY-MM-DD
     const startOfMonth = `${targetYear}-${String(targetMonth).padStart(2, '0')}-01`;
     const lastDay = new Date(targetYear, targetMonth, 0).getDate();
