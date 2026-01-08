@@ -26,8 +26,8 @@ const MobileNavBar = () => {
 
   return (
     <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none">
-      <div className="mx-4 mb-4">
-        <div className="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl px-3 py-3 flex items-center justify-around gap-2 pointer-events-auto overflow-x-auto">
+      <div className="mx-3 mb-3">
+        <div className="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl px-2 py-2.5 flex items-center justify-between pointer-events-auto">
           {navItems.map((item) => {
             const Icon = item.icon
             return (
@@ -35,13 +35,13 @@ const MobileNavBar = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 text-[10px] font-medium transition-colors min-w-[60px] ${
+                  `flex flex-col items-center gap-0.5 text-[9px] font-medium transition-colors flex-1 ${
                     isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'
                   }`
                 }
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-center">{item.label}</span>
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="text-center leading-tight">{item.label}</span>
               </NavLink>
             )
           })}
