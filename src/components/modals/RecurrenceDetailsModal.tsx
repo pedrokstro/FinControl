@@ -94,12 +94,13 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
+            <div className="w-full max-w-md">
             <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
               {/* Header */}
               <div className={`px-6 py-4 ${transaction.type === 'income'
@@ -275,6 +276,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                   Fechar
                 </button>
               </div>
+            </div>
             </div>
           </motion.div>
         </>
