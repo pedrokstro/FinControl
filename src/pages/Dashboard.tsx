@@ -16,7 +16,10 @@ import {
   Repeat,
   Edit3,
   Trash2,
-  BarChart3
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  Calendar
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
@@ -163,7 +166,7 @@ const transactionSchema = z
 type TransactionFormData = z.infer<typeof transactionSchema>
 
 const Dashboard = () => {
-  const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
+  const { transactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const isMobile = useIsMobile()
   const [showCalculator, setShowCalculator] = useState(false)
@@ -181,6 +184,12 @@ const Dashboard = () => {
   const [analyticsEmpty, setAnalyticsEmpty] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   
+  // Estado para controlar mês/ano selecionado
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const now = new Date()
+    return { month: now.getMonth() + 1, year: now.getFullYear() }
+  })
+  
   // Carregar dados de analytics
   const loadAnalytics = async () => {
     try {
@@ -188,11 +197,7 @@ const Dashboard = () => {
       setAnalytics(null)
       setAnalyticsEmpty(false)
 
-      const now = new Date()
-      const currentMonth = now.getMonth() + 1
-      const currentYear = now.getFullYear()
-
-      const data = await analyticsService.getAll(currentMonth, currentYear)
+      const data = await analyticsService.getAll(selectedDate.month, selectedDate.year)
 
       const hasSavingsData =
         !!data?.savingsRate &&
@@ -231,6 +236,49 @@ const Dashboard = () => {
     }
     loadData()
   }, [syncWithBackend])
+
+  // Recarregar analytics quando mudar o mês/ano selecionado
+  useEffect(() => {
+    loadAnalytics()
+  }, [selectedDate])
+
+  // Funções de navegação de mês/ano
+  const goToPreviousMonth = () => {
+    setSelectedDate(prev => {
+      if (prev.month === 1) {
+        return { month: 12, year: prev.year - 1 }
+      }
+      return { month: prev.month - 1, year: prev.year }
+    })
+  }
+
+  const goToNextMonth = () => {
+    const now = new Date()
+    const currentMonth = now.getMonth() + 1
+    const currentYear = now.getFullYear()
+    
+    // Não permitir navegar para o futuro
+    if (selectedDate.year === currentYear && selectedDate.month === currentMonth) {
+      return
+    }
+    
+    setSelectedDate(prev => {
+      if (prev.month === 12) {
+        return { month: 1, year: prev.year + 1 }
+      }
+      return { month: prev.month + 1, year: prev.year }
+    })
+  }
+
+  const goToCurrentMonth = () => {
+    const now = new Date()
+    setSelectedDate({ month: now.getMonth() + 1, year: now.getFullYear() })
+  }
+
+  const isCurrentMonth = () => {
+    const now = new Date()
+    return selectedDate.month === now.getMonth() + 1 && selectedDate.year === now.getFullYear()
+  }
 
   // Carregar meta atual
   const loadCurrentGoal = async () => {
@@ -418,12 +466,21 @@ const Dashboard = () => {
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [showQuickAdd, showCalculator])
 
+  // Filtrar transações pelo mês/ano selecionado
+  const selectedMonthTransactions = useMemo(() => {
+    return transactions.filter((t) => {
+      if (!t.date) return false
+      const tDate = parseISO(t.date)
+      return tDate.getFullYear() === selectedDate.year && tDate.getMonth() + 1 === selectedDate.month
+    })
+  }, [transactions, selectedDate])
+
   const financialSummary = useMemo(() => {
-    const monthIncome = currentMonthTransactions
+    const monthIncome = selectedMonthTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
 
-    const monthExpense = currentMonthTransactions
+    const monthExpense = selectedMonthTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0)
 
@@ -434,19 +491,19 @@ const Dashboard = () => {
       monthExpense,
       monthBalance,
     }
-  }, [currentMonthTransactions])
+  }, [selectedMonthTransactions])
 
   const incomeTransactions = useMemo(() => {
-    return [...currentMonthTransactions]
+    return [...selectedMonthTransactions]
       .filter((t) => t.type === 'income')
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  }, [currentMonthTransactions])
+  }, [selectedMonthTransactions])
 
   const expenseTransactions = useMemo(() => {
-    return [...currentMonthTransactions]
+    return [...selectedMonthTransactions]
       .filter((t) => t.type === 'expense')
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  }, [currentMonthTransactions])
+  }, [selectedMonthTransactions])
 
   const monthlyData = useMemo(() => {
     const data = []
@@ -517,7 +574,7 @@ const Dashboard = () => {
 
   const categoryData = useMemo(() => {
     const allCategories = categories.map((cat) => {
-      const transactions_by_category = currentMonthTransactions.filter(
+      const transactions_by_category = selectedMonthTransactions.filter(
         (t) => t.categoryId === cat.id && t.type === cat.type
       )
       
@@ -532,10 +589,10 @@ const Dashboard = () => {
     }).filter((item) => item.value > 0)
     
     return allCategories
-  }, [currentMonthTransactions, categories])
+  }, [selectedMonthTransactions, categories])
 
   const recentTransactions = useMemo(() => {
-    const sorted = [...currentMonthTransactions].sort(
+    const sorted = [...selectedMonthTransactions].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     )
 
@@ -569,10 +626,10 @@ const Dashboard = () => {
     })
 
     const listToDisplay = grouped.length > 0 ? grouped : sorted
-    const limit = Math.min(currentMonthTransactions.length, 6)
+    const limit = Math.min(selectedMonthTransactions.length, 6)
 
     return listToDisplay.slice(0, limit || 5)
-  }, [currentMonthTransactions])
+  }, [selectedMonthTransactions])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -597,6 +654,49 @@ const Dashboard = () => {
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
             Visão geral das suas finanças
           </p>
+        </div>
+      </div>
+
+      {/* Navegação de Mês/Ano */}
+      <div className="card">
+        <div className="flex items-center justify-between gap-4">
+          <button
+            onClick={goToPreviousMonth}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+            title="Mês anterior"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
+          </button>
+
+          <div className="flex items-center gap-3 flex-1 justify-center">
+            <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+            <span className="text-lg font-semibold text-gray-900 dark:text-white">
+              {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {!isCurrentMonth() && (
+              <button
+                onClick={goToCurrentMonth}
+                className="px-3 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+              >
+                Hoje
+              </button>
+            )}
+            <button
+              onClick={goToNextMonth}
+              disabled={isCurrentMonth()}
+              className={`p-2 rounded-lg transition-colors ${
+                isCurrentMonth()
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
+              }`}
+              title="Próximo mês"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
+            </button>
+          </div>
         </div>
       </div>
       
