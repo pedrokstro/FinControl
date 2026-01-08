@@ -109,12 +109,14 @@ export default defineConfig({
     open: true,
   },
   build: {
-    // Garantir UTF-8 no build
-    charset: 'utf8',
+    // Aumentar limite de warning de chunk size (Dashboard com gráficos)
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        // Garantir encoding correto nos chunks
-        charset: 'utf8',
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'charts': ['recharts'],
+        },
       },
     },
   },
