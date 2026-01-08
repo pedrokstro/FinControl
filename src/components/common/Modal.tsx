@@ -81,7 +81,7 @@ const Modal = ({
             onClick={handleBackdropClick}
           />
 
-          <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -89,18 +89,18 @@ const Modal = ({
               transition={{ duration: 0.2 }}
               role="dialog"
               aria-modal="true"
-              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-2xl flex flex-col max-h-[92vh]`}
+              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh]`}
             >
               {(title || !hideCloseButton) && (
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-900 flex items-start justify-between gap-3">
+                <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 dark:border-neutral-900 flex items-start justify-between gap-3">
                   <div>
                     {title && (
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                         {title}
                       </h2>
                     )}
                     {description && (
-                      <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 mt-1">
                         {description}
                       </p>
                     )}
@@ -109,7 +109,7 @@ const Modal = ({
                     <button
                       type="button"
                       onClick={onClose}
-                      className="p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
                       aria-label="Fechar modal"
                     >
                       <X className="w-5 h-5" />
@@ -118,12 +118,12 @@ const Modal = ({
                 </div>
               )}
 
-              <div className={`px-6 py-5 overflow-y-auto flex-1 ${contentClassName}`}>
+              <div className={`px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto flex-1 ${contentClassName}`}>
                 {children}
               </div>
 
               {footer && (
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-neutral-900 bg-gray-50/70 dark:bg-neutral-900/60">
+                <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-100 dark:border-neutral-900 bg-gray-50/70 dark:bg-neutral-900/60">
                   {footer}
                 </div>
               )}
