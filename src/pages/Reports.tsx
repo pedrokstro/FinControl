@@ -645,7 +645,7 @@ const Reports = () => {
 
       {/* Evolução Mensal */}
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Evolução Financeira
           </h3>
@@ -654,7 +654,7 @@ const Reports = () => {
               <button
                 key={months}
                 onClick={() => setPeriod(months)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   period === months
                     ? 'bg-primary-600 dark:bg-primary-500 text-white'
                     : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
@@ -666,7 +666,8 @@ const Reports = () => {
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={350}>
+        <div className="overflow-hidden min-w-0">
+          <ResponsiveContainer width="100%" height={350}>
           <LineChart data={monthlyEvolution}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
             <XAxis dataKey="month" stroke="#6b7280" className="dark:text-neutral-400" />
@@ -706,11 +707,12 @@ const Reports = () => {
             />
           </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Comparação de Receitas vs Despesas por Categoria */}
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Receitas e Despesas por Categoria
@@ -719,12 +721,13 @@ const Reports = () => {
               Dados do mês atual • Top 10 categorias por volume
             </p>
           </div>
-          <span className="text-xs text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1 rounded-full font-medium">
-            {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
+          <span className="text-xs text-gray-500 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full flex-shrink-0">
+            Mês Atual
           </span>
         </div>
 
-        <ResponsiveContainer width="100%" height={400}>
+        <div className="overflow-hidden min-w-0">
+          <ResponsiveContainer width="100%" height={400}>
           <ComposedChart data={categoryComparison} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
             <XAxis type="number" stroke="#6b7280" className="dark:text-neutral-400" />
@@ -752,6 +755,7 @@ const Reports = () => {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Gráficos de Distribuição lado a lado */}
@@ -767,7 +771,8 @@ const Reports = () => {
             </span>
           </div>
           {categoryData.income.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
+            <div className="overflow-hidden min-w-0">
+              <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={categoryData.income}
@@ -795,6 +800,7 @@ const Reports = () => {
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
               Nenhuma receita registrada este mês
@@ -813,7 +819,8 @@ const Reports = () => {
             </span>
           </div>
           {categoryData.expenses.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
+            <div className="overflow-hidden min-w-0">
+              <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={categoryData.expenses}
@@ -841,6 +848,7 @@ const Reports = () => {
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
               Nenhuma despesa registrada este mês
