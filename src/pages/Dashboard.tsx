@@ -246,6 +246,11 @@ const Dashboard = () => {
     loadAnalytics()
   }, [selectedDate])
 
+  // Recarregar meta quando mudar o mês/ano selecionado
+  useEffect(() => {
+    loadCurrentGoal()
+  }, [selectedDate])
+
   // Funções de navegação de mês/ano
   const goToPreviousMonth = () => {
     setSelectedDate(prev => {
@@ -284,11 +289,11 @@ const Dashboard = () => {
     return selectedDate.month === now.getMonth() + 1 && selectedDate.year === now.getFullYear()
   }
 
-  // Carregar meta atual
+  // Carregar meta do mês/ano selecionado
   const loadCurrentGoal = async () => {
     try {
       setIsLoadingGoal(true)
-      const goal = await savingsGoalService.getCurrentGoal()
+      const goal = await savingsGoalService.getGoalByMonthYear(selectedDate.month, selectedDate.year)
       setCurrentGoal(goal)
     } catch (error) {
       console.error('Erro ao carregar meta:', error)
