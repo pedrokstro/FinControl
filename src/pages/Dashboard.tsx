@@ -537,7 +537,6 @@ const Dashboard = () => {
   // Novo: Dados para o grafico de barras mensal completo
   const yearlyMonthlyData = useMemo(() => {
     const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
-    const currentYear = new Date().getFullYear()
     
     // Agrupar transacoes por mes
     const monthlyTotals: { [key: number]: { income: number; expense: number } } = {}
@@ -547,15 +546,15 @@ const Dashboard = () => {
       monthlyTotals[i] = { income: 0, expense: 0 }
     }
     
-    // Calcular totais de cada mes
+    // Calcular totais de cada mes usando o ano selecionado
     transactions.forEach((t) => {
       const tDate = parseISO(t.date)
-      if (tDate.getFullYear() !== currentYear) {
+      if (tDate.getFullYear() !== selectedDate.year) {
         return
       }
       const tMonth = getMonth(tDate)
       
-      // Agrupar apenas meses do ano atual
+      // Agrupar apenas meses do ano selecionado
       if (t.type === 'income') {
         monthlyTotals[tMonth].income += t.amount
       } else {
@@ -570,7 +569,7 @@ const Dashboard = () => {
       despesas: monthlyTotals[index].expense,
       saldo: monthlyTotals[index].income - monthlyTotals[index].expense
     }))
-  }, [transactions])
+  }, [transactions, selectedDate.year])
 
   const categoryData = useMemo(() => {
     const allCategories = categories.map((cat) => {
