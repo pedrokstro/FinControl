@@ -115,8 +115,9 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
       {/* Toggle Button */}
       <button
         onClick={toggleCollapse}
-        className="absolute -right-3 top-6 w-6 h-6 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10 border-2 border-primary-500 dark:border-primary-600"
+        className="absolute -right-3 top-6 w-7 h-7 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-50 border-2 border-primary-500 dark:border-primary-600"
         title={isCollapsed ? 'Expandir sidebar' : 'Recolher sidebar'}
+        style={{ right: '-14px' }}
       >
         {isCollapsed ? (
           <ChevronRight className="w-4 h-4 text-primary-600 dark:text-primary-400" />
