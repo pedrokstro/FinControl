@@ -1177,14 +1177,14 @@ const Dashboard = () => {
       </div>
 
       {/* Finanças por Categoria - Largura Total */}
-      <div className="card h-[450px]">
+      <div className="card min-h-[450px] lg:h-[450px]">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Finanças por Categoria
         </h3>
         {categoryData.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100%-3rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px] lg:h-[calc(100%-3rem)]">
             {/* Gráfico de Pizza */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center h-[300px] lg:h-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
