@@ -623,11 +623,11 @@ const Reports = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden">
                     <div
                       className="h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${percentage}%`,
+                        width: `${Math.min(percentage, 100)}%`,
                         backgroundColor: cat.color,
                       }}
                     />

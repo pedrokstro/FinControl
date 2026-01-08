@@ -228,7 +228,7 @@ const Transactions = () => {
         date: transactionDate,
         isRecurring: transaction.isRecurring || false,
         recurrenceType: transaction.recurrenceType || undefined,
-        totalInstallments: transaction.recurrenceMonths?.toString() || '',
+        totalInstallments: transaction.totalInstallments?.toString() || '',
       })
     } else {
       setEditingId(null)
@@ -777,7 +777,7 @@ const Transactions = () => {
                     Processando...
                   </>
                 ) : (
-                  editingId ? 'Salvar' : 'Adicionar'
+                  editingId ? 'Atualizar' : 'Salvar'
                 )}
               </button>
             </div>
