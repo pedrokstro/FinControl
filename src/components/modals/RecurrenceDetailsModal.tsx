@@ -77,7 +77,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
     }
   }
 
-  const isInfinite = !transaction.recurrenceEndDate && !transaction.recurrenceMonths
+  const isInfinite = !transaction.recurrenceEndDate && !transaction.totalInstallments
 
   return (
     <AnimatePresence>
@@ -189,7 +189,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                       <span className="text-xs text-gray-500 dark:text-neutral-400">Data de Início</span>
                     </div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatDate(transaction.recurrenceStartDate || transaction.date)}
+                      {formatDate(transaction.date)}
                     </p>
                   </div>
 
@@ -225,20 +225,20 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                   )}
 
                   {/* Número de parcelas */}
-                  {transaction.recurrenceMonths && (
+                  {transaction.totalInstallments && (
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-neutral-900 rounded-xl">
                       <div className="flex items-center gap-2">
                         <Hash className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-600 dark:text-neutral-400">Total de parcelas</span>
                       </div>
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {transaction.recurrenceMonths}x
+                        {transaction.currentInstallment || 1}/{transaction.totalInstallments}x
                       </span>
                     </div>
                   )}
 
                   {/* Valor total estimado */}
-                  {transaction.recurrenceMonths && (
+                  {transaction.totalInstallments && (
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-neutral-900 rounded-xl">
                       <div className="flex items-center gap-2">
                         <CircleDollarSign className="w-4 h-4 text-gray-400" />
@@ -248,7 +248,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                         ? 'text-success-600 dark:text-success-400'
                         : 'text-danger-600 dark:text-danger-400'
                         }`}>
-                        {formatCurrency(transaction.amount * transaction.recurrenceMonths)}
+                        {formatCurrency(transaction.amount * transaction.totalInstallments)}
                       </span>
                     </div>
                   )}

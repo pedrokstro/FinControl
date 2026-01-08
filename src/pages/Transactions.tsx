@@ -25,7 +25,6 @@ import { ptBR } from 'date-fns/locale'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
 import RecurrenceDetailsModal from '@/components/modals/RecurrenceDetailsModal'
-import TransactionTypeSelectionModal from '@/components/modals/TransactionTypeSelectionModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import Modal from '@/components/common/Modal'
@@ -95,7 +94,6 @@ const Transactions = () => {
   } = useFinancialStore()
 
   const [showModal, setShowModal] = useState(false)
-  const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showCancelRecurrenceModal, setShowCancelRecurrenceModal] = useState(false)
   const [transactionToDelete, setTransactionToDelete] = useState<{ id: string; description: string; amount: number } | null>(null)
@@ -209,26 +207,6 @@ const Transactions = () => {
     }
   }, [filteredTransactions])
 
-  const handleOpenNewTransactionModal = () => {
-    setShowTypeSelectionModal(true)
-  }
-
-  const handleSelectTransactionType = (type: 'normal' | 'recurring') => {
-    setEditingId(null)
-    setIsRecurring(type === 'recurring')
-    reset({
-      type: 'expense',
-      amount: '',
-      categoryId: '',
-      description: '',
-      date: format(selectedMonth, 'yyyy-MM-dd'),
-      isRecurring: type === 'recurring',
-      recurrenceType: undefined,
-      totalInstallments: '',
-    })
-    setShowModal(true)
-  }
-
   const handleOpenModal = (transaction?: any) => {
     if (transaction) {
       setEditingId(transaction.id)
@@ -252,10 +230,21 @@ const Transactions = () => {
         recurrenceType: transaction.recurrenceType || undefined,
         totalInstallments: transaction.totalInstallments?.toString() || '',
       })
-      setShowModal(true)
     } else {
-      handleOpenNewTransactionModal()
+      setEditingId(null)
+      setIsRecurring(false)
+      reset({
+        type: 'expense',
+        amount: '',
+        categoryId: '',
+        description: '',
+        date: format(selectedMonth, 'yyyy-MM-dd'),
+        isRecurring: false,
+        recurrenceType: undefined,
+        totalInstallments: '',
+      })
     }
+    setShowModal(true)
   }
 
   const handleCloseModal = () => {
@@ -999,13 +988,6 @@ const Transactions = () => {
             setSelectedRecurrenceTransaction(null)
           }}
           transaction={selectedRecurrenceTransaction}
-        />
-
-        {/* Modal de Seleção de Tipo de Transação */}
-        <TransactionTypeSelectionModal
-          isOpen={showTypeSelectionModal}
-          onClose={() => setShowTypeSelectionModal(false)}
-          onSelectType={handleSelectTransactionType}
         />
       </div>
     </PageTransition>

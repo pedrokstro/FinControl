@@ -27,11 +27,12 @@ export interface Transaction {
   userId: string
   isRecurring?: boolean
   recurrenceType?: 'daily' | 'weekly' | 'monthly' | 'yearly'
-  recurrenceStartDate?: string
   recurrenceEndDate?: string
   nextOccurrence?: string
   parentTransactionId?: string
-  recurrenceMonths?: number
+  totalInstallments?: number
+  currentInstallment?: number
+  isCancelled?: boolean
 }
 
 export interface Category {

@@ -22,7 +22,6 @@ import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
 import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
-import TransactionTypeSelectionModal from '@/components/modals/TransactionTypeSelectionModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
@@ -114,20 +113,6 @@ const renderCategoryLabel = ({
   )
 }
 
-const calculateRecurrenceMonths = (start?: string, end?: string) => {
-  if (!start || !end) return null
-  const startDate = new Date(start)
-  const endDate = new Date(end)
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate < startDate) {
-    return null
-  }
-  const diff =
-    endDate.getFullYear() * 12 + endDate.getMonth() -
-    (startDate.getFullYear() * 12 + startDate.getMonth())
-  const months = diff + 1
-  return months > 0 ? Math.min(months, 60) : null
-}
-
 const transactionSchema = z
   .object({
     type: z.enum(['income', 'expense']),
@@ -137,10 +122,6 @@ const transactionSchema = z
     date: z.string().min(1, 'Data e obrigatoria'),
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
-    recurrenceMode: z.enum(['date', 'installments', 'infinite']).optional(),
-    recurrenceStartDate: z.string().optional(),
-    recurrenceEndDate: z.string().optional(),
-    recurrenceMonths: z.string().optional(),
     totalInstallments: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -152,61 +133,27 @@ const transactionSchema = z
           message: 'Selecione a frequência',
         })
       }
-      
-      // Validação baseada no modo escolhido
-      if (data.recurrenceMode === 'date') {
-        if (!data.recurrenceStartDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['recurrenceStartDate'],
-            message: 'Data inicial é obrigatória',
-          })
-        }
-        if (!data.recurrenceEndDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['recurrenceEndDate'],
-            message: 'Data final é obrigatória',
-          })
-        }
-      } else if (data.recurrenceMode === 'installments') {
-        if (!data.totalInstallments) {
+
+      // Validação do número de parcelas
+      if (!data.totalInstallments) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['totalInstallments'],
+          message: 'Número de parcelas é obrigatório',
+        })
+      } else {
+        const installments = parseInt(data.totalInstallments)
+        if (isNaN(installments) || installments < 2) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['totalInstallments'],
-            message: 'Número de parcelas é obrigatório',
+            message: 'Mínimo de 2 parcelas',
           })
-        } else {
-          const installments = parseInt(data.totalInstallments)
-          if (isNaN(installments) || installments < 2) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ['totalInstallments'],
-              message: 'Mínimo de 2 parcelas',
-            })
-          } else if (installments > 360) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ['totalInstallments'],
-              message: 'Máximo de 360 parcelas',
-            })
-          }
-        }
-      }
-      // Modo 'infinite' não precisa de validações adicionais
-      if (data.recurrenceStartDate && data.recurrenceEndDate) {
-        const months = calculateRecurrenceMonths(data.recurrenceStartDate, data.recurrenceEndDate)
-        if (!months) {
+        } else if (installments > 360) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            path: ['recurrenceEndDate'],
-            message: 'Período inválido',
-          })
-        } else if (months > 60) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['recurrenceEndDate'],
-            message: 'Limite máximo de 60 meses',
+            path: ['totalInstallments'],
+            message: 'Máximo de 360 parcelas',
           })
         }
       }
@@ -218,7 +165,6 @@ type TransactionFormData = z.infer<typeof transactionSchema>
 const Dashboard = () => {
   const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
-  const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false)
   const isMobile = useIsMobile()
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
@@ -227,7 +173,6 @@ const Dashboard = () => {
   const [isLoadingGoal, setIsLoadingGoal] = useState(true)
   const [isDeletingGoal, setIsDeletingGoal] = useState(false)
   const [isQuickAddRecurring, setIsQuickAddRecurring] = useState(false)
-  const [recurrenceMode, setRecurrenceMode] = useState<'date' | 'installments' | 'infinite'>('date')
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [showIncomeModal, setShowIncomeModal] = useState(false)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
@@ -339,54 +284,24 @@ const Dashboard = () => {
         const today = new Date()
         return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
       })(),
-      recurrenceStartDate: (() => {
-        const today = new Date()
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-      })(),
-      recurrenceEndDate: undefined,
     },
   })
 
   const transactionType = watch('type')
-  const recurrenceStartDate = watch('recurrenceStartDate')
-  const recurrenceEndDate = watch('recurrenceEndDate')
-  const computedRecurrenceMonths = useMemo(
-    () => calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate),
-    [recurrenceStartDate, recurrenceEndDate]
-  )
 
-  useEffect(() => {
-    if (isQuickAddRecurring && recurrenceStartDate && recurrenceEndDate) {
-      const months = calculateRecurrenceMonths(recurrenceStartDate, recurrenceEndDate)
-      if (months) {
-        setValue('recurrenceMonths', months.toString())
-      } else {
-        setValue('recurrenceMonths', undefined)
-      }
-    } else {
-      setValue('recurrenceMonths', undefined)
-    }
-  }, [isQuickAddRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
-
-  const openQuickAdd = useCallback((type: 'income' | 'expense') => {
-    setShowTypeSelectionModal(true)
-  }, [])
-
-  const handleSelectTransactionType = useCallback((transactionType: 'normal' | 'recurring') => {
-    const today = new Date()
-    const todayString = format(today, 'yyyy-MM-dd')
+  const openQuickAdd = useCallback((type: 'income' | 'expense' = 'expense') => {
+    // Obter data de hoje sem timezone
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
-    console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo recorrente:', transactionType === 'recurring');
+    console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo:', type);
     
-    setIsQuickAddRecurring(transactionType === 'recurring')
     reset({
-      type: 'expense',
+      type: type,
       amount: '',
       categoryId: '',
       description: '',
       date: todayString,
-      recurrenceStartDate: todayString,
-      recurrenceEndDate: undefined,
     })
     setShowQuickAdd(true)
   }, [reset])
@@ -419,8 +334,7 @@ const Dashboard = () => {
       date: todayString,
       isRecurring: false,
       recurrenceType: undefined,
-      recurrenceEndDate: undefined,
-      recurrenceMonths: undefined,
+      totalInstallments: '',
     })
   }
 
@@ -437,7 +351,6 @@ const Dashboard = () => {
     const category = categories.find((c) => c.id === data.categoryId)
     
     const dateValue: any = data.date;
-    const recurrenceEndDateValue: any = data.recurrenceEndDate;
     
     console.log('📅 [FRONTEND DEBUG v2] Data do formulário:', dateValue)
     console.log('📅 [FRONTEND DEBUG v2] Tipo:', typeof dateValue)
@@ -450,14 +363,6 @@ const Dashboard = () => {
         ? `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}-${String(dateValue.getDate()).padStart(2, '0')}`
         : dateValue;
     
-    const recurrenceEndDateString = recurrenceEndDateValue
-      ? (typeof recurrenceEndDateValue === 'string'
-          ? recurrenceEndDateValue
-          : recurrenceEndDateValue instanceof Date
-            ? `${recurrenceEndDateValue.getFullYear()}-${String(recurrenceEndDateValue.getMonth() + 1).padStart(2, '0')}-${String(recurrenceEndDateValue.getDate()).padStart(2, '0')}`
-            : recurrenceEndDateValue)
-      : undefined;
-    
     console.log('📅 [FRONTEND DEBUG] Data convertida:', dateString, typeof dateString)
     
     addTransaction({
@@ -469,8 +374,7 @@ const Dashboard = () => {
       // Adicionar campos de recorrência se marcado
       isRecurring: isQuickAddRecurring,
       recurrenceType: isQuickAddRecurring ? data.recurrenceType : undefined,
-      recurrenceEndDate: recurrenceEndDateString,
-      recurrenceMonths: isQuickAddRecurring && data.recurrenceMonths ? Number(data.recurrenceMonths) : undefined,
+      totalInstallments: isQuickAddRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
     })
     
     closeQuickAdd()
@@ -1460,14 +1364,9 @@ const Dashboard = () => {
                   onChange={(e) => {
                     const checked = e.target.checked
                     setIsQuickAddRecurring(checked)
-                    if (checked) {
-                      const currentDate = watch('date')
-                      setValue('recurrenceStartDate', currentDate)
-                    } else {
+                    if (!checked) {
                       setValue('recurrenceType', undefined)
-                      setValue('recurrenceStartDate', undefined)
-                      setValue('recurrenceEndDate', undefined)
-                      setValue('recurrenceMonths', undefined)
+                      setValue('totalInstallments', '')
                     }
                   }}
                   className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
@@ -1501,130 +1400,27 @@ const Dashboard = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Modo de Recorrência
+                      Número de Parcelas
                     </label>
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="date"
-                          checked={recurrenceMode === 'date'}
-                          onChange={() => {
-                            setRecurrenceMode('date')
-                            setValue('recurrenceMode', 'date')
-                          }}
-                          className="w-4 h-4 text-primary-600"
-                        />
-                        <span className="text-sm text-gray-900 dark:text-white">Data Início/Fim</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="installments"
-                          checked={recurrenceMode === 'installments'}
-                          onChange={() => {
-                            setRecurrenceMode('installments')
-                            setValue('recurrenceMode', 'installments')
-                          }}
-                          className="w-4 h-4 text-primary-600"
-                        />
-                        <span className="text-sm text-gray-900 dark:text-white">Número de Parcelas</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="infinite"
-                          checked={recurrenceMode === 'infinite'}
-                          onChange={() => {
-                            setRecurrenceMode('infinite')
-                            setValue('recurrenceMode', 'infinite')
-                          }}
-                          className="w-4 h-4 text-primary-600"
-                        />
-                        <span className="text-sm text-gray-900 dark:text-white">Recorrência Infinita</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {recurrenceMode === 'date' && (
-                    <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                          Data Inicial
-                        </label>
-                        <input
-                          type="date"
-                          {...register('recurrenceStartDate')}
-                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceStartDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                        />
-                        {errors.recurrenceStartDate && (
-                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                            {errors.recurrenceStartDate.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                          Data Final
-                        </label>
-                        <input
-                          type="date"
-                          {...register('recurrenceEndDate')}
-                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.recurrenceEndDate ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                        />
-                        {errors.recurrenceEndDate && (
-                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                            {errors.recurrenceEndDate.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 text-xs text-primary-700 dark:text-primary-300">
-                        {computedRecurrenceMonths ? (
-                          <p>
-                            Serão criadas <strong>{computedRecurrenceMonths}</strong> parcelas automaticamente.
-                          </p>
-                        ) : (
-                          <p>Selecione datas válidas (máx. 60 meses).</p>
-                        )}
-                      </div>
-                    </>
-                  )}
-
-                  {recurrenceMode === 'installments' && (
-                    <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                          Número de Parcelas
-                        </label>
-                        <input
-                          type="number"
-                          min="2"
-                          max="360"
-                          placeholder="Ex: 12"
-                          {...register('totalInstallments')}
-                          className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                        />
-                        {errors.totalInstallments && (
-                          <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                            {errors.totalInstallments.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                        <p className="text-xs text-primary-700 dark:text-primary-300">
-                          <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
-                        </p>
-                      </div>
-                    </>
-                  )}
-
-                  {recurrenceMode === 'infinite' && (
-                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                      <p className="text-xs text-primary-700 dark:text-primary-300">
-                        <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada todo mês indefinidamente até você cancelar manualmente.
+                    <input
+                      type="number"
+                      min="2"
+                      max="360"
+                      placeholder="Ex: 12"
+                      {...register('totalInstallments')}
+                      className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
+                    />
+                    {errors.totalInstallments && (
+                      <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
+                        {errors.totalInstallments.message}
                       </p>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
+                    <p className="text-xs text-primary-700 dark:text-primary-300">
+                      <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -1806,13 +1602,6 @@ const Dashboard = () => {
       <div className="mt-12">
         <Footer />
       </div>
-
-      {/* Modal de Seleção de Tipo de Transação */}
-      <TransactionTypeSelectionModal
-        isOpen={showTypeSelectionModal}
-        onClose={() => setShowTypeSelectionModal(false)}
-        onSelectType={handleSelectTransactionType}
-      />
     </div>
   )
 }
