@@ -55,8 +55,8 @@ const PercentageCalculator = () => {
         {/* Header */}
         <div className="responsive-header">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <Percent className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
+              <Percent className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
               Calculadora de Porcentagem
             </h1>
             <p className="text-gray-600 dark:text-neutral-400 mt-1">
@@ -82,10 +82,10 @@ const PercentageCalculator = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-3">
                 Tipo de Cálculo
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setOperation('of')}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     operation === 'of'
                       ? 'bg-primary-600 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
@@ -95,7 +95,7 @@ const PercentageCalculator = () => {
                 </button>
                 <button
                   onClick={() => setOperation('increase')}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     operation === 'increase'
                       ? 'bg-primary-600 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
@@ -105,7 +105,7 @@ const PercentageCalculator = () => {
                 </button>
                 <button
                   onClick={() => setOperation('decrease')}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     operation === 'decrease'
                       ? 'bg-primary-600 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
@@ -124,8 +124,8 @@ const PercentageCalculator = () => {
                 </label>
                 <div className="relative rounded-2xl">
                   <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 via-primary-400 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
-                  <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                  <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300 flex-shrink-0">
                       <Percent className="w-4 h-4" />
                     </div>
                     <input
@@ -133,10 +133,10 @@ const PercentageCalculator = () => {
                       value={percentage}
                       onChange={(e) => setPercentage(e.target.value)}
                       placeholder="Ex: 15"
-                      className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                      className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                       step="0.01"
                     />
-                    <span className="text-sm font-semibold text-primary-600 dark:text-primary-300">%</span>
+                    <span className="text-sm font-semibold text-primary-600 dark:text-primary-300 flex-shrink-0">%</span>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
@@ -150,17 +150,17 @@ const PercentageCalculator = () => {
                 </label>
                 <div className="relative rounded-2xl">
                   <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-amber-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm"></div>
-                  <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300">
+                  <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300 flex-shrink-0">
                       <Wallet className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                    <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400 flex-shrink-0">R$</span>
                     <input
                       type="number"
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
                       placeholder="Ex: 1000,00"
-                      className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                      className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                       step="0.01"
                     />
                   </div>
@@ -204,13 +204,13 @@ const PercentageCalculator = () => {
             {result !== null ? (
               <div className="space-y-6">
                 {/* Resultado Principal */}
-                <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl p-6 border-2 border-primary-200 dark:border-primary-800">
-                  <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
+                <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl p-4 sm:p-6 border-2 border-primary-200 dark:border-primary-800">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-neutral-400 mb-2">
                     {operation === 'of' && `${percentage}% de ${formatCurrency(parseFloat(value))}`}
                     {operation === 'increase' && `${formatCurrency(parseFloat(value))} + ${percentage}%`}
                     {operation === 'decrease' && `${formatCurrency(parseFloat(value))} - ${percentage}%`}
                   </p>
-                  <p className="text-4xl font-bold text-primary-600 dark:text-primary-400">
+                  <p className="text-2xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400 break-all">
                     {formatCurrency(result)}
                   </p>
                 </div>

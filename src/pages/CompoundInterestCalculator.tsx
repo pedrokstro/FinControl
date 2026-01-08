@@ -132,8 +132,8 @@ const CompoundInterestCalculator = () => {
         {/* Header */}
         <div className="responsive-header">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <TrendingUp className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
+              <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
               Calculadora de Juros Compostos
             </h1>
             <p className="text-gray-600 dark:text-neutral-400 mt-1">
@@ -152,16 +152,16 @@ const CompoundInterestCalculator = () => {
               </label>
               <div className="relative rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500 via-sky-400 to-primary-300 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300 flex-shrink-0">
                     <DollarSign className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400 flex-shrink-0">R$</span>
                   <input
                     type="number"
                     value={initialValue}
                     onChange={(e) => setInitialValue(e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 10.000"
                     step="0.01"
                   />
@@ -176,19 +176,19 @@ const CompoundInterestCalculator = () => {
               </label>
               <div className="relative rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500 via-primary-500 to-cyan-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300">
+                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-success-50 text-success-600 dark:bg-success-900/30 dark:text-success-300 flex-shrink-0">
                     <Percent className="w-4 h-4" />
                   </div>
                   <input
                     type="number"
                     value={interestRate}
                     onChange={(e) => setInterestRate(e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 8"
                     step="0.01"
                   />
-                  <span className="text-sm font-semibold text-success-600 dark:text-success-300">%</span>
+                  <span className="text-sm font-semibold text-success-600 dark:text-success-300 flex-shrink-0">%</span>
                 </div>
               </div>
             </div>
@@ -200,20 +200,20 @@ const CompoundInterestCalculator = () => {
               </label>
               <div className="relative rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-400 via-primary-500 to-violet-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300">
+                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300 flex-shrink-0">
                     <Wallet className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400">R$</span>
+                  <span className="text-sm font-semibold text-gray-500 dark:text-neutral-400 flex-shrink-0">R$</span>
                   <input
                     type="number"
                     value={monthlyContribution}
                     onChange={(e) => setMonthlyContribution(e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 400"
                     step="0.01"
                   />
-                  <span className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide">
+                  <span className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide flex-shrink-0">
                     {compoundFrequency === 'Mensal' ? 'Mensal' : 'Anual'}
                   </span>
                 </div>
@@ -227,15 +227,15 @@ const CompoundInterestCalculator = () => {
               </label>
               <div className="relative rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-primary-500 to-sky-400 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent overflow-hidden">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300">
+                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent overflow-hidden">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300 flex-shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <input
                     type="number"
                     value={period}
                     onChange={(e) => setPeriod(e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 10"
                     min="1"
                   />
@@ -291,15 +291,15 @@ const CompoundInterestCalculator = () => {
               </label>
               <div className="relative rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-300">
+                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-300 flex-shrink-0">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-semibold text-gray-900 dark:text-white focus:outline-none"
+                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white focus:outline-none min-w-0"
                   />
                 </div>
               </div>
@@ -332,7 +332,7 @@ const CompoundInterestCalculator = () => {
               <p className="text-gray-700 dark:text-neutral-300 text-lg mb-2">
                 Após {period} {periodType === 'Anual' ? 'anos' : 'meses'} seu investimento valerá
               </p>
-              <p className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-4">
+              <p className="text-2xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400 mb-4 break-all">
                 {formatCurrency(result.finalAmount)}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
@@ -358,7 +358,8 @@ const CompoundInterestCalculator = () => {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                   Composição do Investimento
                 </h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <div className="overflow-hidden min-w-0">
+                  <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={pieData}
@@ -377,6 +378,7 @@ const CompoundInterestCalculator = () => {
                     <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   </PieChart>
                 </ResponsiveContainer>
+                </div>
                 <div className="mt-4 space-y-2">
                   {pieData.map((item, index) => (
                     <div key={index} className="flex items-center justify-between text-sm">
@@ -397,7 +399,8 @@ const CompoundInterestCalculator = () => {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                   Evolução do Investimento
                 </h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <div className="overflow-hidden min-w-0">
+                  <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="year" stroke="#6b7280" />
@@ -408,19 +411,20 @@ const CompoundInterestCalculator = () => {
                     <Bar dataKey="Total de Juros" stackId="a" fill="#9ca3af" />
                   </BarChart>
                 </ResponsiveContainer>
+                </div>
               </div>
             </div>
 
             {/* Tabela Detalhada */}
             <div className="card">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                   Detalhamento do Investimento
                 </h3>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowAnnual(true)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${
                       showAnnual
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
@@ -430,7 +434,7 @@ const CompoundInterestCalculator = () => {
                   </button>
                   <button
                     onClick={() => setShowAnnual(false)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${
                       !showAnnual
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
