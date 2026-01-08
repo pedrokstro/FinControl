@@ -1176,11 +1176,90 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Histórico Mensal - Largura Total */}
+      {/* Finanças por Categoria - Largura Total */}
       <div className="card flex flex-col h-[450px]">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Histórico Mensal
+          Finanças por Categoria
         </h3>
+        {categoryData.length > 0 ? (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCategoryLabel}
+                  outerRadius={100}
+                  innerRadius={0}
+                  fill="#8884d8"
+                  dataKey="value"
+                  animationDuration={1200}
+                  animationBegin={0}
+                  isAnimationActive={true}
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: number, _name: string, props: any) => [
+                    formatCurrency(value),
+                    props.payload.type === 'income' ? 'Receita' : 'Despesa'
+                  ]}
+                  animationDuration={300}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            
+            {/* Legenda personalizada */}
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-neutral-300 border-b dark:border-neutral-800 pb-2">
+                <span>Categoria</span>
+                <span>Tipo</span>
+                <span>Valor</span>
+              </div>
+              {categoryData.map((item, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 flex-1">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-gray-900 dark:text-white">{item.name}</span>
+                  </div>
+                  <span 
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      item.type === 'income' 
+                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300' 
+                        : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                    }`}
+                  >
+                    {item.type === 'income' ? 'Receita' : 'Despesa'}
+                  </span>
+                  <span className={`font-semibold ml-4 ${
+                    item.type === 'income' ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
+                  }`}>
+                    {formatCurrency(item.value)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
+            Nenhuma transação registrada
+          </div>
+        )}
+      </div>
+
+      {/* Histórico Mensal e Comparativo Mensal - Lado a Lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="card flex flex-col h-[450px]">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Histórico Mensal
+          </h3>
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
@@ -1239,86 +1318,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Finanças por Categoria e Novo Gráfico */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card flex flex-col h-[450px]">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Finanças por Categoria
-          </h3>
-          {categoryData.length > 0 ? (
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCategoryLabel}
-                    outerRadius={100}
-                    innerRadius={0}
-                    fill="#8884d8"
-                    dataKey="value"
-                    animationDuration={1200}
-                    animationBegin={0}
-                    isAnimationActive={true}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number, _name: string, props: any) => [
-                      formatCurrency(value),
-                      props.payload.type === 'income' ? 'Receita' : 'Despesa'
-                    ]}
-                    animationDuration={300}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              
-              {/* Legenda personalizada */}
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-neutral-300 border-b dark:border-neutral-800 pb-2">
-                  <span>Categoria</span>
-                  <span>Tipo</span>
-                  <span>Valor</span>
-                </div>
-                {categoryData.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 flex-1">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-gray-900 dark:text-white">{item.name}</span>
-                    </div>
-                    <span 
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        item.type === 'income' 
-                          ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300' 
-                          : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                      }`}
-                    >
-                      {item.type === 'income' ? 'Receita' : 'Despesa'}
-                    </span>
-                    <span className={`font-semibold ml-4 ${
-                      item.type === 'income' ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                    }`}>
-                      {formatCurrency(item.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
-              Nenhuma transação registrada
-            </div>
-          )}
-        </div>
-
-        {/* Novo Gráfico: Comparativo Mensal */}
+        {/* Comparativo Mensal */}
         <div className="card flex flex-col h-[450px]">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
