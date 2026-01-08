@@ -1019,7 +1019,7 @@ const Dashboard = () => {
       </div>
 
       {/* Novos Gráficos: Radial Bar e Line Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 gap-6 ${currentGoal && savingsGoalData.length > 0 ? 'lg:grid-cols-2' : ''}`}>
         {/* Radial Bar Chart - Meta de Economia */}
         {currentGoal && savingsGoalData.length > 0 && (
           <div className="card">
