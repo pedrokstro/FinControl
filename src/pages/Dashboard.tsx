@@ -22,6 +22,7 @@ import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
 import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
+import TransactionTypeSelectionModal from '@/components/modals/TransactionTypeSelectionModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
@@ -217,6 +218,7 @@ type TransactionFormData = z.infer<typeof transactionSchema>
 const Dashboard = () => {
   const { transactions, currentMonthTransactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
+  const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false)
   const isMobile = useIsMobile()
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
@@ -366,15 +368,19 @@ const Dashboard = () => {
     }
   }, [isQuickAddRecurring, recurrenceStartDate, recurrenceEndDate, setValue])
 
-  const openQuickAdd = useCallback((type: 'income' | 'expense' = 'expense') => {
-    // Obter data de hoje sem timezone
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const openQuickAdd = useCallback((type: 'income' | 'expense') => {
+    setShowTypeSelectionModal(true)
+  }, [])
+
+  const handleSelectTransactionType = useCallback((transactionType: 'normal' | 'recurring') => {
+    const today = new Date()
+    const todayString = format(today, 'yyyy-MM-dd')
     
-    console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo:', type);
+    console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo recorrente:', transactionType === 'recurring');
     
+    setIsQuickAddRecurring(transactionType === 'recurring')
     reset({
-      type: type,
+      type: 'expense',
       amount: '',
       categoryId: '',
       description: '',
@@ -1800,6 +1806,13 @@ const Dashboard = () => {
       <div className="mt-12">
         <Footer />
       </div>
+
+      {/* Modal de Seleção de Tipo de Transação */}
+      <TransactionTypeSelectionModal
+        isOpen={showTypeSelectionModal}
+        onClose={() => setShowTypeSelectionModal(false)}
+        onSelectType={handleSelectTransactionType}
+      />
     </div>
   )
 }
