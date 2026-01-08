@@ -49,7 +49,11 @@ import {
   Tooltip,
   Legend,
   BarChart,
-  Bar
+  Bar,
+  RadialBarChart,
+  RadialBar,
+  LineChart,
+  Line
 } from 'recharts'
 import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -630,6 +634,40 @@ const Dashboard = () => {
     return listToDisplay.slice(0, limit || 5)
   }, [selectedMonthTransactions])
 
+  // Dados para o Radial Bar Chart (Meta de Economia)
+  const savingsGoalData = useMemo(() => {
+    if (!currentGoal) return []
+    
+    const currentAmount = currentGoal.currentAmount || 0
+    const targetAmount = currentGoal.targetAmount || 1
+    const percentage = Math.min((currentAmount / targetAmount) * 100, 100)
+    
+    return [
+      {
+        name: 'Meta',
+        value: percentage,
+        fill: percentage >= 100 ? '#22c55e' : percentage >= 50 ? '#3b82f6' : '#f59e0b'
+      }
+    ]
+  }, [currentGoal])
+
+  // Dados para o Line Chart (Saldo Acumulado)
+  const accumulatedBalanceData = useMemo(() => {
+    const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+    let accumulated = 0
+    
+    return monthNames.map((name, index) => {
+      const monthData = yearlyMonthlyData[index]
+      accumulated += monthData.saldo
+      
+      return {
+        month: name,
+        saldoAcumulado: accumulated,
+        saldoMensal: monthData.saldo
+      }
+    })
+  }, [yearlyMonthlyData])
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -976,6 +1014,161 @@ const Dashboard = () => {
             <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
               {yearlyMonthlyData.reduce((max, m) => (m.receitas + m.despesas) > (max.receitas + max.despesas) ? m : max, yearlyMonthlyData[0]).month}
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Novos Gráficos: Radial Bar e Line Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Radial Bar Chart - Meta de Economia */}
+        {currentGoal && savingsGoalData.length > 0 && (
+          <div className="card">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
+                <Target className="w-5 h-5 text-success-600 dark:text-success-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Progresso da Meta
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">
+                  Visualização do progresso de economia
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <ResponsiveContainer width="100%" height={250}>
+                <RadialBarChart 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius="60%" 
+                  outerRadius="90%" 
+                  barSize={20}
+                  data={savingsGoalData}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <RadialBar
+                    minAngle={15}
+                    background
+                    clockWise
+                    dataKey="value"
+                    cornerRadius={10}
+                  />
+                  <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-4xl font-bold fill-gray-900 dark:fill-white"
+                  >
+                    {savingsGoalData[0]?.value.toFixed(0)}%
+                  </text>
+                </RadialBarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Atual</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">
+                  {formatCurrency(currentGoal.currentAmount)}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Meta</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">
+                  {formatCurrency(currentGoal.targetAmount)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Line Chart - Saldo Acumulado */}
+        <div className="card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Saldo Acumulado
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Evolução patrimonial ao longo do ano
+              </p>
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart
+              data={accumulatedBalanceData}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
+              <XAxis 
+                dataKey="month" 
+                stroke="#6b7280"
+                className="dark:text-neutral-400"
+                tick={{ fontSize: 11 }}
+              />
+              <YAxis 
+                stroke="#6b7280"
+                className="dark:text-neutral-400"
+                tick={{ fontSize: 11 }}
+                tickFormatter={(value) => {
+                  if (value >= 1000) {
+                    return `${(value / 1000).toFixed(0)}k`
+                  }
+                  return `${value}`
+                }}
+              />
+              <Tooltip
+                formatter={(value: number) => formatCurrency(value)}
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                }}
+                animationDuration={300}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="saldoAcumulado"
+                stroke="#3b82f6"
+                strokeWidth={3}
+                dot={{ fill: '#3b82f6', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Saldo Acumulado"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+
+          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Saldo Final</p>
+              <p className={`text-lg font-bold ${
+                accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
+                  ? 'text-success-600 dark:text-success-400'
+                  : 'text-danger-600 dark:text-danger-400'
+              }`}>
+                {formatCurrency(accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado || 0)}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Tendência</p>
+              <p className={`text-lg font-bold ${
+                accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
+                  ? 'text-success-600 dark:text-success-400'
+                  : 'text-danger-600 dark:text-danger-400'
+              }`}>
+                {accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0 ? '↑' : '↓'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
