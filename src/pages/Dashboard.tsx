@@ -981,15 +981,16 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
+        <div className="card flex flex-col">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Histórico Mensal
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart 
-              data={monthlyData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart 
+                data={monthlyData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
               <defs>
                 <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
@@ -1039,15 +1040,16 @@ const Dashboard = () => {
               />
             </AreaChart>
           </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="card">
+        <div className="card flex flex-col">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Finanças por Categoria
           </h3>
           {categoryData.length > 0 ? (
-            <>
-              <ResponsiveContainer width="100%" height={300}>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={categoryData}
@@ -1110,7 +1112,7 @@ const Dashboard = () => {
                   </div>
                 ))}
               </div>
-            </>
+            </div>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
               Nenhuma transação registrada
