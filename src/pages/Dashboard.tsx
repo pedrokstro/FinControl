@@ -1176,17 +1176,17 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card flex flex-col h-[450px]">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Histórico Mensal
-          </h3>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart 
-                data={monthlyData}
-                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-              >
+      {/* Histórico Mensal - Largura Total */}
+      <div className="card flex flex-col h-[450px]">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Histórico Mensal
+        </h3>
+        <div className="flex-1 min-h-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart 
+              data={monthlyData}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
               <defs>
                 <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
@@ -1236,9 +1236,11 @@ const Dashboard = () => {
               />
             </AreaChart>
           </ResponsiveContainer>
-          </div>
         </div>
+      </div>
 
+      {/* Finanças por Categoria e Novo Gráfico */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card flex flex-col h-[450px]">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Finanças por Categoria
@@ -1314,6 +1316,89 @@ const Dashboard = () => {
               Nenhuma transação registrada
             </div>
           )}
+        </div>
+
+        {/* Novo Gráfico: Comparativo Mensal */}
+        <div className="card flex flex-col h-[450px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Comparativo Mensal
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Últimos 6 meses
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={monthlyData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#6b7280"
+                  className="dark:text-neutral-400"
+                  tick={{ fontSize: 11 }}
+                />
+                <YAxis 
+                  stroke="#6b7280"
+                  className="dark:text-neutral-400"
+                  tick={{ fontSize: 11 }}
+                  tickFormatter={(value) => {
+                    if (value >= 1000) {
+                      return `${(value / 1000).toFixed(0)}k`
+                    }
+                    return `${value}`
+                  }}
+                />
+                <Tooltip
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                  }}
+                  animationDuration={300}
+                />
+                <Legend />
+                <Bar 
+                  dataKey="receitas" 
+                  fill="#22c55e" 
+                  name="Receitas"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="despesas" 
+                  fill="#ef4444" 
+                  name="Despesas"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Média Receitas</p>
+              <p className="text-lg font-bold text-success-600 dark:text-success-400">
+                {formatCurrency(monthlyData.reduce((sum, m) => sum + m.receitas, 0) / monthlyData.length)}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Média Despesas</p>
+              <p className="text-lg font-bold text-danger-600 dark:text-danger-400">
+                {formatCurrency(monthlyData.reduce((sum, m) => sum + m.despesas, 0) / monthlyData.length)}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
