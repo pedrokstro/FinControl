@@ -1172,7 +1172,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card flex flex-col">
+        <div className="card flex flex-col h-[450px]">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Histórico Mensal
           </h3>
@@ -1234,12 +1234,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card flex flex-col">
+        <div className="card flex flex-col h-[450px]">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Finanças por Categoria
           </h3>
           {categoryData.length > 0 ? (
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 overflow-y-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
