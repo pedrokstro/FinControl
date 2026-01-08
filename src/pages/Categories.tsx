@@ -263,7 +263,7 @@ const Categories = () => {
           
           <button
             onClick={() => handleOpenModal()}
-            className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="hidden sm:flex btn-primary items-center justify-center gap-2 w-full sm:w-auto"
           >
             <Plus className="w-5 h-5" />
             Nova Categoria

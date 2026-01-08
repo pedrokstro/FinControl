@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { ChevronDown, Menu } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import NotificationDropdown from '@/components/NotificationDropdown'
 
-type HeaderProps = {
-  onToggleMobileSidebar?: () => void
-}
-
-const Header = ({ onToggleMobileSidebar }: HeaderProps) => {
+const Header = () => {
   const { user, logout, loadAvatar } = useAuthStore()
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -40,14 +36,6 @@ const Header = ({ onToggleMobileSidebar }: HeaderProps) => {
     <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-6 py-3 transition-colors duration-300 sticky top-0 z-30">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => onToggleMobileSidebar?.()}
-            className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
-            aria-label="Abrir menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
         </div>
 
         <div className="flex items-center justify-end gap-3 sm:gap-4 flex-1">
