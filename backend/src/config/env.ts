@@ -42,6 +42,10 @@ interface Config {
     level: string;
     dir: string;
   };
+  googlePlay: {
+    packageName: string;
+    serviceAccountKeyPath: string;
+  };
 }
 
 export const config: Config = {
@@ -88,6 +92,11 @@ export const config: Config = {
   logging: {
     level: process.env.LOG_LEVEL || 'info',
     dir: process.env.LOG_DIR || 'logs',
+  },
+  
+  googlePlay: {
+    packageName: process.env.GOOGLE_PLAY_PACKAGE_NAME || 'com.fincontrol.app',
+    serviceAccountKeyPath: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_PATH || './google-play-service-account.json',
   },
 };
 

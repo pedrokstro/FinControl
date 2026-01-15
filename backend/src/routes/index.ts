@@ -11,6 +11,7 @@ import notificationRoutes from './notification.routes';
 import adminRoutes from './admin.routes';
 import analyticsRoutes from './analytics.routes';
 import exportRoutes from './export.routes';
+import googlePlayRoutes from './googlePlay.routes';
 
 const router = Router();
 
@@ -27,5 +28,6 @@ router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/export', exportRoutes);
+router.use('/google-play', googlePlayRoutes);
 
 export default router;
