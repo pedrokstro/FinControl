@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as transactionController from '@/controllers/transaction.controller';
 import { authenticate } from '@/middlewares/auth.middleware';
 import { validate, validateQuery } from '@/middlewares/validation.middleware';
+import { checkTransactionLimit } from '@/middlewares/checkTransactionLimit';
 import { createTransactionSchema, updateTransactionSchema, filterTransactionsSchema } from '@/validators/transaction.validator';
 
 const router = Router();
@@ -88,8 +89,10 @@ router.get('/', validateQuery(filterTransactionsSchema), transactionController.f
  *     responses:
  *       201:
  *         description: Transação criada com sucesso
+ *       403:
+ *         description: Limite de transações atingido (plano gratuito)
  */
-router.post('/', validate(createTransactionSchema), transactionController.create);
+router.post('/', checkTransactionLimit, validate(createTransactionSchema), transactionController.create);
 
 /**
  * @swagger

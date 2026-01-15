@@ -279,6 +279,37 @@ export class SubscriptionController {
       });
     }
   }
+
+  /**
+   * GET /api/subscription/usage
+   * Obter uso mensal de transações
+   */
+  async getMonthlyUsage(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado',
+        });
+        return;
+      }
+
+      const usage = await subscriptionService.getMonthlyUsage(userId);
+
+      res.json({
+        success: true,
+        data: usage,
+      });
+    } catch (error: any) {
+      console.error('Erro ao obter uso mensal:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Erro ao obter uso mensal',
+      });
+    }
+  }
 }
 
 export const subscriptionController = new SubscriptionController();

@@ -232,6 +232,99 @@ export class SubscriptionService {
 
     return diffDays > 0 ? diffDays : 0;
   }
+
+  /**
+   * Contar transações do usuário no mês atual
+   */
+  async getMonthlyTransactionCount(userId: string): Promise<number> {
+    const { Transaction } = await import('../models/Transaction');
+    const transactionRepository = AppDataSource.getRepository(Transaction);
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+    const count = await transactionRepository
+      .createQueryBuilder('transaction')
+      .where('transaction.userId = :userId', { userId })
+      .andWhere('transaction.date >= :startOfMonth', { startOfMonth })
+      .andWhere('transaction.date <= :endOfMonth', { endOfMonth })
+      .getCount();
+
+    return count;
+  }
+
+  /**
+   * Verificar se usuário pode criar mais transações
+   */
+  async canCreateTransaction(userId: string): Promise<{
+    allowed: boolean;
+    currentCount: number;
+    limit: number;
+    message?: string;
+  }> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    // Premium tem transações ilimitadas
+    if (user.isPlanActive()) {
+      return {
+        allowed: true,
+        currentCount: 0,
+        limit: -1, // Unlimited
+      };
+    }
+
+    // Free plan tem limite de 10 transações/mês
+    const currentCount = await this.getMonthlyTransactionCount(userId);
+    const limit = User.FREE_PLAN_TRANSACTION_LIMIT;
+
+    if (currentCount >= limit) {
+      return {
+        allowed: false,
+        currentCount,
+        limit,
+        message: `Você atingiu o limite de ${limit} transações mensais do plano gratuito. Faça upgrade para Premium para transações ilimitadas.`,
+      };
+    }
+
+    return {
+      allowed: true,
+      currentCount,
+      limit,
+    };
+  }
+
+  /**
+   * Obter uso mensal de transações
+   */
+  async getMonthlyUsage(userId: string): Promise<{
+    currentCount: number;
+    limit: number;
+    percentage: number;
+    isPremium: boolean;
+  }> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    const isPremium = user.isPlanActive();
+    const currentCount = await this.getMonthlyTransactionCount(userId);
+    const limit = isPremium ? -1 : User.FREE_PLAN_TRANSACTION_LIMIT;
+    const percentage = isPremium ? 0 : Math.min((currentCount / limit) * 100, 100);
+
+    return {
+      currentCount,
+      limit,
+      percentage,
+      isPremium,
+    };
+  }
 }
 
 export const subscriptionService = new SubscriptionService();

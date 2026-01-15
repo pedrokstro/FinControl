@@ -67,4 +67,13 @@ router.post('/start-trial', authenticate, (req, res) =>
   subscriptionController.startTrial(req, res)
 );
 
+/**
+ * @route   GET /api/subscription/usage
+ * @desc    Obter uso mensal de transações
+ * @access  Private
+ */
+router.get('/usage', authenticate, (req, res) =>
+  subscriptionController.getMonthlyUsage(req, res)
+);
+
 export default router;

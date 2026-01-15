@@ -6,6 +6,10 @@ declare global {
       user?: JwtPayload;
       file?: Multer.File;
       files?: Multer.File[];
+      transactionUsage?: {
+        currentCount: number;
+        limit: number;
+      };
     }
   }
 }

@@ -111,6 +111,10 @@ export class User {
       'advanced_reports',
       'export_unlimited',
       'priority_support',
+      'unlimited_transactions',
+      'export_reports',
+      'export_data',
+      'calculators',
     ];
 
     if (premiumFeatures.includes(feature)) {
@@ -120,6 +124,10 @@ export class User {
     // Free features
     return true;
   }
+
+  // Plan limits
+  static readonly FREE_PLAN_TRANSACTION_LIMIT = 10;
+  static readonly PREMIUM_PLAN_TRANSACTION_LIMIT = -1; // Unlimited
 
   toJSON(): Partial<User> {
     const { password, ...user } = this;
