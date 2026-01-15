@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { config } from '../config/env';
+import { getGooglePlayCredentialsPath } from '../config/googlePlay';
 
 /**
  * Serviço para integração com Google Play Billing API
@@ -44,8 +45,10 @@ export class GooglePlayService {
    */
   private async initializeClient() {
     try {
+      const credentialsPath = getGooglePlayCredentialsPath();
+      
       const auth = new google.auth.GoogleAuth({
-        keyFile: config.googlePlay.serviceAccountKeyPath,
+        keyFile: credentialsPath,
         scopes: ['https://www.googleapis.com/auth/androidpublisher'],
       });
 
