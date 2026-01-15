@@ -10,6 +10,7 @@ import savingsGoalRoutes from './savingsGoal.routes';
 import notificationRoutes from './notification.routes';
 import adminRoutes from './admin.routes';
 import analyticsRoutes from './analytics.routes';
+import exportRoutes from './export.routes';
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use('/savings-goals', savingsGoalRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/export', exportRoutes);
 
 export default router;
