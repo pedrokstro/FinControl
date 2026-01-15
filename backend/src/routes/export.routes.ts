@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authenticate } from '@/middlewares/auth.middleware';
-import { checkExportReports, checkExportData } from '@/middlewares/checkPremiumFeature';
-import { exportController } from '@/controllers/export.controller';
+import { authenticate } from '../middlewares/auth.middleware';
+import { checkExportReports, checkExportData } from '../middlewares/checkPremiumFeature';
+import { exportController } from '../controllers/export.controller';
 
 const router = Router();
 
