@@ -55,18 +55,8 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   googlePayTransactionId: string | null;
 
-  // Google Play Billing Fields
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  googlePlayPurchaseToken: string | null;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  googlePlaySubscriptionId: string | null;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  googlePlayOrderId: string | null;
-
   @Column({ type: 'varchar', length: 50, nullable: true })
-  subscriptionStatus: 'active' | 'canceled' | 'expired' | 'revoked' | null;
+  subscriptionStatus: 'active' | 'cancelled' | 'expired' | null;
 
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
