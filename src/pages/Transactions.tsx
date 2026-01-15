@@ -25,10 +25,13 @@ import { ptBR } from 'date-fns/locale'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
 import RecurrenceDetailsModal from '@/components/modals/RecurrenceDetailsModal'
+import TransactionLimitBanner from '@/components/common/TransactionLimitBanner'
+import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
+import { useTransactionLimit } from '@/hooks/useTransactionLimit'
 
 
 

@@ -25,9 +25,12 @@ import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
 import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
+import TransactionLimitBanner from '@/components/common/TransactionLimitBanner'
+import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
+import { useTransactionLimit } from '@/hooks/useTransactionLimit'
 import {
   CashFlowChart,
   TopExpensesChart,
@@ -187,6 +190,8 @@ const Dashboard = () => {
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
   const [analyticsEmpty, setAnalyticsEmpty] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
+  const { usage, checkLimit, refreshUsage } = useTransactionLimit()
+  const [showLimitModal, setShowLimitModal] = useState(false)
   
   // Estado para controlar mês/ano selecionado
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -404,7 +409,14 @@ const Dashboard = () => {
     setValue('amount', value.toString(), { shouldDirty: true, shouldValidate: true })
   }
 
-  const onSubmit = (data: TransactionFormData) => {
+  const onSubmit = async (data: TransactionFormData) => {
+    // Verificar limite de transações antes de criar
+    const canCreate = await checkLimit()
+    if (!canCreate) {
+      setShowLimitModal(true)
+      return
+    }
+
     const category = categories.find((c) => c.id === data.categoryId)
     
     const dateValue: any = data.date;
@@ -422,7 +434,7 @@ const Dashboard = () => {
     
     console.log('📅 [FRONTEND DEBUG] Data convertida:', dateString, typeof dateString)
     
-    addTransaction({
+    await addTransaction({
       ...data,
       date: dateString,
       amount: parseFloat(data.amount),
@@ -433,6 +445,9 @@ const Dashboard = () => {
       recurrenceType: isQuickAddRecurring ? data.recurrenceType : undefined,
       totalInstallments: isQuickAddRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
     })
+    
+    // Atualizar uso após criar transação
+    await refreshUsage()
     
     closeQuickAdd()
     setIsQuickAddRecurring(false) // Reset recorrência
@@ -741,6 +756,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Banner de Limite de Transações */}
+      <TransactionLimitBanner />
       
       <div className="section-grid">
         <CurrentDateCard />
@@ -1984,6 +2002,13 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Transaction Limit Modal */}
+      <TransactionLimitModal 
+        isOpen={showLimitModal} 
+        onClose={() => setShowLimitModal(false)} 
+        usage={usage} 
+      />
 
       {/* Footer */}
       <div className="mt-12">
