@@ -683,8 +683,7 @@ const Categories = () => {
                 <button
                   onClick={() => {
                     setShowUpgradeModal(false)
-                    // Redirecionar para página de planos
-                    window.location.href = '/plans'
+                    navigate('/plans')
                   }}
                   className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
                 >
