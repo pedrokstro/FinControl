@@ -223,29 +223,46 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                     <div className="grid grid-cols-7 gap-2">
                       {icons.map((iconData: IconCategoryItem) => {
                         const isSelected = selectedIcon === iconData.name
+                        const isExclusiveIcon = categoryName === 'Exclusivos'
+                        const isLocked = isExclusiveIcon && !isPremium
                         
                         return (
                           <button
                             key={iconData.name}
                             type="button"
-                            onClick={() => handleSelectIcon(iconData.name as IconName)}
+                            onClick={() => {
+                              if (isLocked && onUpgradeClick) {
+                                onUpgradeClick()
+                              } else {
+                                handleSelectIcon(iconData.name as IconName)
+                              }
+                            }}
                             className={`
                               group relative w-full aspect-square flex items-center justify-center
                               rounded-lg border-2 transition-all
-                              ${isSelected
+                              ${isLocked
+                                ? 'border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/10 cursor-not-allowed opacity-60'
+                                : isSelected
                                 ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
                                 : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:shadow-sm'
                               }
                             `}
-                            title={iconData.label}
+                            title={isLocked ? `${iconData.label} - Premium` : iconData.label}
                           >
                             <CategoryIcon
                               icon={iconData.name}
                               size="md"
-                              className="transition-transform group-hover:scale-105"
+                              className={`transition-transform ${isLocked ? 'opacity-40' : 'group-hover:scale-105'}`}
                               color={isSelected ? '#2563eb' : '#4b5563'}
                             />
-                            {isSelected && (
+                            {isLocked && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-black/20 rounded-lg">
+                                <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                            {isSelected && !isLocked && (
                               <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 dark:bg-primary-400 rounded-full flex items-center justify-center shadow-lg">
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -256,6 +273,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                             <div className="absolute bottom-full mb-2 hidden group-hover:block pointer-events-none z-10">
                               <div className="bg-gray-900 dark:bg-neutral-800 text-white text-xs py-1.5 px-2.5 rounded shadow-lg whitespace-nowrap border border-gray-700 dark:border-neutral-700">
                                 {iconData.label}
+                                {isLocked && <span className="ml-1 text-amber-400">🔒 Premium</span>}
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
                                   <div className="border-4 border-transparent border-t-gray-900 dark:border-t-neutral-800"></div>
                                 </div>
