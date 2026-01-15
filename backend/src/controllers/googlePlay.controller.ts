@@ -66,7 +66,7 @@ class GooglePlayController {
       user.isPremium = true;
       user.planType = 'premium';
       user.planStartDate = new Date();
-      user.planEndDate = verificationResult.expiryDate;
+      user.planEndDate = verificationResult.expiryDate || null;
       user.subscriptionStatus = 'active';
 
       // Salvar dados da compra do Google Play

@@ -104,7 +104,7 @@ export class SubscriptionService {
     user.planType = 'free';
     user.planEndDate = new Date(); // Expira imediatamente
     user.isPremium = false;
-    user.subscriptionStatus = 'cancelled';
+    user.subscriptionStatus = 'canceled';
 
     await this.userRepository.save(user);
 
