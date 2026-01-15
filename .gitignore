@@ -46,3 +46,7 @@ Thumbs.db
 
 # Uploads
 backend/uploads/
+
+# Google Play Billing credentials
+google-play-service-account.json
+backend/google-play-service-account.json
