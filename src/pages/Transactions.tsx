@@ -114,6 +114,8 @@ const Transactions = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
+  const { usage, checkLimit, refreshUsage } = useTransactionLimit()
+  const [showLimitModal, setShowLimitModal] = useState(false)
 
   const {
     register,
@@ -257,7 +259,16 @@ const Transactions = () => {
     reset()
   }
 
-  const onSubmit = (data: TransactionFormData) => {
+  const onSubmit = async (data: TransactionFormData) => {
+    // Verificar limite de transações antes de criar (apenas para novas transações)
+    if (!editingId) {
+      const canCreate = await checkLimit()
+      if (!canCreate) {
+        setShowLimitModal(true)
+        return
+      }
+    }
+
     const category = categories.find((c) => c.id === data.categoryId)
 
     const transactionData = {
@@ -273,14 +284,16 @@ const Transactions = () => {
 
     if (editingId) {
       // ✅ Ao editar, enviar apenas os campos necessários
-      updateTransaction(editingId, transactionData)
+      await updateTransaction(editingId, transactionData)
     } else {
       // ✅ Ao criar, adicionar category name e userId
-      addTransaction({
+      await addTransaction({
         ...transactionData,
         category: category?.name || '',
         userId: '1',
       })
+      // Atualizar uso após criar transação
+      await refreshUsage()
     }
     handleCloseModal()
     setIsRecurring(false) // Reset recorrência
@@ -428,7 +441,12 @@ const Transactions = () => {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Banner de Limite de Transações */}
+        <TransactionLimitBanner />
+
+        <div className="card space-y-3">
           {/* Month Summary */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="text-center">
@@ -991,6 +1009,13 @@ const Transactions = () => {
             setSelectedRecurrenceTransaction(null)
           }}
           transaction={selectedRecurrenceTransaction}
+        />
+
+        {/* Transaction Limit Modal */}
+        <TransactionLimitModal 
+          isOpen={showLimitModal} 
+          onClose={() => setShowLimitModal(false)} 
+          usage={usage} 
         />
       </div>
     </PageTransition>

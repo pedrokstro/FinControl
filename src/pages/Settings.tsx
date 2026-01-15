@@ -181,6 +181,13 @@ const Settings = () => {
   }
   
   const confirmExportData = () => {
+    // Verificar se é premium antes de exportar
+    if (!user?.isPremium) {
+      toast.error('Exportação de dados é exclusiva do plano Premium')
+      setShowExportModal(false)
+      return
+    }
+
     try {
       // Buscar dados do store
       const { transactions, categories } = useFinancialStore.getState()

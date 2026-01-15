@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Calendar } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/store/authStore'
+import { toast } from 'react-hot-toast'
 import PageTransition from '@/components/common/PageTransition'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -26,6 +29,16 @@ interface CalculationResult {
 }
 
 const CompoundInterestCalculator = () => {
+  const { user } = useAuthStore()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!user?.isPremium) {
+      toast.error('Calculadoras são exclusivas do plano Premium')
+      navigate('/plans')
+    }
+  }, [user, navigate])
+
   const [initialValue, setInitialValue] = useState('10000')
   const [monthlyContribution, setMonthlyContribution] = useState('400')
   const [interestRate, setInterestRate] = useState('8')

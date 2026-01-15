@@ -1,8 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Percent, Calculator, ArrowRight, Wallet } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/store/authStore'
+import { toast } from 'react-hot-toast'
 import PageTransition from '@/components/common/PageTransition'
 
 const PercentageCalculator = () => {
+  const { user } = useAuthStore()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!user?.isPremium) {
+      toast.error('Calculadoras são exclusivas do plano Premium')
+      navigate('/plans')
+    }
+  }, [user, navigate])
+
   const [value, setValue] = useState('')
   const [percentage, setPercentage] = useState('')
   const [result, setResult] = useState<number | null>(null)

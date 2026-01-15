@@ -357,6 +357,12 @@ const Reports = () => {
   }
   
   const handleExport = async (format: 'pdf' | 'excel' | 'csv') => {
+    // Verificar se é premium antes de exportar
+    if (!user?.isPremium) {
+      toast.error('Exportação de relatórios é exclusiva do plano Premium')
+      return
+    }
+
     try {
       setIsExporting(true)
       const data = prepareExportData()
