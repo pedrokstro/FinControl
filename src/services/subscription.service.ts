@@ -20,6 +20,13 @@ export interface ActivateSubscriptionResponse {
   isPremium: boolean
 }
 
+export interface MonthlyUsage {
+  currentCount: number
+  limit: number
+  percentage: number
+  isPremium: boolean
+}
+
 class SubscriptionService {
   /**
    * Obter status da assinatura do usuário
@@ -73,6 +80,14 @@ class SubscriptionService {
    */
   async startTrial(): Promise<ActivateSubscriptionResponse> {
     const response = await api.post('/subscription/start-trial')
+    return response.data.data
+  }
+
+  /**
+   * Obter uso mensal de transações
+   */
+  async getMonthlyUsage(): Promise<MonthlyUsage> {
+    const response = await api.get('/subscription/usage')
     return response.data.data
   }
 }
