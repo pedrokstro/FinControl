@@ -15,18 +15,27 @@ class EmailService {
     // Configurar Nodemailer com Gmail
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD;
-    
+
+    console.log('📧 [EmailService] Inicializando...');
+    console.log('📧 [EmailService] GMAIL_USER configurado:', gmailUser ? 'SIM' : 'NÃO');
+    console.log('📧 [EmailService] GMAIL_APP_PASSWORD configurado:', gmailPass ? 'SIM (caracteres: ' + gmailPass.length + ')' : 'NÃO');
+
     if (gmailUser && gmailPass) {
       this.transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // Use SSL
         auth: {
           user: gmailUser,
           pass: gmailPass,
         },
+        // Aumentar o timeout para evitar erro de conexão em servidores lentos
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
       });
-      console.log('✅ Nodemailer configurado para envio de emails via Gmail');
+      console.log('✅ Nodemailer configurado via SMTP (smtp.gmail.com:465)');
     } else {
-      console.warn('⚠️  GMAIL_USER ou GMAIL_APP_PASSWORD não configuradas. Emails não serão enviados.');
+      console.warn('⚠️  GMAIL_USER ou GMAIL_APP_PASSWORD não configuradas no process.env. Emails não serão enviados.');
     }
   }
 
@@ -41,9 +50,9 @@ class EmailService {
 
     try {
       const fromEmail = process.env.EMAIL_FROM || process.env.GMAIL_USER || 'noreply@fincontrol.com';
-      
+
       console.log('📧 Enviando email de:', fromEmail, 'para:', options.to);
-      
+
       const info = await this.transporter.sendMail({
         from: fromEmail,
         to: options.to,
@@ -53,9 +62,10 @@ class EmailService {
       });
 
       console.log('✅ Email enviado com sucesso! ID:', info.messageId);
-    } catch (error) {
-      console.error('❌ Erro ao enviar email:', error);
-      throw new Error('Erro ao enviar email');
+    } catch (error: any) {
+      console.error('❌ Erro detalhado do SMTP/Nodemailer:', error);
+      // Propaga a mensagem real para facilitar o diagnóstico
+      throw new Error(error.message || 'Erro ao enviar email');
     }
   }
 
