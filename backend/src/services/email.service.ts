@@ -103,7 +103,8 @@ class EmailService {
           .wrapper { width: 100%; table-layout: fixed; background-color: #f3f4f6; padding-bottom: 40px; padding-top: 40px; }
           .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
           .header { background-color: #000000; padding: 32px; text-align: center; }
-          .logo-container { background-color: #ffffff; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          .logo-container { background-color: #ffffff; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          .logo-img { width: 40px; height: 40px; object-fit: contain; display: block; }
           .content { padding: 40px 32px; text-align: center; }
           .title { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 16px; margin-top: 0; }
           .text { font-size: 16px; color: #4b5563; margin-bottom: 24px; line-height: 1.6; }
@@ -120,7 +121,7 @@ class EmailService {
           <div class="main">
             <div class="header">
               <div class="logo-container">
-                <img src="https://raw.githubusercontent.com/lucide-react/lucide/main/icons/wallet.png" width="28" height="28" style="display:block; margin: 0 auto; filter: invert(34%) sepia(91%) saturate(2321%) hue-rotate(182deg) brightness(97%) contrast(100%);" alt="L">
+                <img src="https://fincontrol.vercel.app/icons/logofincontrol.png" class="logo-img" alt="FinControl Logo">
               </div>
               <div style="color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">FinControl</div>
             </div>
