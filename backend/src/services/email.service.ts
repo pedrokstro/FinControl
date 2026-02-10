@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { config } from '../config/env';
+import { resendService } from './resend.service';
 
 interface EmailOptions {
   to: string;
@@ -12,46 +12,63 @@ class EmailService {
   private transporter: nodemailer.Transporter | null = null;
 
   constructor() {
-    // Configurar Nodemailer com Gmail
+    // Configurar Nodemailer como fallback ou secundário
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD;
+    const resendKey = process.env.RESEND_API_KEY;
 
     console.log('📧 [EmailService] Inicializando...');
+    console.log('📧 [EmailService] RESEND_API_KEY configurado:', resendKey ? 'SIM' : 'NÃO');
     console.log('📧 [EmailService] GMAIL_USER configurado:', gmailUser ? 'SIM' : 'NÃO');
-    console.log('📧 [EmailService] GMAIL_APP_PASSWORD configurado:', gmailPass ? 'SIM (caracteres: ' + gmailPass.length + ')' : 'NÃO');
 
     if (gmailUser && gmailPass) {
       this.transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // Use SSL
+        secure: true,
         auth: {
           user: gmailUser,
           pass: gmailPass,
         },
-        // Aumentar o timeout para evitar erro de conexão em servidores lentos
         connectionTimeout: 10000,
         greetingTimeout: 10000,
       });
-      console.log('✅ Nodemailer configurado via SMTP (smtp.gmail.com:465)');
-    } else {
-      console.warn('⚠️  GMAIL_USER ou GMAIL_APP_PASSWORD não configuradas no process.env. Emails não serão enviados.');
+      console.log('✅ Nodemailer (Gmail) pronto para uso como fallback.');
     }
   }
 
   /**
-   * Enviar email genérico
+   * Enviar email (Tenta Resend primeiro, depois Nodemailer)
    */
   async sendEmail(options: EmailOptions): Promise<void> {
+    const resendKey = process.env.RESEND_API_KEY;
+
+    // 1. Tentar via Resend se houver API Key
+    if (resendKey) {
+      try {
+        console.log('🚀 [EmailService] Tentando enviar via Resend...');
+        await resendService.sendEmail({
+          to: options.to,
+          subject: options.subject,
+          html: options.html
+        });
+        console.log('✅ [EmailService] Email enviado com sucesso via Resend');
+        return;
+      } catch (error: any) {
+        console.error('❌ [EmailService] Falha no Resend:', error.message);
+        if (!this.transporter) throw error;
+        console.log('🔄 [EmailService] Tentando fallback para Nodemailer...');
+      }
+    }
+
+    // 2. Fallback para Nodemailer
     if (!this.transporter) {
-      console.warn('⚠️  Email não enviado (Nodemailer não configurado):', options.subject);
-      return;
+      throw new Error('Serviço de email não configurado (Faltam chaves do Resend ou Gmail)');
     }
 
     try {
       const fromEmail = process.env.EMAIL_FROM || process.env.GMAIL_USER || 'noreply@fincontrol.com';
-
-      console.log('📧 Enviando email de:', fromEmail, 'para:', options.to);
+      console.log('📧 [EmailService] Enviando via Nodemailer de:', fromEmail);
 
       const info = await this.transporter.sendMail({
         from: fromEmail,
@@ -61,10 +78,9 @@ class EmailService {
         text: options.text,
       });
 
-      console.log('✅ Email enviado com sucesso! ID:', info.messageId);
+      console.log('✅ [EmailService] Email enviado via Nodemailer! ID:', info.messageId);
     } catch (error: any) {
-      console.error('❌ Erro detalhado do SMTP/Nodemailer:', error);
-      // Propaga a mensagem real para facilitar o diagnóstico
+      console.error('❌ [EmailService] Falha final no envio:', error.message);
       throw new Error(error.message || 'Erro ao enviar email');
     }
   }
