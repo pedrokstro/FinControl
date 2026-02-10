@@ -86,98 +86,88 @@ class EmailService {
   }
 
   /**
-   * Enviar código de verificação de email
+   * Helper para gerar o template base de email
    */
-  async sendVerificationCode(email: string, code: string, name: string): Promise<void> {
-    const html = `
+  private getBaseTemplate(title: string, content: string, footerNote: string = ''): string {
+    const logoUrl = 'https://fincontrol.vercel.app/logo-full.svg';
+    const primaryColor = '#0284c7';
+
+    return `
       <!DOCTYPE html>
       <html>
       <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-          }
-          .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3b82f6;
-          }
-          .code-box {
-            background-color: #fff;
-            border: 2px dashed #3b82f6;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-          }
-          .code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #3b82f6;
-            letter-spacing: 8px;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-          }
+          body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1f2937; margin: 0; padding: 0; background-color: #f3f4f6; }
+          .wrapper { width: 100%; table-layout: fixed; background-color: #f3f4f6; padding-bottom: 40px; padding-top: 40px; }
+          .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+          .header { background-color: #000000; padding: 32px; text-align: center; }
+          .logo-container { background-color: #ffffff; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          .content { padding: 40px 32px; text-align: center; }
+          .title { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 16px; margin-top: 0; }
+          .text { font-size: 16px; color: #4b5563; margin-bottom: 24px; line-height: 1.6; }
+          .code-container { background-color: #f8fafc; border: 2px dashed ${primaryColor}; border-radius: 12px; padding: 24px; margin: 32px 0; }
+          .code { font-size: 36px; font-weight: 800; color: ${primaryColor}; letter-spacing: 8px; font-family: 'Courier New', monospace; }
+          .footer { padding: 32px; text-align: center; font-size: 14px; color: #6b7280; }
+          .expiry { font-size: 14px; font-weight: 600; color: #ef4444; margin-top: 8px; }
+          .divider { border-top: 1px solid #e5e7eb; margin: 32px 0; }
+          .social-link { color: ${primaryColor}; text-decoration: none; font-weight: 600; }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <div class="logo">💰 FinControl</div>
-          </div>
-          
-          <h2>Olá, ${name}!</h2>
-          
-          <p>Bem-vindo ao FinControl! Para completar seu cadastro, por favor verifique seu email usando o código abaixo:</p>
-          
-          <div class="code-box">
-            <div class="code">${code}</div>
-          </div>
-          
-          <p><strong>Este código expira em 15 minutos.</strong></p>
-          
-          <p>Se você não solicitou este código, por favor ignore este email.</p>
-          
-          <div class="footer">
-            <p>© 2024 FinControl - Controle Financeiro Inteligente</p>
+        <div class="wrapper">
+          <div class="main">
+            <div class="header">
+              <div class="logo-container">
+                <img src="https://raw.githubusercontent.com/lucide-react/lucide/main/icons/wallet.png" width="28" height="28" style="display:block; margin: 0 auto; filter: invert(34%) sepia(91%) saturate(2321%) hue-rotate(182deg) brightness(97%) contrast(100%);" alt="L">
+              </div>
+              <div style="color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">FinControl</div>
+            </div>
+            
+            <div class="content">
+              <h1 class="title">${title}</h1>
+              ${content}
+              <div class="divider"></div>
+              <p style="font-size: 13px; color: #9ca3af;">${footerNote}</p>
+            </div>
+
+            <div class="footer">
+              <p>© ${new Date().getFullYear()} FinControl - Controle Financeiro Inteligente</p>
+              <p>Gerencie suas finanças com inteligência e simplicidade.</p>
+              <div style="margin-top: 16px;">
+                <a href="https://fincontrolefinanceiro.com" class="social-link">Acessar Plataforma</a>
+              </div>
+            </div>
           </div>
         </div>
       </body>
       </html>
     `;
+  }
 
-    const text = `
-      Olá, ${name}!
-      
-      Bem-vindo ao FinControl! Para completar seu cadastro, use o código: ${code}
-      
-      Este código expira em 15 minutos.
-      
-      Se você não solicitou este código, ignore este email.
-    `;
+  /**
+   * Enviar código de verificação de email
+   */
+  async sendVerificationCode(email: string, code: string, name: string): Promise<void> {
+    const html = this.getBaseTemplate(
+      `Olá, ${name}! 👋`,
+      `
+      <p class="text">Bem-vindo ao <strong>FinControl</strong>! Estamos muito felizes em ter você conosco. Para ativar sua conta e começar sua jornada financeira, use o código abaixo:</p>
+      <div class="code-container">
+        <div class="code">${code}</div>
+        <p class="expiry">Este código expira em 15 minutos</p>
+      </div>
+      <p class="text">Após inserir este código, você terá acesso total ao seu dashboard e ferramentas exclusivas.</p>
+      `,
+      'Se você não criou uma conta no FinControl, pode ignorar este email com segurança.'
+    );
+
+    const text = `Olá, ${name}! Bem-vindo ao FinControl! Código de ativação: ${code} (Válido por 15 min)`;
 
     await this.sendEmail({
       to: email,
-      subject: '🔐 Código de Verificação - FinControl',
+      subject: '🔐 Ative sua conta no FinControl',
       html,
       text,
     });
@@ -187,103 +177,25 @@ class EmailService {
    * Enviar código de recuperação de senha
    */
   async sendPasswordResetCode(email: string, code: string, name: string): Promise<void> {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-          }
-          .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3b82f6;
-          }
-          .code-box {
-            background-color: #fff;
-            border: 2px dashed #ef4444;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-          }
-          .code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #ef4444;
-            letter-spacing: 8px;
-          }
-          .warning {
-            background-color: #fef2f2;
-            border-left: 4px solid #ef4444;
-            padding: 15px;
-            margin: 20px 0;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="logo">💰 FinControl</div>
-          </div>
-          
-          <h2>Olá, ${name}!</h2>
-          
-          <p>Recebemos uma solicitação para redefinir a senha da sua conta. Use o código abaixo para continuar:</p>
-          
-          <div class="code-box">
-            <div class="code">${code}</div>
-          </div>
-          
-          <p><strong>Este código expira em 15 minutos.</strong></p>
-          
-          <div class="warning">
-            <strong>⚠️ Atenção:</strong> Se você não solicitou a redefinição de senha, ignore este email e sua senha permanecerá inalterada.
-          </div>
-          
-          <div class="footer">
-            <p>© 2024 FinControl - Controle Financeiro Inteligente</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+    const html = this.getBaseTemplate(
+      'Recuperação de Senha 🔒',
+      `
+      <p class="text">Olá, ${name}. Recebemos uma solicitação para redefinir a senha da sua conta no <strong>FinControl</strong>.</p>
+      <p class="text">Use o código de segurança abaixo para prosseguir com a alteração:</p>
+      <div class="code-container" style="border-color: #ef4444;">
+        <div class="code" style="color: #ef4444;">${code}</div>
+        <p class="expiry">Este código expira em 15 minutos</p>
+      </div>
+      <p class="text" style="color: #ef4444; font-weight: 600;">⚠️ Se você não solicitou isso, mude sua senha atual imediatamente ou entre em contato com o suporte.</p>
+      `,
+      'Este é um email automático de segurança. Não responda a este remetente.'
+    );
 
-    const text = `
-      Olá, ${name}!
-      
-      Recebemos uma solicitação para redefinir sua senha. Use o código: ${code}
-      
-      Este código expira em 15 minutos.
-      
-      Se você não solicitou isto, ignore este email.
-    `;
+    const text = `Olá, ${name}. Código para redefinir senha: ${code} (Válido por 15 min)`;
 
     await this.sendEmail({
       to: email,
-      subject: '🔐 Código de Recuperação de Senha - FinControl',
+      subject: '🔑 Recuperação de senha - FinControl',
       html,
       text,
     });
@@ -293,105 +205,25 @@ class EmailService {
    * Enviar código de alteração de email
    */
   async sendEmailChangeCode(email: string, code: string, name: string): Promise<void> {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-          }
-          .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3b82f6;
-          }
-          .code-box {
-            background-color: #fff;
-            border: 2px dashed #f59e0b;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-          }
-          .code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #f59e0b;
-            letter-spacing: 8px;
-          }
-          .warning {
-            background-color: #fffbeb;
-            border-left: 4px solid #f59e0b;
-            padding: 15px;
-            margin: 20px 0;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="logo">💰 FinControl</div>
-          </div>
-          
-          <h2>Olá, ${name}!</h2>
-          
-          <p>Recebemos uma solicitação para alterar o email da sua conta. Para confirmar esta alteração, use o código abaixo:</p>
-          
-          <div class="code-box">
-            <div class="code">${code}</div>
-          </div>
-          
-          <p><strong>Este código expira em 15 minutos.</strong></p>
-          
-          <div class="warning">
-            <strong>⚠️ Importante:</strong> Este código confirma a alteração do seu email. Se você não solicitou esta mudança, ignore este email e entre em contato conosco imediatamente.
-          </div>
-          
-          <p>Após a confirmação, você precisará usar o novo email para fazer login.</p>
-          
-          <div class="footer">
-            <p>© 2024 FinControl - Controle Financeiro Inteligente</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+    const html = this.getBaseTemplate(
+      'Alteração de Email 📧',
+      `
+      <p class="text">Olá, ${name}. Você solicitou a alteração do endereço de email da sua conta.</p>
+      <p class="text">Para confirmar que este novo endereço é seu, use o código abaixo:</p>
+      <div class="code-container" style="border-color: #f59e0b;">
+        <div class="code" style="color: #f59e0b;">${code}</div>
+        <p class="expiry">Este código expira em 15 minutos</p>
+      </div>
+      <p class="text">Sua conta só será atualizada após a inserção bem-sucedida deste código.</p>
+      `,
+      'Se você não solicitou esta mudança, ignore este email.'
+    );
 
-    const text = `
-      Olá, ${name}!
-      
-      Recebemos uma solicitação para alterar o email da sua conta. Use o código: ${code}
-      
-      Este código expira em 15 minutos.
-      
-      Se você não solicitou isto, ignore este email e entre em contato conosco.
-    `;
+    const text = `Código para alteração de email: ${code} (Válido por 15 min)`;
 
     await this.sendEmail({
       to: email,
-      subject: '📧 Código de Alteração de Email - FinControl',
+      subject: '📧 Confirmação de novo email - FinControl',
       html,
       text,
     });
@@ -401,105 +233,24 @@ class EmailService {
    * Enviar código de alteração de senha (usuário logado)
    */
   async sendPasswordChangeCode(email: string, code: string, name: string): Promise<void> {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-          }
-          .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3b82f6;
-          }
-          .code-box {
-            background-color: #fff;
-            border: 2px dashed #8b5cf6;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-          }
-          .code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #8b5cf6;
-            letter-spacing: 8px;
-          }
-          .warning {
-            background-color: #faf5ff;
-            border-left: 4px solid #8b5cf6;
-            padding: 15px;
-            margin: 20px 0;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="logo">💰 FinControl</div>
-          </div>
-          
-          <h2>Olá, ${name}!</h2>
-          
-          <p>Recebemos uma solicitação para alterar a senha da sua conta. Para confirmar esta alteração, use o código abaixo:</p>
-          
-          <div class="code-box">
-            <div class="code">${code}</div>
-          </div>
-          
-          <p><strong>Este código expira em 15 minutos.</strong></p>
-          
-          <div class="warning">
-            <strong>🔒 Segurança:</strong> Se você não solicitou esta alteração, ignore este email. Sua senha permanecerá inalterada.
-          </div>
-          
-          <p>Por motivos de segurança, solicitamos este código para confirmar que é realmente você fazendo a alteração.</p>
-          
-          <div class="footer">
-            <p>© 2024 FinControl - Controle Financeiro Inteligente</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+    const html = this.getBaseTemplate(
+      'Confirmação de Segurança 🛡️',
+      `
+      <p class="text">Olá, ${name}. Por motivos de segurança, precisamos confirmar sua identidade para realizar a alteração da sua senha.</p>
+      <p class="text">Insira o código abaixo no campo solicitado:</p>
+      <div class="code-container" style="border-color: #8b5cf6;">
+        <div class="code" style="color: #8b5cf6;">${code}</div>
+        <p class="expiry">Este código expira em 15 minutos</p>
+      </div>
+      `,
+      'Proteja seus códigos de acesso. Nunca compartilhe este código com ninguém.'
+    );
 
-    const text = `
-      Olá, ${name}!
-      
-      Recebemos uma solicitação para alterar a senha da sua conta. Use o código: ${code}
-      
-      Este código expira em 15 minutos.
-      
-      Se você não solicitou isto, ignore este email.
-    `;
+    const text = `Seu código de confirmação de segurança é: ${code}`;
 
     await this.sendEmail({
       to: email,
-      subject: '🔒 Código de Alteração de Senha - FinControl',
+      subject: '🛡️ Confirmação de Segurança - FinControl',
       html,
       text,
     });
