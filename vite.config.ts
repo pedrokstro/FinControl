@@ -9,7 +9,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo-full.svg', 'logo-icon-white.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'icons/*.png'],
+      manifestFilename: 'manifest.json',
       manifest: {
         name: 'FinControl - Controle Financeiro Pessoal',
         short_name: 'FinControl',
@@ -20,23 +21,61 @@ export default defineConfig({
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
+        lang: 'pt-BR',
         icons: [
           {
             src: '/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
           },
           {
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Nova Transação',
+            short_name: 'Nova',
+            description: 'Adicionar nova transação rapidamente',
+            url: '/app/dashboard?action=new',
+            icons: [{ src: '/icons/shortcut-new.png', sizes: '96x96' }]
+          },
+          {
+            name: 'Transações',
+            short_name: 'Transações',
+            description: 'Ver todas as transações',
+            url: '/app/transactions',
+            icons: [{ src: '/icons/shortcut-transactions.png', sizes: '96x96' }]
+          }
+        ],
+        screenshots: [
+          {
+            src: '/screenshots/dashboard.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Dashboard do FinControl'
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json,webmanifest}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.fincontrol\.com\/.*/i,
