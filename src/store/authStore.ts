@@ -405,17 +405,7 @@ export const useAuthStore = create<AuthState>()(
             console.log('🔄 Sessão existe mas estado local vazio. Restaurando login...')
             await get().completeSocialLogin(data.session.access_token)
           } else {
-            // Sem sessão no Supabase. Se tinhamos estado local (exceto demo), devemos limpar
-            const state = get()
-            if (state.isAuthenticated && state.accessToken !== 'demo-token') {
-              console.log('⚠️ Sessão expirada. Fazendo logout local.')
-              set({
-                user: null,
-                accessToken: null,
-                refreshToken: null,
-                isAuthenticated: false
-              })
-            }
+            console.log('ℹ️ Nenhuma sessão Supabase ativa. Mantendo sessão local se existir.')
           }
 
           // Configurar listener para mudanças futuras de sessão (ex: refresh automatico de token)

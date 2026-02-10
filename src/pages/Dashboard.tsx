@@ -3,14 +3,14 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  Target, 
-  Plus, 
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  Target,
+  Plus,
   X,
   Loader2,
   Repeat,
@@ -40,11 +40,11 @@ import {
 } from '@/components/charts/AdvancedCharts'
 import { toast } from 'react-hot-toast'
 import {
-  AreaChart, 
-  Area, 
-  PieChart, 
-  Pie, 
-  Cell, 
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -64,7 +64,7 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import { type IconName } from '@/utils/iconMapping'
 import CurrentDateCard from '@/components/common/CurrentDateCard'
 import Modal from '@/components/common/Modal'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 
 const RADIAN = Math.PI / 180
 
@@ -192,13 +192,13 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { usage, checkLimit, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
-  
+
   // Estado para controlar mês/ano selecionado
   const [selectedDate, setSelectedDate] = useState(() => {
     const now = new Date()
     return { month: now.getMonth() + 1, year: now.getFullYear() }
   })
-  
+
   // Carregar dados de analytics
   const loadAnalytics = async () => {
     try {
@@ -214,10 +214,10 @@ const Dashboard = () => {
 
       const hasChartsData = Boolean(
         data?.dailyCashFlow?.length ||
-          data?.topExpenses?.length ||
-          data?.expensesByWeekday?.length ||
-          data?.budgetVsActual?.length ||
-          hasSavingsData
+        data?.topExpenses?.length ||
+        data?.expensesByWeekday?.length ||
+        data?.budgetVsActual?.length ||
+        hasSavingsData
       )
 
       if (hasChartsData) {
@@ -270,12 +270,12 @@ const Dashboard = () => {
     const now = new Date()
     const currentMonth = now.getMonth() + 1
     const currentYear = now.getFullYear()
-    
+
     // Não permitir navegar para o futuro
     if (selectedDate.year === currentYear && selectedDate.month === currentMonth) {
       return
     }
-    
+
     setSelectedDate(prev => {
       if (prev.month === 12) {
         return { month: 1, year: prev.year + 1 }
@@ -355,9 +355,9 @@ const Dashboard = () => {
     // Obter data de hoje sem timezone
     const today = new Date();
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
+
     console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo:', type);
-    
+
     reset({
       type: type,
       amount: '',
@@ -418,22 +418,22 @@ const Dashboard = () => {
     }
 
     const category = categories.find((c) => c.id === data.categoryId)
-    
+
     const dateValue: any = data.date;
-    
+
     console.log('📅 [FRONTEND DEBUG v2] Data do formulário:', dateValue)
     console.log('📅 [FRONTEND DEBUG v2] Tipo:', typeof dateValue)
     console.log('📅 [FRONTEND DEBUG v2] instanceof Date:', dateValue instanceof Date)
-    
+
     // Garantir que a data seja sempre string no formato YYYY-MM-DD (timezone local)
-    const dateString = typeof dateValue === 'string' 
-      ? dateValue 
+    const dateString = typeof dateValue === 'string'
+      ? dateValue
       : dateValue instanceof Date
         ? `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}-${String(dateValue.getDate()).padStart(2, '0')}`
         : dateValue;
-    
+
     console.log('📅 [FRONTEND DEBUG] Data convertida:', dateString, typeof dateString)
-    
+
     await addTransaction({
       ...data,
       date: dateString,
@@ -445,10 +445,10 @@ const Dashboard = () => {
       recurrenceType: isQuickAddRecurring ? data.recurrenceType : undefined,
       totalInstallments: isQuickAddRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
     })
-    
+
     // Atualizar uso após criar transação
     await refreshUsage()
-    
+
     closeQuickAdd()
     setIsQuickAddRecurring(false) // Reset recorrência
   }
@@ -458,9 +458,9 @@ const Dashboard = () => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Ignorar se estiver digitando em um input, textarea ou modal aberto
       const target = e.target as HTMLElement
-      const isTyping = target.tagName === 'INPUT' || 
-                       target.tagName === 'TEXTAREA' || 
-                       target.isContentEditable
+      const isTyping = target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
 
       // Não executar atalhos se estiver digitando ou se algum modal estiver aberto
       if (isTyping || showQuickAdd || showCalculator) {
@@ -472,13 +472,13 @@ const Dashboard = () => {
         e.preventDefault()
         openQuickAdd('income')
       }
-      
+
       // Atalho: - para adicionar despesa
       if (e.key === '-' || e.key === '_') {
         e.preventDefault()
         openQuickAdd('expense')
       }
-      
+
       // Atalho: C para abrir calculadora
       if (e.key === 'c' || e.key === 'C') {
         e.preventDefault()
@@ -561,15 +561,15 @@ const Dashboard = () => {
   // Novo: Dados para o grafico de barras mensal completo
   const yearlyMonthlyData = useMemo(() => {
     const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
-    
+
     // Agrupar transacoes por mes
     const monthlyTotals: { [key: number]: { income: number; expense: number } } = {}
-    
+
     // Inicializar todos os meses com 0
     for (let i = 0; i < 12; i++) {
       monthlyTotals[i] = { income: 0, expense: 0 }
     }
-    
+
     // Calcular totais de cada mes usando o ano selecionado
     transactions.forEach((t) => {
       const tDate = parseISO(t.date)
@@ -577,7 +577,7 @@ const Dashboard = () => {
         return
       }
       const tMonth = getMonth(tDate)
-      
+
       // Agrupar apenas meses do ano selecionado
       if (t.type === 'income') {
         monthlyTotals[tMonth].income += t.amount
@@ -585,7 +585,7 @@ const Dashboard = () => {
         monthlyTotals[tMonth].expense += t.amount
       }
     })
-    
+
     // Transformar em array para o grafico
     return monthNames.map((name, index) => ({
       month: name,
@@ -600,9 +600,9 @@ const Dashboard = () => {
       const transactions_by_category = selectedMonthTransactions.filter(
         (t) => t.categoryId === cat.id && t.type === cat.type
       )
-      
+
       const total = transactions_by_category.reduce((sum, t) => sum + t.amount, 0)
-      
+
       return {
         name: cat.name,
         value: total,
@@ -610,7 +610,7 @@ const Dashboard = () => {
         type: cat.type, // 'income' ou 'expense'
       }
     }).filter((item) => item.value > 0)
-    
+
     return allCategories
   }, [selectedMonthTransactions, categories])
 
@@ -657,11 +657,11 @@ const Dashboard = () => {
   // Dados para o Radial Bar Chart (Meta de Economia)
   const savingsGoalData = useMemo(() => {
     if (!currentGoal) return []
-    
+
     const currentAmount = currentGoal.currentAmount || 0
     const targetAmount = currentGoal.targetAmount || 1
     const percentage = Math.min((currentAmount / targetAmount) * 100, 100)
-    
+
     return [
       {
         name: 'Meta',
@@ -675,11 +675,11 @@ const Dashboard = () => {
   const accumulatedBalanceData = useMemo(() => {
     const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
     let accumulated = 0
-    
+
     return monthNames.map((name, index) => {
       const monthData = yearlyMonthlyData[index]
       accumulated += monthData.saldo
-      
+
       return {
         month: name,
         saldoAcumulado: accumulated,
@@ -744,11 +744,10 @@ const Dashboard = () => {
             <button
               onClick={goToNextMonth}
               disabled={isCurrentMonth()}
-              className={`p-2 rounded-lg transition-colors ${
-                isCurrentMonth()
+              className={`p-2 rounded-lg transition-colors ${isCurrentMonth()
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
-              }`}
+                }`}
               title="Próximo mês"
             >
               <ChevronRight className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
@@ -759,7 +758,7 @@ const Dashboard = () => {
 
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
-      
+
       <div className="section-grid">
         <CurrentDateCard />
         <div className="card hidden lg:flex items-center gap-3">
@@ -890,7 +889,7 @@ const Dashboard = () => {
                   )}
                 </div>
               </div>
-              
+
               {isLoadingGoal ? (
                 <div className="animate-pulse">
                   <div className="h-8 bg-gray-200 dark:bg-neutral-700 rounded w-32 mb-2"></div>
@@ -910,11 +909,10 @@ const Dashboard = () => {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full transition-all ${
-                          currentGoal.currentAmount >= currentGoal.targetAmount
+                        className={`h-2 rounded-full transition-all ${currentGoal.currentAmount >= currentGoal.targetAmount
                             ? 'bg-success-500'
                             : 'bg-primary-500'
-                        }`}
+                          }`}
                         style={{
                           width: `${Math.min(100, (currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%`,
                         }}
@@ -923,8 +921,8 @@ const Dashboard = () => {
                     <div className="flex items-center gap-1 mt-1">
                       <Target className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                       <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
-                        {currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida! 🎉' : 
-                         `${Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}% concluído`}
+                        {currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida! 🎉' :
+                          `${Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}% concluído`}
                       </span>
                     </div>
                   </div>
@@ -962,20 +960,20 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-        
+
         <ResponsiveContainer width="100%" height={350}>
-          <BarChart 
+          <BarChart
             data={yearlyMonthlyData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-            <XAxis 
-              dataKey="month" 
+            <XAxis
+              dataKey="month"
               stroke="#6b7280"
               className="dark:text-neutral-400"
               tick={{ fontSize: 12 }}
             />
-            <YAxis 
+            <YAxis
               stroke="#6b7280"
               className="dark:text-neutral-400"
               tick={{ fontSize: 12 }}
@@ -997,20 +995,20 @@ const Dashboard = () => {
               labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
               animationDuration={300}
             />
-            <Legend 
+            <Legend
               wrapperStyle={{ paddingTop: '20px' }}
               iconType="rect"
             />
-            <Bar 
-              dataKey="receitas" 
-              fill="#22c55e" 
+            <Bar
+              dataKey="receitas"
+              fill="#22c55e"
               name="Receitas"
               radius={[4, 4, 0, 0]}
               isAnimationActive={false}
             />
-            <Bar 
-              dataKey="despesas" 
-              fill="#ef4444" 
+            <Bar
+              dataKey="despesas"
+              fill="#ef4444"
               name="Despesas"
               radius={[4, 4, 0, 0]}
               isAnimationActive={false}
@@ -1062,11 +1060,11 @@ const Dashboard = () => {
 
             <div className="flex items-center justify-center">
               <ResponsiveContainer width="100%" height={250}>
-                <RadialBarChart 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius="60%" 
-                  outerRadius="90%" 
+                <RadialBarChart
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="60%"
+                  outerRadius="90%"
                   barSize={20}
                   data={savingsGoalData}
                   startAngle={90}
@@ -1129,13 +1127,13 @@ const Dashboard = () => {
               margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-              <XAxis 
-                dataKey="month" 
+              <XAxis
+                dataKey="month"
                 stroke="#6b7280"
                 className="dark:text-neutral-400"
                 tick={{ fontSize: 11 }}
               />
-              <YAxis 
+              <YAxis
                 stroke="#6b7280"
                 className="dark:text-neutral-400"
                 tick={{ fontSize: 11 }}
@@ -1172,21 +1170,19 @@ const Dashboard = () => {
           <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Saldo Final</p>
-              <p className={`text-lg font-bold ${
-                accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
+              <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
                   ? 'text-success-600 dark:text-success-400'
                   : 'text-danger-600 dark:text-danger-400'
-              }`}>
+                }`}>
                 {formatCurrency(accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado || 0)}
               </p>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Tendência</p>
-              <p className={`text-lg font-bold ${
-                accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
+              <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
                   ? 'text-success-600 dark:text-success-400'
                   : 'text-danger-600 dark:text-danger-400'
-              }`}>
+                }`}>
                 {accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0 ? '↑' : '↓'}
               </p>
             </div>
@@ -1223,7 +1219,7 @@ const Dashboard = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value: number, _name: string, props: any) => [
                       formatCurrency(value),
                       props.payload.type === 'income' ? 'Receita' : 'Despesa'
@@ -1245,24 +1241,22 @@ const Dashboard = () => {
                 {categoryData.map((item, index) => (
                   <div key={index} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div 
-                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                      <div
+                        className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ backgroundColor: item.color }}
                       />
                       <span className="text-gray-900 dark:text-white truncate">{item.name}</span>
                     </div>
-                    <span 
-                      className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ml-2 ${
-                        item.type === 'income' 
-                          ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300' 
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ml-2 ${item.type === 'income'
+                          ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
                           : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                      }`}
+                        }`}
                     >
                       {item.type === 'income' ? 'Receita' : 'Despesa'}
                     </span>
-                    <span className={`font-semibold ml-2 flex-shrink-0 ${
-                      item.type === 'income' ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                    }`}>
+                    <span className={`font-semibold ml-2 flex-shrink-0 ${item.type === 'income' ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
+                      }`}>
                       {formatCurrency(item.value)}
                     </span>
                   </div>
@@ -1283,63 +1277,63 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Histórico Mensal
           </h3>
-        <div className="flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart 
-              data={monthlyData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-              <XAxis dataKey="month" stroke="#6b7280" className="dark:text-neutral-400" />
-              <YAxis stroke="#6b7280" className="dark:text-neutral-400" />
-              <Tooltip 
-                formatter={(value: number) => formatCurrency(value)}
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-                animationDuration={300}
-              />
-              <Legend />
-              <Area 
-                type="monotone" 
-                dataKey="receitas" 
-                stroke="#22c55e" 
-                strokeWidth={2}
-                fillOpacity={1} 
-                fill="url(#colorReceitas)" 
-                name="Receitas"
-                animationDuration={1000}
-                animationBegin={0}
-                animationEasing="ease-in-out"
-              />
-              <Area 
-                type="monotone" 
-                dataKey="despesas" 
-                stroke="#ef4444" 
-                strokeWidth={2}
-                fillOpacity={1} 
-                fill="url(#colorDespesas)" 
-                name="Despesas"
-                animationDuration={1000}
-                animationBegin={200}
-                animationEasing="ease-in-out"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={monthlyData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
+                <XAxis dataKey="month" stroke="#6b7280" className="dark:text-neutral-400" />
+                <YAxis stroke="#6b7280" className="dark:text-neutral-400" />
+                <Tooltip
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                  animationDuration={300}
+                />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="receitas"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorReceitas)"
+                  name="Receitas"
+                  animationDuration={1000}
+                  animationBegin={0}
+                  animationEasing="ease-in-out"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="despesas"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorDespesas)"
+                  name="Despesas"
+                  animationDuration={1000}
+                  animationBegin={200}
+                  animationEasing="ease-in-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </div>
 
         {/* Comparativo Mensal */}
         <div className="card flex flex-col h-[450px]">
@@ -1364,13 +1358,13 @@ const Dashboard = () => {
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   stroke="#6b7280"
                   className="dark:text-neutral-400"
                   tick={{ fontSize: 11 }}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#6b7280"
                   className="dark:text-neutral-400"
                   tick={{ fontSize: 11 }}
@@ -1392,15 +1386,15 @@ const Dashboard = () => {
                   animationDuration={300}
                 />
                 <Legend />
-                <Bar 
-                  dataKey="receitas" 
-                  fill="#22c55e" 
+                <Bar
+                  dataKey="receitas"
+                  fill="#22c55e"
                   name="Receitas"
                   radius={[4, 4, 0, 0]}
                 />
-                <Bar 
-                  dataKey="despesas" 
-                  fill="#ef4444" 
+                <Bar
+                  dataKey="despesas"
+                  fill="#ef4444"
                   name="Despesas"
                   radius={[4, 4, 0, 0]}
                 />
@@ -1430,16 +1424,16 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Transações Recentes
           </h3>
-          <a href="/transactions" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+          <Link to="/app/transactions" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
             Ver todas
-          </a>
+          </Link>
         </div>
-        
+
         {recentTransactions.length > 0 ? (
           <div className="space-y-3">
             {recentTransactions.map((transaction) => {
               const category = categories.find(c => c.id === transaction.categoryId)
-              
+
               return (
                 <div
                   key={transaction.id}
@@ -1447,11 +1441,10 @@ const Dashboard = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        transaction.type === 'income'
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${transaction.type === 'income'
                           ? 'bg-success-100 dark:bg-success-900/30'
                           : 'bg-danger-100 dark:bg-danger-900/30'
-                      }`}
+                        }`}
                     >
                       {category ? (
                         <CategoryIcon
@@ -1477,11 +1470,10 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div
-                    className={`font-semibold ${
-                      transaction.type === 'income'
+                    className={`font-semibold ${transaction.type === 'income'
                         ? 'text-success-600 dark:text-success-400'
                         : 'text-danger-600 dark:text-danger-400'
-                    }`}
+                      }`}
                   >
                     {transaction.type === 'income' ? '+' : '-'}
                     {formatCurrency(transaction.amount)}
@@ -1518,33 +1510,33 @@ const Dashboard = () => {
           </div>
 
           {/* 1. Fluxo de Caixa Diário */}
-          <CashFlowChart 
-            data={analytics.dailyCashFlow} 
-            formatCurrency={formatCurrency} 
+          <CashFlowChart
+            data={analytics.dailyCashFlow}
+            formatCurrency={formatCurrency}
           />
 
           {/* 2. Taxa de Poupança */}
-          <SavingsRateChart 
-            data={analytics.savingsRate} 
-            formatCurrency={formatCurrency} 
+          <SavingsRateChart
+            data={analytics.savingsRate}
+            formatCurrency={formatCurrency}
           />
 
           {/* 3. Top 10 Maiores Despesas + Despesas por Dia da Semana */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <TopExpensesChart 
-              data={analytics.topExpenses} 
-              formatCurrency={formatCurrency} 
+            <TopExpensesChart
+              data={analytics.topExpenses}
+              formatCurrency={formatCurrency}
             />
-            <ExpensesByWeekdayChart 
-              data={analytics.expensesByWeekday} 
-              formatCurrency={formatCurrency} 
+            <ExpensesByWeekdayChart
+              data={analytics.expensesByWeekday}
+              formatCurrency={formatCurrency}
             />
           </div>
 
           {/* 4. Orçamento vs Real */}
-          <BudgetVsActualChart 
-            data={analytics.budgetVsActual} 
-            formatCurrency={formatCurrency} 
+          <BudgetVsActualChart
+            data={analytics.budgetVsActual}
+            formatCurrency={formatCurrency}
           />
         </>
       )}
@@ -1596,9 +1588,8 @@ const Dashboard = () => {
               type="submit"
               form="quick-add-form"
               disabled={isCreatingTransaction}
-              className={`flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
-                isMobile ? 'w-full' : ''
-              }`}
+              className={`flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${isMobile ? 'w-full' : ''
+                }`}
             >
               {isCreatingTransaction ? (
                 <>
@@ -1634,11 +1625,10 @@ const Dashboard = () => {
                 <button
                   type="button"
                   onClick={() => setValue('type', 'income')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    transactionType === 'income'
+                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'income'
                       ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500'
                       : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  }`}
+                    }`}
                 >
                   <TrendingUp className="w-5 h-5" />
                   Receita
@@ -1646,11 +1636,10 @@ const Dashboard = () => {
                 <button
                   type="button"
                   onClick={() => setValue('type', 'expense')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    transactionType === 'expense'
+                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'expense'
                       ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500'
                       : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  }`}
+                    }`}
                 >
                   <TrendingDown className="w-5 h-5" />
                   Despesa
@@ -2004,10 +1993,10 @@ const Dashboard = () => {
       )}
 
       {/* Transaction Limit Modal */}
-      <TransactionLimitModal 
-        isOpen={showLimitModal} 
-        onClose={() => setShowLimitModal(false)} 
-        usage={usage} 
+      <TransactionLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        usage={usage}
       />
 
       {/* Footer */}

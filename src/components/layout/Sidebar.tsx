@@ -98,11 +98,11 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
   const isAdmin = (user as any)?.isAdmin || false
 
   const menuItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/transactions', icon: ArrowLeftRight, label: 'Transações' },
-    { path: '/categories', icon: FolderOpen, label: 'Categorias' },
-    { path: '/reports', icon: BarChart3, label: 'Relatórios' },
-    { path: '/settings', icon: Settings, label: 'Configurações' },
+    { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações' },
+    { path: '/app/categories', icon: FolderOpen, label: 'Categorias' },
+    { path: '/app/reports', icon: BarChart3, label: 'Relatórios' },
+    { path: '/app/settings', icon: Settings, label: 'Configurações' },
   ]
 
   // Adicionar item Admin apenas se for administrador
