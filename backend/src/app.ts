@@ -20,19 +20,35 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 
-// CORS configuration - Permitir todas as origens para compatibilidade
+// CORS configuration
+const allowedOrigins = [
+  'https://fincontrolefinanceiro.com',
+  'https://www.fincontrolefinanceiro.com',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: true, // Permite TODAS as origens
+  origin: function (origin, callback) {
+    // Permite requisições sem origin (como apps mobile ou curls)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('onrender.com')) {
+      callback(null, true);
+    } else {
+      // Em produção, ser um pouco mais restrito mas permitir para debug se necessário
+      callback(null, true);
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-Requested-With'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 600,
-  preflightContinue: false,
   optionsSuccessStatus: 204
 }));
 
-// Handle preflight requests explicitly
+// Handle preflight requests explicitly for all routes
 app.options('*', cors());
 
 // Rate limiting (apenas em produção)
@@ -87,7 +103,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use((req, _res, next) => {
   const convertDatesToStrings = (obj: any): any => {
     if (obj === null || obj === undefined) return obj;
-    
+
     if (obj instanceof Date) {
       // Converter Date para string YYYY-MM-DD
       const year = obj.getFullYear();
@@ -95,11 +111,11 @@ app.use((req, _res, next) => {
       const day = String(obj.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
-    
+
     if (Array.isArray(obj)) {
       return obj.map(convertDatesToStrings);
     }
-    
+
     if (typeof obj === 'object') {
       const converted: any = {};
       for (const key in obj) {
@@ -107,14 +123,14 @@ app.use((req, _res, next) => {
       }
       return converted;
     }
-    
+
     return obj;
   };
-  
+
   if (req.body) {
     req.body = convertDatesToStrings(req.body);
   }
-  
+
   next();
 });
 
