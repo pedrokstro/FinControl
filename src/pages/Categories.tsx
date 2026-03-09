@@ -23,6 +23,7 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import ColorPicker from '@/components/common/ColorPicker'
 import { type IconName } from '@/utils/iconMapping'
 import PageTransition from '@/components/common/PageTransition'
+import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import BudgetModal from '@/components/modals/BudgetModal'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
@@ -41,6 +42,7 @@ const Categories = () => {
   const { categories, budgets, currentMonthTransactions, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const dragControls = useDragControls()
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
@@ -587,145 +589,177 @@ const Categories = () => {
         )}
 
         {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 z-50">
-            <div className="bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
-                {/* Drag Indicator para Mobile */}
-                <div className="sm:hidden w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full mx-auto mb-4" />
-
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                    {editingId ? 'Editar Categoria' : 'Nova Categoria'}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
-                <div>
-                  <label className="label">Nome da Categoria</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Alimentacao, Transporte, Salario..."
-                    {...register('name')}
-                    className={`input-field ${errors.name ? 'input-error' : ''}`}
-                  />
-                  {errors.name && (
-                    <p className="error-message">{errors.name.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="label">Tipo</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                      <input
-                        type="radio"
-                        value="income"
-                        {...register('type')}
-                        className="sr-only"
-                      />
-                      <div className="text-center">
-                        <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
-                      </div>
-                    </label>
-                    <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                      <input
-                        type="radio"
-                        value="expense"
-                        {...register('type')}
-                        className="sr-only"
-                      />
-                      <div className="text-center">
-                        <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="label">Ícone</label>
-                  <IconPicker
-                    selectedIcon={selectedIcon}
-                    onSelectIcon={(icon) => setValue('icon', icon as string)}
-                    type={selectedType}
-                    isPremium={isPremium}
-                    onUpgradeClick={() => setShowUpgradeModal(true)}
-                  />
-                  {errors.icon && (
-                    <p className="error-message">{errors.icon.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="label">Cor</label>
-                  <ColorPicker
-                    selectedColor={selectedColor}
-                    onSelectColor={(color) => setValue('color', color)}
-                    usedColors={usedColors}
-                    showCustomPicker={true}
-                  />
-                  {errors.color && (
-                    <p className="error-message mt-2">{errors.color.message}</p>
-                  )}
-                </div>
-
-                {/* Preview */}
-                <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
-                  <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
-                    Visualizacao
-                  </p>
-                  <div className="flex items-center gap-3">
+        <AnimatePresence>
+          {showModal && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex"
+                onClick={handleCloseModal}
+              />
+              <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4 z-50 pointer-events-none">
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  drag="y"
+                  dragControls={dragControls}
+                  dragListener={false}
+                  dragConstraints={{ top: 0, bottom: 0 }}
+                  dragElastic={{ top: 0, bottom: 0.4 }}
+                  onDragEnd={(_, { offset, velocity }) => {
+                    if (offset.y > 100 || velocity.y > 400) {
+                      handleCloseModal()
+                    }
+                  }}
+                  className="bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden pointer-events-auto"
+                >
+                  <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
+                    {/* Drag Indicator para Mobile */}
                     <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${selectedColor}20` }}
+                      className="sm:hidden py-4 -mt-4 mb-2 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
+                      onPointerDown={(e) => dragControls.start(e)}
                     >
-                      <CategoryIcon
-                        icon={selectedIcon as IconName}
-                        color={selectedColor}
-                        size="lg"
-                      />
+                      <div className="w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full" />
                     </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">
-                        {watch('name') || 'Nome da Categoria'}
-                      </p>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${selectedType === 'income'
-                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                        : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                        }`}>
-                        {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {selectedType === 'income' ? 'Receita' : 'Despesa'}
-                      </span>
+
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                        {editingId ? 'Editar Categoria' : 'Nova Categoria'}
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={handleCloseModal}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex gap-3 pt-6 pb-2 sm:pb-0 mt-auto sticky bottom-0 bg-white dark:bg-neutral-950 border-t border-gray-100 dark:border-neutral-800/50">
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="flex-1 btn-secondary rounded-full"
-                  >
-                    Cancelar
-                  </button>
-                  <button type="submit" className="flex-1 btn-primary rounded-full shadow-md">
-                    {editingId ? 'Salvar' : 'Criar'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+                  <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+                    <div>
+                      <label className="label">Nome da Categoria</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Alimentacao, Transporte, Salario..."
+                        {...register('name')}
+                        className={`input-field ${errors.name ? 'input-error' : ''}`}
+                      />
+                      {errors.name && (
+                        <p className="error-message">{errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="label">Tipo</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                          <input
+                            type="radio"
+                            value="income"
+                            {...register('type')}
+                            className="sr-only"
+                          />
+                          <div className="text-center">
+                            <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
+                          </div>
+                        </label>
+                        <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                          <input
+                            type="radio"
+                            value="expense"
+                            {...register('type')}
+                            className="sr-only"
+                          />
+                          <div className="text-center">
+                            <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="label">Ícone</label>
+                      <IconPicker
+                        selectedIcon={selectedIcon}
+                        onSelectIcon={(icon) => setValue('icon', icon as string)}
+                        type={selectedType}
+                        isPremium={isPremium}
+                        onUpgradeClick={() => setShowUpgradeModal(true)}
+                      />
+                      {errors.icon && (
+                        <p className="error-message">{errors.icon.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="label">Cor</label>
+                      <ColorPicker
+                        selectedColor={selectedColor}
+                        onSelectColor={(color) => setValue('color', color)}
+                        usedColors={usedColors}
+                        showCustomPicker={true}
+                      />
+                      {errors.color && (
+                        <p className="error-message mt-2">{errors.color.message}</p>
+                      )}
+                    </div>
+
+                    {/* Preview */}
+                    <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
+                      <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
+                        Visualizacao
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-lg flex items-center justify-center"
+                          style={{ backgroundColor: `${selectedColor}20` }}
+                        >
+                          <CategoryIcon
+                            icon={selectedIcon as IconName}
+                            color={selectedColor}
+                            size="lg"
+                          />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {watch('name') || 'Nome da Categoria'}
+                          </p>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${selectedType === 'income'
+                            ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
+                            : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                            }`}>
+                            {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                            {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-6 pb-2 sm:pb-0 mt-auto sticky bottom-0 bg-white dark:bg-neutral-950 border-t border-gray-100 dark:border-neutral-800/50">
+                      <button
+                        type="button"
+                        onClick={handleCloseModal}
+                        className="flex-1 btn-secondary rounded-full"
+                      >
+                        Cancelar
+                      </button>
+                      <button type="submit" className="flex-1 btn-primary rounded-full shadow-md">
+                        {editingId ? 'Salvar' : 'Criar'}
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Upgrade Modal */}
         {showUpgradeModal && (
