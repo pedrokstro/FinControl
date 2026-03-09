@@ -951,16 +951,25 @@ const Transactions = () => {
                     {/* Frequência */}
                     <div>
                       <label className="label">Frequência</label>
-                      <select
-                        {...register('recurrenceType')}
-                        className="input-field"
-                      >
-                        <option value="">Selecione a frequência...</option>
-                        <option value="daily">Diária</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensal</option>
-                        <option value="yearly">Anual</option>
-                      </select>
+                      <Controller
+                        name="recurrenceType"
+                        control={control}
+                        render={({ field }) => (
+                          <CustomSelect
+                            options={[
+                              { value: 'daily', label: 'Diária' },
+                              { value: 'weekly', label: 'Semanal' },
+                              { value: 'monthly', label: 'Mensal' },
+                              { value: 'yearly', label: 'Anual' }
+                            ]}
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            placeholder="Selecione a frequência..."
+                            dropdownTitle="Frequência"
+                            className="w-full"
+                          />
+                        )}
+                      />
                       {errors.recurrenceType && (
                         <p className="error-message">{errors.recurrenceType.message}</p>
                       )}

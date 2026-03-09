@@ -63,6 +63,7 @@ import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import CategorySelect from '@/components/common/CategorySelect'
 import CustomDatePicker from '@/components/common/CustomDatePicker'
+import CustomSelect from '@/components/common/CustomSelect'
 import { type IconName } from '@/utils/iconMapping'
 import CurrentDateCard from '@/components/common/CurrentDateCard'
 import Modal from '@/components/common/Modal'
@@ -1842,16 +1843,25 @@ const Dashboard = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                       Frequência
                     </label>
-                    <select
-                      {...register('recurrenceType')}
-                      className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-                    >
-                      <option value="">Selecione...</option>
-                      <option value="daily">Diária</option>
-                      <option value="weekly">Semanal</option>
-                      <option value="monthly">Mensal</option>
-                      <option value="yearly">Anual</option>
-                    </select>
+                    <Controller
+                      name="recurrenceType"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSelect
+                          options={[
+                            { value: 'daily', label: 'Diária' },
+                            { value: 'weekly', label: 'Semanal' },
+                            { value: 'monthly', label: 'Mensal' },
+                            { value: 'yearly', label: 'Anual' }
+                          ]}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder="Selecione..."
+                          dropdownTitle="Frequência de Recorrência"
+                          className="w-full"
+                        />
+                      )}
+                    />
                   </div>
 
                   <div>
