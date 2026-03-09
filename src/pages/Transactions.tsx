@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useFinancialStore } from '@/store/financialStore'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import api from '@/config/api'
@@ -29,6 +29,7 @@ import TransactionLimitBanner from '@/components/common/TransactionLimitBanner'
 import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
+import CategorySelect from '@/components/common/CategorySelect'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
@@ -122,6 +123,7 @@ const Transactions = () => {
     handleSubmit,
     reset,
     watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<TransactionFormData>({
@@ -863,17 +865,18 @@ const Transactions = () => {
 
               <div>
                 <label className="label">Categoria</label>
-                <select
-                  {...register('categoryId')}
-                  className={`input-field ${errors.categoryId ? 'input-error' : ''}`}
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {availableCategories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="categoryId"
+                  control={control}
+                  render={({ field }) => (
+                    <CategorySelect
+                      categories={availableCategories}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.categoryId?.message}
+                    />
+                  )}
+                />
                 {errors.categoryId && (
                   <p className="error-message">{errors.categoryId.message}</p>
                 )}

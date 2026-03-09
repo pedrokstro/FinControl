@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useFinancialStore } from '@/store/financialStore'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -61,6 +61,7 @@ import {
 import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
+import CategorySelect from '@/components/common/CategorySelect'
 import { type IconName } from '@/utils/iconMapping'
 import CurrentDateCard from '@/components/common/CurrentDateCard'
 import Modal from '@/components/common/Modal'
@@ -337,6 +338,7 @@ const Dashboard = () => {
     handleSubmit,
     reset,
     watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<TransactionFormData>({
@@ -1717,19 +1719,18 @@ const Dashboard = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                 Categoria
               </label>
-              <select
-                {...register('categoryId')}
-                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-              >
-                <option value="">Selecione uma categoria</option>
-                {categories
-                  .filter((cat) => cat.type === transactionType)
-                  .map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-              </select>
+              <Controller
+                name="categoryId"
+                control={control}
+                render={({ field }) => (
+                  <CategorySelect
+                    categories={categories.filter((cat) => cat.type === transactionType)}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.categoryId?.message}
+                  />
+                )}
+              />
               {errors.categoryId && (
                 <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
                   {errors.categoryId.message}
