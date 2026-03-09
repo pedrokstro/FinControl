@@ -84,7 +84,7 @@ const TransactionLimitModal = ({ isOpen, onClose, usage }: TransactionLimitModal
           <div className="space-y-3 mb-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                <TrendingUp className="w-4 h-4 text-primary-600 dark:text-primary-400 animate-arrow-up" />
               </div>
               <span className="text-gray-700 dark:text-neutral-300 text-sm">
                 <strong>Transações ilimitadas</strong>

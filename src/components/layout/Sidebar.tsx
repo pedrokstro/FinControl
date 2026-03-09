@@ -225,7 +225,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                       }`
                     }
                   >
-                    <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                    <TrendingUp className="w-4 h-4 flex-shrink-0 animate-arrow-up" />
                     <span className="whitespace-nowrap">Calc. de Juros Compostos</span>
                   </NavLink>
                 </li>
@@ -266,7 +266,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                       }`
                     }
                   >
-                    <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                    <TrendingUp className="w-4 h-4 flex-shrink-0 animate-arrow-up" />
                     <span>Calc. de Juros Compostos</span>
                   </NavLink>
                 </div>

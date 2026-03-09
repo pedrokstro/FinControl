@@ -260,7 +260,7 @@ const Landing = () => {
                 borderClassName="bg-[radial-gradient(var(--primary-200)_40%,transparent_70%)]"
                 className="rounded-[1.6rem] p-8 bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-700/40"
               >
-                <TrendingUp className="w-12 h-12 mb-4" />
+                <TrendingUp className="w-12 h-12 mb-4 animate-arrow-up" />
                 <h3 className="text-2xl font-bold mb-4">Acompanhe sua evolução</h3>
                 <p className="text-primary-100 mb-6">
                   Visualize seu progresso financeiro com gráficos detalhados e insights personalizados

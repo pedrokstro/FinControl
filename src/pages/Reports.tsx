@@ -435,7 +435,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Receitas do Mês</h3>
               <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400 animate-arrow-up" />
               </div>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -456,7 +456,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Despesas do Mês</h3>
               <div className="w-10 h-10 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400 animate-arrow-down" />
               </div>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -501,7 +501,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-white">Total de Receitas Anual</h3>
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
+                <TrendingUp className="w-5 h-5 text-white animate-arrow-up" />
               </div>
             </div>
             <p className="text-2xl font-bold text-white mb-2">
@@ -516,7 +516,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-white">Total de Despesas Anual</h3>
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-white" />
+                <TrendingDown className="w-5 h-5 text-white animate-arrow-down" />
               </div>
             </div>
             <p className="text-2xl font-bold text-white mb-2">
@@ -549,7 +549,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Média de Receitas/Mês</h3>
               <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400 animate-arrow-up" />
               </div>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -564,7 +564,7 @@ const Reports = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Média de Despesas/Mês</h3>
               <div className="w-10 h-10 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400 animate-arrow-down" />
               </div>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -658,8 +658,8 @@ const Reports = () => {
                   key={months}
                   onClick={() => setPeriod(months)}
                   className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${period === months
-                      ? 'bg-primary-600 dark:bg-primary-500 text-white'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    ? 'bg-primary-600 dark:bg-primary-500 text-white'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
                     }`}
                 >
                   {months} meses
@@ -787,6 +787,9 @@ const Reports = () => {
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="receitas"
+                      isAnimationActive={true}
+                      animationDuration={1200}
+                      animationBegin={0}
                     >
                       {categoryData.income.map((entry, index) => (
                         <Cell key={`cell-income-${index}`} fill={entry.color} />
@@ -835,6 +838,9 @@ const Reports = () => {
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="despesas"
+                      isAnimationActive={true}
+                      animationDuration={1200}
+                      animationBegin={0}
                     >
                       {categoryData.expenses.map((entry, index) => (
                         <Cell key={`cell-expense-${index}`} fill={entry.color} />

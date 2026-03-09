@@ -383,12 +383,18 @@ const CompoundInterestCalculator = () => {
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
+                        isAnimationActive={true}
+                        animationDuration={1200}
+                        animationBegin={0}
                       >
                         {pieData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))}
+                        isAnimationActive={true}
+                        animationDuration={300}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -418,10 +424,13 @@ const CompoundInterestCalculator = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis dataKey="year" stroke="#6b7280" />
                       <YAxis stroke="#6b7280" tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
-                      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))}
+                        isAnimationActive={true}
+                        animationDuration={300}
+                      />
                       <Legend />
-                      <Bar dataKey="Investimento Total" stackId="a" fill="#3b82f6" />
-                      <Bar dataKey="Total de Juros" stackId="a" fill="#9ca3af" />
+                      <Bar dataKey="Investimento Total" stackId="a" fill="#3b82f6" isAnimationActive={true} animationDuration={800} animationBegin={0} />
+                      <Bar dataKey="Total de Juros" stackId="a" fill="#9ca3af" isAnimationActive={true} animationDuration={800} animationBegin={200} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

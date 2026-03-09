@@ -77,6 +77,8 @@ export const CashFlowChart = memo<CashFlowChartProps>(({ data, formatCurrency })
               borderRadius: '8px',
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
             }}
+            animationDuration={300}
+            isAnimationActive={true}
           />
           <Legend />
           <Line
@@ -89,6 +91,9 @@ export const CashFlowChart = memo<CashFlowChartProps>(({ data, formatCurrency })
             name="Saldo Acumulado"
             dot={{ fill: '#0ea5e9', r: 4 }}
             activeDot={{ r: 6 }}
+            isAnimationActive={true}
+            animationDuration={1200}
+            animationBegin={0}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -167,8 +172,10 @@ export const TopExpensesChart = memo<TopExpensesChartProps>(({ data, formatCurre
               border: '1px solid #e5e7eb',
               borderRadius: '8px',
             }}
+            animationDuration={300}
+            isAnimationActive={true}
           />
-          <Bar dataKey="amount" name="Valor" radius={[0, 8, 8, 0]}>
+          <Bar dataKey="amount" name="Valor" radius={[0, 8, 8, 0]} isAnimationActive={true} animationDuration={1000} animationBegin={0}>
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getCategoryColor(entry.category)} />
             ))}
@@ -205,17 +212,15 @@ export const SavingsRateChart = memo<SavingsRateChartProps>(({ data, formatCurre
   return (
     <div className="card">
       <div className="flex items-center gap-3 mb-6">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-          isGood ? 'bg-green-50 dark:bg-green-900/20' : 
-          isWarning ? 'bg-yellow-50 dark:bg-yellow-900/20' : 
-          'bg-red-50 dark:bg-red-900/20'
-        }`}>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isGood ? 'bg-green-50 dark:bg-green-900/20' :
+            isWarning ? 'bg-yellow-50 dark:bg-yellow-900/20' :
+              'bg-red-50 dark:bg-red-900/20'
+          }`}>
           {isGood ? (
             <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
           ) : (
-            <AlertTriangle className={`w-5 h-5 ${
-              isWarning ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
-            }`} />
+            <AlertTriangle className={`w-5 h-5 ${isWarning ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
+              }`} />
           )}
         </div>
         <div>
@@ -231,11 +236,10 @@ export const SavingsRateChart = memo<SavingsRateChartProps>(({ data, formatCurre
       {/* Barra de progresso */}
       <div className="relative w-full h-16 bg-gray-100 dark:bg-neutral-800 rounded-lg overflow-hidden mb-6">
         <div
-          className={`absolute top-0 left-0 h-full transition-all duration-500 ${
-            isGood ? 'bg-gradient-to-r from-green-500 to-green-600' :
-            isWarning ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
-            'bg-gradient-to-r from-red-500 to-red-600'
-          }`}
+          className={`absolute top-0 left-0 h-full transition-all duration-500 ${isGood ? 'bg-gradient-to-r from-green-500 to-green-600' :
+              isWarning ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
+                'bg-gradient-to-r from-red-500 to-red-600'
+            }`}
           style={{ width: `${percentage}%` }}
         />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -332,8 +336,10 @@ export const ExpensesByWeekdayChart = memo<ExpensesByWeekdayChartProps>(({ data,
               border: '1px solid #e5e7eb',
               borderRadius: '8px',
             }}
+            animationDuration={300}
+            isAnimationActive={true}
           />
-          <Bar dataKey="total" name="Despesas" radius={[8, 8, 0, 0]}>
+          <Bar dataKey="total" name="Despesas" radius={[8, 8, 0, 0]} isAnimationActive={true} animationDuration={1000} animationBegin={0}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
@@ -407,17 +413,19 @@ export const BudgetVsActualChart = memo<BudgetVsActualChartProps>(({ data, forma
               border: '1px solid #e5e7eb',
               borderRadius: '8px',
             }}
+            animationDuration={300}
+            isAnimationActive={true}
           />
           <Legend />
-          <Bar dataKey="budget" fill="#94a3b8" name="Orçamento" radius={[0, 4, 4, 0]} />
-          <Bar dataKey="actual" name="Real" radius={[0, 4, 4, 0]}>
+          <Bar dataKey="budget" fill="#94a3b8" name="Orçamento" radius={[0, 4, 4, 0]} isAnimationActive={true} animationDuration={1000} animationBegin={0} />
+          <Bar dataKey="actual" name="Real" radius={[0, 4, 4, 0]} isAnimationActive={true} animationDuration={1000} animationBegin={200}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={
                   entry.status === 'good' ? '#22c55e' :
-                  entry.status === 'warning' ? '#f59e0b' :
-                  '#ef4444'
+                    entry.status === 'warning' ? '#f59e0b' :
+                      '#ef4444'
                 }
               />
             ))}

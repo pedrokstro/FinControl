@@ -35,18 +35,18 @@ export const MemoizedBarChart = memo<MemoizedBarChartProps>(
   ({ data, formatCurrency }) => {
     return (
       <ResponsiveContainer width="100%" height={350}>
-        <BarChart 
+        <BarChart
           data={data}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-          <XAxis 
-            dataKey="month" 
+          <XAxis
+            dataKey="month"
             stroke="#6b7280"
             className="dark:text-neutral-400"
             tick={{ fontSize: 12 }}
           />
-          <YAxis 
+          <YAxis
             stroke="#6b7280"
             className="dark:text-neutral-400"
             tick={{ fontSize: 12 }}
@@ -68,23 +68,27 @@ export const MemoizedBarChart = memo<MemoizedBarChartProps>(
             labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
             animationDuration={300}
           />
-          <Legend 
+          <Legend
             wrapperStyle={{ paddingTop: '20px' }}
             iconType="rect"
           />
-          <Bar 
-            dataKey="receitas" 
-            fill="#22c55e" 
+          <Bar
+            dataKey="receitas"
+            fill="#22c55e"
             name="Receitas"
             radius={[4, 4, 0, 0]}
-            isAnimationActive={false}
+            isAnimationActive={true}
+            animationDuration={800}
+            animationBegin={0}
           />
-          <Bar 
-            dataKey="despesas" 
-            fill="#ef4444" 
+          <Bar
+            dataKey="despesas"
+            fill="#ef4444"
             name="Despesas"
             radius={[4, 4, 0, 0]}
-            isAnimationActive={false}
+            isAnimationActive={true}
+            animationDuration={800}
+            animationBegin={200}
           />
         </BarChart>
       </ResponsiveContainer>
@@ -94,7 +98,7 @@ export const MemoizedBarChart = memo<MemoizedBarChartProps>(
     // Comparação customizada para evitar re-renders desnecessários
     return (
       prevProps.data.length === nextProps.data.length &&
-      prevProps.data.every((item, index) => 
+      prevProps.data.every((item, index) =>
         item.month === nextProps.data[index].month &&
         item.receitas === nextProps.data[index].receitas &&
         item.despesas === nextProps.data[index].despesas
@@ -130,22 +134,22 @@ export const MemoizedAreaChart = memo<MemoizedAreaChartProps>(
         >
           <defs>
             <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-          <XAxis 
-            dataKey="month" 
+          <XAxis
+            dataKey="month"
             stroke="#6b7280"
             className="dark:text-neutral-400"
             tick={{ fontSize: 12 }}
           />
-          <YAxis 
+          <YAxis
             stroke="#6b7280"
             className="dark:text-neutral-400"
             tick={{ fontSize: 12 }}
@@ -198,7 +202,7 @@ export const MemoizedAreaChart = memo<MemoizedAreaChartProps>(
   (prevProps, nextProps) => {
     return (
       prevProps.data.length === nextProps.data.length &&
-      prevProps.data.every((item, index) => 
+      prevProps.data.every((item, index) =>
         item.month === nextProps.data[index].month &&
         item.receitas === nextProps.data[index].receitas &&
         item.despesas === nextProps.data[index].despesas
@@ -255,6 +259,8 @@ export const MemoizedPieChart = memo<MemoizedPieChartProps>(
               borderRadius: '8px',
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
             }}
+            animationDuration={300}
+            isAnimationActive={true}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -263,7 +269,7 @@ export const MemoizedPieChart = memo<MemoizedPieChartProps>(
   (prevProps, nextProps) => {
     return (
       prevProps.data.length === nextProps.data.length &&
-      prevProps.data.every((item, index) => 
+      prevProps.data.every((item, index) =>
         item.name === nextProps.data[index].name &&
         item.value === nextProps.data[index].value &&
         item.color === nextProps.data[index].color

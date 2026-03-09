@@ -135,7 +135,7 @@ const FloatingActionButton = () => {
                     onClick={() => handleAction('calc-interest')}
                     className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
                   >
-                    <TrendingUp className="w-5 h-5 text-amber-500" />
+                    <TrendingUp className="w-5 h-5 text-amber-500 animate-arrow-up" />
                     <span className="text-sm font-medium whitespace-nowrap">Juros Compostos</span>
                     <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-md font-bold uppercase">Pro</span>
                   </motion.button>

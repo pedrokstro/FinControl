@@ -233,7 +233,7 @@ const About = () => {
                 className="bg-white dark:bg-neutral-900 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800 group hover:border-primary-500/50 transition-colors"
               >
                 <div className="w-14 h-14 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 group-hover:text-white transition-colors text-primary-600 dark:text-primary-400">
-                  <feature.icon className="w-6 h-6" />
+                  <feature.icon className={`w-6 h-6 ${feature.icon === TrendingUp ? 'animate-arrow-up' : ''}`} />
                 </div>
                 <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
                   {feature.title}

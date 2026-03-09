@@ -36,49 +36,44 @@ const TransactionLimitBanner = () => {
 
   return (
     <div
-      className={`rounded-lg p-4 mb-6 border-2 ${
-        isAtLimit
+      className={`rounded-lg p-4 mb-6 border-2 ${isAtLimit
           ? 'bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-800'
           : 'bg-amber-50 dark:bg-amber-900/10 border-amber-300 dark:border-amber-800'
-      }`}
+        }`}
     >
       <div className="flex items-start gap-3">
         <div
-          className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
-            isAtLimit
+          className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${isAtLimit
               ? 'bg-red-100 dark:bg-red-900/30'
               : 'bg-amber-100 dark:bg-amber-900/30'
-          }`}
+            }`}
         >
           {isAtLimit ? (
             <AlertCircle
-              className={`w-5 h-5 ${
-                isAtLimit ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'
-              }`}
+              className={`w-5 h-5 ${isAtLimit ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'
+                }`}
             />
           ) : (
-            <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400 animate-arrow-up" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
           <h4
-            className={`text-sm font-semibold mb-1 ${
-              isAtLimit
+            className={`text-sm font-semibold mb-1 ${isAtLimit
                 ? 'text-red-900 dark:text-red-200'
                 : 'text-amber-900 dark:text-amber-200'
-            }`}
+              }`}
           >
             {isAtLimit
               ? '🚫 Limite de transações atingido'
               : '⚠️ Você está próximo do limite'}
           </h4>
           <p
-            className={`text-sm mb-3 ${
-              isAtLimit
+            className={`text-sm mb-3 ${isAtLimit
                 ? 'text-red-700 dark:text-red-300'
                 : 'text-amber-700 dark:text-amber-300'
-            }`}
+              }`}
           >
             {isAtLimit
               ? `Você atingiu o limite de ${usage.limit} transações mensais do plano gratuito.`
@@ -109,11 +104,10 @@ const TransactionLimitBanner = () => {
             </div>
             <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden">
               <div
-                className={`h-full transition-all duration-500 ${
-                  isAtLimit
+                className={`h-full transition-all duration-500 ${isAtLimit
                     ? 'bg-red-500 dark:bg-red-600'
                     : 'bg-amber-500 dark:bg-amber-600'
-                }`}
+                  }`}
                 style={{ width: `${Math.min(usage.percentage, 100)}%` }}
               />
             </div>

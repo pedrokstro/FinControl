@@ -1266,9 +1266,9 @@ const Dashboard = () => {
                     innerRadius={0}
                     fill="#8884d8"
                     dataKey="value"
+                    isAnimationActive={true}
                     animationDuration={1200}
                     animationBegin={0}
-                    isAnimationActive={true}
                   >
                     {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
