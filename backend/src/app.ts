@@ -21,34 +21,17 @@ app.use(helmet({
 }));
 
 // CORS configuration
-const allowedOrigins = [
-  'https://fincontrolefinanceiro.com',
-  'https://www.fincontrolefinanceiro.com',
-  'http://localhost:3000',
-  'http://localhost:5173'
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permite requisições sem origin (como apps mobile ou curls)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('onrender.com')) {
-      callback(null, true);
-    } else {
-      // Em produção, ser um pouco mais restrito mas permitir para debug se necessário
-      callback(null, true);
-    }
-  },
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 600,
   optionsSuccessStatus: 204
 }));
 
-// Handle preflight requests explicitly for all routes
+// Handle preflight requests
 app.options('*', cors());
 
 // Rate limiting (apenas em produção)
@@ -62,41 +45,22 @@ if (config.nodeEnv === 'production') {
   });
   app.use(limiter);
   logger.info('Rate limiting habilitado');
-} else {
-  logger.info('Rate limiting desabilitado (desenvolvimento)');
 }
 
-// Body parsing customizado para não converter strings ISO para Date
-app.use((req, res, next) => {
-  if (req.is('application/json')) {
-    let data = '';
-    req.setEncoding('utf8');
-    req.on('data', chunk => {
-      data += chunk;
-    });
-    req.on('end', () => {
-      try {
-        // Parse JSON com reviver customizado
-        req.body = JSON.parse(data, (key, value) => {
-          // Detectar strings ISO de data e converter para YYYY-MM-DD
-          if (typeof value === 'string') {
-            const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
-            if (isoDateRegex.test(value)) {
-              console.log(`🔄 [MIDDLEWARE] Convertendo data ISO para string: ${value} -> ${value.split('T')[0]}`);
-              return value.split('T')[0];
-            }
-          }
-          return value;
-        });
-        next();
-      } catch (error) {
-        res.status(400).json({ error: 'Invalid JSON' });
+// Global Body Parsing with Date reviver
+app.use(express.json({
+  limit: '10mb',
+  reviver: (key, value) => {
+    // Detectar strings ISO de data e converter para YYYY-MM-DD
+    if (typeof value === 'string') {
+      const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
+      if (isoDateRegex.test(value)) {
+        return value.split('T')[0];
       }
-    });
-  } else {
-    next();
+    }
+    return value;
   }
-});
+}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Middleware para converter Date objects de volta para strings

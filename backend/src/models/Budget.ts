@@ -37,7 +37,7 @@ export class Budget {
     @JoinColumn({ name: 'userId' })
     user: User;
 
-    @ManyToOne(() => Category, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Category, (category) => category.budgets, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'categoryId' })
     category: Category;
 }
