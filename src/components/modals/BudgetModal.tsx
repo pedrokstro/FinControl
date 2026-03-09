@@ -67,14 +67,17 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
     const onSubmit = async (data: BudgetFormData) => {
         if (!category?.id) return
 
-        const amount = Number(data.amount) / 100
-
-        saveBudget({
-            categoryId: category.id,
-            amount
-        })
-
-        onClose()
+        try {
+            const amount = Number(data.amount) / 100
+            await saveBudget({
+                categoryId: category.id,
+                amount
+            })
+            onClose()
+        } catch (error) {
+            console.error('Falha ao salvar orçamento:', error)
+            // O toast de erro já é disparado pela store
+        }
     }
 
     const handleDelete = () => {

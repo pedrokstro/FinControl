@@ -21,19 +21,28 @@ export const budgetController = {
             const userId = req.user!.userId;
             const { categoryId, amount } = req.body;
 
-            console.log(`[BUDGET] Request received: User=${userId}, Category=${categoryId}, Amount=${amount} (${typeof amount})`);
+            console.log('[BUDGET-DEBUG] Payload recebido:', JSON.stringify(req.body));
+            console.log('[BUDGET-DEBUG] Headers:', JSON.stringify(req.headers));
 
-            if (!categoryId || amount === undefined || amount === null) {
+            if (!categoryId) {
+                console.error('[BUDGET-DEBUG] Falha: categoryId ausente');
                 return res.status(400).json({
                     success: false,
-                    message: 'Dados insuficientes: categoryId e amount são obrigatórios'
+                    message: 'Faltando categoryId no corpo da requisição'
+                });
+            }
+
+            if (amount === undefined || amount === null) {
+                console.error('[BUDGET-DEBUG] Falha: amount ausente');
+                return res.status(400).json({
+                    success: false,
+                    message: 'Faltando amount no corpo da requisição'
                 });
             }
 
             // Converte e valida o 'amount'
             let numericAmount: number;
             if (typeof amount === 'string') {
-                // Remove R$, pontos de milhar e troca vírgula por ponto (se houver)
                 const cleanAmount = amount.replace(/[R$\s.]/g, '').replace(',', '.');
                 numericAmount = parseFloat(cleanAmount);
             } else {
@@ -41,14 +50,14 @@ export const budgetController = {
             }
 
             if (isNaN(numericAmount)) {
-                console.error(`[BUDGET] Valor inválido recebido: ${amount}`);
+                console.error(`[BUDGET-DEBUG] Falha: amount inválido (${amount})`);
                 return res.status(400).json({
                     success: false,
-                    message: 'O valor do limite deve ser um número válido'
+                    message: `O valor do limite '${amount}' não é um número válido`
                 });
             }
 
-            console.log(`[BUDGET] Saving numeric limit: ${numericAmount}`);
+            console.log(`[BUDGET-DEBUG] Persistindo: User=${userId}, Cat=${categoryId}, Val=${numericAmount}`);
 
             const budget = await budgetService.save(userId, {
                 categoryId,
@@ -57,10 +66,10 @@ export const budgetController = {
 
             return sendCreated(res, budget, 'Orçamento salvo com sucesso');
         } catch (error: any) {
-            console.error('[BUDGET] Erro fatal no controller:', error);
+            console.error('[BUDGET-FATAL] Erro:', error);
             return res.status(500).json({
                 success: false,
-                message: 'Erro interno ao salvar orçamento',
+                message: 'Erro interno no servidor ao processar orçamento',
                 error: error.message
             });
         }
