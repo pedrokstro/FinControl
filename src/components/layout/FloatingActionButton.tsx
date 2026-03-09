@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { Plus, X, Receipt, FolderOpen, Calculator, Percent, TrendingUp, ChevronLeft } from 'lucide-react'
+import { Plus, X, Receipt, FolderOpen, Calculator, Percent, TrendingUp, ChevronLeft, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuthStore } from '@/store/authStore'
 
 const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [showCalculators, setShowCalculators] = useState(false)
   const navigate = useNavigate()
+  const { logout } = useAuthStore()
 
   const handleAction = (action: 'transaction' | 'category' | 'calc-percent' | 'calc-interest') => {
     setIsOpen(false)
@@ -97,6 +99,21 @@ const FloatingActionButton = () => {
                   >
                     <Calculator className="w-5 h-5" />
                     <span className="text-sm font-semibold whitespace-nowrap">Calculadoras</span>
+                  </motion.button>
+
+                  <div className="h-px bg-gray-200 dark:bg-neutral-800 my-1"></div>
+
+                  {/* Sair do App */}
+                  <motion.button
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ delay: 0.2 }}
+                    onClick={logout}
+                    className="flex items-center gap-3 bg-danger-50 dark:bg-danger-900/40 text-danger-600 dark:text-danger-400 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-danger-100 dark:border-danger-800/50 group"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span className="text-sm font-bold whitespace-nowrap">Sair do App</span>
                   </motion.button>
                 </>
               ) : (

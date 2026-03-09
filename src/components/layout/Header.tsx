@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { ChevronDown, LogOut } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import NotificationDropdown from '@/components/NotificationDropdown'
 
 const Header = () => {
@@ -107,13 +107,6 @@ const Header = () => {
                 target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
               }}
             />
-            <button
-              onClick={logout}
-              className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
-              title="Sair"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </div>
