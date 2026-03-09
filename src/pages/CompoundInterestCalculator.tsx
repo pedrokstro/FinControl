@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/authStore'
 import { toast } from 'react-hot-toast'
 import PageTransition from '@/components/common/PageTransition'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import CustomDatePicker from '@/components/common/CustomDatePicker'
 
 interface YearlyBreakdown {
   year: number
@@ -295,22 +296,16 @@ const CompoundInterestCalculator = () => {
               </div>
             </div>
 
-            {/* Data de Início */}
             <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Data de Início
               </label>
-              <div className="relative rounded-2xl overflow-hidden">
+              <div className="relative rounded-2xl overflow-hidden shadow-sm">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 sm:px-4 py-3 shadow-sm group-focus-within:border-transparent">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-300 flex-shrink-0">
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                  <input
-                    type="date"
+                <div className="relative bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl group-focus-within:border-transparent">
+                  <CustomDatePicker
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white focus:outline-none min-w-0"
+                    onChange={setStartDate}
                   />
                 </div>
               </div>

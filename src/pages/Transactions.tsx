@@ -31,6 +31,7 @@ import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import CategorySelect from '@/components/common/CategorySelect'
 import CustomSelect from '@/components/common/CustomSelect'
+import CustomDatePicker from '@/components/common/CustomDatePicker'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
@@ -906,10 +907,16 @@ const Transactions = () => {
 
               <div>
                 <label className="label">Data</label>
-                <input
-                  type="date"
-                  {...register('date')}
-                  className={`input-field ${errors.date ? 'input-error' : ''}`}
+                <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomDatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.date?.message}
+                    />
+                  )}
                 />
                 {errors.date && (
                   <p className="error-message">{errors.date.message}</p>

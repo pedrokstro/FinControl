@@ -62,6 +62,7 @@ import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 
 import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import CategorySelect from '@/components/common/CategorySelect'
+import CustomDatePicker from '@/components/common/CustomDatePicker'
 import { type IconName } from '@/utils/iconMapping'
 import CurrentDateCard from '@/components/common/CurrentDateCard'
 import Modal from '@/components/common/Modal'
@@ -1792,17 +1793,16 @@ const Dashboard = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                 Data
               </label>
-              <input
-                {...register('date', {
-                  setValueAs: (value) => {
-                    if (value instanceof Date) {
-                      return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
-                    }
-                    return value
-                  },
-                })}
-                type="date"
-                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <CustomDatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.date?.message}
+                  />
+                )}
               />
               {errors.date && (
                 <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
