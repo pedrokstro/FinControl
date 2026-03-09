@@ -26,7 +26,7 @@ const FallingMoney = () => {
   }, [])
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-primary-900">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-primary-900">
       {/* Dynamic gradient overlay to make things look deep */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary-800/80 via-primary-900/90 to-primary-900 z-10" />
       {particles.map((p) => (
@@ -135,7 +135,7 @@ const Login = () => {
 
   return (
     <AnimatedPage direction="left">
-      <div className="relative min-h-screen flex flex-col lg:flex-row bg-primary-900 overflow-hidden">
+      <div className="relative min-h-[100dvh] flex flex-col lg:flex-row bg-primary-900 overflow-x-hidden">
         {/* Dynamic Background */}
         <FallingMoney />
 
@@ -205,9 +205,8 @@ const Login = () => {
           </div>
         </motion.div>
 
-        {/* Right Side - Login Form */}
         <motion.div
-          className="w-full lg:w-[480px] xl:w-[560px] flex-shrink-0 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative z-10"
+          className="w-full flex-1 lg:flex-none lg:w-[480px] xl:w-[560px] flex-shrink-0 flex flex-col items-center justify-center p-4 py-10 sm:p-8 lg:p-12 relative z-10"
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
