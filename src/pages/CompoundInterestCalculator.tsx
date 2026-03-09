@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Calendar } from 'lucide-react'
+import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Calendar, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from 'react-hot-toast'
@@ -157,9 +157,9 @@ const CompoundInterestCalculator = () => {
 
         {/* Formulário */}
         <div className="card space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Investimento Inicial */}
-            <div className="group">
+            <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Inicial
               </label>
@@ -183,7 +183,7 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Taxa de Juros Anual */}
-            <div className="group">
+            <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Taxa de Juros Anual
               </label>
@@ -207,7 +207,7 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Investimento Contínuo */}
-            <div className="group">
+            <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Investimento Contínuo
               </label>
@@ -227,7 +227,7 @@ const CompoundInterestCalculator = () => {
                     step="0.01"
                   />
                   <span className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide flex-shrink-0">
-                    {compoundFrequency === 'Mensal' ? 'Mensal' : 'Anual'}
+                    {compoundFrequency === 'Mensal' ? 'Mês' : 'Ano'}
                   </span>
                 </div>
               </div>
@@ -252,7 +252,7 @@ const CompoundInterestCalculator = () => {
                     placeholder="Ex: 10"
                     min="1"
                   />
-                  <span className="text-[11px] font-semibold text-gray-600 dark:text-neutral-300 uppercase tracking-wide flex-shrink-0 whitespace-nowrap px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-full">
+                  <span className="text-[11px] font-semibold text-primary-600 dark:text-primary-300 uppercase tracking-widest flex-shrink-0 whitespace-nowrap px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
                     {compoundFrequency === 'Mensal' ? 'Meses' : 'Anos'}
                   </span>
                 </div>
@@ -261,9 +261,10 @@ const CompoundInterestCalculator = () => {
           </div>
 
           {/* Segunda linha */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Botões e Configurações secundárias */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             {/* Composto */}
-            <div className="group">
+            <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Composto
               </label>
@@ -275,12 +276,9 @@ const CompoundInterestCalculator = () => {
                     const newFrequency = e.target.value as 'Anual' | 'Mensal'
                     setCompoundFrequency(newFrequency)
                     setPeriodType(newFrequency === 'Mensal' ? 'Mensal' : 'Anual')
-                    // Ajustar período ao mudar frequência
                     if (newFrequency === 'Mensal' && compoundFrequency === 'Anual') {
-                      // Converter anos para meses
                       setPeriod(String(parseInt(period) * 12))
                     } else if (newFrequency === 'Anual' && compoundFrequency === 'Mensal') {
-                      // Converter meses para anos
                       setPeriod(String(Math.ceil(parseInt(period) / 12)))
                     }
                   }}
@@ -298,7 +296,7 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Data de Início */}
-            <div className="group">
+            <div className="group lg:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Data de Início
               </label>
@@ -319,19 +317,21 @@ const CompoundInterestCalculator = () => {
             </div>
 
             {/* Botões Calcular e Limpar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:col-span-2 lg:col-span-1">
+            <div className="flex flex-row items-center gap-3 lg:col-span-2">
               <button
                 onClick={calculate}
-                className="btn-primary flex-1 flex items-center justify-center gap-2 w-full"
+                className="btn-primary flex-1 flex items-center justify-center gap-2 py-3.5 sm:py-4 rounded-2xl shadow-lg shadow-primary-500/20 active:scale-95 transition-all"
               >
                 <Calculator className="w-5 h-5" />
-                Calcular
+                <span className="font-bold">Calcular</span>
               </button>
               <button
                 onClick={clear}
-                className="btn-secondary flex items-center justify-center gap-2 flex-1 sm:flex-none w-full"
+                className="px-6 py-3.5 sm:py-4 text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-white bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-2xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+                title="Limpar formulário"
               >
-                Limpar
+                <Trash2 className="w-5 h-5" />
+                <span className="hidden sm:inline">Limpar</span>
               </button>
             </div>
           </div>
@@ -438,8 +438,8 @@ const CompoundInterestCalculator = () => {
                   <button
                     onClick={() => setShowAnnual(true)}
                     className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${showAnnual
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
                       }`}
                   >
                     Detalhamento Anual
@@ -447,8 +447,8 @@ const CompoundInterestCalculator = () => {
                   <button
                     onClick={() => setShowAnnual(false)}
                     className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${!showAnnual
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
                       }`}
                   >
                     Detalhamento Mensal
