@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Calendar, Trash2 } from 'lucide-react'
+import { TrendingUp, Calculator, DollarSign, Percent, Wallet, Clock, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from 'react-hot-toast'
 import PageTransition from '@/components/common/PageTransition'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import CustomDatePicker from '@/components/common/CustomDatePicker'
+import CustomSelect from '@/components/common/CustomSelect'
 
 interface YearlyBreakdown {
   year: number
@@ -269,12 +270,11 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Composto
               </label>
-              <div className="relative rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
-                <select
+              <div className="relative rounded-2xl">
+                <CustomSelect
                   value={compoundFrequency}
-                  onChange={(e) => {
-                    const newFrequency = e.target.value as 'Anual' | 'Mensal'
+                  onChange={(val) => {
+                    const newFrequency = val as 'Anual' | 'Mensal'
                     setCompoundFrequency(newFrequency)
                     setPeriodType(newFrequency === 'Mensal' ? 'Mensal' : 'Anual')
                     if (newFrequency === 'Mensal' && compoundFrequency === 'Anual') {
@@ -283,16 +283,11 @@ const CompoundInterestCalculator = () => {
                       setPeriod(String(Math.ceil(parseInt(period) / 12)))
                     }
                   }}
-                  className="relative w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl text-gray-900 dark:text-white focus:outline-none focus:ring-0 appearance-none pr-12 font-semibold"
-                >
-                  <option value="Anual">Anual</option>
-                  <option value="Mensal">Mensal</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-neutral-400">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                  options={[
+                    { value: 'Anual', label: 'Anual' },
+                    { value: 'Mensal', label: 'Mensal' }
+                  ]}
+                />
               </div>
             </div>
 

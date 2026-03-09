@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import api from '@/config/api'
 import PageTransition from '@/components/common/PageTransition'
+import CustomSelect from '@/components/common/CustomSelect'
 
 interface Stats {
   totalUsers: number
@@ -252,31 +253,31 @@ const Admin = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Tipo</label>
-                  <select
+                  <CustomSelect
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                    className="input-field"
-                  >
-                    <option value="info">Informação</option>
-                    <option value="success">Sucesso</option>
-                    <option value="warning">Alerta</option>
-                    <option value="error">Erro</option>
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, type: val as any })}
+                    options={[
+                      { value: 'info', label: 'Informação' },
+                      { value: 'success', label: 'Sucesso' },
+                      { value: 'warning', label: 'Alerta' },
+                      { value: 'error', label: 'Erro' }
+                    ]}
+                  />
                 </div>
 
                 <div>
                   <label className="label">Categoria</label>
-                  <select
+                  <CustomSelect
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                    className="input-field"
-                  >
-                    <option value="system">Sistema</option>
-                    <option value="premium">Premium</option>
-                    <option value="transaction">Transação</option>
-                    <option value="goal">Meta</option>
-                    <option value="budget">Orçamento</option>
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, category: val as any })}
+                    options={[
+                      { value: 'system', label: 'Sistema' },
+                      { value: 'premium', label: 'Premium' },
+                      { value: 'transaction', label: 'Transação' },
+                      { value: 'goal', label: 'Meta' },
+                      { value: 'budget', label: 'Orçamento' }
+                    ]}
+                  />
                 </div>
               </div>
 

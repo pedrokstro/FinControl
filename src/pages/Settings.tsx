@@ -15,6 +15,7 @@ import VerifyPasswordChangeModal from '@/components/modals/VerifyPasswordChangeM
 import ExportDataModal from '@/components/modals/ExportDataModal'
 import DeleteAccountModal from '@/components/modals/DeleteAccountModal'
 import userService from '@/services/user.service'
+import CustomSelect from '@/components/common/CustomSelect'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
@@ -919,40 +920,40 @@ const Settings = () => {
                     <div className="space-y-4">
                       <div>
                         <label className="label">Tema</label>
-                        <select
-                          className="input-field"
+                        <CustomSelect
                           value={theme}
-                          onChange={(e) => handleThemeChange(e.target.value)}
-                        >
-                          <option value="light">Claro</option>
-                          <option value="dark">Escuro</option>
-                        </select>
+                          onChange={(val) => handleThemeChange(val)}
+                          options={[
+                            { value: 'light', label: 'Claro' },
+                            { value: 'dark', label: 'Escuro' }
+                          ]}
+                        />
                       </div>
 
                       <div>
                         <label className="label">Idioma</label>
-                        <select
-                          className="input-field"
+                        <CustomSelect
                           value={preferences.language}
-                          onChange={(e) => handleLanguageChange(e.target.value)}
-                        >
-                          <option value="pt-BR">Português (Brasil)</option>
-                          <option value="en">English</option>
-                          <option value="es">Español</option>
-                        </select>
+                          onChange={(val) => handleLanguageChange(val)}
+                          options={[
+                            { value: 'pt-BR', label: 'Português (Brasil)' },
+                            { value: 'en', label: 'English' },
+                            { value: 'es', label: 'Español' }
+                          ]}
+                        />
                       </div>
 
                       <div>
                         <label className="label">Moeda</label>
-                        <select
-                          className="input-field"
+                        <CustomSelect
                           value={preferences.currency}
-                          onChange={(e) => handleCurrencyChange(e.target.value)}
-                        >
-                          <option value="BRL">Real (R$)</option>
-                          <option value="USD">Dólar (USD)</option>
-                          <option value="EUR">Euro (EUR)</option>
-                        </select>
+                          onChange={(val) => handleCurrencyChange(val)}
+                          options={[
+                            { value: 'BRL', label: 'Real (R$)' },
+                            { value: 'USD', label: 'Dólar (USD)' },
+                            { value: 'EUR', label: 'Euro (EUR)' }
+                          ]}
+                        />
                       </div>
                     </div>
                   </div>
