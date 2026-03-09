@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import {
     format,
     addMonths,
@@ -27,6 +27,7 @@ interface CustomDatePickerProps {
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, error, minDate, maxDate }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const dragControls = useDragControls();
 
     // Parse current value or use today (handle timezone securely parsing as ISO just the date)
     const selectedDate = value ? (value.includes('T') ? parseISO(value.split('T')[0]) : parseISO(value)) : new Date();
@@ -211,10 +212,23 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 50, scale: 0.95 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            drag="y"
+                            dragControls={dragControls}
+                            dragListener={false}
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={{ top: 0, bottom: 0.4 }}
+                            onDragEnd={(_, { offset, velocity }) => {
+                                if (offset.y > 100 || velocity.y > 400) {
+                                    setIsOpen(false);
+                                }
+                            }}
                             className="fixed sm:absolute z-50 bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto sm:right-0 sm:top-full sm:mt-2 w-full sm:min-w-[340px] bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 flex flex-col p-4 sm:p-5 pb-8 sm:pb-5"
                         >
                             {/* Mobile handle */}
-                            <div className="w-full flex justify-center pb-4 sm:hidden cursor-pointer" onClick={() => setIsOpen(false)}>
+                            <div
+                                className="w-full flex justify-center pb-4 -mt-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                                onPointerDown={(e) => dragControls.start(e)}
+                            >
                                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full" />
                             </div>
 

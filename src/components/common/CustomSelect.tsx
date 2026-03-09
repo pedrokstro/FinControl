@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 
 export interface SelectOption {
     value: string;
@@ -29,6 +29,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const dragControls = useDragControls();
 
     const selectedOption = options.find((opt) => opt.value === value);
 
@@ -91,10 +92,23 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 50, scale: 0.95 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            drag="y"
+                            dragControls={dragControls}
+                            dragListener={false}
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={{ top: 0, bottom: 0.4 }}
+                            onDragEnd={(_, { offset, velocity }) => {
+                                if (offset.y > 100 || velocity.y > 400) {
+                                    setIsOpen(false);
+                                }
+                            }}
                             className="fixed sm:absolute z-50 bottom-0 left-0 right-0 sm:bottom-auto sm:left-0 sm:right-auto sm:top-full sm:mt-2 w-full sm:min-w-[240px] bg-white dark:bg-neutral-800 sm:rounded-xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[70vh] sm:max-h-[300px]"
                         >
                             {/* Mobile handle */}
-                            <div className="w-full flex justify-center py-3 sm:hidden cursor-pointer" onClick={() => setIsOpen(false)}>
+                            <div
+                                className="w-full flex justify-center py-4 -mt-2 mb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                                onPointerDown={(e) => dragControls.start(e)}
+                            >
                                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full" />
                             </div>
 
