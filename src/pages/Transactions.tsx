@@ -30,6 +30,7 @@ import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import CategorySelect from '@/components/common/CategorySelect'
+import CustomSelect from '@/components/common/CustomSelect'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
@@ -490,28 +491,36 @@ const Transactions = () => {
               />
             </div>
 
-            <select
+            <CustomSelect
+              options={[
+                { value: 'all', label: 'Todos os tipos' },
+                { value: 'income', label: 'Receitas', icon: <TrendingUp className="w-4 h-4" /> },
+                { value: 'expense', label: 'Despesas', icon: <TrendingDown className="w-4 h-4" /> }
+              ]}
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value as any)}
-              className="input-field rounded-full"
-            >
-              <option value="all">Todos os tipos</option>
-              <option value="income">Receitas</option>
-              <option value="expense">Despesas</option>
-            </select>
+              onChange={(value) => setFilterType(value as any)}
+              dropdownTitle="Filtrar por Tipo"
+              className="w-full sm:w-auto min-w-[180px]"
+            />
 
-            <select
+            <CustomSelect
+              options={[
+                { value: 'all', label: 'Todas as categorias' },
+                ...categories.map(cat => ({
+                  value: cat.id,
+                  label: cat.name,
+                  icon: (
+                    <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-100 dark:bg-neutral-800" style={{ color: cat.color }}>
+                      <CategoryIcon icon={cat.icon} size="sm" />
+                    </div>
+                  )
+                }))
+              ]}
               value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="input-field rounded-full"
-            >
-              <option value="all">Todas as categorias</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              onChange={setFilterCategory}
+              dropdownTitle="Filtrar por Categoria"
+              className="w-full sm:w-auto min-w-[200px]"
+            />
           </div>
         </div>
 
