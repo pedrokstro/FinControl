@@ -12,6 +12,7 @@ import bcrypt from 'bcryptjs';
 import { Category } from './Category';
 import { Transaction } from './Transaction';
 import { RefreshToken } from './RefreshToken';
+import { Budget } from './Budget';
 
 @Entity('users')
 export class User {
@@ -82,6 +83,9 @@ export class User {
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
+
+  @OneToMany(() => Budget, (budget) => budget.user)
+  budgets: Budget[];
 
   // Methods
   @BeforeInsert()

@@ -1,190 +1,264 @@
-import { Lock, Eye, Database, UserCheck, AlertCircle, Sparkles } from 'lucide-react'
+import { Lock, Eye, Database, UserCheck, AlertCircle, Scale, ShieldCheck } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useState } from 'react'
+
+const FallingMoney = () => {
+  const [particles, setParticles] = useState<any[]>([])
+
+  useEffect(() => {
+    const symbols = ['R$', '$', '€', '£', '¥', '₿', '¢']
+    const generated = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      symbol: symbols[Math.floor(Math.random() * symbols.length)],
+      x: Math.random() * 100, // vw
+      delay: Math.random() * 15,
+      duration: 15 + Math.random() * 25,
+      size: 14 + Math.random() * 28, // px
+      opacity: 0.15 + Math.random() * 0.45,
+      rotateStart: Math.random() * 360,
+      rotateEnd: Math.random() * 360 + 360,
+    }))
+    setParticles(generated)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-primary-900">
+      {/* Dynamic gradient overlay to make things look deep */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-800/80 via-primary-900/90 to-primary-900 z-10" />
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute text-emerald-400 font-serif font-black select-none z-20 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+          style={{ left: `${p.x}vw`, fontSize: p.size, opacity: p.opacity }}
+          initial={{ y: '-10vh', x: 0, rotate: p.rotateStart }}
+          animate={{
+            y: '110vh',
+            x: [0, Math.random() * 50 - 25, 0], // sway left/right
+            rotate: p.rotateEnd
+          }}
+          transition={{
+            y: { duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' },
+            x: { duration: p.duration * 0.5, delay: p.delay, repeat: Infinity, ease: 'easeInOut', repeatType: 'mirror' },
+            rotate: { duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' }
+          }}
+        >
+          {p.symbol}
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring" as const, stiffness: 100, damping: 15 }
+  }
+}
 
 const Privacy = () => {
-  const floatingShapes = [
-    { className: 'w-70 h-70 bg-primary-500/12 top-[-30px] right-[-15px]' },
-    { className: 'w-60 h-60 bg-primary-300/12 bottom-[-40px] left-[-20px]' },
-    { className: 'w-44 h-44 bg-white/10 top-1/3 left-12 hidden lg:block' },
-  ]
+  const { scrollYProgress } = useScroll()
+  const headerY = useTransform(scrollYProgress, [0, 1], [0, 300])
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800 overflow-hidden">
-        {floatingShapes.map((shape, index) => (
-          <motion.span
-            key={index}
-            className={`absolute rounded-full blur-3xl ${shape.className}`}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1, y: [0, -20, 0] }}
-            transition={{ duration: 12 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
-        {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
-          <div className="container mx-auto px-6 relative">
+      <div className="relative min-h-screen bg-neutral-50 dark:bg-neutral-950 selection:bg-primary-500/30 selection:text-primary-900 dark:selection:text-primary-100">
+
+        {/* Deep Landing Hero */}
+        <div className="relative h-[45vh] lg:h-[55vh] flex items-center justify-center overflow-hidden bg-primary-900">
+          <FallingMoney />
+
+          <motion.div
+            style={{ y: headerY, opacity: headerOpacity }}
+            className="relative z-20 text-center px-6 max-w-4xl mx-auto"
+          >
             <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 border border-white/20 backdrop-blur-md rounded-full mb-8 shadow-2xl"
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Documento Oficial</span>
+            </motion.div>
+
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center space-y-6 max-w-3xl mx-auto"
+              transition={{ duration: 0.8, delay: 0.1, type: "spring" }}
+              className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6 leading-[1.1] drop-shadow-2xl"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm font-medium">Sua Privacidade Importa</span>
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold">
-                Política de Privacidade
-              </h1>
-              <p className="text-xl text-primary-100">
-                Última atualização: {new Date().toLocaleDateString('pt-BR')}
-              </p>
-            </motion.div>
-          </div>
+              Política de <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-300 drop-shadow-lg">Privacidade</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="text-lg md:text-xl text-primary-100/90 font-light max-w-2xl mx-auto drop-shadow-md"
+            >
+              Atualizada em {new Date().toLocaleDateString('pt-BR')}. Seus dados financeiros encriptados, soberanos e intocáveis sob os mais rígidos protocolos de sigilo.
+            </motion.p>
+          </motion.div>
         </div>
 
-        {/* Content */}
-        <div className="container mx-auto px-6 py-16">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-lg border border-neutral-200 dark:border-neutral-700"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center">
-                  <Lock className="w-6 h-6 text-white" />
+        {/* Content Restructured - Shadcn aesthetics */}
+        <div className="relative z-10 -mt-16 container mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="max-w-4xl mx-auto space-y-6"
+          >
+            {/* Section 1 */}
+            <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800">
+              <div className="flex items-center gap-5 mb-6">
+                <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <Lock className="w-7 h-7" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Compromisso com sua Privacidade
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  I. Compromisso Irrestrito
                 </h2>
               </div>
-              <p className="text-gray-600 dark:text-neutral-400 leading-relaxed">
-                No FinControl, levamos sua privacidade a sério. Esta política descreve como coletamos, 
-                usamos e protegemos suas informações pessoais.
+              <div className="prose prose-neutral dark:prose-invert prose-lg max-w-none text-gray-600 dark:text-neutral-400 leading-relaxed font-light">
+                <p>
+                  No núcleo do FinControl, o axioma principal é claro: seus dados bancários e fluxos financeiros nunca são nossos. Eles pertencem unicamente a você. Este documento traça transparentemente a linha divisória de responsabilidades sobre coleta, uso inteligente e proteção de suas informações institucionais.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Section 2 */}
+            <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800">
+              <div className="flex items-center gap-5 mb-8">
+                <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400">
+                  <Database className="w-7 h-7" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  II. Matriz de Coleta de Dados
+                </h2>
+              </div>
+              <p className="text-gray-600 dark:text-neutral-400 text-lg leading-relaxed font-light mb-8">
+                Registramos unicamente informações estritamente necessárias para o funcionamento lógico do algoritmo e renderização dos dashboards financeiros:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  'Identificação: Nome, E-mail Corporativo/Pessoal (nunca repassados).',
+                  'Arquitetura de Acesso: Senhas (altamente hasheadas via bcrypt/similar).',
+                  'Entidades Primitivas: Dados contábeis registrados por você (despesas, receitas).',
+                  'Biometria de Uso: Sessões de login e requisições para mitigar fraudes.'
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-100 dark:border-neutral-800">
+                    <div className="min-w-6 mt-1 flex justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    </div>
+                    <span className="text-gray-700 dark:text-neutral-300 font-medium text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Section 3 */}
+            <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800">
+              <div className="flex items-center gap-5 mb-8">
+                <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400">
+                  <Eye className="w-7 h-7" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  III. Engenharia de Uso
+                </h2>
+              </div>
+              <p className="text-gray-600 dark:text-neutral-400 text-lg leading-relaxed font-light mb-8">
+                Rejeitamos categoricamente a monetização mercantil de seus dados. Os usos restritos são focados inteiramente em aprimorar a sua própria ferramenta:
+              </p>
+
+              <ul className="space-y-4">
+                {[
+                  'Alimentar os motores lógicos das visões analíticas gráficas do seu painel.',
+                  'Executar rotinas assíncronas de notificações vitais sobre a conta (e-mails transacionais).',
+                  'Detectar de modo invisível padrões de navegação hostis (prevenção DDoS ou Bruteforce).',
+                  'Fornecimento de customização baseada em sessões (ex: preferência Dark Mode).'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-4">
+                    <div className="min-w-6 mt-1 flex justify-center">
+                      <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                    </div>
+                    <span className="text-gray-700 dark:text-neutral-300 text-base">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Section 4 */}
+            <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800">
+              <div className="flex items-center gap-5 mb-6">
+                <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <UserCheck className="w-7 h-7" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  IV. Soberania Individual (LGPD/GDPR)
+                </h2>
+              </div>
+              <div className="bg-emerald-50/50 dark:bg-emerald-500/5 border-l-4 border-emerald-500 p-6 rounded-r-xl my-8">
+                <p className="text-emerald-900 dark:text-emerald-200/80 font-medium leading-relaxed">
+                  O poder sobre a permanência dos dados baseia-se puramente em consentimento afirmativo. Exija portabilidade dos formatos, correção em massa ou anonimização imediata via painel de Controle quando desejar.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Section 5 */}
+            <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-neutral-200/60 dark:border-neutral-800">
+              <div className="flex items-center gap-5 mb-6">
+                <div className="w-14 h-14 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 text-red-600 dark:text-red-400">
+                  <AlertCircle className="w-7 h-7" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  V. Protocolos de Defesa Ativos
+                </h2>
+              </div>
+              <p className="text-gray-600 dark:text-neutral-400 text-lg leading-relaxed font-light">
+                Utilizamos as mais robustas assinaturas criptográficas da indústria, isolamento de bancos de dados via silos e escudos em nível de roteamento para barrar invasões. Seu dinheiro virtual fica trancafiado aqui sob constante vigilância cibernética.
               </p>
             </motion.div>
 
-          {/* Section 2 */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Database className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Dados que Coletamos
-              </h2>
-            </div>
-            <ul className="space-y-3 text-gray-600 dark:text-neutral-400">
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span><strong>Informações de Conta:</strong> Nome, email e senha (criptografada)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span><strong>Dados Financeiros:</strong> Transações, categorias e metas que você registra</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span><strong>Dados de Uso:</strong> Como você interage com nossa plataforma</span>
-              </li>
-            </ul>
-          </section>
+            {/* Contact Support Block */}
+            <motion.div variants={itemVariants} className="mt-16 bg-gradient-to-br from-primary-800 to-primary-900 rounded-3xl p-10 sm:p-16 text-center shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-[80px]" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-emerald-500/20 rounded-full blur-[60px]" />
 
-          {/* Section 3 */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Eye className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Como Usamos seus Dados
-              </h2>
-            </div>
-            <ul className="space-y-3 text-gray-600 dark:text-neutral-400">
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Fornecer e melhorar nossos serviços</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Personalizar sua experiência</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Enviar notificações importantes sobre sua conta</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Garantir a segurança da plataforma</span>
-              </li>
-            </ul>
-          </section>
-
-          {/* Section 4 */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <UserCheck className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Seus Direitos
-              </h2>
-            </div>
-            <p className="text-gray-600 dark:text-neutral-400 leading-relaxed">
-              Você tem direito a:
-            </p>
-            <ul className="space-y-3 text-gray-600 dark:text-neutral-400">
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Acessar seus dados pessoais</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Corrigir informações incorretas</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Solicitar a exclusão de sua conta</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary-600 dark:text-primary-400 mt-1">•</span>
-                <span>Exportar seus dados</span>
-              </li>
-            </ul>
-          </section>
-
-          {/* Section 5 */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Segurança
-              </h2>
-            </div>
-            <p className="text-gray-600 dark:text-neutral-400 leading-relaxed">
-              Implementamos medidas de segurança técnicas e organizacionais para proteger seus dados, 
-              incluindo criptografia, autenticação segura e monitoramento contínuo.
-            </p>
-          </section>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl p-8 text-white shadow-xl"
-            >
-              <h3 className="text-2xl font-bold mb-2">
-                Dúvidas sobre Privacidade?
-              </h3>
-              <p className="text-primary-100 mb-4">
-                Nossa equipe está pronta para ajudar você
-              </p>
-              <a
-                href="mailto:suportfincontrol@gmail.com"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-colors"
-              >
-                Entrar em Contato
-              </a>
+              <div className="relative z-10 max-w-2xl mx-auto">
+                <Scale className="w-12 h-12 text-primary-300 mx-auto mb-6 opacity-80" />
+                <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4">
+                  Transparência é Inegociável.
+                </h3>
+                <p className="text-primary-100/80 text-lg font-light mb-10 leading-relaxed">
+                  Havendo preocupações legítimas sobre a criptografia alocada à sua conta, acione imediatamente nosso esquadrão de Devs & Segurança.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                  <a
+                    href="mailto:suportfincontrol@gmail.com"
+                    className="w-full sm:w-auto px-8 py-4 bg-white text-primary-900 rounded-xl font-bold tracking-wide hover:bg-neutral-100 transition-all hover:scale-105 shadow-xl"
+                  >
+                    CONTATAR DPO DE SEGURANÇA
+                  </a>
+                </div>
+              </div>
             </motion.div>
-          </div>
+
+          </motion.div>
         </div>
       </div>
     </PageTransition>

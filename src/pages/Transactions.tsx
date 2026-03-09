@@ -372,7 +372,7 @@ const Transactions = () => {
     <PageTransition>
       <div className="responsive-page">
         <div className="responsive-header">
-          <div>
+          <div className="hidden sm:block">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Transações</h1>
             <p className="text-gray-600 dark:text-neutral-400 mt-1">
               Gerencie todas as suas transações financeiras
@@ -380,7 +380,7 @@ const Transactions = () => {
           </div>
           <button
             onClick={() => handleOpenModal()}
-            className="hidden sm:flex btn-primary items-center justify-center gap-2 w-full sm:w-auto"
+            className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-full shadow-sm"
           >
             <Plus className="w-5 h-5" />
             Nova Transacao
@@ -433,7 +433,7 @@ const Transactions = () => {
                 {!isCurrentMonth && (
                   <button
                     onClick={handleCurrentMonth}
-                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium mt-1"
+                    className="text-sm text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1 rounded-full font-medium mt-1 transition-colors"
                   >
                     Voltar para mes atual
                   </button>
@@ -484,14 +484,14 @@ const Transactions = () => {
                 placeholder="Buscar transacoes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-10"
+                className="input-field pl-10 rounded-full"
               />
             </div>
 
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as any)}
-              className="input-field"
+              className="input-field rounded-full"
             >
               <option value="all">Todos os tipos</option>
               <option value="income">Receitas</option>
@@ -501,7 +501,7 @@ const Transactions = () => {
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="input-field"
+              className="input-field rounded-full"
             >
               <option value="all">Todas as categorias</option>
               {categories.map((cat) => (
@@ -760,7 +760,7 @@ const Transactions = () => {
               {!isCurrentMonth && (
                 <button
                   onClick={handleCurrentMonth}
-                  className="mt-4 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+                  className="mt-4 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-4 py-2 rounded-full font-medium transition-colors inline-block"
                 >
                   Voltar para mes atual
                 </button>
@@ -781,7 +781,7 @@ const Transactions = () => {
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="flex-1 btn-secondary"
+                className="flex-1 btn-secondary rounded-full"
                 disabled={isCreatingTransaction}
               >
                 Cancelar
@@ -789,7 +789,7 @@ const Transactions = () => {
               <button
                 type="submit"
                 form="transaction-form"
-                className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex-1 btn-primary flex items-center justify-center gap-2 rounded-full shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={isCreatingTransaction}
               >
                 {isCreatingTransaction ? (
@@ -818,7 +818,7 @@ const Transactions = () => {
               <div>
                 <label className="label">Tipo</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-success-500 has-[:checked]:bg-success-50">
+                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
                     <input
                       type="radio"
                       value="income"
@@ -826,11 +826,11 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 mb-1" />
-                      <span className="text-sm font-medium">Receita</span>
+                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
                     </div>
                   </label>
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50">
+                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
                     <input
                       type="radio"
                       value="expense"
@@ -838,8 +838,8 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 mb-1" />
-                      <span className="text-sm font-medium">Despesa</span>
+                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
                     </div>
                   </label>
                 </div>
@@ -1012,10 +1012,10 @@ const Transactions = () => {
         />
 
         {/* Transaction Limit Modal */}
-        <TransactionLimitModal 
-          isOpen={showLimitModal} 
-          onClose={() => setShowLimitModal(false)} 
-          usage={usage} 
+        <TransactionLimitModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          usage={usage}
         />
       </div>
     </PageTransition>

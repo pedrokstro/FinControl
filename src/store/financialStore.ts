@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Transaction, Category, FilterOptions } from '@/types'
+import { Transaction, Category, FilterOptions, Budget } from '@/types'
 import toast from 'react-hot-toast'
 import transactionService from '@/services/transaction.service'
 import categoryService from '@/services/category.service'
+import { budgetService } from '@/services/budget.service'
 import { parseISO } from 'date-fns'
 
 const normalizeDate = (value: any): string | undefined => {
@@ -55,6 +56,7 @@ interface FinancialState {
   transactions: Transaction[]
   currentMonthTransactions: Transaction[]
   categories: Category[]
+  budgets: Budget[]
   currentUserId: string | null
   isLoading: boolean
   isCreatingTransaction: boolean
@@ -72,6 +74,9 @@ interface FinancialState {
   syncAllTransactions: () => Promise<void>
   fetchCategories: () => Promise<void>
   syncWithBackend: () => Promise<void>
+  fetchBudgets: () => Promise<void>
+  saveBudget: (budget: Omit<Budget, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => Promise<void>
+  deleteBudget: (categoryId: string) => Promise<void>
 }
 
 // Categorias padrão removidas - sempre buscar do backend
@@ -82,6 +87,7 @@ export const useFinancialStore = create<FinancialState>()(
       transactions: [],
       currentMonthTransactions: [],
       categories: [],
+      budgets: [],
       currentUserId: null,
       isLoading: false,
       isCreatingTransaction: false,
@@ -302,6 +308,7 @@ export const useFinancialStore = create<FinancialState>()(
           set({
             transactions: [],
             categories: [],
+            budgets: [],
             currentUserId: userId,
           })
         } else {
@@ -313,6 +320,7 @@ export const useFinancialStore = create<FinancialState>()(
         set({
           transactions: [],
           categories: [],
+          budgets: [],
           currentUserId: null,
         })
       },
@@ -418,11 +426,51 @@ export const useFinancialStore = create<FinancialState>()(
       },
 
       syncWithBackend: async () => {
-        const { fetchTransactions, fetchCategories } = get()
+        const { fetchTransactions, fetchCategories, fetchBudgets } = get()
         await Promise.all([
           fetchTransactions(),
           fetchCategories(),
+          fetchBudgets(),
         ])
+      },
+
+      fetchBudgets: async () => {
+        try {
+          const { currentUserId } = get()
+          if (!currentUserId) return
+          const budgets = await budgetService.getBudgets()
+          set({ budgets })
+        } catch (error) {
+          console.error('Error fetching budgets:', error)
+        }
+      },
+
+      saveBudget: async (data) => {
+        try {
+          const { currentUserId } = get()
+          if (!currentUserId) return
+
+          await budgetService.saveBudget(data)
+          await get().fetchBudgets()
+          toast.success('Limite definido com sucesso')
+        } catch (error) {
+          console.error('Error saving budget:', error)
+          toast.error('Erro ao salvar orçamento')
+        }
+      },
+
+      deleteBudget: async (categoryId) => {
+        try {
+          const { currentUserId } = get()
+          if (!currentUserId) return
+
+          await budgetService.deleteBudget(categoryId)
+          await get().fetchBudgets()
+          toast.success('Limite removido com sucesso')
+        } catch (error) {
+          console.error('Error deleting budget:', error)
+          toast.error('Erro ao remover orçamento')
+        }
       },
     }),
     {
@@ -443,6 +491,7 @@ export const useFinancialStore = create<FinancialState>()(
                 state: {
                   transactions: [],
                   categories: [],
+                  budgets: [],
                   currentUserId: null,
                 },
               }
@@ -461,6 +510,7 @@ export const useFinancialStore = create<FinancialState>()(
               state: {
                 transactions: [],
                 categories: [],
+                budgets: [],
                 currentUserId: userId,
               },
             }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, X, Receipt, FolderOpen } from 'lucide-react'
+import { Plus, X, Receipt, FolderOpen, Calculator } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -7,10 +7,12 @@ const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
 
-  const handleAction = (action: 'transaction' | 'category') => {
+  const handleAction = (action: 'transaction' | 'category' | 'calculator') => {
     setIsOpen(false)
     if (action === 'transaction') {
       navigate('/app/dashboard?quickAdd=expense')
+    } else if (action === 'calculator') {
+      navigate('/app/calculadora-porcentagem')
     } else {
       navigate('/app/categories?add=true')
     }
@@ -66,6 +68,20 @@ const FloatingActionButton = () => {
                 <FolderOpen className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 <span className="text-sm font-medium whitespace-nowrap">Nova Categoria</span>
               </motion.button>
+
+              {/* Calculadora */}
+              <motion.button
+                layoutId="calculator-shared-element"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ delay: 0.15 }}
+                onClick={() => handleAction('calculator')}
+                className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
+              >
+                <Calculator className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <span className="text-sm font-medium whitespace-nowrap">Calculadora</span>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -74,11 +90,10 @@ const FloatingActionButton = () => {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all ${
-            isOpen
+          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all ${isOpen
               ? 'bg-gray-900 dark:bg-white rotate-45'
               : 'bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700'
-          }`}
+            }`}
         >
           {isOpen ? (
             <X className="w-6 h-6 text-white dark:text-gray-900" />

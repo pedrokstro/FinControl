@@ -10,6 +10,53 @@ import { authService } from '@/services/api'
 import AnimatedPage from '@/components/common/AnimatedPage'
 import { motion } from 'framer-motion'
 
+const FallingMoney = () => {
+  const [particles, setParticles] = useState<any[]>([])
+
+  useEffect(() => {
+    const symbols = ['R$', '$', '€', '£', '¥', '₿', '¢']
+    const generated = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      symbol: symbols[Math.floor(Math.random() * symbols.length)],
+      x: Math.random() * 100, // vw
+      delay: Math.random() * 15,
+      duration: 15 + Math.random() * 25,
+      size: 14 + Math.random() * 28, // px
+      opacity: 0.15 + Math.random() * 0.45,
+      rotateStart: Math.random() * 360,
+      rotateEnd: Math.random() * 360 + 360,
+    }))
+    setParticles(generated)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-primary-900">
+      {/* Dynamic gradient overlay to make things look deep */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-800/80 via-primary-900/90 to-primary-900 z-10" />
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute text-emerald-400 font-serif font-black select-none z-20 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+          style={{ left: `${p.x}vw`, fontSize: p.size, opacity: p.opacity }}
+          initial={{ y: '-10vh', x: 0, rotate: p.rotateStart }}
+          animate={{
+            y: '110vh',
+            x: [0, Math.random() * 50 - 25, 0], // sway left/right
+            rotate: p.rotateEnd
+          }}
+          transition={{
+            y: { duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' },
+            x: { duration: p.duration * 0.5, delay: p.delay, repeat: Infinity, ease: 'easeInOut', repeatType: 'mirror' },
+            rotate: { duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' }
+          }}
+        >
+          {p.symbol}
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
 // Schema de validação
 const registerSchema = z.object({
   name: z.string()
@@ -59,11 +106,7 @@ const Register = () => {
 
   const password = watch('password', '')
 
-  const floatingShapes = [
-    { className: 'w-80 h-80 bg-primary-500/15 top-[-60px] right-[-30px]' },
-    { className: 'w-64 h-64 bg-primary-300/15 bottom-[-40px] left-[-10px]' },
-    { className: 'w-40 h-40 bg-white/10 top-1/3 right-12 hidden lg:block' },
-  ]
+
 
   // Validação de força da senha
   const getPasswordStrength = (pwd: string) => {
@@ -120,141 +163,147 @@ const Register = () => {
 
   return (
     <AnimatedPage direction="right">
-      <div className="relative min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-primary-500 to-primary-700 overflow-hidden">
-        {floatingShapes.map((shape, index) => (
-          <motion.span
-            key={index}
-            className={`absolute rounded-full blur-3xl ${shape.className}`}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1, y: [0, -30, 0] }}
-            transition={{ duration: 11 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
+      <div className="relative min-h-screen flex flex-col lg:flex-row bg-primary-900 overflow-hidden">
+        {/* Dynamic Background */}
+        <FallingMoney />
 
         {/* Left Side */}
         <motion.div
-          className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-between relative z-10"
+          className="hidden lg:flex lg:flex-1 p-12 xl:p-16 flex-col justify-between relative z-10"
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden p-2">
               <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
             </div>
-            <span className="text-3xl font-bold text-white">FinControl</span>
+            <span className="text-3xl font-extrabold tracking-tight text-white">FinControl</span>
           </div>
 
-          <div className="text-white">
-            <h1 className="text-4xl font-bold mb-4">
-              Comece a controlar suas finanças hoje
+          <div className="text-white max-w-2xl">
+            <h1 className="text-5xl xl:text-7xl font-black tracking-tighter mb-6 leading-[1.1]">
+              Eleve o seu <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-100">
+                patamar
+              </span><br />
+              financeiro.
             </h1>
-            <p className="text-primary-100 text-lg mb-8">
-              Junte-se a milhares de usuários que já transformaram sua vida financeira.
+            <p className="text-primary-100 text-xl font-light leading-relaxed max-w-xl mb-10">
+              Junte-se a uma rede de inteligência financeira de elite e transforme a gestão do seu patrimônio.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-6 max-w-md">
               {[
-                { title: '100% Gratuito', text: 'Sem taxas ocultas ou cobranças surpresa' },
-                { title: 'Seguro e Privado', text: 'Seus dados são criptografados e protegidos' },
-                { title: 'Fácil de Usar', text: 'Interface intuitiva e moderna' },
+                { title: 'Custos Ocultos Zero', text: 'Estrutura totalmente livre, sem surpresas.' },
+                { title: 'Privacidade Nível Bancário', text: 'Criptografia avançada e servidores blindados.' },
+                { title: 'Engenharia de Usabilidade', text: 'Interface projetada para velocidade e precisão.' },
               ].map((item, idx) => (
                 <motion.div
                   key={item.title}
-                  className="flex items-start gap-3"
+                  className="flex items-start gap-4"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.15 + idx * 0.1 }}
                 >
-                  <CheckCircle2 className="w-6 h-6 text-success-400 flex-shrink-0 mt-1" />
+                  <div className="mt-1 w-6 h-6 flex items-center justify-center rounded-full bg-primary-800/50 border border-primary-500/30 text-primary-400 flex-shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{item.title}</h3>
-                    <p className="text-primary-100 text-sm">{item.text}</p>
+                    <h3 className="font-bold mb-1 tracking-tight text-white">{item.title}</h3>
+                    <p className="text-primary-200 text-sm font-light leading-relaxed">{item.text}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="flex gap-8 text-white">
-            {[
-              { value: '10k+', label: 'Usuários ativos' },
-              { value: '50k+', label: 'Transações registradas' },
-              { value: '4.9★', label: 'Avaliação média' },
-            ].map((stat, idx) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + idx * 0.1 }}
-              >
-                <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                <div className="text-primary-100">{stat.label}</div>
-              </motion.div>
-            ))}
+          <div className="flex gap-12 text-white border-t border-white/10 pt-8 mt-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8, type: "spring", stiffness: 80 }}
+              className="relative group cursor-default"
+            >
+              <div className="text-4xl font-black tracking-tight mb-1 relative z-10 drop-shadow-lg transition-colors">
+                10k+
+              </div>
+              <div className="text-primary-200 text-sm font-medium uppercase tracking-wider">Investidores</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8, type: "spring", stiffness: 80 }}
+              className="relative group cursor-default"
+            >
+              <div className="text-4xl font-black tracking-tight mb-1 relative z-10 drop-shadow-lg transition-colors">
+                50k+
+              </div>
+              <div className="text-primary-200 text-sm font-medium uppercase tracking-wider">Transações</div>
+            </motion.div>
           </div>
         </motion.div>
 
         {/* Right Side */}
         <motion.div
-          className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 relative z-10"
+          className="w-full lg:w-[480px] xl:w-[560px] flex-shrink-0 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative z-10"
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
           <div className="w-full max-w-md">
-            <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 text-white">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden p-2">
+            <div className="lg:hidden flex flex-col items-center text-center gap-3 mb-8 sm:mb-10 text-white">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl overflow-hidden p-3">
                 <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <div>
-                <span className="text-3xl font-bold block">FinControl</span>
-                <p className="text-primary-50 text-sm mt-1">Crie sua conta e organize suas finanças em minutos</p>
+                <span className="text-3xl sm:text-4xl font-black tracking-tighter block">FinControl</span>
+                <p className="text-primary-100 text-sm mt-2 font-light">Ecossistema financeiro inteligente</p>
               </div>
             </div>
 
             <motion.div
-              className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden"
+              className="w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 sm:p-10 relative overflow-hidden border border-gray-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <motion.span
-                className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-transparent dark:from-primary-400/10"
-                animate={{ opacity: [0.15, 0.3, 0.15] }}
-                transition={{ duration: 7, repeat: Infinity }}
+                className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent pointer-events-none"
+                animate={{ opacity: [0.1, 0.3, 0.1] }}
+                transition={{ duration: 6, repeat: Infinity }}
               />
               <div className="relative z-10">
-                <div className="mb-6 sm:mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Criar sua conta
+                <div className="mb-10 text-center">
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 mb-2">
+                    Abertura de Conta
                   </h2>
-                  <p className="text-gray-600 dark:text-neutral-400">
-                    Preencha os dados abaixo para começar
+                  <p className="text-gray-500 font-medium text-sm">
+                    Preencha os dados oficiais para iniciar
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   {/* Nome Completo */}
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                    <label htmlFor="name" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                       Nome Completo
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         id="name"
                         type="text"
                         {...register('name')}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                          }`}
+                        className={`w-full pl-12 pr-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all bg-gray-50/50 hover:bg-white text-gray-900 placeholder-gray-400 font-medium ${errors.name ? 'border-red-500' : 'border-gray-200'}`}
                         placeholder="João Silva"
                         disabled={isLoading}
                       />
                     </div>
                     {errors.name && (
-                      <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5" />
                         {errors.name.message}
                       </p>
                     )}
@@ -262,24 +311,23 @@ const Register = () => {
 
                   {/* Email */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Email
+                    <label htmlFor="email" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      E-mail Corporativo / Pessoal
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         id="email"
                         type="email"
                         {...register('email')}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                          }`}
-                        placeholder="seu@email.com"
+                        className={`w-full pl-12 pr-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all bg-gray-50/50 hover:bg-white text-gray-900 placeholder-gray-400 font-medium ${errors.email ? 'border-red-500' : 'border-gray-200'}`}
+                        placeholder="nome@exemplo.com"
                         disabled={isLoading}
                       />
                     </div>
                     {errors.email && (
-                      <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5" />
                         {errors.email.message}
                       </p>
                     )}
@@ -287,48 +335,47 @@ const Register = () => {
 
                   {/* Senha */}
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Senha
+                    <label htmlFor="password" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Senha de Acesso
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         id="password"
                         type={showPassword ? 'text' : 'password'}
                         {...register('password')}
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                          }`}
-                        placeholder="Mínimo 6 caracteres"
+                        className={`w-full pl-12 pr-12 py-3.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all bg-gray-50/50 hover:bg-white text-gray-900 placeholder-gray-400 font-medium ${errors.password ? 'border-red-500' : 'border-gray-200'}`}
+                        placeholder="••••••••"
                         disabled={isLoading}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
 
                     {password && (
-                      <div className="mt-2">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className="flex-1 h-2 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                      <div className="mt-3">
+                        <div className="flex items-center gap-2.5 mb-1.5">
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div
-                              className={`h-full transition-all duração-300 ${getStrengthLabel().color}`}
+                              className={`h-full transition-all duration-300 ${getStrengthLabel().color}`}
                               style={{ width: `${(passwordStrength / 6) * 100}%` }}
                             />
                           </div>
-                          <span className="text-xs font-medium text-gray-600 dark:text-neutral-400">
-                            {getStrengthLabel().label}
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                            Força: {getStrengthLabel().label}
                           </span>
                         </div>
                       </div>
                     )}
 
                     {errors.password && (
-                      <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5" />
                         {errors.password.message}
                       </p>
                     )}
@@ -336,60 +383,58 @@ const Register = () => {
 
                   {/* Confirmar Senha */}
                   <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Confirmar Senha
+                    <label htmlFor="confirmPassword" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Confirme a Senha
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         id="confirmPassword"
                         type={showConfirmPassword ? 'text' : 'password'}
                         {...register('confirmPassword')}
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all bg-white dark:bg-neutral-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
-                          }`}
-                        placeholder="Digite a senha novamente"
+                        className={`w-full pl-12 pr-12 py-3.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all bg-gray-50/50 hover:bg-white text-gray-900 placeholder-gray-400 font-medium ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'}`}
+                        placeholder="••••••••"
                         disabled={isLoading}
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                       >
                         {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
                     {errors.confirmPassword && (
-                      <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5" />
                         {errors.confirmPassword.message}
                       </p>
                     )}
                   </div>
 
                   {/* Termos de Serviço */}
-                  <div>
-                    <label className="flex items-start gap-3 cursor-pointer flex-col sm:flex-row sm:items-start">
+                  <div className="pt-2">
+                    <label className="flex items-start gap-3 cursor-pointer group">
                       <input
                         type="checkbox"
                         {...register('acceptTerms')}
-                        className={`w-5 h-5 mt-0.5 text-primary-600 border-gray-300 dark:border-neutral-600 rounded focus:ring-primary-500 cursor-pointer ${errors.acceptTerms ? 'border-red-500' : ''
-                          }`}
+                        className={`w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500/20 cursor-pointer ${errors.acceptTerms ? 'border-red-500' : ''}`}
                         disabled={isLoading}
                       />
-                      <span className="text-sm text-gray-600 dark:text-neutral-400">
-                        Eu concordo com os{' '}
-                        <Link to="/terms" target="_blank" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
+                      <span className="text-xs font-medium text-gray-500 leading-relaxed">
+                        Declaro que li e concordo com os{' '}
+                        <Link to="/terms" target="_blank" className="text-primary-600 hover:text-primary-800 font-bold transition-colors">
                           Termos de Serviço
                         </Link>{' '}
-                        e{' '}
-                        <Link to="/privacy" target="_blank" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
+                        e a{' '}
+                        <Link to="/privacy" target="_blank" className="text-primary-600 hover:text-primary-800 font-bold transition-colors">
                           Política de Privacidade
                         </Link>
                       </span>
                     </label>
                     {errors.acceptTerms && (
-                      <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5" />
                         {errors.acceptTerms.message}
                       </p>
                     )}
@@ -399,45 +444,41 @@ const Register = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold tracking-wide py-4 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl hover:shadow-primary-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 mt-2"
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Criando conta...
+                        <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                        PROCESSANDO...
                       </>
                     ) : (
-                      'Criar Conta'
+                      'FINALIZAR ABERTURA'
                     )}
                   </button>
                 </form>
 
-                <div className="mt-6 text-center space-y-3">
-                  <p className="text-sm text-gray-600 dark:text-neutral-400">
-                    Já tem uma conta?{' '}
+                <div className="mt-8 text-center space-y-4">
+                  <p className="text-sm font-medium text-gray-500">
+                    Já é um membro?{' '}
                     <Link
                       to="/login"
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
+                      className="text-primary-600 hover:text-primary-800 font-bold transition-colors"
                     >
-                      Fazer login
-                    </Link>
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-neutral-400">
-                    <Link
-                      to="/about"
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
-                    >
-                      Saiba mais sobre o FinControl
+                      Acessar Plataforma
                     </Link>
                   </p>
                 </div>
               </div>
             </motion.div>
 
-            <div className="mt-6 text-center text-white/80 flex items-center justify-center gap-2">
-              <Lock className="w-4 h-4" />
-              Seus dados são criptografados e protegidos
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-6 flex flex-col items-center gap-2 text-primary-200/60 font-medium text-[10px] uppercase tracking-widest"
+            >
+              <span className="flex items-center gap-1.5"><Lock className="w-3 h-3" /> Ambiente Seguro Institucional</span>
+            </motion.div>
           </div>
         </motion.div>
       </div>

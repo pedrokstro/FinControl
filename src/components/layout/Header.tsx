@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, LogOut } from 'lucide-react'
 import NotificationDropdown from '@/components/NotificationDropdown'
 
 const Header = () => {
@@ -41,7 +41,8 @@ const Header = () => {
         <div className="flex items-center justify-end gap-3 sm:gap-4 flex-1">
           <NotificationDropdown />
 
-          <div className="relative" ref={dropdownRef}>
+          {/* User Profile Dropdown (Desktop) */}
+          <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-all"
@@ -93,6 +94,26 @@ const Header = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* User Profile actions (Mobile) */}
+          <div className="flex items-center gap-1 md:hidden">
+            <img
+              src={user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+              alt={user?.name}
+              className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-neutral-700 object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+              }}
+            />
+            <button
+              onClick={logout}
+              className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+              title="Sair"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>

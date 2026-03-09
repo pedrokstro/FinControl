@@ -65,6 +65,7 @@ import { type IconName } from '@/utils/iconMapping'
 import CurrentDateCard from '@/components/common/CurrentDateCard'
 import Modal from '@/components/common/Modal'
 import { useSearchParams, Link } from 'react-router-dom'
+import BudgetProgressBar from '@/components/common/BudgetProgressBar'
 
 const RADIAN = Math.PI / 180
 
@@ -173,7 +174,7 @@ const transactionSchema = z
 type TransactionFormData = z.infer<typeof transactionSchema>
 
 const Dashboard = () => {
-  const { transactions, categories, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
+  const { transactions, categories, budgets, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const isMobile = useIsMobile()
   const [showCalculator, setShowCalculator] = useState(false)
@@ -706,7 +707,7 @@ const Dashboard = () => {
   return (
     <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
       <div className="responsive-header">
-        <div>
+        <div className="hidden sm:block">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
             Visão geral das suas finanças
@@ -719,7 +720,7 @@ const Dashboard = () => {
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={goToPreviousMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+            className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
             title="Mês anterior"
           >
             <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
@@ -732,11 +733,11 @@ const Dashboard = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {!isCurrentMonth() && (
               <button
                 onClick={goToCurrentMonth}
-                className="px-3 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                className="px-3 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-colors"
               >
                 Hoje
               </button>
@@ -744,9 +745,9 @@ const Dashboard = () => {
             <button
               onClick={goToNextMonth}
               disabled={isCurrentMonth()}
-              className={`p-2 rounded-lg transition-colors ${isCurrentMonth()
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
+              className={`p-2 sm:p-2.5 rounded-full transition-colors ${isCurrentMonth()
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
                 }`}
               title="Próximo mês"
             >
@@ -780,23 +781,23 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="card bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white border-0">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="card col-span-2 lg:col-span-1 bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-primary-100 dark:text-primary-200 text-sm font-medium">Saldo do Mês</p>
-              <h3 className="text-3xl font-bold mt-2">
+              <h3 className="text-3xl font-bold mt-2 truncate max-w-[200px]">
                 {formatCurrency(financialSummary.monthBalance)}
               </h3>
             </div>
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
               <Wallet className="w-6 h-6" />
             </div>
           </div>
         </div>
 
         <div
-          className="card cursor-pointer hover:shadow-lg transition-all"
+          className="card col-span-1 cursor-pointer hover:shadow-lg transition-all p-3 sm:p-5"
           onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
           role="button"
           tabIndex={0}
@@ -806,27 +807,25 @@ const Dashboard = () => {
             }
           }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Receitas do Mês</p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+          <div className="flex flex-col gap-2 sm:gap-0 sm:flex-row sm:items-center sm:justify-between h-full w-full">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-success-50 dark:bg-success-900/20 rounded-full flex items-center justify-center flex-shrink-0 block sm:order-2">
+              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-success-600 dark:text-success-400" />
+            </div>
+            <div className="flex-1 min-w-0 sm:order-1">
+              <p className="text-gray-600 dark:text-neutral-400 text-xs sm:text-sm font-medium">Receitas <span className="hidden sm:inline">do Mês</span></p>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-2 truncate w-full">
                 {formatCurrency(financialSummary.monthIncome)}
               </h3>
-              <div className="flex items-center gap-1 mt-2">
+              <div className="hidden sm:flex items-center gap-1 mt-2">
                 <ArrowUpRight className="w-4 h-4 text-success-600 dark:text-success-400" />
-                <span className="text-sm text-success-600 dark:text-success-400 font-medium">
-                  +12.5%
-                </span>
+                <span className="text-sm text-success-600 dark:text-success-400 font-medium">+12.5%</span>
               </div>
-            </div>
-            <div className="w-12 h-12 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
             </div>
           </div>
         </div>
 
         <div
-          className="card cursor-pointer hover:shadow-lg transition-all"
+          className="card col-span-1 cursor-pointer hover:shadow-lg transition-all p-3 sm:p-5"
           onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
           role="button"
           tabIndex={0}
@@ -836,26 +835,24 @@ const Dashboard = () => {
             }
           }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Despesas do Mês</p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+          <div className="flex flex-col gap-2 sm:gap-0 sm:flex-row sm:items-center sm:justify-between h-full w-full">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-danger-50 dark:bg-danger-900/20 rounded-full flex items-center justify-center flex-shrink-0 block sm:order-2">
+              <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-danger-600 dark:text-danger-400" />
+            </div>
+            <div className="flex-1 min-w-0 sm:order-1">
+              <p className="text-gray-600 dark:text-neutral-400 text-xs sm:text-sm font-medium">Despesas <span className="hidden sm:inline">do Mês</span></p>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-2 truncate w-full">
                 {formatCurrency(financialSummary.monthExpense)}
               </h3>
-              <div className="flex items-center gap-1 mt-2">
+              <div className="hidden sm:flex items-center gap-1 mt-2">
                 <ArrowDownRight className="w-4 h-4 text-danger-600 dark:text-danger-400" />
-                <span className="text-sm text-danger-600 dark:text-danger-400 font-medium">
-                  -8.2%
-                </span>
+                <span className="text-sm text-danger-600 dark:text-danger-400 font-medium">-8.2%</span>
               </div>
-            </div>
-            <div className="w-12 h-12 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
-              <TrendingDown className="w-6 h-6 text-danger-600 dark:text-danger-400" />
             </div>
           </div>
         </div>
 
-        <div className="card cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setShowGoalModal(true)}>
+        <div className="card col-span-2 lg:col-span-1 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
@@ -910,8 +907,8 @@ const Dashboard = () => {
                     <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all ${currentGoal.currentAmount >= currentGoal.targetAmount
-                            ? 'bg-success-500'
-                            : 'bg-primary-500'
+                          ? 'bg-success-500'
+                          : 'bg-primary-500'
                           }`}
                         style={{
                           width: `${Math.min(100, (currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%`,
@@ -938,12 +935,70 @@ const Dashboard = () => {
                 </>
               )}
             </div>
-            <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110">
               <Target className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </div>
       </div>
+
+      {/* NOVO WIDGET: Orçamentos Inteligentes */}
+      {budgets.length > 0 && (
+        <div className="card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center">
+              <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Meus Limites
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Acompanhamento dos orçamentos mensais
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {budgets.map((budget) => {
+              const category = categories.find((c) => c.id === budget.categoryId)
+              if (!category) return null
+
+              const spent = transactions
+                .filter(t => {
+                  if (t.categoryId !== budget.categoryId || t.type !== 'expense') return false
+                  const date = parseISO(t.date)
+                  return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
+                })
+                .reduce((sum, t) => sum + t.amount, 0)
+
+              return (
+                <div
+                  key={budget.id}
+                  className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-xl border border-gray-100 dark:border-neutral-800"
+                >
+                  <div className="flex items-center gap-3 w-full mb-2">
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${category.color}20` }}
+                    >
+                      <CategoryIcon
+                        icon={category.icon as IconName}
+                        color={category.color}
+                        size="sm"
+                      />
+                    </div>
+                    <span className="font-semibold text-gray-900 dark:text-white truncate">
+                      {category.name}
+                    </span>
+                  </div>
+                  <BudgetProgressBar limit={budget.amount} spent={spent} />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Novo: Card Resumo Anual */}
       <div className="card">
@@ -1171,8 +1226,8 @@ const Dashboard = () => {
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Saldo Final</p>
               <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
-                  ? 'text-success-600 dark:text-success-400'
-                  : 'text-danger-600 dark:text-danger-400'
+                ? 'text-success-600 dark:text-success-400'
+                : 'text-danger-600 dark:text-danger-400'
                 }`}>
                 {formatCurrency(accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado || 0)}
               </p>
@@ -1180,8 +1235,8 @@ const Dashboard = () => {
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Tendência</p>
               <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
-                  ? 'text-success-600 dark:text-success-400'
-                  : 'text-danger-600 dark:text-danger-400'
+                ? 'text-success-600 dark:text-success-400'
+                : 'text-danger-600 dark:text-danger-400'
                 }`}>
                 {accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0 ? '↑' : '↓'}
               </p>
@@ -1249,8 +1304,8 @@ const Dashboard = () => {
                     </div>
                     <span
                       className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ml-2 ${item.type === 'income'
-                          ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                          : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
+                        : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
                         }`}
                     >
                       {item.type === 'income' ? 'Receita' : 'Despesa'}
@@ -1437,13 +1492,13 @@ const Dashboard = () => {
               return (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-900 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-900 rounded-2xl md:rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${transaction.type === 'income'
-                          ? 'bg-success-100 dark:bg-success-900/30'
-                          : 'bg-danger-100 dark:bg-danger-900/30'
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center flex-shrink-0 ${transaction.type === 'income'
+                        ? 'bg-success-100 dark:bg-success-900/30'
+                        : 'bg-danger-100 dark:bg-danger-900/30'
                         }`}
                     >
                       {category ? (
@@ -1471,8 +1526,8 @@ const Dashboard = () => {
                   </div>
                   <div
                     className={`font-semibold ${transaction.type === 'income'
-                        ? 'text-success-600 dark:text-success-400'
-                        : 'text-danger-600 dark:text-danger-400'
+                      ? 'text-success-600 dark:text-success-400'
+                      : 'text-danger-600 dark:text-danger-400'
                       }`}
                   >
                     {transaction.type === 'income' ? '+' : '-'}
@@ -1490,81 +1545,87 @@ const Dashboard = () => {
       </div>
 
       {/* Gráficos Avançados de Analytics */}
-      {!isLoadingAnalytics && analytics && (
-        <>
-          {/* Seção de Analytics */}
-          <div className="mt-8 mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Análises Avançadas
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-neutral-400">
-                  Insights detalhados sobre suas finanças
-                </p>
+      {
+        !isLoadingAnalytics && analytics && (
+          <>
+            {/* Seção de Analytics */}
+            <div className="mt-8 mb-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Análises Avançadas
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-neutral-400">
+                    Insights detalhados sobre suas finanças
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* 1. Fluxo de Caixa Diário */}
-          <CashFlowChart
-            data={analytics.dailyCashFlow}
-            formatCurrency={formatCurrency}
-          />
-
-          {/* 2. Taxa de Poupança */}
-          <SavingsRateChart
-            data={analytics.savingsRate}
-            formatCurrency={formatCurrency}
-          />
-
-          {/* 3. Top 10 Maiores Despesas + Despesas por Dia da Semana */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <TopExpensesChart
-              data={analytics.topExpenses}
+            {/* 1. Fluxo de Caixa Diário */}
+            <CashFlowChart
+              data={analytics.dailyCashFlow}
               formatCurrency={formatCurrency}
             />
-            <ExpensesByWeekdayChart
-              data={analytics.expensesByWeekday}
+
+            {/* 2. Taxa de Poupança */}
+            <SavingsRateChart
+              data={analytics.savingsRate}
               formatCurrency={formatCurrency}
             />
-          </div>
 
-          {/* 4. Orçamento vs Real */}
-          <BudgetVsActualChart
-            data={analytics.budgetVsActual}
-            formatCurrency={formatCurrency}
-          />
-        </>
-      )}
+            {/* 3. Top 10 Maiores Despesas + Despesas por Dia da Semana */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TopExpensesChart
+                data={analytics.topExpenses}
+                formatCurrency={formatCurrency}
+              />
+              <ExpensesByWeekdayChart
+                data={analytics.expensesByWeekday}
+                formatCurrency={formatCurrency}
+              />
+            </div>
 
-      {!isLoadingAnalytics && analyticsEmpty && (
-        <div className="card">
-          <div className="py-12 text-center">
-            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-              Nenhum dado neste mês
-            </p>
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
-              Adicione transações no mês atual para visualizar estes gráficos.
-            </p>
+            {/* 4. Orçamento vs Real */}
+            <BudgetVsActualChart
+              data={analytics.budgetVsActual}
+              formatCurrency={formatCurrency}
+            />
+          </>
+        )
+      }
+
+      {
+        !isLoadingAnalytics && analyticsEmpty && (
+          <div className="card">
+            <div className="py-12 text-center">
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                Nenhum dado neste mês
+              </p>
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
+                Adicione transações no mês atual para visualizar estes gráficos.
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Loading Analytics */}
-      {isLoadingAnalytics && (
-        <div className="card">
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" />
-            <span className="ml-3 text-gray-600 dark:text-neutral-400">
-              Carregando análises...
-            </span>
+      {
+        isLoadingAnalytics && (
+          <div className="card">
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" />
+              <span className="ml-3 text-gray-600 dark:text-neutral-400">
+                Carregando análises...
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       <Modal
         isOpen={showQuickAdd}
@@ -1626,8 +1687,8 @@ const Dashboard = () => {
                   type="button"
                   onClick={() => setValue('type', 'income')}
                   className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'income'
-                      ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
                     }`}
                 >
                   <TrendingUp className="w-5 h-5" />
@@ -1637,8 +1698,8 @@ const Dashboard = () => {
                   type="button"
                   onClick={() => setValue('type', 'expense')}
                   className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'expense'
-                      ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
                     }`}
                 >
                   <TrendingDown className="w-5 h-5" />
@@ -1843,154 +1904,158 @@ const Dashboard = () => {
       />
 
       {/* Income Transactions Modal */}
-      {showIncomeModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
-          <div
-            className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
-              <div>
-                <p className="text-sm text-success-600 dark:text-success-400 font-medium">Receitas do Mês</p>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                  {formatCurrency(financialSummary.monthIncome)}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                  {incomeTransactions.length} {incomeTransactions.length === 1 ? 'receita' : 'receitas'} registradas
-                </p>
+      {
+        showIncomeModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
+            <div
+              className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-success-600 dark:text-success-400 font-medium">Receitas do Mês</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                    {formatCurrency(financialSummary.monthIncome)}
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                    {incomeTransactions.length} {incomeTransactions.length === 1 ? 'receita' : 'receitas'} registradas
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowIncomeModal(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowIncomeModal(false)}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="overflow-y-auto max-h-[60vh]">
-              {incomeTransactions.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-                  Nenhuma receita registrada neste mês.
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-                  {incomeTransactions.map((transaction) => {
-                    const category = categories.find((cat) => cat.id === transaction.categoryId)
-                    return (
-                      <div key={transaction.id} className="p-4 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
-                          <CategoryIcon
-                            icon={(category?.icon as IconName) || 'Wallet'}
-                            color={category?.color || '#22c55e'}
-                            size="md"
-                          />
+              <div className="overflow-y-auto max-h-[60vh]">
+                {incomeTransactions.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+                    Nenhuma receita registrada neste mês.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                    {incomeTransactions.map((transaction) => {
+                      const category = categories.find((cat) => cat.id === transaction.categoryId)
+                      return (
+                        <div key={transaction.id} className="p-4 flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-lg bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
+                            <CategoryIcon
+                              icon={(category?.icon as IconName) || 'Wallet'}
+                              color={category?.color || '#22c55e'}
+                              size="md"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
+                            <p className="text-sm text-gray-500 dark:text-neutral-400">
+                              {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-success-600 dark:text-success-400">
+                              {formatCurrency(transaction.amount)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
-                          <p className="text-sm text-gray-500 dark:text-neutral-400">
-                            {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-success-600 dark:text-success-400">
-                            {formatCurrency(transaction.amount)}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowIncomeModal(false)}
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-              >
-                Fechar
-              </button>
+              <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowIncomeModal(false)}
+                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Expense Transactions Modal */}
-      {showExpenseModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
-          <div
-            className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
-              <div>
-                <p className="text-sm text-danger-600 dark:text-danger-400 font-medium">Despesas do Mês</p>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                  {formatCurrency(financialSummary.monthExpense)}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                  {expenseTransactions.length} {expenseTransactions.length === 1 ? 'despesa' : 'despesas'} registradas
-                </p>
+      {
+        showExpenseModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
+            <div
+              className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-danger-600 dark:text-danger-400 font-medium">Despesas do Mês</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                    {formatCurrency(financialSummary.monthExpense)}
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                    {expenseTransactions.length} {expenseTransactions.length === 1 ? 'despesa' : 'despesas'} registradas
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowExpenseModal(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowExpenseModal(false)}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="overflow-y-auto max-h-[60vh]">
-              {expenseTransactions.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-                  Nenhuma despesa registrada neste mês.
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-                  {expenseTransactions.map((transaction) => {
-                    const category = categories.find((cat) => cat.id === transaction.categoryId)
-                    return (
-                      <div key={transaction.id} className="p-4 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
-                          <CategoryIcon
-                            icon={(category?.icon as IconName) || 'Wallet'}
-                            color={category?.color || '#ef4444'}
-                            size="md"
-                          />
+              <div className="overflow-y-auto max-h-[60vh]">
+                {expenseTransactions.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+                    Nenhuma despesa registrada neste mês.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                    {expenseTransactions.map((transaction) => {
+                      const category = categories.find((cat) => cat.id === transaction.categoryId)
+                      return (
+                        <div key={transaction.id} className="p-4 flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-lg bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
+                            <CategoryIcon
+                              icon={(category?.icon as IconName) || 'Wallet'}
+                              color={category?.color || '#ef4444'}
+                              size="md"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
+                            <p className="text-sm text-gray-500 dark:text-neutral-400">
+                              {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-danger-600 dark:text-danger-400">
+                              {formatCurrency(transaction.amount)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
-                          <p className="text-sm text-gray-500 dark:text-neutral-400">
-                            {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-danger-600 dark:text-danger-400">
-                            {formatCurrency(transaction.amount)}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowExpenseModal(false)}
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-              >
-                Fechar
-              </button>
+              <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowExpenseModal(false)}
+                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Transaction Limit Modal */}
       <TransactionLimitModal
@@ -2003,7 +2068,7 @@ const Dashboard = () => {
       <div className="mt-12">
         <Footer />
       </div>
-    </div>
+    </div >
   )
 }
 

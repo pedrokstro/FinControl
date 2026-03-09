@@ -9,11 +9,11 @@ interface EmojiPickerTabProps {
   onUpgradeClick?: () => void;
 }
 
-const EmojiPickerTab = ({ 
-  onSelectEmoji, 
+const EmojiPickerTab = ({
+  onSelectEmoji,
   selectedEmoji,
   isPremium,
-  onUpgradeClick 
+  onUpgradeClick
 }: EmojiPickerTabProps) => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -54,7 +54,7 @@ const EmojiPickerTab = ({
       )}
 
       {/* Emoji Picker Container */}
-      <div className={`${!isPremium ? 'mt-12 opacity-50 pointer-events-none' : ''} overflow-y-auto`} style={{ maxHeight: 'calc(90vh - 200px)' }}>
+      <div className={`${!isPremium ? 'mt-12 opacity-50 pointer-events-none' : ''} h-full overflow-y-auto`}>
         <div className="p-4">
           {/* Selected Emoji Preview */}
           {selectedEmoji && (
@@ -169,7 +169,7 @@ const EmojiPickerTab = ({
                 <p className="text-gray-700 dark:text-neutral-300 mb-4">
                   Os <strong>Emojis para Ícones</strong> são um recurso exclusivo do plano Premium.
                 </p>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">

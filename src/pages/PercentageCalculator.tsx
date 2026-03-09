@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from 'react-hot-toast'
 import PageTransition from '@/components/common/PageTransition'
+import { motion } from 'framer-motion'
 
 const PercentageCalculator = () => {
   const { user } = useAuthStore()
@@ -67,7 +68,7 @@ const PercentageCalculator = () => {
       <div className="responsive-page">
         {/* Header */}
         <div className="responsive-header">
-          <div>
+          <div className="hidden sm:block">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
               <Percent className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
               Calculadora de Porcentagem
@@ -80,7 +81,7 @@ const PercentageCalculator = () => {
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Formulário */}
-          <div className="card">
+          <motion.div layoutId="calculator-shared-element" className="card">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
                 <Calculator className="w-5 h-5 text-primary-600 dark:text-primary-400" />
@@ -98,31 +99,28 @@ const PercentageCalculator = () => {
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setOperation('of')}
-                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    operation === 'of'
-                      ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  }`}
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${operation === 'of'
+                    ? 'bg-primary-600 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    }`}
                 >
                   X% de Y
                 </button>
                 <button
                   onClick={() => setOperation('increase')}
-                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    operation === 'increase'
-                      ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  }`}
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${operation === 'increase'
+                    ? 'bg-primary-600 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    }`}
                 >
                   Y + X%
                 </button>
                 <button
                   onClick={() => setOperation('decrease')}
-                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    operation === 'decrease'
-                      ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  }`}
+                  className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${operation === 'decrease'
+                    ? 'bg-primary-600 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                    }`}
                 >
                   Y - X%
                 </button>
@@ -201,7 +199,7 @@ const PercentageCalculator = () => {
                 Limpar
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Resultado */}
           <div className="card">
@@ -247,11 +245,10 @@ const PercentageCalculator = () => {
                       <span className="text-sm text-gray-600 dark:text-neutral-400">
                         {operation === 'increase' ? 'Acréscimo' : 'Desconto'}
                       </span>
-                      <span className={`font-semibold ${
-                        operation === 'increase' 
-                          ? 'text-success-600 dark:text-success-400' 
-                          : 'text-danger-600 dark:text-danger-400'
-                      }`}>
+                      <span className={`font-semibold ${operation === 'increase'
+                        ? 'text-success-600 dark:text-success-400'
+                        : 'text-danger-600 dark:text-danger-400'
+                        }`}>
                         {formatCurrency(Math.abs(result - parseFloat(value)))}
                       </span>
                     </div>

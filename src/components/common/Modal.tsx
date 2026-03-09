@@ -81,7 +81,7 @@ const Modal = ({
             onClick={handleBackdropClick}
           />
 
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -89,41 +89,46 @@ const Modal = ({
               transition={{ duration: 0.2 }}
               role="dialog"
               aria-modal="true"
-              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh]`}
+              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh] pointer-events-auto overflow-hidden`}
             >
               {(title || !hideCloseButton) && (
-                <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 dark:border-neutral-900 flex items-start justify-between gap-3">
-                  <div>
-                    {title && (
-                      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                        {title}
-                      </h2>
-                    )}
-                    {description && (
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                        {description}
-                      </p>
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
+                  {/* Drag Indicator para Mobile */}
+                  <div className="sm:hidden w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full mx-auto mb-4" />
+
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      {title && (
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                          {title}
+                        </h2>
+                      )}
+                      {description && (
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                          {description}
+                        </p>
+                      )}
+                    </div>
+                    {!hideCloseButton && (
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+                        aria-label="Fechar modal"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
                     )}
                   </div>
-                  {!hideCloseButton && (
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
-                      aria-label="Fechar modal"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  )}
                 </div>
               )}
 
-              <div className={`px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto flex-1 ${contentClassName}`}>
+              <div className={`px-6 py-6 overflow-y-auto flex-1 ${contentClassName} custom-scrollbar`}>
                 {children}
               </div>
 
               {footer && (
-                <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-100 dark:border-neutral-900 bg-gray-50/70 dark:bg-neutral-900/60">
+                <div className="px-6 py-4 sm:py-5 border-t border-gray-100 dark:border-neutral-800/50 bg-white dark:bg-neutral-950 sticky bottom-0 z-10 mt-auto">
                   {footer}
                 </div>
               )}

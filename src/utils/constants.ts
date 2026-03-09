@@ -133,7 +133,7 @@ export const SUCCESS_MESSAGES = {
  */
 export const APP_CONFIG = {
   NAME: 'FinControl',
-  VERSION: '1.0.0',
+  VERSION: '2.0.1',
   DESCRIPTION: 'Sistema de Controle Financeiro',
   AUTHOR: 'Seu Nome',
   LOCALE: 'pt-BR',

@@ -44,6 +44,15 @@ export interface Category {
   userId: string
 }
 
+export interface Budget {
+  id: string
+  categoryId: string
+  amount: number
+  userId: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface FinancialSummary {
   totalIncome: number
   totalExpense: number
@@ -82,6 +91,11 @@ export interface CategoryFormData {
   type: 'income' | 'expense'
   color: string
   icon: string
+}
+
+export interface BudgetFormData {
+  categoryId: string
+  amount: string
 }
 
 export interface FilterOptions {

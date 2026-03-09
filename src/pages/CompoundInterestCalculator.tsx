@@ -73,10 +73,10 @@ const CompoundInterestCalculator = () => {
       const monthInterest = balance * monthlyRate
       balance = balance + monthInterest + monthlyDeposit
       totalInvested += monthlyDeposit
-      
+
       const currentMonth = (startMonth + monthIndex) % 12
       const currentYear = startYear + Math.floor((startMonth + monthIndex) / 12)
-      
+
       monthlyData.push({
         month: `${monthNames[currentMonth]}/${currentYear}`,
         investment: totalInvested,
@@ -103,7 +103,7 @@ const CompoundInterestCalculator = () => {
       monthlyBreakdown: monthlyData
     })
   }
-  
+
   const clear = () => {
     setInitialValue('10000')
     setMonthlyContribution('400')
@@ -144,7 +144,7 @@ const CompoundInterestCalculator = () => {
       <div className="responsive-page">
         {/* Header */}
         <div className="responsive-header">
-          <div>
+          <div className="hidden sm:block">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
               <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
               Calculadora de Juros Compostos
@@ -373,24 +373,24 @@ const CompoundInterestCalculator = () => {
                 </h3>
                 <div className="overflow-hidden min-w-0">
                   <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                  </PieChart>
-                </ResponsiveContainer>
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
                 <div className="mt-4 space-y-2">
                   {pieData.map((item, index) => (
@@ -414,16 +414,16 @@ const CompoundInterestCalculator = () => {
                 </h3>
                 <div className="overflow-hidden min-w-0">
                   <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="year" stroke="#6b7280" />
-                    <YAxis stroke="#6b7280" tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
-                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                    <Legend />
-                    <Bar dataKey="Investimento Total" stackId="a" fill="#3b82f6" />
-                    <Bar dataKey="Total de Juros" stackId="a" fill="#9ca3af" />
-                  </BarChart>
-                </ResponsiveContainer>
+                    <BarChart data={barData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis dataKey="year" stroke="#6b7280" />
+                      <YAxis stroke="#6b7280" tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                      <Legend />
+                      <Bar dataKey="Investimento Total" stackId="a" fill="#3b82f6" />
+                      <Bar dataKey="Total de Juros" stackId="a" fill="#9ca3af" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </div>
@@ -437,21 +437,19 @@ const CompoundInterestCalculator = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowAnnual(true)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${
-                      showAnnual
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${showAnnual
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
+                      }`}
                   >
                     Detalhamento Anual
                   </button>
                   <button
                     onClick={() => setShowAnnual(false)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${
-                      !showAnnual
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-none ${!showAnnual
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
+                      }`}
                   >
                     Detalhamento Mensal
                   </button>

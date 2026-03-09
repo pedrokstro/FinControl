@@ -4,9 +4,9 @@ import { useAuthStore } from '@/store/authStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { 
-  Plus, 
-  Pencil, 
+import {
+  Plus,
+  Pencil,
   Trash2,
   X,
   TrendingUp,
@@ -17,13 +17,16 @@ import {
   Grid3x3,
   List,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import IconPicker from '@/components/common/IconPicker'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import ColorPicker from '@/components/common/ColorPicker'
 import { type IconName } from '@/utils/iconMapping'
 import PageTransition from '@/components/common/PageTransition'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
+import BudgetModal from '@/components/modals/BudgetModal'
+import BudgetProgressBar from '@/components/common/BudgetProgressBar'
+import { Target } from 'lucide-react'
 
 const categorySchema = z.object({
   name: z.string().min(3, 'Nome deve ter no minimo 3 caracteres'),
@@ -35,8 +38,9 @@ const categorySchema = z.object({
 type CategoryFormData = z.infer<typeof categorySchema>
 
 const Categories = () => {
-  const { categories, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
+  const { categories, budgets, currentMonthTransactions, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
@@ -49,7 +53,11 @@ const Categories = () => {
     color: string
   } | null>(null)
   const [isDeletingCategory, setIsDeletingCategory] = useState(false)
-  
+
+  // Budget states
+  const [showBudgetModal, setShowBudgetModal] = useState(false)
+  const [categoryForBudget, setCategoryForBudget] = useState<any>(null)
+
   // View mode state
   const [viewMode, setViewMode] = useState<'grid' | 'list' | null>(null)
   const [isViewModeLoading, setIsViewModeLoading] = useState(true)
@@ -107,6 +115,18 @@ const Categories = () => {
     loadCategories()
   }, [categories.length, fetchCategories])
 
+  // Checar se deve abrir o modal via parametro na URL
+  useEffect(() => {
+    if (searchParams.get('add') === 'true') {
+      handleOpenModal()
+
+      // Limpar parametro da URL sem causar re-render na pagina inteira
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('add')
+      setSearchParams(newParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
   // Salvar preferência de visualização no backend
   const handleViewModeChange = async (mode: 'grid' | 'list') => {
     setViewMode(mode)
@@ -149,6 +169,17 @@ const Categories = () => {
   const filteredCategories = categories.filter(
     (cat) => filterType === 'all' || cat.type === filterType
   )
+
+  const getCategorySpent = (categoryId: string) => {
+    return currentMonthTransactions
+      .filter(t => t.categoryId === categoryId && t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0)
+  }
+
+  const handleOpenBudgetModal = (category: any) => {
+    setCategoryForBudget(category)
+    setShowBudgetModal(true)
+  }
 
   const handleOpenModal = (category?: any) => {
     if (category) {
@@ -224,171 +255,305 @@ const Categories = () => {
   return (
     <PageTransition>
       <div className="responsive-page">
-      {/* Header */}
-      <div className="responsive-header gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
-          <p className="text-gray-600 dark:text-neutral-400 mt-1">
-            Organize suas transações em categorias personalizadas
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          {/* Toggle View Mode */}
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
-            <button
-              onClick={() => handleViewModeChange('grid')}
-              disabled={isViewModeLoading}
-              className={`p-2 rounded-md transition-all ${
-                viewMode === 'grid'
+        {/* Header */}
+        <div className="responsive-header gap-4">
+          <div className="hidden sm:block">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
+            <p className="text-gray-600 dark:text-neutral-400 mt-1">
+              Organize suas transações em categorias personalizadas
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            {/* Toggle View Mode */}
+            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
+              <button
+                onClick={() => handleViewModeChange('grid')}
+                disabled={isViewModeLoading}
+                className={`p-2 rounded-md transition-all ${viewMode === 'grid'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-              } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-              title="Visualização em Grade"
-            >
-              <Grid3x3 className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => handleViewModeChange('list')}
-              disabled={isViewModeLoading}
-              className={`p-2 rounded-md transition-all ${
-                viewMode === 'list'
+                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                title="Visualização em Grade"
+              >
+                <Grid3x3 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => handleViewModeChange('list')}
+                disabled={isViewModeLoading}
+                className={`p-2 rounded-md transition-all ${viewMode === 'list'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-              } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-              title="Visualização em Lista"
+                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                title="Visualização em Lista"
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => handleOpenModal()}
+              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-full shadow-sm"
             >
-              <List className="w-5 h-5" />
+              <Plus className="w-5 h-5" />
+              Nova Categoria
             </button>
           </div>
-          
-          <button
-            onClick={() => handleOpenModal()}
-            className="hidden sm:flex btn-primary items-center justify-center gap-2 w-full sm:w-auto"
-          >
-            <Plus className="w-5 h-5" />
-            Nova Categoria
-          </button>
         </div>
-      </div>
 
-      {/* Premium Banner */}
-      {!isPremium && (
-        <div className="mb-6">
-          <button
-            onClick={() => navigate('/plans')}
-            className="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 rounded-xl p-6 transition-all duration-300 shadow-lg hover:shadow-2xl group relative overflow-hidden"
-          >
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-            
-            <div className="relative flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <Crown className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-bold text-white">Torne-se Premium</h3>
-                    <Sparkles className="w-5 h-5 text-yellow-200 animate-pulse" />
+        {/* Premium Banner */}
+        {!isPremium && (
+          <div className="mb-6">
+            <button
+              onClick={() => navigate('/plans')}
+              className="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 rounded-xl p-6 transition-all duration-300 shadow-lg hover:shadow-2xl group relative overflow-hidden"
+            >
+              {/* Animated Background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <Crown className="w-8 h-8 text-white" />
                   </div>
-                  <p className="text-white text-opacity-95 text-sm">
-                    Desbloqueie <strong>emojis exclusivos</strong>, personalização avançada e muito mais!
-                  </p>
+                  <div className="text-left">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-xl font-bold text-white">Torne-se Premium</h3>
+                      <Sparkles className="w-5 h-5 text-yellow-200 animate-pulse" />
+                    </div>
+                    <p className="text-white text-opacity-95 text-sm">
+                      Desbloqueie <strong>emojis exclusivos</strong>, personalização avançada e muito mais!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="hidden md:flex items-center gap-3 bg-white bg-opacity-20 backdrop-blur-sm px-6 py-3 rounded-lg">
+                  <div className="text-right">
+                    <p className="text-xs text-white text-opacity-80">A partir de</p>
+                    <p className="text-2xl font-bold text-white">R$ 14,99<span className="text-sm font-normal">/mês</span></p>
+                  </div>
+                  <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-2 transition-transform" />
+                </div>
+
+                <div className="md:hidden">
+                  <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
-              
-              <div className="hidden md:flex items-center gap-3 bg-white bg-opacity-20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <div className="text-right">
-                  <p className="text-xs text-white text-opacity-80">A partir de</p>
-                  <p className="text-2xl font-bold text-white">R$ 14,99<span className="text-sm font-normal">/mês</span></p>
-                </div>
-                <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-2 transition-transform" />
-              </div>
-              
-              <div className="md:hidden">
-                <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-2 transition-transform" />
-              </div>
-            </div>
-          </button>
-        </div>
-      )}
+            </button>
+          </div>
+        )}
 
-      {/* Filtros */}
-      <div className="card">
-        <div className="mobile-scroll-buttons">
-          <button
-            onClick={() => setFilterType('all')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filterType === 'all'
-                ? 'bg-primary-600 dark:bg-primary-500 text-white'
+        {/* Filtros */}
+        <div className="card">
+          <div className="mobile-scroll-buttons">
+            <button
+              onClick={() => setFilterType('all')}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'all'
+                ? 'bg-primary-600 dark:bg-primary-500 text-white ring-2 ring-primary-600/20 dark:ring-primary-400/20'
                 : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-            }`}
-          >
-            Todas ({categories.length})
-          </button>
-          <button
-            onClick={() => setFilterType('income')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filterType === 'income'
-                ? 'bg-success-600 dark:bg-success-500 text-white'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-            }`}
-          >
-            Receitas ({categories.filter(c => c.type === 'income').length})
-          </button>
-          <button
-            onClick={() => setFilterType('expense')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filterType === 'expense'
-                ? 'bg-danger-600 dark:bg-danger-500 text-white'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-            }`}
-          >
-            Despesas ({categories.filter(c => c.type === 'expense').length})
-          </button>
-        </div>
-      </div>
-
-      {(isViewModeLoading || isCategoriesLoading) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={`skeleton-${index}`}
-              className="card animate-pulse border border-transparent dark:border-neutral-800"
+                }`}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-neutral-800" />
+              Todas ({categories.length})
+            </button>
+            <button
+              onClick={() => setFilterType('income')}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'income'
+                ? 'bg-success-600 dark:bg-success-500 text-white ring-2 ring-success-600/20 dark:ring-success-400/20'
+                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                }`}
+            >
+              Receitas ({categories.filter(c => c.type === 'income').length})
+            </button>
+            <button
+              onClick={() => setFilterType('expense')}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'expense'
+                ? 'bg-danger-600 dark:bg-danger-500 text-white ring-2 ring-danger-600/20 dark:ring-danger-400/20'
+                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                }`}
+            >
+              Despesas ({categories.filter(c => c.type === 'expense').length})
+            </button>
+          </div>
+        </div>
+
+        {(isViewModeLoading || isCategoriesLoading) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={`skeleton-${index}`}
+                className="card animate-pulse border border-transparent dark:border-neutral-800"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-neutral-800" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
+                  </div>
+                </div>
+                <div className="h-5 bg-gray-200 dark:bg-neutral-800 rounded w-3/4 mb-3" />
+                <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-1/3" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {viewMode === 'grid' && !isViewModeLoading && !isCategoriesLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-grid-cols-4 gap-6">
+            {filteredCategories.map((category) => (
+              <div
+                key={category.id}
+                className="card hover:shadow-md dark:hover:shadow-dark transition-all group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${category.color}20` }}
+                  >
+                    <CategoryIcon
+                      icon={category.icon as IconName}
+                      color={category.color}
+                      size="lg"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleOpenModal(category)}
+                      className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                      title="Editar"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category)}
+                      className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+                      title="Excluir"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {category.name}
+                </h3>
+
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
-                  <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800" />
+                  {category.type === 'income' ? (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      Receita
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
+                      <TrendingDown className="w-3.5 h-3.5" />
+                      Despesa
+                    </span>
+                  )}
                 </div>
-              </div>
-              <div className="h-5 bg-gray-200 dark:bg-neutral-800 rounded w-3/4 mb-3" />
-              <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-1/3" />
-            </div>
-          ))}
-        </div>
-      )}
 
-      {viewMode === 'grid' && !isViewModeLoading && !isCategoriesLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-grid-cols-4 gap-6">
-          {filteredCategories.map((category) => (
-            <div
-              key={category.id}
-              className="card hover:shadow-md dark:hover:shadow-dark transition-all group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: `${category.color}20` }}
-                >
-                  <CategoryIcon
-                    icon={category.icon as IconName}
-                    color={category.color}
-                    size="lg"
-                  />
+                {/* Integração do Budget ProgressBar apenas para Despesas */}
+                {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                    <BudgetProgressBar
+                      limit={budgets.find(b => b.categoryId === category.id)!.amount}
+                      spent={getCategorySpent(category.id)}
+                    />
+                  </div>
+                )}
+
+                {/* Botão de Orçamento - Fica visível sempre que for Despesa, ajudando na gamificação */}
+                {category.type === 'expense' && !budgets.find(b => b.categoryId === category.id) && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                    <button
+                      onClick={() => handleOpenBudgetModal(category)}
+                      className="flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 w-full justify-center py-1.5 transition-colors"
+                    >
+                      <Target className="w-4 h-4" />
+                      Definir Orçamento
+                    </button>
+                  </div>
+                )}
+                {/* Modificar para abrir edição de orçamento se ele existir */}
+                {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
+                  <button
+                    onClick={() => handleOpenBudgetModal(category)}
+                    className="mt-2 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-neutral-500 dark:hover:text-neutral-300 transition-colors w-full text-center"
+                  >
+                    Ajustar Limite
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && !isViewModeLoading && !isCategoriesLoading && (
+          <div className="card divide-y divide-gray-200 dark:divide-neutral-800">
+            {filteredCategories.map((category) => (
+              <div
+                key={category.id}
+                className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-neutral-900/50 transition-colors group"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${category.color}20` }}
+                  >
+                    <CategoryIcon
+                      icon={category.icon as IconName}
+                      color={category.color}
+                      size="lg"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                      {category.name}
+                    </h3>
+                    <div className="flex items-center gap-3 mt-1">
+                      {category.type === 'income' ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
+                          <TrendingUp className="w-3 h-3" />
+                          Receita
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
+                          <TrendingDown className="w-3 h-3" />
+                          Despesa
+                        </span>
+                      )}
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span className="text-xs text-gray-500 dark:text-neutral-400">
+                          {category.color.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
+                      <div className="mt-3">
+                        <BudgetProgressBar
+                          limit={budgets.find(b => b.categoryId === category.id)!.amount}
+                          spent={getCategorySpent(category.id)}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+                  {category.type === 'expense' && (
+                    <button
+                      onClick={() => handleOpenBudgetModal(category)}
+                      className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                      title={budgets.find(b => b.categoryId === category.id) ? "Ajustar Orçamento" : "Definir Orçamento"}
+                    >
+                      <Target className="w-4 h-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => handleOpenModal(category)}
                     className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
@@ -405,306 +570,232 @@ const Categories = () => {
                   </button>
                 </div>
               </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {category.name}
-              </h3>
-
-              <div className="flex items-center gap-2">
-                {category.type === 'income' ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    Receita
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
-                    <TrendingDown className="w-3.5 h-3.5" />
-                    Despesa
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* List View */}
-      {viewMode === 'list' && !isViewModeLoading && !isCategoriesLoading && (
-        <div className="card divide-y divide-gray-200 dark:divide-neutral-800">
-          {filteredCategories.map((category) => (
-            <div
-              key={category.id}
-              className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-neutral-900/50 transition-colors group"
-            >
-              <div className="flex items-center gap-4 flex-1">
-                <div
-                  className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: `${category.color}20` }}
-                >
-                  <CategoryIcon
-                    icon={category.icon as IconName}
-                    color={category.color}
-                    size="lg"
-                  />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-                    {category.name}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    {category.type === 'income' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
-                        <TrendingUp className="w-3 h-3" />
-                        Receita
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
-                        <TrendingDown className="w-3 h-3" />
-                        Despesa
-                      </span>
-                    )}
-                    <div className="flex items-center gap-1.5">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <span className="text-xs text-gray-500 dark:text-neutral-400">
-                        {category.color.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleOpenModal(category)}
-                  className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-                  title="Editar"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(category)}
-                  className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
-                  title="Excluir"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {filteredCategories.length === 0 && (
-        <div className="card text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center">
-            <Plus className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
+            ))}
           </div>
-          <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            Nenhuma categoria encontrada
-          </p>
-          <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6">
-            Crie sua primeira categoria para começar a organizar suas finanças
-          </p>
-          <button
-            onClick={() => handleOpenModal()}
-            className="btn-primary inline-flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Criar Categoria
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {editingId ? 'Editar Categoria' : 'Nova Categoria'}
-                </h2>
-                <button
-                  onClick={handleCloseModal}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-lg transition-colors text-gray-600 dark:text-neutral-400"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+        {filteredCategories.length === 0 && (
+          <div className="card text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center">
+              <Plus className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
             </div>
+            <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              Nenhuma categoria encontrada
+            </p>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 max-w-sm mx-auto">
+              Crie sua primeira categoria para começar a organizar suas finanças
+            </p>
+            <button
+              onClick={() => handleOpenModal()}
+              className="btn-primary inline-flex items-center gap-2 rounded-full shadow-sm px-6"
+            >
+              <Plus className="w-5 h-5" />
+              Criar Categoria
+            </button>
+          </div>
+        )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-              <div>
-                <label className="label">Nome da Categoria</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Alimentacao, Transporte, Salario..."
-                  {...register('name')}
-                  className={`input-field ${errors.name ? 'input-error' : ''}`}
-                />
-                {errors.name && (
-                  <p className="error-message">{errors.name.message}</p>
-                )}
-              </div>
+        {/* Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 z-50">
+            <div className="bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
+                {/* Drag Indicator para Mobile */}
+                <div className="sm:hidden w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full mx-auto mb-4" />
 
-              <div>
-                <label className="label">Tipo</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                    <input
-                      type="radio"
-                      value="income"
-                      {...register('type')}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
-                    </div>
-                  </label>
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                    <input
-                      type="radio"
-                      value="expense"
-                      {...register('type')}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
-                    </div>
-                  </label>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                    {editingId ? 'Editar Categoria' : 'Nova Categoria'}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
 
-              <div>
-                <label className="label">Ícone</label>
-                <IconPicker
-                  selectedIcon={selectedIcon}
-                  onSelectIcon={(icon) => setValue('icon', icon as string)}
-                  type={selectedType}
-                  isPremium={isPremium}
-                  onUpgradeClick={() => setShowUpgradeModal(true)}
-                />
-                {errors.icon && (
-                  <p className="error-message">{errors.icon.message}</p>
-                )}
-              </div>
+              <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+                <div>
+                  <label className="label">Nome da Categoria</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Alimentacao, Transporte, Salario..."
+                    {...register('name')}
+                    className={`input-field ${errors.name ? 'input-error' : ''}`}
+                  />
+                  {errors.name && (
+                    <p className="error-message">{errors.name.message}</p>
+                  )}
+                </div>
 
-              <div>
-                <label className="label">Cor</label>
-                <ColorPicker
-                  selectedColor={selectedColor}
-                  onSelectColor={(color) => setValue('color', color)}
-                  usedColors={usedColors}
-                  showCustomPicker={true}
-                />
-                {errors.color && (
-                  <p className="error-message mt-2">{errors.color.message}</p>
-                )}
-              </div>
-
-              {/* Preview */}
-              <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
-                <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
-                  Visualizacao
-                </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${selectedColor}20` }}
-                  >
-                    <CategoryIcon
-                      icon={selectedIcon as IconName}
-                      color={selectedColor}
-                      size="lg"
-                    />
+                <div>
+                  <label className="label">Tipo</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                      <input
+                        type="radio"
+                        value="income"
+                        {...register('type')}
+                        className="sr-only"
+                      />
+                      <div className="text-center">
+                        <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
+                      </div>
+                    </label>
+                    <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                      <input
+                        type="radio"
+                        value="expense"
+                        {...register('type')}
+                        className="sr-only"
+                      />
+                      <div className="text-center">
+                        <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
+                      </div>
+                    </label>
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {watch('name') || 'Nome da Categoria'}
-                    </p>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                      selectedType === 'income'
+                </div>
+
+                <div>
+                  <label className="label">Ícone</label>
+                  <IconPicker
+                    selectedIcon={selectedIcon}
+                    onSelectIcon={(icon) => setValue('icon', icon as string)}
+                    type={selectedType}
+                    isPremium={isPremium}
+                    onUpgradeClick={() => setShowUpgradeModal(true)}
+                  />
+                  {errors.icon && (
+                    <p className="error-message">{errors.icon.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label">Cor</label>
+                  <ColorPicker
+                    selectedColor={selectedColor}
+                    onSelectColor={(color) => setValue('color', color)}
+                    usedColors={usedColors}
+                    showCustomPicker={true}
+                  />
+                  {errors.color && (
+                    <p className="error-message mt-2">{errors.color.message}</p>
+                  )}
+                </div>
+
+                {/* Preview */}
+                <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
+                  <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
+                    Visualizacao
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-12 h-12 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${selectedColor}20` }}
+                    >
+                      <CategoryIcon
+                        icon={selectedIcon as IconName}
+                        color={selectedColor}
+                        size="lg"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {watch('name') || 'Nome da Categoria'}
+                      </p>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${selectedType === 'income'
                         ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
                         : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                    }`}>
-                      {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {selectedType === 'income' ? 'Receita' : 'Despesa'}
-                    </span>
+                        }`}>
+                        {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                        {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="flex-1 btn-secondary"
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="flex-1 btn-primary">
-                  {editingId ? 'Salvar Alteracoes' : 'Criar Categoria'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[100]">
-          <div className="bg-white dark:bg-neutral-950 rounded-xl shadow-2xl max-w-lg w-full border border-gray-200 dark:border-neutral-800">
-            <div className="p-6 border-b border-gray-200 dark:border-neutral-800 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-xl">
-              <h3 className="text-2xl font-bold text-white">
-                Upgrade para Premium
-              </h3>
-              <p className="text-white text-opacity-90 mt-1">
-                Desbloqueie recursos exclusivos
-              </p>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-700 dark:text-neutral-300 mb-6">
-                O plano Premium oferece acesso a emojis personalizados, relatórios avançados, e muito mais!
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowUpgradeModal(false)}
-                  className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all"
-                >
-                  Fechar
-                </button>
-                <button
-                  onClick={() => {
-                    setShowUpgradeModal(false)
-                    navigate('/plans')
-                  }}
-                  className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
-                >
-                  Ver Planos
-                </button>
-              </div>
+                <div className="flex gap-3 pt-6 pb-2 sm:pb-0 mt-auto sticky bottom-0 bg-white dark:bg-neutral-950 border-t border-gray-100 dark:border-neutral-800/50">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="flex-1 btn-secondary rounded-full"
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className="flex-1 btn-primary rounded-full shadow-md">
+                    {editingId ? 'Salvar' : 'Criar'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      )}
-      {/* Delete Category Modal */}
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        onClose={handleCloseDeleteModal}
-        onConfirm={confirmDeleteCategory}
-        title="Excluir Categoria"
-        description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
-        itemName={categoryToDelete?.name}
-        isLoading={isDeletingCategory}
-      />
-    </div>
+        )}
+
+        {/* Upgrade Modal */}
+        {showUpgradeModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[100]">
+            <div className="bg-white dark:bg-neutral-950 rounded-xl shadow-2xl max-w-lg w-full border border-gray-200 dark:border-neutral-800">
+              <div className="p-6 border-b border-gray-200 dark:border-neutral-800 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-xl">
+                <h3 className="text-2xl font-bold text-white">
+                  Upgrade para Premium
+                </h3>
+                <p className="text-white text-opacity-90 mt-1">
+                  Desbloqueie recursos exclusivos
+                </p>
+              </div>
+              <div className="p-6">
+                <p className="text-gray-700 dark:text-neutral-300 mb-6">
+                  O plano Premium oferece acesso a emojis personalizados, relatórios avançados, e muito mais!
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all"
+                  >
+                    Fechar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowUpgradeModal(false)
+                      navigate('/plans')
+                    }}
+                    className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
+                  >
+                    Ver Planos
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Delete Category Modal */}
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          onClose={handleCloseDeleteModal}
+          onConfirm={confirmDeleteCategory}
+          title="Excluir Categoria"
+          description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+          itemName={categoryToDelete?.name}
+          isLoading={isDeletingCategory}
+        />
+
+        {/* Modal de Orçamento (Budget) */}
+        <BudgetModal
+          isOpen={showBudgetModal}
+          onClose={() => setShowBudgetModal(false)}
+          category={categoryForBudget}
+          existingBudget={
+            categoryForBudget
+              ? budgets.find(b => b.categoryId === categoryForBudget.id)
+              : undefined
+          }
+        />
+      </div>
     </PageTransition>
   )
 }
