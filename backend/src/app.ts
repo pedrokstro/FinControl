@@ -47,56 +47,9 @@ if (config.nodeEnv === 'production') {
   logger.info('Rate limiting habilitado');
 }
 
-// Global Body Parsing with Date reviver
-app.use(express.json({
-  limit: '10mb',
-  reviver: (key, value) => {
-    // Detectar strings ISO de data e converter para YYYY-MM-DD
-    if (typeof value === 'string') {
-      const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
-      if (isoDateRegex.test(value)) {
-        return value.split('T')[0];
-      }
-    }
-    return value;
-  }
-}));
+// Global Body Parsing
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Middleware para converter Date objects de volta para strings
-app.use((req, _res, next) => {
-  const convertDatesToStrings = (obj: any): any => {
-    if (obj === null || obj === undefined) return obj;
-
-    if (obj instanceof Date) {
-      // Converter Date para string YYYY-MM-DD
-      const year = obj.getFullYear();
-      const month = String(obj.getMonth() + 1).padStart(2, '0');
-      const day = String(obj.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    if (Array.isArray(obj)) {
-      return obj.map(convertDatesToStrings);
-    }
-
-    if (typeof obj === 'object') {
-      const converted: any = {};
-      for (const key in obj) {
-        converted[key] = convertDatesToStrings(obj[key]);
-      }
-      return converted;
-    }
-
-    return obj;
-  };
-
-  if (req.body) {
-    req.body = convertDatesToStrings(req.body);
-  }
-
-  next();
-});
 
 // Compression
 app.use(compression());

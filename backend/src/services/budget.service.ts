@@ -12,16 +12,17 @@ export class BudgetService {
         });
 
         if (budget) {
-            // Atualiza o existente
+            console.log(`[BUDGET-SERVICE] Updating existing budget ${budget.id} to amount ${data.amount}`);
             budget.amount = data.amount;
         } else {
-            // Cria um novo
+            console.log(`[BUDGET-SERVICE] Creating new budget for category ${data.categoryId} with amount ${data.amount}`);
             budget = this.budgetRepository.create({
                 ...data,
                 userId,
             });
         }
 
+        console.log(`[BUDGET-SERVICE] Final entity to save:`, JSON.stringify(budget));
         await this.budgetRepository.save(budget);
         return budget;
     }

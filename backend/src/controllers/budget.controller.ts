@@ -21,14 +21,34 @@ export const budgetController = {
             const userId = req.user!.userId;
             const { categoryId, amount } = req.body;
 
-            console.log(`[BUDGET] Salvando limite: User=${userId}, Category=${categoryId}, Amount=${amount}`);
+            console.log(`[BUDGET] Request received: User=${userId}, Category=${categoryId}, Amount=${amount} (${typeof amount})`);
 
-            if (!categoryId || amount === undefined) {
-                return res.status(400).json({ error: 'Dados insuficientes' });
+            if (!categoryId || amount === undefined || amount === null) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Dados insuficientes: categoryId e amount são obrigatórios'
+                });
             }
 
             // Converte e valida o 'amount'
-            const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+            let numericAmount: number;
+            if (typeof amount === 'string') {
+                // Remove R$, pontos de milhar e troca vírgula por ponto (se houver)
+                const cleanAmount = amount.replace(/[R$\s.]/g, '').replace(',', '.');
+                numericAmount = parseFloat(cleanAmount);
+            } else {
+                numericAmount = Number(amount);
+            }
+
+            if (isNaN(numericAmount)) {
+                console.error(`[BUDGET] Valor inválido recebido: ${amount}`);
+                return res.status(400).json({
+                    success: false,
+                    message: 'O valor do limite deve ser um número válido'
+                });
+            }
+
+            console.log(`[BUDGET] Saving numeric limit: ${numericAmount}`);
 
             const budget = await budgetService.save(userId, {
                 categoryId,
@@ -37,10 +57,11 @@ export const budgetController = {
 
             return sendCreated(res, budget, 'Orçamento salvo com sucesso');
         } catch (error: any) {
-            console.error('[BUDGET] Erro ao salvar:', error);
+            console.error('[BUDGET] Erro fatal no controller:', error);
             return res.status(500).json({
-                error: 'Erro interno ao salvar orçamento',
-                message: error.message
+                success: false,
+                message: 'Erro interno ao salvar orçamento',
+                error: error.message
             });
         }
     },
