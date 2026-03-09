@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { X } from 'lucide-react'
 
 type ModalSize = 'sm' | 'md' | 'lg'
@@ -37,6 +37,7 @@ const Modal = ({
   contentClassName = '',
 }: ModalProps) => {
   const [mounted, setMounted] = useState(false)
+  const dragControls = useDragControls()
 
   useEffect(() => {
     setMounted(true)
@@ -89,12 +90,27 @@ const Modal = ({
               transition={{ duration: 0.2 }}
               role="dialog"
               aria-modal="true"
+              drag="y"
+              dragControls={dragControls}
+              dragListener={false}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.4 }}
+              onDragEnd={(_, { offset, velocity }) => {
+                if (offset.y > 100 || velocity.y > 400) {
+                  onClose()
+                }
+              }}
               className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh] pointer-events-auto overflow-hidden`}
             >
               {(title || !hideCloseButton) && (
                 <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
                   {/* Drag Indicator para Mobile */}
-                  <div className="sm:hidden w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full mx-auto mb-4" />
+                  <div
+                    className="sm:hidden py-4 -mt-4 mb-2 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
+                    onPointerDown={(e) => dragControls.start(e)}
+                  >
+                    <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-700 rounded-full" />
+                  </div>
 
                   <div className="flex items-center justify-between gap-3">
                     <div>
