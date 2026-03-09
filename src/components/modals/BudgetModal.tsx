@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useFinancialStore } from '@/store/financialStore'
 import { Category, Budget } from '@/types'
+import toast from 'react-hot-toast'
 
 const budgetSchema = z.object({
     amount: z.string().min(1, 'Valor é obrigatório').refine(
@@ -68,7 +69,17 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
         if (!category?.id) return
 
         try {
-            const amount = Number(data.amount) / 100
+            // Extrair apenas números e converter para float
+            const cleanValue = data.amount.replace(/\D/g, '')
+            const amount = Number(cleanValue) / 100
+
+            console.log(`[BUDGET-UI] Submitting: Category=${category.id}, Amount=${amount}, Raw=${data.amount}`)
+
+            if (isNaN(amount) || amount <= 0) {
+                toast.error('O valor do limite deve ser maior que zero')
+                return
+            }
+
             await saveBudget({
                 categoryId: category.id,
                 amount
@@ -76,7 +87,6 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
             onClose()
         } catch (error) {
             console.error('Falha ao salvar orçamento:', error)
-            // O toast de erro já é disparado pela store
         }
     }
 
