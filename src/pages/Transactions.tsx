@@ -19,6 +19,8 @@ import {
   XCircle,
   Loader2,
   Info,
+  Wallet,
+  Activity,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -451,31 +453,54 @@ const Transactions = () => {
         {/* Banner de Limite de Transações */}
         <TransactionLimitBanner />
 
-        <div className="card space-y-3">
-          {/* Month Summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Total de Transacoes</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{monthSummary.count}</p>
+        {/* Month Summary */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="card p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                <Activity className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Transacoes no mes</p>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Receitas</p>
-              <p className="text-2xl font-bold text-success-600 dark:text-success-400">
-                {formatCurrency(monthSummary.income)}
-              </p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white truncate">
+              {monthSummary.count}
+            </p>
+          </div>
+
+          <div className="card p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Receitas</p>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Despesas</p>
-              <p className="text-2xl font-bold text-danger-600 dark:text-danger-400">
-                {formatCurrency(monthSummary.expense)}
-              </p>
+            <p className="text-2xl font-bold text-success-600 dark:text-success-400 truncate">
+              {formatCurrency(monthSummary.income)}
+            </p>
+          </div>
+
+          <div className="card p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
+                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Despesas</p>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Saldo</p>
-              <p className={`text-2xl font-bold ${monthSummary.balance >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
-                {formatCurrency(monthSummary.balance)}
-              </p>
+            <p className="text-2xl font-bold text-danger-600 dark:text-danger-400 truncate">
+              {formatCurrency(monthSummary.expense)}
+            </p>
+          </div>
+
+          <div className="card p-4 bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 border-0 shadow-lg shadow-primary-500/20">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                <Wallet className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-sm font-medium text-primary-100 dark:text-primary-200">Saldo do Mes</p>
             </div>
+            <p className="text-2xl font-bold text-white truncate">
+              {formatCurrency(monthSummary.balance)}
+            </p>
           </div>
         </div>
 
