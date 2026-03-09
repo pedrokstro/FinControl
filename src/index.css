@@ -444,6 +444,22 @@
     @apply focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400;
     @apply focus:ring-offset-2 dark:focus:ring-offset-black;
   }
+
+  /* Arrow animations */
+  @keyframes arrowUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes arrowDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+  .animate-arrow-up {
+    animation: arrowUp 1.2s ease-in-out infinite;
+  }
+  .animate-arrow-down {
+    animation: arrowDown 1.2s ease-in-out infinite;
+  }
 }
 
 /* ============================================

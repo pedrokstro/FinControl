@@ -584,12 +584,12 @@ const Transactions = () => {
                           >
                             {transaction.type === 'income' ? (
                               <>
-                                <TrendingUp className="w-4 h-4" />
+                                <TrendingUp className="w-4 h-4 animate-arrow-up" />
                                 Receita
                               </>
                             ) : (
                               <>
-                                <TrendingDown className="w-4 h-4" />
+                                <TrendingDown className="w-4 h-4 animate-arrow-down" />
                                 Despesa
                               </>
                             )}
@@ -700,12 +700,12 @@ const Transactions = () => {
                       >
                         {transaction.type === 'income' ? (
                           <>
-                            <TrendingUp className="w-4 h-4" />
+                            <TrendingUp className="w-4 h-4 animate-arrow-up" />
                             Receita
                           </>
                         ) : (
                           <>
-                            <TrendingDown className="w-4 h-4" />
+                            <TrendingDown className="w-4 h-4 animate-arrow-down" />
                             Despesa
                           </>
                         )}

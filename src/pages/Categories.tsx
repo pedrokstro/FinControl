@@ -439,12 +439,12 @@ const Categories = () => {
                 <div className="flex items-center gap-2">
                   {category.type === 'income' ? (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
-                      <TrendingUp className="w-3.5 h-3.5" />
+                      <TrendingUp className="w-3.5 h-3.5 animate-arrow-up" />
                       Receita
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
-                      <TrendingDown className="w-3.5 h-3.5" />
+                      <TrendingDown className="w-3.5 h-3.5 animate-arrow-down" />
                       Despesa
                     </span>
                   )}
@@ -513,12 +513,12 @@ const Categories = () => {
                     <div className="flex items-center gap-3 mt-1">
                       {category.type === 'income' ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
-                          <TrendingUp className="w-3 h-3" />
+                          <TrendingUp className="w-3 h-3 animate-arrow-up" />
                           Receita
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
-                          <TrendingDown className="w-3 h-3" />
+                          <TrendingDown className="w-3 h-3 animate-arrow-down" />
                           Despesa
                         </span>
                       )}
