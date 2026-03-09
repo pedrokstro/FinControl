@@ -975,7 +975,7 @@ const Settings = () => {
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                        v2.0.1
+                        v2.1.0
                       </div>
                       <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                     </div>
@@ -986,8 +986,54 @@ const Settings = () => {
                       <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                       <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.1</span>
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.0</span>
                           <span className="px-2 py-0.5 bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded text-[10px] font-bold uppercase tracking-wider animate-pulse">Novo</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          9 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              Experiência Mobile
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg border border-primary-100/50 dark:border-primary-900/20">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Swipe-to-Action:</strong> Deslize para a esquerda em transações para editar ou excluir rapidamente.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg border border-primary-100/50 dark:border-primary-900/20">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Pull-to-Close:</strong> Gesto físico de baixar para fechar modais, calendários e seletores (estilo iOS).</span>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                              Interface & Teclado
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg border border-emerald-100/50 dark:border-emerald-900/20">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span>Teclado numérico decimal nativo em todos os campos de valores financeiros para maior agilidade.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg border border-emerald-100/50 dark:border-emerald-900/20">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span>Extermínio do <code>&lt;select&gt;</code> nativo e redesign dos cartões de estatísticas com novo visual.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.1</span>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                           9 de Março de 2026
@@ -1007,10 +1053,6 @@ const Settings = () => {
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
                                 <span>Entrada animada escalonada (Fade-in e Slide-up) nos gráficos interativos do Dashboard.</span>
                               </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Expansões de fatias de pizza animadas suavemente em todas calculadoras e relatórios.</span>
-                              </li>
                             </ul>
                           </div>
                           <div className="space-y-4">
@@ -1021,15 +1063,11 @@ const Settings = () => {
                             <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Sincronização Cloud: Orçamentos Inteligentes persistentes no banco de dados.</span>
+                                <span>Sincronização Cloud: Orçamentos Inteligentes persistentes.</span>
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Padronização do loop temporal infinito nas setas Tendência (TradingUp e TradingDown).</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Refinamento massivo no layout renderizado da Dashboard (mobile e multiresolução).</span>
+                                <span>Padronização do loop temporal infinito nas setas Tendência.</span>
                               </li>
                             </ul>
                           </div>
