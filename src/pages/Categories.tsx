@@ -522,15 +522,6 @@ const Categories = () => {
                           Despesa
                         </span>
                       )}
-                      <div className="flex items-center gap-1.5">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        <span className="text-xs text-gray-500 dark:text-neutral-400">
-                          {category.color.toUpperCase()}
-                        </span>
-                      </div>
                     </div>
 
                     {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
