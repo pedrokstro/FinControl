@@ -444,7 +444,7 @@ const Transactions = () => {
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Transacoes no mes</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white truncate">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               {monthSummary.count}
             </p>
           </div>
@@ -456,7 +456,7 @@ const Transactions = () => {
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Receitas</p>
             </div>
-            <p className="text-2xl font-bold text-success-600 dark:text-success-400 truncate">
+            <p className="text-xl sm:text-2xl font-bold text-success-600 dark:text-success-400">
               {formatCurrency(monthSummary.income)}
             </p>
           </div>
@@ -468,7 +468,7 @@ const Transactions = () => {
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Despesas</p>
             </div>
-            <p className="text-2xl font-bold text-danger-600 dark:text-danger-400 truncate">
+            <p className="text-xl sm:text-2xl font-bold text-danger-600 dark:text-danger-400">
               {formatCurrency(monthSummary.expense)}
             </p>
           </div>
@@ -480,7 +480,7 @@ const Transactions = () => {
               </div>
               <p className="text-sm font-medium text-primary-100 dark:text-primary-200">Saldo do Mes</p>
             </div>
-            <p className="text-2xl font-bold text-white truncate">
+            <p className="text-xl sm:text-2xl font-bold text-white">
               {formatCurrency(monthSummary.balance)}
             </p>
           </div>

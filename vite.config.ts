@@ -17,7 +17,7 @@ export default defineConfig({
         description: 'Sistema completo de controle financeiro pessoal com gráficos, relatórios e análises avançadas',
         theme_color: '#0284c7',
         background_color: '#000000',
-        display: 'standalone',
+        display: 'fullscreen',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
