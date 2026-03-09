@@ -395,58 +395,40 @@ const Transactions = () => {
         </div>
 
         {/* Month Navigation */}
-        <div className="card space-y-3">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 w-full lg:w-auto">
-              <button
-                onClick={handlePreviousMonth}
-                className="w-full sm:w-auto flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl text-gray-900 dark:text-white shadow-sm hover:shadow transition-all active:scale-[0.99]"
-                aria-label="Ir para o mês anterior"
-              >
-                <div className="flex flex-col items-start text-left leading-tight">
-                  <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-neutral-500">
-                    Período
-                  </span>
-                  <span className="text-sm font-semibold">Anterior</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-300">
-                  <ChevronLeft className="w-4 h-4" />
-                </div>
-              </button>
+        <div className="card shadow-sm py-4">
+          <div className="flex items-center justify-between gap-4">
+            <button
+              onClick={handlePreviousMonth}
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors group"
+              title="Mês anterior"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+            </button>
 
-              <button
-                onClick={handleNextMonth}
-                className="w-full sm:w-auto flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl text-gray-900 dark:text-white shadow-sm hover:shadow transition-all active:scale-[0.99]"
-                aria-label="Ir para o próximo mês"
-              >
-                <div className="flex flex-col items-start text-left leading-tight">
-                  <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-neutral-500">
-                    Período
-                  </span>
-                  <span className="text-sm font-semibold">Próximo</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-300">
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 justify-center lg:justify-start">
-              <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-              <div className="text-center lg:text-left">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white capitalize">
                   {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
                 </h2>
-                {!isCurrentMonth && (
-                  <button
-                    onClick={handleCurrentMonth}
-                    className="text-sm text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1 rounded-full font-medium mt-1 transition-colors"
-                  >
-                    Voltar para mes atual
-                  </button>
-                )}
               </div>
+              {!isCurrentMonth && (
+                <button
+                  onClick={handleCurrentMonth}
+                  className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium mt-1 transition-colors"
+                >
+                  Voltar para mes atual
+                </button>
+              )}
             </div>
+
+            <button
+              onClick={handleNextMonth}
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors group"
+              title="Próximo mês"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+            </button>
           </div>
         </div>
 
