@@ -494,8 +494,8 @@ const Transactions = () => {
             <CustomSelect
               options={[
                 { value: 'all', label: 'Todos os tipos' },
-                { value: 'income', label: 'Receitas', icon: <TrendingUp className="w-4 h-4" /> },
-                { value: 'expense', label: 'Despesas', icon: <TrendingDown className="w-4 h-4" /> }
+                { value: 'income', label: 'Receitas', icon: <TrendingUp className="w-4 h-4 text-success-500" /> },
+                { value: 'expense', label: 'Despesas', icon: <TrendingDown className="w-4 h-4 text-danger-500" /> }
               ]}
               value={filterType}
               onChange={(value) => setFilterType(value as any)}
@@ -511,7 +511,7 @@ const Transactions = () => {
                   label: cat.name,
                   icon: (
                     <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-100 dark:bg-neutral-800" style={{ color: cat.color }}>
-                      <CategoryIcon icon={cat.icon} size="sm" />
+                      <CategoryIcon icon={cat.icon} color={cat.color} size="sm" />
                     </div>
                   )
                 }))

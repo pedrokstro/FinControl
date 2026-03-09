@@ -63,8 +63,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 className="w-full h-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/20 text-left"
             >
                 <div className="flex items-center gap-2 truncate">
-                    {icon && <span className="text-gray-400 dark:text-neutral-500">{icon}</span>}
-                    {selectedOption?.icon && <span className="text-gray-500 dark:text-neutral-400">{selectedOption.icon}</span>}
+                    {icon && <span className="flex-shrink-0">{icon}</span>}
+                    {selectedOption?.icon && <span className="flex-shrink-0">{selectedOption.icon}</span>}
                     <span className={`truncate font-medium ${selectedOption ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-neutral-400'}`}>
                         {selectedOption ? selectedOption.label : placeholder}
                     </span>
@@ -111,8 +111,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                                                 type="button"
                                                 onClick={() => handleSelect(opt.value)}
                                                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${value === opt.value
-                                                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
-                                                        : 'hover:bg-gray-50 dark:hover:bg-neutral-700/50 text-gray-700 dark:text-gray-200'
+                                                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                                                    : 'hover:bg-gray-50 dark:hover:bg-neutral-700/50 text-gray-700 dark:text-gray-200'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3 truncate">
