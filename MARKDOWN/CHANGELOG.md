@@ -17,9 +17,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [2.1.0] - 2026-03-09
+## [2.1.1] - 2026-03-09
 
 ### Adicionado
+- **PWA Fullscreen:** O aplicativo agora roda em modo tela cheia real (fullscreen), ocultando a barra de status do sistema para uma experiência de aplicativo nativo completa.
+- Suporte a `viewport-fit=cover` para aproveitar toda a área da tela em dispositivos com entalhe (notches).
+
+### Corrigido
+- Valores financeiros nos cartões de resumo que ficavam obstruídos ou com "..." no mobile agora ajustam o tamanho da fonte dinamicamente e não são mais truncados.
+
+---
+
+## [2.1.0] - 2026-03-09### Adicionado
 - **Swipe-to-Action Mobile:** Gesto de deslizar para a esquerda (framer-motion) adicionado nos cartões de transação para editar/excluir deslizando o dedo no celular.
 - **Pull-to-Close:** Gesto de deslizar de cima para baixo na "barrinha" para fechar Fisicamente todos os Modais, Calendários Customizados, Dropdowns e Icon Pickers fluídos tipo iOS.
 - Teclado numérico Mobile Nativo em todos os campos que exigem moeda, taxas ou quantidades financeiras (`inputMode="decimal"`), refinando o uso no iOS/Android.
