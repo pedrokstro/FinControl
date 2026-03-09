@@ -24,7 +24,7 @@ const MobileNavBar = () => {
   }
 
   return (
-    <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none">
+    <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none pb-[env(safe-area-inset-bottom)]">
       <div className="mx-3 mb-3">
         <div className="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl px-2 py-2.5 flex items-center justify-between pointer-events-auto">
           {navItems.map((item) => {

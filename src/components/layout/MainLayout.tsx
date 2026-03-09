@@ -14,7 +14,7 @@ const MainLayout = () => {
   }, [syncWithBackend])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-black transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-black transition-colors duration-300 safe-area-bottom">
       <div className="hidden lg:flex">
         <Sidebar />
       </div>

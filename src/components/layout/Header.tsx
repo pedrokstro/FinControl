@@ -33,7 +33,7 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-6 py-3 transition-colors duration-300 sticky top-0 z-30">
+    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-6 py-3 pt-[calc(theme(spacing.3)+env(safe-area-inset-top))] transition-colors duration-300 sticky top-0 z-30">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
         </div>
