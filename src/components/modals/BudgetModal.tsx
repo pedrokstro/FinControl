@@ -159,13 +159,13 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
                         </p>
                     </div>
 
-                    <div className="mt-8 flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <div className="mt-8 flex flex-wrap items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-neutral-800">
                         {existingBudget && (
                             <button
                                 type="button"
                                 onClick={handleDelete}
                                 disabled={isDeleting}
-                                className="px-4 py-2.5 text-sm font-semibold text-danger-600 hover:text-danger-700 dark:text-danger-400 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-xl transition-colors"
+                                className="mr-auto px-4 py-2.5 text-sm font-semibold text-danger-600 hover:text-danger-700 dark:text-danger-400 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-xl transition-colors"
                             >
                                 Remover
                             </button>
@@ -173,14 +173,14 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
+                            className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors text-center"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-6 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 rounded-xl shadow-lg shadow-primary-600/20 dark:shadow-none transition-all hover:-translate-y-0.5"
+                            className="flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 rounded-xl shadow-lg shadow-primary-600/20 dark:shadow-none transition-all hover:-translate-y-0.5 text-center whitespace-nowrap"
                         >
                             Salvar Limite
                         </button>

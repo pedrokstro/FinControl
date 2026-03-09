@@ -28,12 +28,12 @@ const BudgetProgressBar = ({ spent, limit }: BudgetProgressBarProps) => {
 
     return (
         <div className="mt-4 flex flex-col gap-2 w-full">
-            <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-gray-600 dark:text-neutral-400">
-                    Gasto: <strong className="text-gray-900 dark:text-white">{formatCurrency(spent)}</strong>
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] xs:text-xs sm:text-sm">
+                <span className="text-gray-600 dark:text-neutral-400 whitespace-nowrap">
+                    Gasto: <strong className="text-gray-900 dark:text-white ml-0.5">{formatCurrency(spent)}</strong>
                 </span>
-                <span className="text-gray-600 dark:text-neutral-400">
-                    Limite: <strong className="text-gray-900 dark:text-white">{formatCurrency(limit)}</strong>
+                <span className="text-gray-600 dark:text-neutral-400 whitespace-nowrap">
+                    Limite: <strong className="text-gray-900 dark:text-white ml-0.5">{formatCurrency(limit)}</strong>
                 </span>
             </div>
 

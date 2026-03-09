@@ -492,9 +492,9 @@ const Categories = () => {
             {filteredCategories.map((category) => (
               <div
                 key={category.id}
-                className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-neutral-900/50 transition-colors group"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-neutral-900/50 transition-colors group gap-4"
               >
-                <div className="flex items-center gap-4 flex-1">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div
                     className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
                     style={{ backgroundColor: `${category.color}20` }}
@@ -506,7 +506,7 @@ const Categories = () => {
                     />
                   </div>
 
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pr-2">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
                       {category.name}
                     </h3>
@@ -535,29 +535,29 @@ const Categories = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+                <div className="flex items-center justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   {category.type === 'expense' && (
                     <button
                       onClick={() => handleOpenBudgetModal(category)}
-                      className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                      className="p-2 sm:p-2.5 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors bg-primary-50/50 sm:bg-transparent"
                       title={budgets.find(b => b.categoryId === category.id) ? "Ajustar Orçamento" : "Definir Orçamento"}
                     >
-                      <Target className="w-4 h-4" />
+                      <Target className="w-5 h-5 sm:w-4 sm:h-4" />
                     </button>
                   )}
                   <button
                     onClick={() => handleOpenModal(category)}
-                    className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                    className="p-2 sm:p-2.5 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors bg-primary-50/50 sm:bg-transparent"
                     title="Editar"
                   >
-                    <Pencil className="w-4 h-4" />
+                    <Pencil className="w-5 h-5 sm:w-4 sm:h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(category)}
-                    className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+                    className="p-2 sm:p-2.5 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors bg-danger-50/50 sm:bg-transparent"
                     title="Excluir"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>
