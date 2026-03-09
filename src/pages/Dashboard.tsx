@@ -1766,6 +1766,7 @@ const Dashboard = () => {
                 type="number"
                 step="0.01"
                 inputMode="decimal"
+                pattern="[0-9]*"
                 className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
                 placeholder="0,00"
               />

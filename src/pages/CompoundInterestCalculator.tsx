@@ -179,6 +179,8 @@ const CompoundInterestCalculator = () => {
                     className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 10.000"
                     step="0.01"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                   />
                 </div>
               </div>
@@ -202,6 +204,8 @@ const CompoundInterestCalculator = () => {
                     className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 8"
                     step="0.01"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                   />
                   <span className="text-sm font-semibold text-success-600 dark:text-success-300 flex-shrink-0">%</span>
                 </div>
@@ -227,6 +231,8 @@ const CompoundInterestCalculator = () => {
                     className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 400"
                     step="0.01"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                   />
                   <span className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide flex-shrink-0">
                     {compoundFrequency === 'Mensal' ? 'Mês' : 'Ano'}
@@ -253,6 +259,8 @@ const CompoundInterestCalculator = () => {
                     className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                     placeholder="Ex: 10"
                     min="1"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                   />
                   <span className="text-[11px] font-semibold text-primary-600 dark:text-primary-300 uppercase tracking-widest flex-shrink-0 whitespace-nowrap px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
                     {compoundFrequency === 'Mensal' ? 'Meses' : 'Anos'}

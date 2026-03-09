@@ -146,6 +146,8 @@ const PercentageCalculator = () => {
                       placeholder="Ex: 15"
                       className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                       step="0.01"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                     />
                     <span className="text-sm font-semibold text-primary-600 dark:text-primary-300 flex-shrink-0">%</span>
                   </div>
@@ -173,6 +175,8 @@ const PercentageCalculator = () => {
                       placeholder="Ex: 1000,00"
                       className="flex-1 bg-transparent text-base sm:text-lg font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none min-w-0"
                       step="0.01"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                     />
                   </div>
                 </div>
