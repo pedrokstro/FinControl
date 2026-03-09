@@ -995,40 +995,40 @@ const Settings = () => {
                           <div className="space-y-4">
                             <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                               <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Orçamentos Inteligentes
+                              Orçamentos & Interface
                             </h4>
                             <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Definição de limites mensais personalizados por categoria.</span>
+                                <span>Definição de limites mensais personalizados por categoria com alertas visuais fluidos.</span>
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Barras de progresso visuais com heatmap (Verde ➔ Amarelo ➔ Vermelho).</span>
+                                <span>Entrada animada escalonada (Fade-in e Slide-up) nos gráficos interativos do Dashboard.</span>
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Widget interativo no Dashboard para controle instantâneo.</span>
+                                <span>Expansões de fatias de pizza animadas suavemente em todas calculadoras e relatórios.</span>
                               </li>
                             </ul>
                           </div>
                           <div className="space-y-4">
                             <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                               <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Core & Segurança
+                              Core & Estabilidade
                             </h4>
                             <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Sincronização Cloud: Orçamentos persistentes no banco de dados.</span>
+                                <span>Sincronização Cloud: Orçamentos Inteligentes persistentes no banco de dados.</span>
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Otimização no carregamento de transações pesadas.</span>
+                                <span>Padronização do loop temporal infinito nas setas Tendência (TradingUp e TradingDown).</span>
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Refinamento de UX na visualização mobile de categorias.</span>
+                                <span>Refinamento massivo no layout renderizado da Dashboard (mobile e multiresolução).</span>
                               </li>
                             </ul>
                           </div>

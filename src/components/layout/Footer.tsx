@@ -118,7 +118,7 @@ const Footer = () => {
             <div className="text-sm text-gray-600 dark:text-neutral-400 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
               <p className="font-medium">© {currentYear} FinControl — Todos os direitos reservados</p>
               <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
-                Versão 1.8.0
+                Versão 2.0.1
               </p>
             </div>
             <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/50 p-2 px-4 rounded-full order-1 md:order-2">

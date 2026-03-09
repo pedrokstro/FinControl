@@ -17,6 +17,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.0.1] - 2026-03-09
+
+### Adicionado
+- Animações escalonadas nos gráficos da Dashboard: AreaChart (receitas vs despesas), BarChart formatadas.
+- Animações circulares e lineares de PieCharts na Calculadora de Juros Compostos e em Relatórios Dinâmicos.
+- Animação padronizada de expansão e visibilidade (pulsação ascendente) para ícones TradingUp/TradingDown em modais e alertas de Upgrade e Limits.
+- Re-refatoração e memoização de gráficos Recharts no arquivo AdvancedCharts para exibição estática transacional animada suave de elementos svg.
+
+### Corrigido
+- Avisos de ununsed components no linter (`PageTransition` em Plans.tsx).
+- Responsividade refinada para uso de animações em ambiente Mobile (Dashboard e Modal Premium).
+
+---
+
 ## [1.0.0] - 2025-11-12
 
 ### 🎉 Lançamento Inicial
