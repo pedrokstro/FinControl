@@ -17,6 +17,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.1.0] - 2026-03-09
+
+### Adicionado
+- **Swipe-to-Action (Deslizar para agir):** Novo gesto nas listas de transações via celular. Deslize os cartões da direita para esquerda para exibir os botões rápidos de "Editar" e "Apagar".
+- **Pull-to-Close (Arrastar para fechar):** Implementação de comportamento físico nativo em todos os menus inferiores (Bottom Sheets), Modal, Calendário Picker (`CustomDatePicker`), Seletor de Ícones e Dropdowns (`CustomSelect`). Basta deslizar o topo do card para baixo para fechá-lo fluidamente.
+- Componente universal `CustomSelect` substituindo integralmente os antigos componentes `<select>` nativos do navegador, uniformizando o design em todo o App (Configurações, Painel Admin, Calculadoras).
+
+### Melhorado
+- **Teclado Financeiro Mobile:** Adoção rigorosa do pseudo-teclado `inputMode="decimal"` nos campos financeiros para garantir que usuários de iOS/Android abram diretamente o numpad na hora de digitar valores.
+- **Ergonomia do Menu:** Realocação da opção de "Sair/Logout" do topo da tela para a maleta de ações rápidas (FAB - Floating Action Button) focado na experiência Mobile com uso de apenas uma mão.
+- **Visual de Transações:** Redesign focado do widget "Resumo do Mês" nas Transações, separando Total, Receitas, Despesas e Saldo em cartões flutuantes distintos e aplicando gradientes majestosos em dados positivos/negativos acompanhado do "Mês Centralizado" (`< março 2026 >`).
+- Otimização do formulário de autenticação em telas pequenas para forçar o encaixe na *viewport* e anular o *"Scroll"* na página de Login.
+
+---
+
 ## [2.0.1] - 2026-03-09
 
 ### Adicionado
