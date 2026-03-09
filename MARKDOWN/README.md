@@ -1,33 +1,63 @@
-# ?? FinControl - Sistema de Controle Financeiro
+<div align="center">
 
-![React](https://img.shields.io/badge/React-18.2-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)
-![Vite](https://img.shields.io/badge/Vite-5.0-purple)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-cyan)
+# 💰 FinControl
+
+![Version](https://img.shields.io/badge/version-2.0.1-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)
+
+### CI/CD & Qualidade
+
+![CI/CD](https://github.com/pedrokstro/FinControl/actions/workflows/ci.yml/badge.svg)
+![Release](https://github.com/pedrokstro/FinControl/actions/workflows/release.yml/badge.svg)
+![Dependency Review](https://github.com/pedrokstro/FinControl/actions/workflows/dependency-review.yml/badge.svg)
+
+### Stack Tecnológica
+
+![React](https://img.shields.io/badge/React-18.2-61dafb?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.0-646cff?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169e1?style=for-the-badge&logo=postgresql&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-0.3-fe0902?style=for-the-badge&logo=typeorm&logoColor=white)
+
+### Qualidade & Ferramentas
+
+![ESLint](https://img.shields.io/badge/ESLint-8.x-4b32c3?style=for-the-badge&logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-3.x-f7b93e?style=for-the-badge&logo=prettier&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-1.x-6e9f18?style=for-the-badge&logo=vitest&logoColor=white)
+
+---
+
+</div>
 
 Sistema completo de controle financeiro pessoal desenvolvido com React, TypeScript e Tailwind CSS.
 
-## ?? Características
+## ✨ Características
 
-### ? Funcionalidades Principais
+### 🎯 Funcionalidades Principais
 
-- ?? **Autenticação Segura** - Sistema de login com JWT e persistência local
-- ?? **Dashboard Intuitivo** - Visão geral completa das finanças com gráficos interativos
-- ?? **Gestão de Transações** - CRUD completo com filtros avançados
-- ?? **Categorias Personalizadas** - Organize receitas e despesas
-- ?? **Relatórios Detalhados** - Análises e visualizações financeiras
-- ?? **Configurações** - Personalização e preferências do usuário
+- 🔐 **Autenticação Segura** - Sistema de login com JWT e persistência local
+- 📊 **Dashboard Intuitivo** - Visão geral completa das finanças com gráficos interativos
+- 💸 **Gestão de Transações** - CRUD completo com filtros avançados
+- 🏷️ **Categorias Personalizadas** - Organize receitas e despesas
+- 📈 **Relatórios Detalhados** - Análises e visualizações financeiras
+- ⚙️ **Configurações** - Personalização e preferências do usuário
 
-### ?? Interface
+### 🎨 Interface
 
-- ? Design moderno e responsivo
-- ? Componentes reutilizáveis
-- ? Animações e transições suaves
-- ? Feedback visual com toasts
-- ? Paleta de cores personalizável
-- ? Acessibilidade (WCAG 2.1 AA)
+- ✅ Design moderno e responsivo
+- ✅ Componentes reutilizáveis
+- ✅ Animações e transições suaves
+- ✅ Feedback visual com toasts
+- ✅ Paleta de cores personalizável
+- ✅ Acessibilidade (WCAG 2.1 AA)
 
-### ??? Tecnologias
+### 🛠️ Tecnologias
 
 #### Frontend
 - **React 18.2** - Biblioteca UI
@@ -50,7 +80,7 @@ Sistema completo de controle financeiro pessoal desenvolvido com React, TypeScri
 - **Vitest** - Testes unitários
 - **Testing Library** - Testes de componentes
 
-## ?? Instalação
+## 🚀 Instalação
 
 ### Pré-requisitos
 
@@ -85,7 +115,7 @@ npm run dev
 http://localhost:3000
 ```
 
-## ?? Credenciais de Demonstração
+## 🔑 Credenciais de Demonstração
 
 Para acessar o sistema, use:
 
@@ -107,29 +137,33 @@ Se você ver caracteres corrompidos (�) na página de Categorias:
 
 **Documentação completa:** Veja `FIX-ENCODING-NOW.md` para instruções detalhadas.
 
-## ?? Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
-controle-financeiro/
-??? public/              # Arquivos estáticos
-??? src/
-?   ??? components/      # Componentes reutilizáveis
-?   ?   ??? layout/      # Componentes de layout
-?   ??? pages/           # Páginas da aplicação
-?   ??? store/           # Gerenciamento de estado (Zustand)
-?   ??? types/           # Definições TypeScript
-?   ??? App.tsx          # Componente principal
-?   ??? main.tsx         # Entry point
-?   ??? index.css        # Estilos globais
-??? index.html           # HTML base
-??? package.json         # Dependências
-??? tsconfig.json        # Configuração TypeScript
-??? tailwind.config.js   # Configuração Tailwind
-??? vite.config.ts       # Configuração Vite
-??? README.md           # Documentação
+fincontrol/
+├── public/              # Arquivos estáticos
+├── src/
+│   ├── components/      # Componentes reutilizáveis
+│   │   └── layout/      # Componentes de layout
+│   ├── pages/           # Páginas da aplicação
+│   ├── store/           # Gerenciamento de estado (Zustand)
+│   ├── types/           # Definições TypeScript
+│   ├── App.tsx          # Componente principal
+│   ├── main.tsx         # Entry point
+│   └── index.css        # Estilos globais
+├── backend/             # API Node.js
+│   ├── src/             # Código fonte do backend
+│   └── database/        # Migrations e seeds
+├── scripts/             # Scripts utilitários
+├── index.html           # HTML base
+├── package.json         # Dependências
+├── tsconfig.json        # Configuração TypeScript
+├── tailwind.config.js   # Configuração Tailwind
+├── vite.config.ts       # Configuração Vite
+└── README.md            # Documentação
 ```
 
-## ?? Scripts Disponíveis
+## 📜 Scripts Disponíveis
 
 ```bash
 # Desenvolvimento
@@ -146,7 +180,7 @@ npm run test:ui         # Interface de testes
 npm run test:coverage   # Cobertura de testes
 ```
 
-## ?? Funcionalidades Detalhadas
+## 📋 Funcionalidades Detalhadas
 
 ### Dashboard
 - Resumo financeiro mensal
@@ -179,7 +213,7 @@ npm run test:coverage   # Cobertura de testes
 - Preferências de notificação
 - Personalização visual
 
-## ?? Segurança
+## 🔒 Segurança
 
 - Rotas protegidas com autenticação
 - Validação de formulários com Zod
@@ -187,15 +221,15 @@ npm run test:coverage   # Cobertura de testes
 - Persistência segura com localStorage
 - Sanitização de inputs
 
-## ?? Responsividade
+## 📱 Responsividade
 
 O sistema é totalmente responsivo e otimizado para:
-- ?? Mobile (320px+)
-- ?? Tablet (768px+)
-- ?? Desktop (1024px+)
-- ??? Large screens (1440px+)
+- 📱 Mobile (320px+)
+- 💻 Tablet (768px+)
+- 🖥️ Desktop (1024px+)
+- 🖥️ Large screens (1440px+)
 
-## ?? Customização
+## 🎨 Customização
 
 ### Cores
 Edite `tailwind.config.js` para personalizar o tema:
@@ -214,7 +248,7 @@ theme: {
 ### Componentes
 Todos os componentes são modulares e podem ser facilmente customizados.
 
-## ?? Testes
+## 🧪 Testes
 
 ```bash
 # Executar todos os testes
@@ -230,7 +264,7 @@ npm run test:ui
 npm run test:coverage
 ```
 
-## ?? Deploy
+## 🚀 Deploy
 
 ### Build de Produção
 ```bash
@@ -253,7 +287,7 @@ npm i -g netlify-cli
 netlify deploy --prod
 ```
 
-## ?? Contribuindo
+## 🤝 Contribuindo
 
 1. Fork o projeto
 2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
@@ -261,7 +295,7 @@ netlify deploy --prod
 4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
 
-## ?? Roadmap
+## 🗺️ Roadmap
 
 - [ ] Integração com API backend real
 - [ ] Autenticação com OAuth (Google, Facebook)
@@ -274,15 +308,15 @@ netlify deploy --prod
 - [ ] Lembretes e notificações push
 - [ ] Aplicativo mobile (React Native)
 
-## ?? Licença
+## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## ????? Autor
+## 👨‍💻 Autor
 
-Desenvolvido com ?? por [Seu Nome]
+Desenvolvido por PEDRO KSTRO
 
-## ?? Agradecimentos
+## 🙏 Agradecimentos
 
 - React Team
 - Tailwind CSS
@@ -292,4 +326,4 @@ Desenvolvido com ?? por [Seu Nome]
 
 ---
 
-? Se este projeto te ajudou, considere dar uma estrela!
+⭐ Se este projeto te ajudou, considere dar uma estrela!
