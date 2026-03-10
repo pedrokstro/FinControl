@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import {
     format,
     addMonths,
@@ -196,68 +197,74 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
             </button>
 
             {/* Popover */}
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-                        {/* Mobile Overlay */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm sm:hidden"
-                            onClick={() => setIsOpen(false)}
-                        />
+            {createPortal(
+                <AnimatePresence>
+                    {isOpen && (
+                        <>
+                            {/* Mobile Overlay */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm sm:hidden"
+                                onClick={() => setIsOpen(false)}
+                            />
 
-                        {/* Dropdown / Bottom Sheet */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                            drag="y"
-                            dragControls={dragControls}
-                            dragListener={false}
-                            dragConstraints={{ top: 0, bottom: 0 }}
-                            dragElastic={{ top: 0, bottom: 0.4 }}
-                            onDragEnd={(_, { offset, velocity }) => {
-                                if (offset.y > 100 || velocity.y > 400) {
-                                    setIsOpen(false);
-                                }
-                            }}
-                            className="fixed sm:absolute z-50 bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto sm:right-0 sm:top-full sm:mt-2 w-full sm:min-w-[340px] bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 flex flex-col p-4 sm:p-5 pb-8 sm:pb-5"
-                        >
-                            {/* Mobile handle */}
-                            <div
-                                className="w-full flex justify-center pb-4 -mt-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
-                                onPointerDown={(e) => dragControls.start(e)}
+                            {/* Dropdown / Bottom Sheet */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                drag="y"
+                                dragControls={dragControls}
+                                dragListener={false}
+                                dragConstraints={{ top: 0, bottom: 0 }}
+                                dragElastic={{ top: 0, bottom: 0.4 }}
+                                onDragEnd={(_, { offset, velocity }) => {
+                                    if (offset.y > 100 || velocity.y > 400) {
+                                        setIsOpen(false);
+                                    }
+                                }}
+                                className="fixed sm:absolute z-50 bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto sm:right-0 sm:top-full sm:mt-2 w-full sm:min-w-[340px] bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 flex flex-col p-4 sm:p-5 pb-8 sm:pb-5"
                             >
-                                <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full" />
-                            </div>
-
-                            {renderHeader()}
-                            {renderDays()}
-                            {renderCells()}
-
-                            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 flex justify-between items-center">
-                                <button
-                                    type="button"
-                                    onClick={() => handleDateClick(new Date())}
-                                    className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 px-3 py-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                                {/* Mobile handle */}
+                                <div
+                                    className="w-full flex justify-center pb-4 -mt-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                                    onPointerDown={(e) => {
+                                        e.stopPropagation();
+                                        dragControls.start(e);
+                                    }}
                                 >
-                                    Ir para Hoje
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsOpen(false)}
-                                    className="text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200 px-4 py-2 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors sm:hidden"
-                                >
-                                    Confirmar
-                                </button>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                                    <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full" />
+                                </div>
+
+                                {renderHeader()}
+                                {renderDays()}
+                                {renderCells()}
+
+                                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 flex justify-between items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDateClick(new Date())}
+                                        className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 px-3 py-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                                    >
+                                        Ir para Hoje
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200 px-4 py-2 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg transition-colors sm:hidden"
+                                    >
+                                        Confirmar
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 };
