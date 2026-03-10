@@ -128,25 +128,26 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                 onClick={() => setIsOpen(false)}
               />
 
-              {/* Modal Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                drag="y"
-                dragControls={dragControls}
-                dragListener={false}
-                dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={{ top: 0, bottom: 0.4 }}
-                onDragEnd={(_, { offset, velocity }) => {
-                  if (offset.y > 100 || velocity.y > 400) {
-                    setIsOpen(false)
-                  }
-                }}
-                className="fixed inset-x-0 bottom-0 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:max-w-[500px] h-[85vh] sm:h-auto sm:max-h-[85vh] bg-white dark:bg-neutral-950 border-t sm:border border-gray-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-2xl shadow-2xl dark:shadow-dark-lg z-[60] flex flex-col overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
+              {/* Modal Container */}
+              <div className="fixed inset-0 flex items-end sm:items-center justify-center pointer-events-none z-[60] sm:p-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  drag="y"
+                  dragControls={dragControls}
+                  dragListener={false}
+                  dragConstraints={{ top: 0, bottom: 0 }}
+                  dragElastic={{ top: 0, bottom: 0.4 }}
+                  onDragEnd={(_, { offset, velocity }) => {
+                    if (offset.y > 100 || velocity.y > 400) {
+                      setIsOpen(false)
+                    }
+                  }}
+                  className="w-full sm:max-w-[500px] h-[85vh] sm:h-auto sm:max-h-[85vh] bg-white dark:bg-neutral-950 border-t sm:border border-gray-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-2xl shadow-2xl dark:shadow-dark-lg flex flex-col overflow-hidden pointer-events-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
                 {/* Header with Tabs */}
                 <div className="p-4 pt-4 border-b border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 flex-shrink-0 z-20 rounded-t-3xl sm:rounded-t-2xl">
                   {/* Drag Indicator (Mobile Only) */}
@@ -330,11 +331,12 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                   </div>
                 )}
               </motion.div>
-            </>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+            </div>
+          </>
+        )}
+      </AnimatePresence>,
+      document.body
+    )}
     </div>
   )
 }
