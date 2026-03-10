@@ -97,17 +97,20 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
   const onSubmit = async (data: CardFormData) => {
     try {
       haptics.light()
-      // Se "Outro", usa o texto digitado como brand
       const finalBrand = data.brand === 'Outro'
         ? (data.customBrand?.trim() || 'Outro')
         : data.brand
 
+      const limitVal  = parseFloat(data.limit || '0')
+      const closingVal = parseInt(data.closingDay || '1', 10)
+      const dueVal     = parseInt(data.dueDay    || '10', 10)
+
       const cardData = {
-        name: data.name,
-        brand: finalBrand,
-        limit: data.limit ? parseFloat(data.limit) : 0,
-        closingDay: data.closingDay ? parseInt(data.closingDay, 10) : 1,
-        dueDay: data.dueDay ? parseInt(data.dueDay, 10) : 10,
+        name:       data.name,
+        brand:      finalBrand,
+        limit:      isNaN(limitVal)   ? 0  : limitVal,
+        closingDay: isNaN(closingVal) ? 1  : closingVal,
+        dueDay:     isNaN(dueVal)     ? 10 : dueVal,
       }
 
       if (card) {
