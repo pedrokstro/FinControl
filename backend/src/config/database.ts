@@ -8,6 +8,7 @@ import { UserPreference } from '@/entities/UserPreference';
 import { VerificationCode } from '@/entities/VerificationCode';
 import { Notification } from '@/models/Notification';
 import { Budget } from '@/models/Budget';
+import { CreditCard } from '@/models/CreditCard';
 
 const shouldUseSsl = Boolean(process.env.DATABASE_URL);
 const isUsingPooler = process.env.DATABASE_URL?.includes('pooler.supabase.com');
@@ -56,7 +57,7 @@ export const AppDataSource = new DataSource({
   ...connectionConfig,
   synchronize: false, // DESABILITADO - Usar migrations
   logging: config.nodeEnv === 'development',
-  entities: [User, Category, Transaction, RefreshToken, UserPreference, VerificationCode, Notification, Budget],
+  entities: [User, Category, Transaction, RefreshToken, UserPreference, VerificationCode, Notification, Budget, CreditCard],
   migrations: config.nodeEnv === 'production'
     ? ['dist/database/migrations/**/*.js']
     : ['src/database/migrations/**/*.ts'],
