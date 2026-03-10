@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-interface Transaction {
+export interface ExportTransaction {
   id: string
   description: string
   amount: number
@@ -13,301 +13,350 @@ interface Transaction {
   date: string
 }
 
-interface ReportData {
-  transactions: Transaction[]
+export interface ReportData {
+  transactions: ExportTransaction[]
   period: string
+  periodLabel: string
   totalIncome: number
   totalExpense: number
   balance: number
+  userName: string
   categoryBreakdown: Array<{
     category: string
+    type: 'income' | 'expense'
     amount: number
     percentage: number
   }>
 }
 
+// Cores do tema FinControl
+const COLORS = {
+  primary: [37, 99, 235] as [number, number, number],
+  primaryLight: [219, 234, 254] as [number, number, number],
+  success: [22, 163, 74] as [number, number, number],
+  successLight: [220, 252, 231] as [number, number, number],
+  danger: [220, 38, 38] as [number, number, number],
+  dangerLight: [254, 226, 226] as [number, number, number],
+  gray100: [243, 244, 246] as [number, number, number],
+  gray600: [75, 85, 99] as [number, number, number],
+  gray900: [17, 24, 39] as [number, number, number],
+  white: [255, 255, 255] as [number, number, number],
+}
+
+const fmt = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
 class ExportService {
-  /**
-   * Exportar relatório em PDF com design profissional
-   */
-  exportToPDF(data: ReportData, userName: string = 'Usuário') {
-    const doc = new jsPDF()
-    const pageWidth = doc.internal.pageSize.getWidth()
-    const pageHeight = doc.internal.pageSize.getHeight()
-    
-    // Cores do tema
-    const primaryColor: [number, number, number] = [37, 99, 235] // primary-600
-    const lightGray: [number, number, number] = [243, 244, 246] // gray-100
-    const darkGray: [number, number, number] = [75, 85, 99] // gray-600
-    
-    // Header com título
-    doc.setFillColor(...primaryColor)
-    doc.rect(0, 0, pageWidth, 40, 'F')
-    
-    // Título
-    doc.setTextColor(255, 255, 255)
-    doc.setFontSize(20)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // PDF
+  // ─────────────────────────────────────────────────────────────────────────────
+  exportToPDF(data: ReportData) {
+    const doc = new jsPDF({ orientation: 'portrait', format: 'a4' })
+    const pw = doc.internal.pageSize.getWidth()
+    const ph = doc.internal.pageSize.getHeight()
+    let y = 0
+
+    // ── COVER / HEADER BAND ────────────────────────────────────────────────────
+    doc.setFillColor(...COLORS.primary)
+    doc.rect(0, 0, pw, 52, 'F')
+
+    // Accent stripe at bottom of header
+    doc.setFillColor(...COLORS.primaryLight)
+    doc.rect(0, 49, pw, 3, 'F')
+
+    // Logo text (FinControl)
+    doc.setTextColor(...COLORS.white)
+    doc.setFontSize(22)
     doc.setFont('helvetica', 'bold')
-    doc.text('FinControl', 15, 20)
-    
-    doc.setFontSize(12)
+    doc.text('Fin', 15, 22)
+    doc.setTextColor(147, 197, 253) // blue-300
+    doc.text('Control', 29, 22)
+
+    // Subtitle
+    doc.setTextColor(...COLORS.white)
     doc.setFont('helvetica', 'normal')
-    doc.text('Relatório Financeiro', 15, 28)
-    
-    // Data de geração
+    doc.setFontSize(10)
+    doc.text('Controle Financeiro Inteligente', 15, 30)
+
+    // Right-side meta
+    doc.setFontSize(8)
+    doc.setTextColor(219, 234, 254)
+    doc.text(`Relatório gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, pw - 15, 18, { align: 'right' })
+    doc.text(`Usuário: ${data.userName}`, pw - 15, 26, { align: 'right' })
+    doc.text(`Período: ${data.periodLabel}`, pw - 15, 34, { align: 'right' })
+
+    y = 62
+
+    // ── PERIOD INFO ────────────────────────────────────────────────────────────
+    doc.setTextColor(...COLORS.gray600)
     doc.setFontSize(9)
-    doc.text(`Gerado em: ${format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}`, pageWidth - 15, 20, { align: 'right' })
-    doc.text(`Usuário: ${userName}`, pageWidth - 15, 27, { align: 'right' })
-    
-    // Período do relatório
-    let yPos = 50
-    doc.setTextColor(...darkGray)
-    doc.setFontSize(14)
-    doc.setFont('helvetica', 'bold')
-    doc.text('Período do Relatório', 15, yPos)
-    
-    yPos += 8
-    doc.setFontSize(11)
     doc.setFont('helvetica', 'normal')
-    doc.text(data.period, 15, yPos)
-    
-    // Cards de resumo
-    yPos += 15
-    const cardWidth = (pageWidth - 45) / 3
-    const cardHeight = 25
-    
-    // Card Receitas
-    doc.setFillColor(220, 252, 231) // green-100
-    doc.roundedRect(15, yPos, cardWidth, cardHeight, 3, 3, 'F')
-    doc.setTextColor(22, 163, 74) // green-600
-    doc.setFontSize(10)
+    doc.text(`Período analisado: ${data.period}`, 15, y)
+    y += 4
+    doc.setDrawColor(...COLORS.gray100)
+    doc.setLineWidth(0.5)
+    doc.line(15, y, pw - 15, y)
+    y += 8
+
+    // ── SUMMARY CARDS ─────────────────────────────────────────────────────────
     doc.setFont('helvetica', 'bold')
-    doc.text('RECEITAS', 15 + cardWidth / 2, yPos + 8, { align: 'center' })
-    doc.setFontSize(14)
-    doc.text(`R$ ${data.totalIncome.toFixed(2)}`, 15 + cardWidth / 2, yPos + 18, { align: 'center' })
-    
-    // Card Despesas
-    doc.setFillColor(254, 226, 226) // red-100
-    doc.roundedRect(15 + cardWidth + 5, yPos, cardWidth, cardHeight, 3, 3, 'F')
-    doc.setTextColor(220, 38, 38) // red-600
-    doc.setFontSize(10)
-    doc.setFont('helvetica', 'bold')
-    doc.text('DESPESAS', 15 + cardWidth + 5 + cardWidth / 2, yPos + 8, { align: 'center' })
-    doc.setFontSize(14)
-    doc.text(`R$ ${data.totalExpense.toFixed(2)}`, 15 + cardWidth + 5 + cardWidth / 2, yPos + 18, { align: 'center' })
-    
-    // Card Saldo
-    const balanceColor: [number, number, number] = data.balance >= 0 ? [22, 163, 74] : [220, 38, 38]
-    const balanceBg: [number, number, number] = data.balance >= 0 ? [220, 252, 231] : [254, 226, 226]
-    doc.setFillColor(...balanceBg)
-    doc.roundedRect(15 + (cardWidth + 5) * 2, yPos, cardWidth, cardHeight, 3, 3, 'F')
-    doc.setTextColor(...balanceColor)
-    doc.setFontSize(10)
-    doc.setFont('helvetica', 'bold')
-    doc.text('SALDO', 15 + (cardWidth + 5) * 2 + cardWidth / 2, yPos + 8, { align: 'center' })
-    doc.setFontSize(14)
-    doc.text(`R$ ${data.balance.toFixed(2)}`, 15 + (cardWidth + 5) * 2 + cardWidth / 2, yPos + 18, { align: 'center' })
-    
-    // Distribuição por categoria
-    yPos += 40
-    doc.setTextColor(...darkGray)
-    doc.setFontSize(14)
-    doc.setFont('helvetica', 'bold')
-    doc.text('Distribuição por Categoria', 15, yPos)
-    
-    yPos += 5
-    if (data.categoryBreakdown.length > 0) {
+    doc.setFontSize(11)
+    doc.setTextColor(...COLORS.gray900)
+    doc.text('Resumo Financeiro', 15, y)
+    y += 6
+
+    const cardW = (pw - 45) / 3
+    const cardH = 30
+
+    const drawCard = (x: number, yy: number, label: string, value: number) => {
+      const isPos = value >= 0
+      const bg = label === 'RECEITAS' ? COLORS.successLight : label === 'DESPESAS' ? COLORS.dangerLight : isPos ? COLORS.successLight : COLORS.dangerLight
+      const fg = label === 'RECEITAS' ? COLORS.success : label === 'DESPESAS' ? COLORS.danger : isPos ? COLORS.success : COLORS.danger
+
+      doc.setFillColor(...bg)
+      doc.roundedRect(x, yy, cardW, cardH, 4, 4, 'F')
+
+      doc.setTextColor(...fg)
+      doc.setFontSize(7)
+      doc.setFont('helvetica', 'bold')
+      doc.text(label, x + cardW / 2, yy + 9, { align: 'center' })
+
+      doc.setFontSize(11)
+      doc.text(fmt(value), x + cardW / 2, yy + 21, { align: 'center' })
+    }
+
+    drawCard(15, y, 'RECEITAS', data.totalIncome)
+    drawCard(15 + cardW + 5, y, 'DESPESAS', data.totalExpense)
+    drawCard(15 + (cardW + 5) * 2, y, 'SALDO', data.balance)
+    y += cardH + 12
+
+    // ── CATEGORY BREAKDOWN ─────────────────────────────────────────────────────
+    const expenses = data.categoryBreakdown.filter(c => c.type === 'expense')
+    const incomes = data.categoryBreakdown.filter(c => c.type === 'income')
+
+    if (expenses.length > 0) {
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(11)
+      doc.setTextColor(...COLORS.gray900)
+      doc.text('Despesas por Categoria', 15, y)
+      y += 4
+
       autoTable(doc, {
-        startY: yPos,
-        head: [['Categoria', 'Valor', 'Percentual']],
-        body: data.categoryBreakdown.map(cat => [
-          cat.category,
-          `R$ ${cat.amount.toFixed(2)}`,
-          `${cat.percentage.toFixed(1)}%`
-        ]),
+        startY: y,
+        head: [['Categoria', 'Valor (R$)', '% do Total']],
+        body: expenses.map(c => [c.category, fmt(c.amount), `${c.percentage.toFixed(1)}%`]),
         theme: 'striped',
-        headStyles: {
-          fillColor: primaryColor,
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          fontSize: 10
-        },
-        bodyStyles: {
-          fontSize: 9,
-          textColor: darkGray
-        },
-        alternateRowStyles: {
-          fillColor: lightGray
-        },
-        margin: { left: 15, right: 15 }
+        headStyles: { fillColor: COLORS.danger, textColor: COLORS.white, fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8.5, textColor: COLORS.gray600 },
+        alternateRowStyles: { fillColor: COLORS.gray100 },
+        columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } },
+        margin: { left: 15, right: 15 },
       })
-      
-      yPos = (doc as any).lastAutoTable.finalY + 15
+      y = (doc as any).lastAutoTable.finalY + 10
     }
-    
-    // Transações detalhadas
-    if (yPos > pageHeight - 80) {
-      doc.addPage()
-      yPos = 20
-    }
-    
-    doc.setTextColor(...darkGray)
-    doc.setFontSize(14)
-    doc.setFont('helvetica', 'bold')
-    doc.text('Transações Detalhadas', 15, yPos)
-    
-    yPos += 5
-    if (data.transactions.length > 0) {
+
+    if (incomes.length > 0) {
+      if (y > ph - 80) { doc.addPage(); y = 20 }
+
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(11)
+      doc.setTextColor(...COLORS.gray900)
+      doc.text('Receitas por Categoria', 15, y)
+      y += 4
+
       autoTable(doc, {
-        startY: yPos,
-        head: [['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor']],
-        body: data.transactions.map(t => [
-          format(new Date(t.date), 'dd/MM/yyyy'),
+        startY: y,
+        head: [['Categoria', 'Valor (R$)', '% do Total']],
+        body: incomes.map(c => [c.category, fmt(c.amount), `${c.percentage.toFixed(1)}%`]),
+        theme: 'striped',
+        headStyles: { fillColor: COLORS.success, textColor: COLORS.white, fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8.5, textColor: COLORS.gray600 },
+        alternateRowStyles: { fillColor: COLORS.gray100 },
+        columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } },
+        margin: { left: 15, right: 15 },
+      })
+      y = (doc as any).lastAutoTable.finalY + 10
+    }
+
+    // ── TRANSACTIONS TABLE ─────────────────────────────────────────────────────
+    if (y > ph - 80) { doc.addPage(); y = 20 }
+
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(...COLORS.gray900)
+    doc.text(`Transações Detalhadas (${data.transactions.length})`, 15, y)
+    y += 4
+
+    if (data.transactions.length > 0) {
+      const sorted = [...data.transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+      autoTable(doc, {
+        startY: y,
+        head: [['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor (R$)']],
+        body: sorted.map(t => [
+          format(new Date(t.date + 'T12:00:00'), 'dd/MM/yyyy'),
           t.description,
           t.category,
-          t.type === 'income' ? 'Receita' : 'Despesa',
-          `R$ ${t.amount.toFixed(2)}`
+          t.type === 'income' ? '▲ Receita' : '▼ Despesa',
+          fmt(t.amount),
         ]),
         theme: 'striped',
-        headStyles: {
-          fillColor: primaryColor,
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          fontSize: 9
-        },
-        bodyStyles: {
-          fontSize: 8,
-          textColor: darkGray
-        },
-        alternateRowStyles: {
-          fillColor: lightGray
-        },
+        headStyles: { fillColor: COLORS.primary, textColor: COLORS.white, fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8, textColor: COLORS.gray600 },
+        alternateRowStyles: { fillColor: COLORS.gray100 },
         columnStyles: {
-          0: { cellWidth: 25 },
+          0: { cellWidth: 22 },
           1: { cellWidth: 'auto' },
-          2: { cellWidth: 35 },
-          3: { cellWidth: 25 },
-          4: { cellWidth: 30, halign: 'right' }
+          2: { cellWidth: 32 },
+          3: { cellWidth: 22 },
+          4: { cellWidth: 30, halign: 'right' },
         },
-        margin: { left: 15, right: 15 }
+        didParseCell: (hookData) => {
+          if (hookData.column.index === 3 && hookData.section === 'body') {
+            const val = hookData.cell.raw as string
+            hookData.cell.styles.textColor = val.includes('Receita') ? COLORS.success : COLORS.danger
+            hookData.cell.styles.fontStyle = 'bold'
+          }
+        },
+        margin: { left: 15, right: 15 },
       })
+    } else {
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9)
+      doc.setTextColor(...COLORS.gray600)
+      doc.text('Nenhuma transação no período selecionado.', 15, y + 10)
     }
-    
-    // Footer em todas as páginas
+
+    // ── FOOTER ─────────────────────────────────────────────────────────────────
     const totalPages = doc.getNumberOfPages()
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i)
-      doc.setFillColor(...lightGray)
-      doc.rect(0, pageHeight - 15, pageWidth, 15, 'F')
-      doc.setTextColor(...darkGray)
-      doc.setFontSize(8)
+      doc.setFillColor(...COLORS.gray100)
+      doc.rect(0, ph - 14, pw, 14, 'F')
+      doc.setDrawColor(...COLORS.primaryLight)
+      doc.setLineWidth(1)
+      doc.line(0, ph - 14, pw, ph - 14)
+      doc.setTextColor(...COLORS.gray600)
+      doc.setFontSize(7.5)
       doc.setFont('helvetica', 'normal')
-      doc.text('FinControl - Controle Financeiro Inteligente', pageWidth / 2, pageHeight - 8, { align: 'center' })
-      doc.text(`Página ${i} de ${totalPages}`, pageWidth - 15, pageHeight - 8, { align: 'right' })
+      doc.text('FinControl · Controle Financeiro Inteligente · Documento confidencial', pw / 2, ph - 7, { align: 'center' })
+      doc.text(`Página ${i} de ${totalPages}`, pw - 15, ph - 7, { align: 'right' })
+      doc.text(format(new Date(), 'dd/MM/yyyy'), 15, ph - 7)
     }
-    
-    // Salvar PDF
-    const fileName = `relatorio-financeiro-${format(new Date(), 'yyyy-MM-dd-HHmm')}.pdf`
-    doc.save(fileName)
+
+    doc.save(`FinControl_Relatorio_${format(new Date(), 'yyyy-MM-dd_HHmm')}.pdf`)
   }
-  
-  /**
-   * Exportar relatório em Excel
-   */
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // EXCEL
+  // ─────────────────────────────────────────────────────────────────────────────
   exportToExcel(data: ReportData) {
-    const workbook = XLSX.utils.book_new()
-    
-    // Sheet 1: Resumo
-    const summaryData = [
-      ['FinControl - Relatório Financeiro'],
-      [''],
-      ['Período:', data.period],
-      ['Gerado em:', format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })],
-      [''],
-      ['RESUMO FINANCEIRO'],
-      ['Receitas:', data.totalIncome],
-      ['Despesas:', data.totalExpense],
-      ['Saldo:', data.balance],
-      [''],
-      ['DISTRIBUIÇÃO POR CATEGORIA'],
-      ['Categoria', 'Valor', 'Percentual'],
-      ...data.categoryBreakdown.map(cat => [cat.category, cat.amount, `${cat.percentage.toFixed(1)}%`])
+    const wb = XLSX.utils.book_new()
+    const now = format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+
+    // ── Sheet 1: Resumo ────────────────────────────────────────────────────────
+    const summaryRows = [
+      ['FINCONTROL – RELATÓRIO FINANCEIRO'],
+      [`Gerado em: ${now}`],
+      [`Usuário: ${data.userName}`],
+      [`Período: ${data.period}`],
+      [],
+      ['RESUMO GERAL'],
+      ['Indicador', 'Valor (R$)'],
+      ['Total de Receitas', data.totalIncome],
+      ['Total de Despesas', data.totalExpense],
+      ['Saldo do Período', data.balance],
+      ['Total de Transações', data.transactions.length],
     ]
-    
-    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData)
-    
-    // Estilização básica
-    summarySheet['!cols'] = [
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 15 }
+
+    const wsResumo = XLSX.utils.aoa_to_sheet(summaryRows)
+    wsResumo['!cols'] = [{ wch: 30 }, { wch: 20 }]
+    wsResumo['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }]
+    XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo')
+
+    // ── Sheet 2: Categorias ────────────────────────────────────────────────────
+    const catRows = [
+      ['FINCONTROL – DISTRIBUIÇÃO POR CATEGORIA'],
+      [`Período: ${data.period}`],
+      [],
+      ['Categoria', 'Tipo', 'Valor (R$)', '% do Total'],
+      ...data.categoryBreakdown
+        .sort((a, b) => b.amount - a.amount)
+        .map(c => [c.category, c.type === 'income' ? 'Receita' : 'Despesa', c.amount, `${c.percentage.toFixed(1)}%`]),
     ]
-    
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumo')
-    
-    // Sheet 2: Transações
-    const transactionsData = [
-      ['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor'],
-      ...data.transactions.map(t => [
-        format(new Date(t.date), 'dd/MM/yyyy'),
-        t.description,
-        t.category,
-        t.type === 'income' ? 'Receita' : 'Despesa',
-        t.amount
-      ])
+
+    const wsCat = XLSX.utils.aoa_to_sheet(catRows)
+    wsCat['!cols'] = [{ wch: 28 }, { wch: 12 }, { wch: 18 }, { wch: 14 }]
+    XLSX.utils.book_append_sheet(wb, wsCat, 'Categorias')
+
+    // ── Sheet 3: Transações ────────────────────────────────────────────────────
+    const txRows = [
+      ['FINCONTROL – TRANSAÇÕES DETALHADAS'],
+      [`Período: ${data.period}`],
+      [],
+      ['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor (R$)'],
+      ...[...data.transactions]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .map(t => [
+          format(new Date(t.date + 'T12:00:00'), 'dd/MM/yyyy'),
+          t.description,
+          t.category,
+          t.type === 'income' ? 'Receita' : 'Despesa',
+          t.amount,
+        ]),
     ]
-    
-    const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData)
-    
-    transactionsSheet['!cols'] = [
-      { wch: 12 },
-      { wch: 35 },
-      { wch: 20 },
-      { wch: 12 },
-      { wch: 15 }
-    ]
-    
-    XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Transações')
-    
-    // Salvar Excel
-    const fileName = `relatorio-financeiro-${format(new Date(), 'yyyy-MM-dd-HHmm')}.xlsx`
-    XLSX.writeFile(workbook, fileName)
+
+    const wsTx = XLSX.utils.aoa_to_sheet(txRows)
+    wsTx['!cols'] = [{ wch: 13 }, { wch: 38 }, { wch: 22 }, { wch: 12 }, { wch: 16 }]
+    XLSX.utils.book_append_sheet(wb, wsTx, 'Transações')
+
+    XLSX.writeFile(wb, `FinControl_Relatorio_${format(new Date(), 'yyyy-MM-dd_HHmm')}.xlsx`)
   }
-  
-  /**
-   * Exportar relatório em CSV
-   */
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CSV
+  // ─────────────────────────────────────────────────────────────────────────────
   exportToCSV(data: ReportData) {
-    const csvContent = [
-      ['FinControl - Relatório Financeiro'],
-      [''],
-      ['Período', data.period],
-      ['Gerado em', format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })],
-      [''],
-      ['RESUMO FINANCEIRO'],
+    const now = format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+
+    const rows: (string | number)[][] = [
+      ['FINCONTROL – RELATÓRIO FINANCEIRO'],
+      [`Gerado em:`, now],
+      [`Usuário:`, data.userName],
+      [`Período:`, data.period],
+      [],
+      ['RESUMO GERAL'],
       ['Receitas', data.totalIncome],
       ['Despesas', data.totalExpense],
       ['Saldo', data.balance],
-      [''],
-      ['TRANSAÇÕES'],
+      [],
+      ['CATEGORIAS'],
+      ['Categoria', 'Tipo', 'Valor', '% do Total'],
+      ...data.categoryBreakdown
+        .sort((a, b) => b.amount - a.amount)
+        .map(c => [c.category, c.type === 'income' ? 'Receita' : 'Despesa', c.amount, `${c.percentage.toFixed(1)}%`]),
+      [],
+      ['TRANSAÇÕES DETALHADAS'],
       ['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor'],
-      ...data.transactions.map(t => [
-        format(new Date(t.date), 'dd/MM/yyyy'),
-        t.description,
-        t.category,
-        t.type === 'income' ? 'Receita' : 'Despesa',
-        t.amount
-      ])
+      ...[...data.transactions]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .map(t => [
+          format(new Date(t.date + 'T12:00:00'), 'dd/MM/yyyy'),
+          t.description,
+          t.category,
+          t.type === 'income' ? 'Receita' : 'Despesa',
+          t.amount,
+        ]),
     ]
-    
-    const csv = csvContent.map(row => row.join(';')).join('\n')
+
+    const csv = rows
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+      .join('\r\n')
+
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', `relatorio-financeiro-${format(new Date(), 'yyyy-MM-dd-HHmm')}.csv`)
-    link.style.visibility = 'hidden'
+    link.href = URL.createObjectURL(blob)
+    link.download = `FinControl_Relatorio_${format(new Date(), 'yyyy-MM-dd_HHmm')}.csv`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

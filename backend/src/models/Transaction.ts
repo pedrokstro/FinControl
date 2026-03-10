@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from './User';
 import { Category } from './Category';
+import { CreditCard } from './CreditCard';
 
 export enum TransactionType {
   INCOME = 'income',
@@ -72,6 +73,9 @@ export class Transaction {
   @Column({ type: 'uuid', nullable: true })
   parentTransactionId: string | null;
 
+  @Column({ type: 'uuid', nullable: true })
+  creditCardId: string | null;
+
   // Installments fields (novos campos opcionais)
   @Column({ type: 'integer', nullable: true, comment: 'Número total de parcelas (null = infinito ou usa recurrenceEndDate)' })
   totalInstallments?: number | null;
@@ -101,4 +105,11 @@ export class Transaction {
   })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @ManyToOne(() => CreditCard, (creditCard) => creditCard.transactions, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'creditCardId' })
+  creditCard: CreditCard;
 }

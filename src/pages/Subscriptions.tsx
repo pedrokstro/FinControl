@@ -7,6 +7,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '@/components/common/PageTransition'
 import { haptics } from '@/utils/haptics'
 
+const getBrandIcon = (name: string, defaultIcon?: string) => {
+  const lower = name.toLowerCase()
+  if (lower.includes('netflix')) return 'NetflixIcon'
+  if (lower.includes('spotify')) return 'SpotifyIcon'
+  if (lower.includes('amazon') || lower.includes('prime')) return 'AmazonIcon'
+  if (lower.includes('apple') || lower.includes('icloud') || lower.includes('mac')) return 'AppleBrandIcon'
+  if (lower.includes('google') || lower.includes('youtube') || lower.includes('yt ')) return 'GoogleIcon'
+  if (lower.includes('disney')) return 'DisneyPlusIcon'
+  return defaultIcon || 'Receipt'
+}
+
 const Subscriptions = () => {
   const { transactions, categories } = useFinancialStore()
   const [searchTerm, setSearchTerm] = useState('')
@@ -133,7 +144,7 @@ const Subscriptions = () => {
                     >
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-50 dark:bg-neutral-800 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors shadow-sm border border-gray-200 dark:border-neutral-700">
-                          <CategoryIcon icon={sub.category?.icon || 'HelpCircle'} color={sub.category?.color || '#9ca3af'} size="md" />
+                          <CategoryIcon icon={getBrandIcon(sub.brandName, sub.category?.icon)} color={sub.category?.color || '#9ca3af'} size="md" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 dark:text-white truncate" title={sub.brandName}>

@@ -12,6 +12,7 @@ import adminRoutes from './admin.routes';
 import analyticsRoutes from './analytics.routes';
 import exportRoutes from './export.routes';
 import budgetRoutes from './budget.routes';
+import creditCardRoutes from './creditCard.routes';
 
 const router = Router();
 
@@ -29,5 +30,6 @@ router.use('/admin', adminRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/export', exportRoutes);
 router.use('/budgets', budgetRoutes);
+router.use('/credit-cards', creditCardRoutes);
 
 export default router;

@@ -975,19 +975,127 @@ const Settings = () => {
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                        v2.1.3
+                        v2.3.0
                       </div>
                       <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                     </div>
                   </div>
 
                   <div className="space-y-12">
+
+                    {/* v2.3.0 - NOVO */}
                     <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                       <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                       <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.3</span>
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.3.0</span>
                           <span className="px-2 py-0.5 bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded text-[10px] font-bold uppercase tracking-wider animate-pulse">Novo</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          10 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              Relatórios com Filtros
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Filtro por Mês:</strong> analise exatamente o mês que quiser com um seletor nativo.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Filtro por Período:</strong> botões rápidos de 3, 6 ou 12 meses.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Filtro Personalizado:</strong> intervalo de data livre (De → Até) com validação automática.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span>Todos os gráficos, cards e rankings reagem em tempo real ao filtro ativo.</span>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                              Exportação Profissional
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span><strong>PDF:</strong> cabeçalho com logo FinControl, cards coloridos, tabelas separadas por tipo e rodapé profissional em todas as páginas.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span><strong>Excel:</strong> 3 abas separadas — Resumo, Categorias e Transações — com colunas otimizadas.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span><strong>CSV:</strong> com BOM UTF-8 e campos entre aspas, compatível com Excel Brasileiro.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.2.0 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.2.0</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          10 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              Controle de Cartões de Crédito
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span>Página de cartões com fatura atual calculada em tempo real e barra de limite.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span>Vincule despesas a um cartão — elas <strong>não somam duas vezes</strong> no resumo mensal.</span>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                              Assinaturas Melhorado
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span>Ícones reais de marca: Netflix, Spotify, Amazon, Apple, Google e Disney+.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span>Grupo "Assinaturas" adicionado no seletor de ícones para despesas.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.1.3 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.3</span>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                           10 de Março de 2026
@@ -1005,7 +1113,7 @@ const Settings = () => {
                               </li>
                               <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Início de visualização dramática revelando com precisão Cirúrgica o "Custo Mensal" e "Dreno Anual (12x)".</span>
+                                <span>Visualização do "Custo Mensal" e "Dreno Anual (12x)" de todas as assinaturas.</span>
                               </li>
                             </ul>
                           </div>

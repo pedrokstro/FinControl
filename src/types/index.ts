@@ -33,6 +33,20 @@ export interface Transaction {
   totalInstallments?: number
   currentInstallment?: number
   isCancelled?: boolean
+  creditCardId?: string
+  creditCard?: CreditCard
+}
+
+export interface CreditCard {
+  id: string
+  name: string
+  limit: number
+  closingDay: number
+  dueDay: number
+  brand: string
+  userId: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Category {

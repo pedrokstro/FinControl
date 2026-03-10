@@ -21,6 +21,7 @@ import {
   Info,
   Wallet,
   Activity,
+  CreditCard as CreditCardIcon,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -50,6 +51,7 @@ const transactionSchema = z
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
     totalInstallments: z.string().optional(),
+    creditCardId: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isRecurring) {
@@ -99,6 +101,8 @@ const Transactions = () => {
     syncWithBackend,
     isLoading,
     isCreatingTransaction,
+    creditCards,
+    fetchCreditCards,
   } = useFinancialStore()
 
   const [showModal, setShowModal] = useState(false)
@@ -206,8 +210,9 @@ const Transactions = () => {
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
 
+    // IMPORTANTE: Excluir transações de cartão de crédito do total de despesas para evitar bitributação/redundância (solicitação do usuário)
     const expense = filteredTransactions
-      .filter(t => t.type === 'expense')
+      .filter(t => t.type === 'expense' && !t.creditCardId)
       .reduce((sum, t) => sum + t.amount, 0)
 
     return {
@@ -221,6 +226,8 @@ const Transactions = () => {
   const handleOpenModal = (transaction?: any) => {
     if (transaction) {
       setEditingId(transaction.id)
+      // Buscar cartões ao abrir modal
+      fetchCreditCards()
       // Atualizar estado de recorrência
       setIsRecurring(transaction.isRecurring || false)
 
@@ -240,10 +247,13 @@ const Transactions = () => {
         isRecurring: transaction.isRecurring || false,
         recurrenceType: transaction.recurrenceType || undefined,
         totalInstallments: transaction.totalInstallments?.toString() || '',
+        creditCardId: transaction.creditCardId || '',
       })
     } else {
       setEditingId(null)
       setIsRecurring(false)
+      // Buscar cartões ao abrir modal
+      fetchCreditCards()
       reset({
         type: 'expense',
         amount: '',
@@ -253,6 +263,7 @@ const Transactions = () => {
         isRecurring: false,
         recurrenceType: undefined,
         totalInstallments: '',
+        creditCardId: '',
       })
     }
     setShowModal(true)
@@ -287,6 +298,7 @@ const Transactions = () => {
       isRecurring: isRecurring,
       recurrenceType: isRecurring ? data.recurrenceType : undefined,
       recurrenceMonths: isRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
+      creditCardId: data.type === 'expense' && data.creditCardId ? data.creditCardId : undefined,
     }
 
     try {
@@ -585,10 +597,16 @@ const Transactions = () => {
                             <p className="font-medium text-gray-900 dark:text-white">
                               {transaction.description}
                             </p>
-                            {transaction.isRecurring && (
+                             {transaction.isRecurring && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                                 <Repeat className="w-3 h-3" />
                                 Recorrente
+                              </span>
+                            )}
+                            {transaction.creditCardId && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+                                <CreditCardIcon className="w-3 h-3" />
+                                {transaction.creditCard?.name || 'Cartão'}
                               </span>
                             )}
                           </div>
@@ -745,6 +763,12 @@ const Transactions = () => {
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 mt-1">
                               <Repeat className="w-3 h-3" />
                               Recorrente
+                            </span>
+                          )}
+                          {transaction.creditCardId && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 mt-1">
+                              <CreditCardIcon className="w-3 h-3" />
+                              {transaction.creditCard?.name || 'Cartão'}
                             </span>
                           )}
                         </div>
@@ -957,6 +981,36 @@ const Transactions = () => {
                   <p className="error-message">{errors.date.message}</p>
                 )}
               </div>
+
+              {/* Seleção de Cartão (apenas para despesas) */}
+              {transactionType === 'expense' && (
+                <div>
+                  <label className="label">Cartão de Crédito (Opcional)</label>
+                  <Controller
+                    name="creditCardId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        options={[
+                          { value: '', label: 'Nenhum cartão' },
+                          ...creditCards.map(card => ({
+                            value: card.id,
+                            label: card.name,
+                            icon: <CreditCardIcon className="w-4 h-4 text-purple-500" />
+                          }))
+                        ]}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        dropdownTitle="Selecione um Cartão"
+                        className="w-full"
+                      />
+                    )}
+                  />
+                  <p className="text-[10px] text-gray-500 mt-1">
+                    Se marcado, a despesa não será somada ao total mensal para evitar redundância com a fatura.
+                  </p>
+                </div>
+              )}
 
               {/* Transação Recorrente */}
               <div className="border-t border-gray-200 dark:border-neutral-800 pt-4">

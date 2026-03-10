@@ -103,6 +103,7 @@ class RecurrenceService {
             parentTransactionId: transaction.id,
             currentInstallment,
             totalInstallments: transaction.totalInstallments,
+            creditCardId: transaction.creditCardId,
           });
 
           await this.transactionRepository.save(newTransaction);
@@ -182,6 +183,7 @@ class RecurrenceService {
       nextOccurrence: nextOccurrenceDate,
       currentInstallment: transactionData.currentInstallment ?? 1,
       totalInstallments: installmentsLimit ?? null,
+      creditCardId: transactionData.creditCardId || null,
     });
 
     const savedParent = await this.transactionRepository.save(parentEntity);

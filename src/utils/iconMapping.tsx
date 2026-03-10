@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react'
 import {
   // Income Icons - Financial
   DollarSign,
@@ -265,6 +266,26 @@ const SunsetFlightIcon = makeCustomIcon('SunsetFlightIcon', ({ size = 24, ...pro
   </svg>
 ))
 
+// Subscription Brand Icons via Iconify
+const NetflixIcon = makeCustomIcon('NetflixIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:netflix-icon" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+const SpotifyIcon = makeCustomIcon('SpotifyIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:spotify-icon" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+const AmazonIcon = makeCustomIcon('AmazonIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:amazon" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+const AppleBrandIcon = makeCustomIcon('AppleBrandIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:apple" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+const GoogleIcon = makeCustomIcon('GoogleIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:google-icon" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+const DisneyPlusIcon = makeCustomIcon('DisneyPlusIcon', ({ size = 24, ...props }, ref) => (
+  <Icon icon="logos:disney-icon" width={size} height={size} {...(props as any)} ref={ref as any} />
+))
+
 const NeonGroceriesIcon = makeCustomIcon('NeonGroceriesIcon', ({ size = 24, ...props }, ref) => (
   <svg ref={ref} width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
@@ -410,6 +431,8 @@ export type IconName =
   // Exclusive realistic icons
   | 'AuroraCardIcon' | 'CrystalCoinIcon' | 'SunsetFlightIcon' | 'NeonGroceriesIcon'
   | 'LuminaSafeIcon' | 'GalaxyBonusIcon' | 'SapphireTravelIcon' | 'VelvetDiningIcon'
+  // Subscription Brands
+  | 'NetflixIcon' | 'SpotifyIcon' | 'AmazonIcon' | 'AppleBrandIcon' | 'GoogleIcon' | 'DisneyPlusIcon'
 
 export type IconCategoryItem = {
   name: IconName | string
@@ -540,6 +563,14 @@ export const iconMap: Record<IconName, LucideIcon> = {
   GalaxyBonusIcon,
   SapphireTravelIcon,
   VelvetDiningIcon,
+  
+  // Subscription Brands
+  NetflixIcon,
+  SpotifyIcon,
+  AmazonIcon,
+  AppleBrandIcon,
+  GoogleIcon,
+  DisneyPlusIcon,
 }
 
 const exclusiveIconSet: readonly IconCategoryItem[] = exclusiveImageIcons.map(({ name, label }) => ({
@@ -674,6 +705,15 @@ export const iconCategories = {
     { name: 'FileCheck', label: 'Assinatura' },
   ] as const,
   
+  subscriptions: [
+    { name: 'NetflixIcon', label: 'Netflix' },
+    { name: 'SpotifyIcon', label: 'Spotify' },
+    { name: 'AmazonIcon', label: 'Amazon' },
+    { name: 'AppleBrandIcon', label: 'Apple' },
+    { name: 'GoogleIcon', label: 'Google' },
+    { name: 'DisneyPlusIcon', label: 'Disney+' },
+  ] as const,
+  
   personal: [
     { name: 'Scissors', label: 'Cabelo' },
     { name: 'Sparkles', label: 'Beleza' },
@@ -705,6 +745,7 @@ export const getAllIcons = () => {
     ...iconCategories.health,
     ...iconCategories.education,
     ...iconCategories.bills,
+    ...iconCategories.subscriptions,
     ...iconCategories.personal,
     ...iconCategories.pets,
     ...iconCategories.other,
@@ -727,6 +768,7 @@ export const getIconsByType = (type: 'income' | 'expense') => {
     ...iconCategories.health,
     ...iconCategories.education,
     ...iconCategories.bills,
+    ...iconCategories.subscriptions,
     ...iconCategories.personal,
     ...iconCategories.pets,
     ...iconCategories.other,

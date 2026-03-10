@@ -46,6 +46,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
         'Saude': iconCategories.health,
         'Educacao': iconCategories.education,
         'Contas': iconCategories.bills,
+        'Assinaturas': iconCategories.subscriptions,
         'Pessoal': iconCategories.personal,
         'Pets': iconCategories.pets,
         'Outros': iconCategories.other,

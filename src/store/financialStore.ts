@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Transaction, Category, FilterOptions, Budget } from '@/types'
+import { Transaction, Category, FilterOptions, Budget, CreditCard } from '@/types'
 import toast from 'react-hot-toast'
 import transactionService from '@/services/transaction.service'
 import categoryService from '@/services/category.service'
+import creditCardService from '@/services/creditCard.service'
 import { budgetService } from '@/services/budget.service'
 import { parseISO } from 'date-fns'
 
@@ -42,6 +43,8 @@ const normalizeTransaction = (tx: any) => ({
   nextOccurrence: tx.nextOccurrence,
   recurrenceMonths: tx.recurrenceMonths ? Number(tx.recurrenceMonths) : undefined,
   parentTransactionId: tx.parentTransactionId,
+  creditCardId: tx.creditCardId,
+  creditCard: tx.creditCard,
 })
 
 const getCurrentMonthRange = () => {
@@ -57,6 +60,7 @@ interface FinancialState {
   currentMonthTransactions: Transaction[]
   categories: Category[]
   budgets: Budget[]
+  creditCards: CreditCard[]
   currentUserId: string | null
   isLoading: boolean
   isCreatingTransaction: boolean
@@ -77,6 +81,11 @@ interface FinancialState {
   fetchBudgets: () => Promise<void>
   saveBudget: (budget: Omit<Budget, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => Promise<void>
   deleteBudget: (categoryId: string) => Promise<void>
+  // Credit Card actions
+  fetchCreditCards: () => Promise<void>
+  addCreditCard: (card: Omit<CreditCard, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => Promise<void>
+  updateCreditCard: (id: string, card: Partial<CreditCard>) => Promise<void>
+  deleteCreditCard: (id: string) => Promise<void>
 }
 
 // Categorias padrão removidas - sempre buscar do backend
@@ -88,6 +97,7 @@ export const useFinancialStore = create<FinancialState>()(
       currentMonthTransactions: [],
       categories: [],
       budgets: [],
+      creditCards: [],
       currentUserId: null,
       isLoading: false,
       isCreatingTransaction: false,
@@ -426,11 +436,12 @@ export const useFinancialStore = create<FinancialState>()(
       },
 
       syncWithBackend: async () => {
-        const { fetchTransactions, fetchCategories, fetchBudgets } = get()
+        const { fetchTransactions, fetchCategories, fetchBudgets, fetchCreditCards } = get()
         await Promise.all([
           fetchTransactions(),
           fetchCategories(),
           fetchBudgets(),
+          fetchCreditCards(),
         ])
       },
 
@@ -470,6 +481,70 @@ export const useFinancialStore = create<FinancialState>()(
         } catch (error) {
           console.error('Error deleting budget:', error)
           toast.error('Erro ao remover orçamento')
+        }
+      },
+
+      fetchCreditCards: async () => {
+        try {
+          set({ isLoading: true })
+          const data = await creditCardService.getAll()
+          set({ creditCards: data, isLoading: false })
+        } catch (error) {
+          console.error('❌ Erro ao buscar cartões:', error)
+          set({ isLoading: false })
+        }
+      },
+
+      addCreditCard: async (card) => {
+        try {
+          set({ isLoading: true })
+          const newCard = await creditCardService.create(card)
+          set((state) => ({
+            creditCards: [...state.creditCards, newCard],
+            isLoading: false,
+          }))
+          toast.success('Cartão adicionado com sucesso')
+        } catch (error) {
+          console.error('❌ Erro ao adicionar cartão:', error)
+          set({ isLoading: false })
+          toast.error('Erro ao adicionar cartão')
+          throw error
+        }
+      },
+
+      updateCreditCard: async (id, updatedData) => {
+        try {
+          set({ isLoading: true })
+          const updatedCard = await creditCardService.update(id, updatedData)
+          set((state) => ({
+            creditCards: state.creditCards.map((c) =>
+              c.id === id ? updatedCard : c
+            ),
+            isLoading: false,
+          }))
+          toast.success('Cartão atualizado com sucesso')
+        } catch (error) {
+          console.error('❌ Erro ao atualizar cartão:', error)
+          set({ isLoading: false })
+          toast.error('Erro ao atualizar cartão')
+          throw error
+        }
+      },
+
+      deleteCreditCard: async (id) => {
+        try {
+          set({ isLoading: true })
+          await creditCardService.delete(id)
+          set((state) => ({
+            creditCards: state.creditCards.filter((c) => c.id !== id),
+            isLoading: false,
+          }))
+          toast.success('Cartão excluído com sucesso')
+        } catch (error) {
+          console.error('❌ Erro ao excluir cartão:', error)
+          set({ isLoading: false })
+          toast.error('Erro ao excluir cartão')
+          throw error
         }
       },
     }),

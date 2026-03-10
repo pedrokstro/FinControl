@@ -24,6 +24,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Transactions = lazy(() => import('./pages/Transactions'))
 const Categories = lazy(() => import('./pages/Categories'))
 const Subscriptions = lazy(() => import('./pages/Subscriptions'))
+const Cards = lazy(() => import('./pages/Cards'))
 const Reports = lazy(() => import('./pages/Reports'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Plans = lazy(() => import('./pages/Plans'))
@@ -161,6 +162,11 @@ const AnimatedRoutes = () => {
           <Route path="subscriptions" element={
             <Suspense fallback={<PageLoader />}>
               <Subscriptions />
+            </Suspense>
+          } />
+          <Route path="cards" element={
+            <Suspense fallback={<PageLoader />}>
+              <Cards />
             </Suspense>
           } />
           <Route path="reports" element={

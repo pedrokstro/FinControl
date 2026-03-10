@@ -16,52 +16,139 @@ import {
   ResponsiveContainer,
   ComposedChart,
 } from 'recharts'
-import { format, startOfMonth, endOfMonth, subMonths, eachMonthOfInterval } from 'date-fns'
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  eachMonthOfInterval,
+  parseISO,
+  isValid,
+} from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { TrendingUp, TrendingDown, DollarSign, FileText, FileSpreadsheet, FileDown } from 'lucide-react'
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  FileText,
+  FileSpreadsheet,
+  FileDown,
+  Calendar,
+  CalendarRange,
+  Filter,
+  Loader2,
+  BarChart3,
+} from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
 import { exportService } from '@/services/exportService'
 import { toast } from 'react-hot-toast'
 
+// ─── Tipos de filtro ──────────────────────────────────────────────────────────
+type FilterMode = 'month' | 'period' | 'custom'
+
+const PERIODS = [
+  { value: '3', label: '3 meses' },
+  { value: '6', label: '6 meses' },
+  { value: '12', label: '12 meses' },
+] as const
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const fmtCurrency = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
+const fmtPct = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const Reports = () => {
   const { transactions, categories } = useFinancialStore()
   const { user } = useAuthStore()
-  const [period, setPeriod] = useState<'3' | '6' | '12'>('6')
+
+  // ── Filtros ────────────────────────────────────────────────────────────────
+  const [filterMode, setFilterMode] = useState<FilterMode>('period')
+  const [selectedPeriod, setSelectedPeriod] = useState<'3' | '6' | '12'>('6')
+  // mês único (YYYY-MM)
+  const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'yyyy-MM'))
+  // intervalo personalizado
+  const [customFrom, setCustomFrom] = useState<string>(format(subMonths(new Date(), 1), 'yyyy-MM-dd'))
+  const [customTo, setCustomTo] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
+
   const [isExporting, setIsExporting] = useState(false)
-  const currentYear = new Date().getFullYear()
 
-  const currentYearTransactions = useMemo(() => {
-    return transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate.getFullYear() === currentYear
+  // ── Intervalo de datas ativo ───────────────────────────────────────────────
+  const dateRange = useMemo(() => {
+    if (filterMode === 'month') {
+      const d = parseISO(`${selectedMonth}-01`)
+      return { start: startOfMonth(d), end: endOfMonth(d) }
+    }
+    if (filterMode === 'custom') {
+      const s = parseISO(customFrom)
+      const e = parseISO(customTo)
+      return { start: isValid(s) ? s : subMonths(new Date(), 1), end: isValid(e) ? e : new Date() }
+    }
+    // period
+    const months = parseInt(selectedPeriod)
+    return { start: startOfMonth(subMonths(new Date(), months - 1)), end: endOfMonth(new Date()) }
+  }, [filterMode, selectedMonth, selectedPeriod, customFrom, customTo])
+
+  const periodLabel = useMemo(() => {
+    if (filterMode === 'month') {
+      return format(parseISO(`${selectedMonth}-01`), 'MMMM yyyy', { locale: ptBR })
+    }
+    if (filterMode === 'custom') {
+      return `${format(dateRange.start, 'dd/MM/yyyy')} – ${format(dateRange.end, 'dd/MM/yyyy')}`
+    }
+    return `Últimos ${selectedPeriod} meses`
+  }, [filterMode, selectedMonth, selectedPeriod, dateRange, customFrom, customTo])
+
+  // ── Transações filtradas ───────────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    return transactions.filter(t => {
+      const d = parseISO(t.date)
+      return d >= dateRange.start && d <= dateRange.end
     })
-  }, [transactions, currentYear])
+  }, [transactions, dateRange])
 
-  // Dados para gráfico de evolução mensal
+  // ── Resumo do período ──────────────────────────────────────────────────────
+  const summary = useMemo(() => {
+    const income = filtered.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+    const expense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    return { income, expense, balance: income - expense, count: filtered.length }
+  }, [filtered])
+
+  // ── Comparação com período anterior ───────────────────────────────────────
+  const comparison = useMemo(() => {
+    const span = dateRange.end.getTime() - dateRange.start.getTime()
+    const prevEnd = new Date(dateRange.start.getTime() - 1)
+    const prevStart = new Date(prevEnd.getTime() - span)
+
+    const prev = transactions.filter(t => {
+      const d = parseISO(t.date)
+      return d >= prevStart && d <= prevEnd
+    })
+
+    const prevIncome = prev.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+    const prevExpense = prev.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    const prevBalance = prevIncome - prevExpense
+
+    const chg = (cur: number, pre: number) => (pre !== 0 ? ((cur - pre) / pre) * 100 : 0)
+
+    return {
+      income: { current: summary.income, prev: prevIncome, change: chg(summary.income, prevIncome) },
+      expense: { current: summary.expense, prev: prevExpense, change: chg(summary.expense, prevExpense) },
+      balance: { current: summary.balance, prev: prevBalance, change: chg(summary.balance, prevBalance) },
+    }
+  }, [filtered, summary, transactions, dateRange])
+
+  // ── Evolução mensal (linha) ────────────────────────────────────────────────
   const monthlyEvolution = useMemo(() => {
-    const months = parseInt(period)
-    const startDate = subMonths(new Date(), months - 1)
-    const endDate = new Date()
-
-    const monthsArray = eachMonthOfInterval({ start: startDate, end: endDate })
-
-    return monthsArray.map((month) => {
-      const monthStart = startOfMonth(month)
-      const monthEnd = endOfMonth(month)
-
-      const monthTransactions = transactions.filter((t) => {
-        const tDate = new Date(t.date)
-        return tDate >= monthStart && tDate <= monthEnd
-      })
-
-      const income = monthTransactions
-        .filter((t) => t.type === 'income')
-        .reduce((sum, t) => sum + t.amount, 0)
-
-      const expense = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0)
-
+    const months = eachMonthOfInterval({ start: dateRange.start, end: dateRange.end })
+    return months.map(month => {
+      const ms = startOfMonth(month)
+      const me = endOfMonth(month)
+      const mt = transactions.filter(t => { const d = parseISO(t.date); return d >= ms && d <= me })
+      const income = mt.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const expense = mt.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
       return {
         month: format(month, 'MMM/yy', { locale: ptBR }),
         receitas: income,
@@ -69,570 +156,353 @@ const Reports = () => {
         saldo: income - expense,
       }
     })
-  }, [transactions, period])
+  }, [transactions, dateRange])
 
-  // Atualizar dados de categorias para incluir receitas e despesas DO MES ATUAL
+  // ── Por categoria (período ativo) ─────────────────────────────────────────
   const categoryData = useMemo(() => {
-    const now = new Date()
-    const monthStart = startOfMonth(now)
-    const monthEnd = endOfMonth(now)
+    const expCats = categories
+      .filter(c => c.type === 'expense')
+      .map(cat => ({
+        name: cat.name,
+        despesas: filtered.filter(t => t.categoryId === cat.id && t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+        receitas: 0,
+        color: cat.color,
+        type: 'expense' as const,
+      }))
+      .filter(c => c.despesas > 0)
 
-    // Filtrar apenas transações do mês atual
-    const monthTransactions = transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate >= monthStart && tDate <= monthEnd
-    })
-
-    // Despesas por categoria (apenas do mês atual)
-    const expensesByCategory = categories
-      .filter((cat) => cat.type === 'expense')
-      .map((cat) => {
-        const total = monthTransactions
-          .filter((t) => t.categoryId === cat.id && t.type === 'expense')
-          .reduce((sum, t) => sum + t.amount, 0)
-
-        return {
-          name: cat.name,
-          despesas: total,
-          receitas: 0,
-          color: cat.color,
-          type: 'expense' as const,
-        }
-      })
-      .filter((item) => item.despesas > 0)
-
-    // Receitas por categoria (apenas do mês atual)
-    const incomeByCategory = categories
-      .filter((cat) => cat.type === 'income')
-      .map((cat) => {
-        const total = monthTransactions
-          .filter((t) => t.categoryId === cat.id && t.type === 'income')
-          .reduce((sum, t) => sum + t.amount, 0)
-
-        return {
-          name: cat.name,
-          receitas: total,
-          despesas: 0,
-          color: cat.color,
-          type: 'income' as const,
-        }
-      })
-      .filter((item) => item.receitas > 0)
+    const incCats = categories
+      .filter(c => c.type === 'income')
+      .map(cat => ({
+        name: cat.name,
+        receitas: filtered.filter(t => t.categoryId === cat.id && t.type === 'income').reduce((s, t) => s + t.amount, 0),
+        despesas: 0,
+        color: cat.color,
+        type: 'income' as const,
+      }))
+      .filter(c => c.receitas > 0)
 
     return {
-      expenses: expensesByCategory.sort((a, b) => b.despesas - a.despesas),
-      income: incomeByCategory.sort((a, b) => b.receitas - a.receitas),
-      combined: [...expensesByCategory, ...incomeByCategory].sort((a, b) =>
-        (b.receitas + b.despesas) - (a.receitas + a.despesas)
-      ),
+      expenses: expCats.sort((a, b) => b.despesas - a.despesas),
+      income: incCats.sort((a, b) => b.receitas - a.receitas),
     }
-  }, [transactions, categories])
+  }, [filtered, categories])
 
-  // Dados para comparação lado a lado de receitas e despesas por categoria (MES ATUAL)
+  // ── Comparação por categoria (barras horizontais) ─────────────────────────
   const categoryComparison = useMemo(() => {
-    const now = new Date()
-    const monthStart = startOfMonth(now)
-    const monthEnd = endOfMonth(now)
-
-    // Filtrar apenas transações do mês atual
-    const monthTransactions = transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate >= monthStart && tDate <= monthEnd
-    })
-
-    const allCategories = new Set([
+    const all = new Set<string>([
       ...categories.filter(c => c.type === 'expense').map(c => c.name),
       ...categories.filter(c => c.type === 'income').map(c => c.name),
     ])
-
-    return Array.from(allCategories).map(catName => {
-      const expenseCat = categories.find(c => c.name === catName && c.type === 'expense')
-      const incomeCat = categories.find(c => c.name === catName && c.type === 'income')
-
-      const expenses = expenseCat
-        ? monthTransactions
-          .filter(t => t.categoryId === expenseCat.id && t.type === 'expense')
-          .reduce((sum, t) => sum + t.amount, 0)
-        : 0
-
-      const income = incomeCat
-        ? monthTransactions
-          .filter(t => t.categoryId === incomeCat.id && t.type === 'income')
-          .reduce((sum, t) => sum + t.amount, 0)
-        : 0
-
-      return {
-        category: catName,
-        receitas: income,
-        despesas: expenses,
-        total: income + expenses,
-      }
-    }).filter(item => item.total > 0)
+    return Array.from(all).map(name => {
+      const ec = categories.find(c => c.name === name && c.type === 'expense')
+      const ic = categories.find(c => c.name === name && c.type === 'income')
+      const exp = ec ? filtered.filter(t => t.categoryId === ec.id && t.type === 'expense').reduce((s, t) => s + t.amount, 0) : 0
+      const inc = ic ? filtered.filter(t => t.categoryId === ic.id && t.type === 'income').reduce((s, t) => s + t.amount, 0) : 0
+      return { category: name, receitas: inc, despesas: exp, total: inc + exp }
+    })
+      .filter(i => i.total > 0)
       .sort((a, b) => b.total - a.total)
-      .slice(0, 10) // Top 10 categorias
-  }, [transactions, categories])
+      .slice(0, 10)
+  }, [filtered, categories])
 
-  // Dados para comparação mensal
-  const monthlyComparison = useMemo(() => {
-    const currentMonth = new Date()
-    const lastMonth = subMonths(currentMonth, 1)
-
-    const getCurrentMonthData = (date: Date) => {
-      const monthStart = startOfMonth(date)
-      const monthEnd = endOfMonth(date)
-
-      const monthTransactions = transactions.filter((t) => {
-        const tDate = new Date(t.date)
-        return tDate >= monthStart && tDate <= monthEnd
-      })
-
-      return {
-        income: monthTransactions
-          .filter((t) => t.type === 'income')
-          .reduce((sum, t) => sum + t.amount, 0),
-        expense: monthTransactions
-          .filter((t) => t.type === 'expense')
-          .reduce((sum, t) => sum + t.amount, 0),
-      }
-    }
-
-    const current = getCurrentMonthData(currentMonth)
-    const last = getCurrentMonthData(lastMonth)
-
-    return {
-      income: {
-        current: current.income,
-        last: last.income,
-        change: last.income > 0 ? ((current.income - last.income) / last.income) * 100 : 0,
-      },
-      expense: {
-        current: current.expense,
-        last: last.expense,
-        change: last.expense > 0 ? ((current.expense - last.expense) / last.expense) * 100 : 0,
-      },
-      balance: {
-        current: current.income - current.expense,
-        last: last.income - last.expense,
-        change: (last.income - last.expense) > 0
-          ? (((current.income - current.expense) - (last.income - last.expense)) / (last.income - last.expense)) * 100
-          : 0,
-      },
-    }
-  }, [transactions])
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value)
-  }
-
-  const formatPercent = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
-  }
-
-  // Totais gerais do ano corrente
-  const totalStats = useMemo(() => {
-    const totalIncome = currentYearTransactions
-      .filter((t) => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    const totalExpense = currentYearTransactions
-      .filter((t) => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    return {
-      income: totalIncome,
-      expense: totalExpense,
-      balance: totalIncome - totalExpense,
-    }
-  }, [currentYearTransactions])
-
-  // Médias mensais
-  const monthlyAverages = useMemo(() => {
-    // Agrupar transações por mês
-    const monthsMap = new Map<string, { income: number; expense: number }>()
-
-    currentYearTransactions.forEach((t) => {
-      const date = new Date(t.date)
-      const monthKey = `${date.getFullYear()}-${date.getMonth()}`
-
-      if (!monthsMap.has(monthKey)) {
-        monthsMap.set(monthKey, { income: 0, expense: 0 })
-      }
-
-      const monthData = monthsMap.get(monthKey)!
-      if (t.type === 'income') {
-        monthData.income += t.amount
-      } else {
-        monthData.expense += t.amount
+  // ── Top categorias despesas ────────────────────────────────────────────────
+  const topExpense = useMemo(() => {
+    const map = new Map<string, { name: string; total: number; color: string }>()
+    filtered.filter(t => t.type === 'expense').forEach(t => {
+      const cat = categories.find(c => c.id === t.categoryId)
+      if (cat) {
+        const cur = map.get(cat.id) || { name: cat.name, total: 0, color: cat.color }
+        cur.total += t.amount
+        map.set(cat.id, cur)
       }
     })
+    return Array.from(map.values()).sort((a, b) => b.total - a.total).slice(0, 5)
+  }, [filtered, categories])
 
-    const monthCount = monthsMap.size || 1
-    const totals = Array.from(monthsMap.values())
+  // ── Exportação ────────────────────────────────────────────────────────────
+  const buildExportData = () => {
+    const expCategoryMap = new Map<string, number>()
+    const incCategoryMap = new Map<string, number>()
 
-    const avgIncome = totals.reduce((sum, m) => sum + m.income, 0) / monthCount
-    const avgExpense = totals.reduce((sum, m) => sum + m.expense, 0) / monthCount
-
-    return {
-      income: avgIncome,
-      expense: avgExpense,
-      balance: avgIncome - avgExpense,
-      monthCount,
-    }
-  }, [transactions])
-
-  // Top categorias mais gastadas
-  const topExpenseCategories = useMemo(() => {
-    const categoryTotals = new Map<string, { name: string; total: number; color: string }>()
-
-    transactions
-      .filter((t) => t.type === 'expense')
-      .forEach((t) => {
-        const category = categories.find((c) => c.id === t.categoryId)
-        if (category) {
-          const current = categoryTotals.get(category.id) || { name: category.name, total: 0, color: category.color }
-          current.total += t.amount
-          categoryTotals.set(category.id, current)
-        }
-      })
-
-    return Array.from(categoryTotals.values())
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 3)
-  }, [transactions, categories])
-
-  // Preparar dados para exportação
-  const prepareExportData = () => {
-    const months = parseInt(period)
-    const startDate = subMonths(new Date(), months - 1)
-    const endDate = new Date()
-
-    const periodTransactions = transactions.filter((t) => {
-      const tDate = new Date(t.date)
-      return tDate >= startDate && tDate <= endDate
+    filtered.forEach(t => {
+      const cat = categories.find(c => c.id === t.categoryId)
+      const name = cat?.name || 'Sem categoria'
+      if (t.type === 'expense') expCategoryMap.set(name, (expCategoryMap.get(name) || 0) + t.amount)
+      else incCategoryMap.set(name, (incCategoryMap.get(name) || 0) + t.amount)
     })
 
-    const totalIncome = periodTransactions
-      .filter((t) => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const totalAll = filtered.reduce((s, t) => s + t.amount, 0)
 
-    const totalExpense = periodTransactions
-      .filter((t) => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    // Agrupar por categoria
-    const categoryMap = new Map<string, number>()
-    periodTransactions.forEach((t) => {
-      const category = categories.find(c => c.id === t.categoryId)
-      const catName = category?.name || 'Sem categoria'
-      categoryMap.set(catName, (categoryMap.get(catName) || 0) + t.amount)
-    })
-
-    const totalAmount = Array.from(categoryMap.values()).reduce((sum, val) => sum + val, 0)
-    const categoryBreakdown = Array.from(categoryMap.entries())
-      .map(([category, amount]) => ({
+    const breakdown = [
+      ...Array.from(expCategoryMap.entries()).map(([category, amount]) => ({
         category,
+        type: 'expense' as const,
         amount,
-        percentage: totalAmount > 0 ? (amount / totalAmount) * 100 : 0
-      }))
-      .sort((a, b) => b.amount - a.amount)
+        percentage: totalAll > 0 ? (amount / totalAll) * 100 : 0,
+      })),
+      ...Array.from(incCategoryMap.entries()).map(([category, amount]) => ({
+        category,
+        type: 'income' as const,
+        amount,
+        percentage: totalAll > 0 ? (amount / totalAll) * 100 : 0,
+      })),
+    ].sort((a, b) => b.amount - a.amount)
 
     return {
-      transactions: periodTransactions.map(t => ({
+      transactions: filtered.map(t => ({
         id: t.id,
         description: t.description,
         amount: t.amount,
         type: t.type,
         category: categories.find(c => c.id === t.categoryId)?.name || 'Sem categoria',
-        date: t.date
+        date: t.date,
       })),
-      period: `${format(startDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })} - ${format(endDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}`,
-      totalIncome,
-      totalExpense,
-      balance: totalIncome - totalExpense,
-      categoryBreakdown
+      period: `${format(dateRange.start, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })} – ${format(dateRange.end, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}`,
+      periodLabel,
+      totalIncome: summary.income,
+      totalExpense: summary.expense,
+      balance: summary.balance,
+      userName: user?.name || 'Usuário',
+      categoryBreakdown: breakdown,
     }
   }
 
-  const handleExport = async (format: 'pdf' | 'excel' | 'csv') => {
-    // Verificar se é premium antes de exportar
+  const handleExport = async (type: 'pdf' | 'excel' | 'csv') => {
     if (!user?.isPremium) {
-      toast.error('Exportação de relatórios é exclusiva do plano Premium')
+      toast.error('Exportação é exclusiva do plano Premium')
       return
     }
-
     try {
       setIsExporting(true)
-      const data = prepareExportData()
-      const userName = user?.name || 'Usuário'
-
-      switch (format) {
-        case 'pdf':
-          exportService.exportToPDF(data, userName)
-          toast.success('Relatório PDF gerado com sucesso!')
-          break
-        case 'excel':
-          exportService.exportToExcel(data)
-          toast.success('Relatório Excel gerado com sucesso!')
-          break
-        case 'csv':
-          exportService.exportToCSV(data)
-          toast.success('Relatório CSV gerado com sucesso!')
-          break
-      }
-    } catch (error) {
-      console.error('Erro ao exportar:', error)
-      toast.error('Erro ao gerar relatório. Tente novamente.')
+      const data = buildExportData()
+      if (type === 'pdf') exportService.exportToPDF(data)
+      else if (type === 'excel') exportService.exportToExcel(data)
+      else exportService.exportToCSV(data)
+      toast.success(`Relatório ${type.toUpperCase()} gerado com sucesso!`)
+    } catch (err) {
+      console.error(err)
+      toast.error('Erro ao gerar relatório.')
     } finally {
       setIsExporting(false)
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <PageTransition>
       <div className="responsive-page">
-        {/* Header */}
+
+        {/* ── HEADER ──────────────────────────────────────────────────────── */}
         <div className="responsive-header">
           <div className="hidden sm:block">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Relatórios</h1>
-            <p className="text-gray-600 dark:text-neutral-400 mt-1">
-              Análise detalhada das suas finanças
-            </p>
+            <p className="text-gray-600 dark:text-neutral-400 mt-1">Análise detalhada das suas finanças</p>
           </div>
-          <div className="responsive-toolbar justify-end">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <button
               onClick={() => handleExport('pdf')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
             >
-              <FileText className="w-4 h-4" />
-              {isExporting ? 'Gerando...' : 'PDF'}
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              PDF
             </button>
             <button
               onClick={() => handleExport('excel')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
             >
-              <FileSpreadsheet className="w-4 h-4" />
-              {isExporting ? 'Gerando...' : 'Excel'}
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+              Excel
             </button>
             <button
               onClick={() => handleExport('csv')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
             >
-              <FileDown className="w-4 h-4" />
-              {isExporting ? 'Gerando...' : 'CSV'}
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              CSV
             </button>
           </div>
         </div>
 
-        {/* Comparação Mensal */}
+        {/* ── FILTROS ──────────────────────────────────────────────────────── */}
+        <div className="card border border-primary-100 dark:border-primary-900/40 bg-primary-50/40 dark:bg-primary-950/20">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Filtrar Período</h2>
+            <span className="ml-auto text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800 px-2 py-0.5 rounded-full">
+              {periodLabel}
+            </span>
+          </div>
+
+          {/* Modos */}
+          <div className="flex gap-2 flex-wrap mb-4">
+            {([
+              { mode: 'month', label: 'Mês', icon: Calendar },
+              { mode: 'period', label: 'Período', icon: BarChart3 },
+              { mode: 'custom', label: 'Personalizado', icon: CalendarRange },
+            ] as const).map(({ mode, label, icon: Icon }) => (
+              <button
+                key={mode}
+                onClick={() => setFilterMode(mode)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border ${filterMode === mode
+                  ? 'bg-primary-600 dark:bg-primary-500 text-white border-primary-600 dark:border-primary-500 shadow-sm'
+                  : 'bg-white dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Controles dinâmicos */}
+          <div className="flex items-center flex-wrap gap-3">
+            {filterMode === 'month' && (
+              <input
+                type="month"
+                value={selectedMonth}
+                max={format(new Date(), 'yyyy-MM')}
+                onChange={e => setSelectedMonth(e.target.value)}
+                className="input-field max-w-[220px]"
+              />
+            )}
+
+            {filterMode === 'period' && (
+              <div className="flex gap-2 flex-wrap">
+                {PERIODS.map(p => (
+                  <button
+                    key={p.value}
+                    onClick={() => setSelectedPeriod(p.value)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${selectedPeriod === p.value
+                      ? 'bg-primary-600 dark:bg-primary-500 text-white border-transparent'
+                      : 'bg-white dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {filterMode === 'custom' && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-neutral-400 font-medium">De</label>
+                  <input
+                    type="date"
+                    value={customFrom}
+                    max={customTo}
+                    onChange={e => setCustomFrom(e.target.value)}
+                    className="input-field max-w-[180px]"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-neutral-400 font-medium">Até</label>
+                  <input
+                    type="date"
+                    value={customTo}
+                    min={customFrom}
+                    max={format(new Date(), 'yyyy-MM-dd')}
+                    onChange={e => setCustomTo(e.target.value)}
+                    className="input-field max-w-[180px]"
+                  />
+                </div>
+              </div>
+            )}
+
+            <span className="text-xs text-gray-400 dark:text-neutral-500 ml-auto">
+              {summary.count} transação{summary.count !== 1 ? 'ões' : ''} no período
+            </span>
+          </div>
+        </div>
+
+        {/* ── CARDS DE RESUMO ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Receitas */}
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Receitas do Mês</h3>
-              <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Receitas</h3>
+              <div className="w-9 h-9 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400 animate-arrow-up" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {formatCurrency(monthlyComparison.income.current)}
-            </p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{fmtCurrency(summary.income)}</p>
             <div className="flex items-center gap-2">
-              <span
-                className={`text-sm font-medium ${monthlyComparison.income.change >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                  }`}
-              >
-                {formatPercent(monthlyComparison.income.change)}
+              <span className={`text-xs font-semibold ${comparison.income.change >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
+                {fmtPct(comparison.income.change)}
               </span>
-              <span className="text-sm text-gray-500 dark:text-neutral-400">vs mês anterior</span>
+              <span className="text-xs text-gray-500 dark:text-neutral-400">vs período anterior</span>
             </div>
           </div>
 
+          {/* Despesas */}
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Despesas do Mês</h3>
-              <div className="w-10 h-10 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Despesas</h3>
+              <div className="w-9 h-9 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
                 <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400 animate-arrow-down" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {formatCurrency(monthlyComparison.expense.current)}
-            </p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{fmtCurrency(summary.expense)}</p>
             <div className="flex items-center gap-2">
-              <span
-                className={`text-sm font-medium ${monthlyComparison.expense.change <= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                  }`}
-              >
-                {formatPercent(monthlyComparison.expense.change)}
+              <span className={`text-xs font-semibold ${comparison.expense.change <= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
+                {fmtPct(comparison.expense.change)}
               </span>
-              <span className="text-sm text-gray-500 dark:text-neutral-400">vs mês anterior</span>
+              <span className="text-xs text-gray-500 dark:text-neutral-400">vs período anterior</span>
             </div>
           </div>
 
+          {/* Saldo */}
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Saldo do Mês</h3>
-              <div className="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Saldo do Período</h3>
+              <div className="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
                 <DollarSign className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {formatCurrency(monthlyComparison.balance.current)}
+            <p className={`text-2xl font-bold mb-1 ${summary.balance >= 0 ? 'text-gray-900 dark:text-white' : 'text-danger-600 dark:text-danger-400'}`}>
+              {fmtCurrency(summary.balance)}
             </p>
             <div className="flex items-center gap-2">
-              <span
-                className={`text-sm font-medium ${monthlyComparison.balance.change >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                  }`}
-              >
-                {formatPercent(monthlyComparison.balance.change)}
+              <span className={`text-xs font-semibold ${comparison.balance.change >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
+                {fmtPct(comparison.balance.change)}
               </span>
-              <span className="text-sm text-gray-500 dark:text-neutral-400">vs mês anterior</span>
+              <span className="text-xs text-gray-500 dark:text-neutral-400">vs período anterior</span>
             </div>
           </div>
         </div>
 
-        {/* Totais Gerais - Todos os Meses */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card bg-green-600 dark:bg-green-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-white">Total de Receitas Anual</h3>
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white animate-arrow-up" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mb-2">
-              {formatCurrency(totalStats.income)}
-            </p>
-            <p className="text-xs text-white/80">
-              Soma de todas as receitas
-            </p>
-          </div>
-
-          <div className="card bg-red-600 dark:bg-red-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-white">Total de Despesas Anual</h3>
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-white animate-arrow-down" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mb-2">
-              {formatCurrency(totalStats.expense)}
-            </p>
-            <p className="text-xs text-white/80">
-              Soma de todas as despesas
-            </p>
-          </div>
-
-          <div className="card bg-primary-600 dark:bg-primary-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-white">Saldo Total Anual</h3>
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-white" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mb-2">
-              {formatCurrency(totalStats.balance)}
-            </p>
-            <p className="text-xs text-white/80">
-              Receitas - Despesas (todos os meses)
-            </p>
-          </div>
-        </div>
-
-        {/* Médias Mensais */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Média de Receitas/Mês</h3>
-              <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400 animate-arrow-up" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {formatCurrency(monthlyAverages.income)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-neutral-400">
-              Baseado em {monthlyAverages.monthCount} {monthlyAverages.monthCount === 1 ? 'mês' : 'meses'}
-            </p>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Média de Despesas/Mês</h3>
-              <div className="w-10 h-10 bg-danger-50 dark:bg-danger-900/20 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400 animate-arrow-down" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {formatCurrency(monthlyAverages.expense)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-neutral-400">
-              Baseado em {monthlyAverages.monthCount} {monthlyAverages.monthCount === 1 ? 'mês' : 'meses'}
-            </p>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-400">Média de Saldo/Mês</h3>
-              <div className="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-              </div>
-            </div>
-            <p className={`text-2xl font-bold mb-2 ${monthlyAverages.balance >= 0 ? 'text-gray-900 dark:text-white' : 'text-danger-600 dark:text-danger-400'}`}>
-              {formatCurrency(monthlyAverages.balance)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-neutral-400">
-              Baseado em {monthlyAverages.monthCount} {monthlyAverages.monthCount === 1 ? 'mês' : 'meses'}
-            </p>
-          </div>
-        </div>
-
-        {/* Top Categorias Mais Gastadas */}
+        {/* ── TOP CATEGORIAS MAIS GASTADAS ─────────────────────────────────── */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-            Categorias Mais Gastadas
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+            <div className="w-2 h-5 bg-danger-500 rounded" />
+            Top Categorias Mais Gastadas
+            <span className="ml-2 text-xs text-gray-400 dark:text-neutral-500 font-normal">{periodLabel}</span>
           </h3>
-          {topExpenseCategories.length > 0 ? (
+          {topExpense.length > 0 ? (
             <div className="space-y-4">
-              {topExpenseCategories.map((cat, index) => {
-                const percentage = totalStats.expense > 0 ? (cat.total / totalStats.expense) * 100 : 0
+              {topExpense.map((cat, i) => {
+                const pct = summary.expense > 0 ? (cat.total / summary.expense) * 100 : 0
                 return (
-                  <div key={cat.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
+                  <div key={cat.name}>
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-800 text-sm font-bold text-gray-700 dark:text-neutral-300">
-                          {index + 1}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: cat.color }}
-                          />
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {cat.name}
-                          </span>
-                        </div>
+                        <span className="w-7 h-7 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-neutral-300">{i + 1}</span>
+                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
+                        <span className="font-medium text-gray-900 dark:text-white text-sm">{cat.name}</span>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-gray-900 dark:text-white">
-                          {formatCurrency(cat.total)}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-neutral-400">
-                          {percentage.toFixed(1)}% do total
-                        </p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm">{fmtCurrency(cat.total)}</p>
+                        <p className="text-xs text-gray-400 dark:text-neutral-500">{pct.toFixed(1)}%</p>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
                       <div
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${Math.min(percentage, 100)}%`,
-                          backgroundColor: cat.color,
-                        }}
+                        className="h-1.5 rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: cat.color }}
                       />
                     </div>
                   </div>
@@ -640,175 +510,89 @@ const Reports = () => {
               })}
             </div>
           ) : (
-            <p className="text-center text-gray-500 dark:text-neutral-400 py-8">
-              Nenhuma despesa registrada
-            </p>
+            <p className="text-center text-gray-400 dark:text-neutral-500 py-8 text-sm">Nenhuma despesa no período selecionado</p>
           )}
         </div>
 
-        {/* Evolução Mensal */}
+        {/* ── EVOLUÇÃO MENSAL ───────────────────────────────────────────────── */}
         <div className="card">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Evolução Financeira
-            </h3>
-            <div className="flex gap-2">
-              {(['3', '6', '12'] as const).map((months) => (
-                <button
-                  key={months}
-                  onClick={() => setPeriod(months)}
-                  className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${period === months
-                    ? 'bg-primary-600 dark:bg-primary-500 text-white'
-                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
-                >
-                  {months} meses
-                </button>
-              ))}
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Evolução Financeira</h3>
+            <span className="text-xs text-gray-400 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full">{periodLabel}</span>
           </div>
-
           <div className="overflow-hidden min-w-0">
             <ResponsiveContainer width="100%" height={350}>
               <LineChart data={monthlyEvolution}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis dataKey="month" stroke="#6b7280" className="dark:text-neutral-400" />
-                <YAxis stroke="#6b7280" className="dark:text-neutral-400" />
-                <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="receitas"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  name="Receitas"
-                  dot={{ fill: '#22c55e', r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="despesas"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  name="Despesas"
-                  dot={{ fill: '#ef4444', r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="saldo"
-                  stroke="#0ea5e9"
-                  strokeWidth={2}
-                  name="Saldo"
-                  dot={{ fill: '#0ea5e9', r: 4 }}
-                />
+                <XAxis dataKey="month" stroke="#6b7280" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Line type="monotone" dataKey="receitas" stroke="#22c55e" strokeWidth={2.5} name="Receitas" dot={{ fill: '#22c55e', r: 4 }} />
+                <Line type="monotone" dataKey="despesas" stroke="#ef4444" strokeWidth={2.5} name="Despesas" dot={{ fill: '#ef4444', r: 4 }} />
+                <Line type="monotone" dataKey="saldo" stroke="#0ea5e9" strokeWidth={2} name="Saldo" dot={{ fill: '#0ea5e9', r: 3 }} strokeDasharray="4 2" />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Comparação de Receitas vs Despesas por Categoria */}
+        {/* ── RECEITAS vs DESPESAS POR CATEGORIA ───────────────────────────── */}
         <div className="card">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Receitas e Despesas por Categoria
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                Dados do mês atual • Top 10 categorias por volume
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Receitas e Despesas por Categoria</h3>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">Top 10 por volume — {periodLabel}</p>
             </div>
-            <span className="text-xs text-gray-500 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full flex-shrink-0">
-              Mês Atual
-            </span>
           </div>
-
-          <div className="overflow-hidden min-w-0">
-            <ResponsiveContainer width="100%" height={400}>
-              <ComposedChart data={categoryComparison} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis type="number" stroke="#6b7280" className="dark:text-neutral-400" />
-                <YAxis dataKey="category" type="category" stroke="#6b7280" className="dark:text-neutral-400" width={120} />
-                <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="receitas"
-                  fill="#22c55e"
-                  name="Receitas"
-                  radius={[0, 8, 8, 0]}
-                />
-                <Bar
-                  dataKey="despesas"
-                  fill="#ef4444"
-                  name="Despesas"
-                  radius={[0, 8, 8, 0]}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+          {categoryComparison.length > 0 ? (
+            <div className="overflow-hidden min-w-0">
+              <ResponsiveContainer width="100%" height={Math.max(300, categoryComparison.length * 40)}>
+                <ComposedChart data={categoryComparison} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
+                  <XAxis type="number" stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
+                  <YAxis dataKey="category" type="category" stroke="#6b7280" tick={{ fontSize: 11 }} width={130} />
+                  <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="receitas" fill="#22c55e" name="Receitas" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="despesas" fill="#ef4444" name="Despesas" radius={[0, 6, 6, 0]} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p className="text-center text-gray-400 dark:text-neutral-500 py-10 text-sm">Nenhuma transação no período selecionado</p>
+          )}
         </div>
 
-        {/* Gráficos de Distribuição lado a lado */}
+        {/* ── GRÁFICOS DE PIZZA ─────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribuição de Receitas */}
           <div className="card">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Distribuição de Receitas
-              </h3>
-              <span className="text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
-                {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
-              </span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Distribuição de Receitas</h3>
+              <span className="text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800 px-3 py-1 rounded-full">{periodLabel}</span>
             </div>
             {categoryData.income.length > 0 ? (
-              <div className="overflow-hidden min-w-0">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData.income}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="receitas"
-                      isAnimationActive={true}
-                      animationDuration={1200}
-                      animationBegin={0}
-                    >
-                      {categoryData.income.map((entry, index) => (
-                        <Cell key={`cell-income-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value: number) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={categoryData.income}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    dataKey="receitas"
+                    isAnimationActive
+                    animationDuration={1000}
+                  >
+                    {categoryData.income.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
-                Nenhuma receita registrada este mês
+              <div className="h-[280px] flex items-center justify-center text-gray-400 dark:text-neutral-500 text-sm">
+                Nenhuma receita no período selecionado
               </div>
             )}
           </div>
@@ -816,187 +600,123 @@ const Reports = () => {
           {/* Distribuição de Despesas */}
           <div className="card">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Distribuição de Despesas
-              </h3>
-              <span className="text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
-                {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
-              </span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Distribuição de Despesas</h3>
+              <span className="text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800 px-3 py-1 rounded-full">{periodLabel}</span>
             </div>
             {categoryData.expenses.length > 0 ? (
-              <div className="overflow-hidden min-w-0">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData.expenses}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="despesas"
-                      isAnimationActive={true}
-                      animationDuration={1200}
-                      animationBegin={0}
-                    >
-                      {categoryData.expenses.map((entry, index) => (
-                        <Cell key={`cell-expense-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value: number) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={categoryData.expenses}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    dataKey="despesas"
+                    isAnimationActive
+                    animationDuration={1000}
+                  >
+                    {categoryData.expenses.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-neutral-400">
-                Nenhuma despesa registrada este mês
+              <div className="h-[280px] flex items-center justify-center text-gray-400 dark:text-neutral-500 text-sm">
+                Nenhuma despesa no período selecionado
               </div>
             )}
           </div>
         </div>
 
-        {/* Resumo Detalhado - Receitas e Despesas */}
+        {/* ── DETALHAMENTO POR CATEGORIA ────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Resumo de Receitas */}
+          {/* Receitas */}
           <div className="card">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <div className="w-2 h-6 bg-success-500 rounded"></div>
-                Resumo de Receitas
+                <div className="w-2 h-5 bg-success-500 rounded" />
+                Receitas por Categoria
               </h3>
-              <span className="text-xs text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-3 py-1 rounded-full font-medium">
-                Mês Atual
-              </span>
+              <span className="text-xs text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-3 py-1 rounded-full font-medium">{periodLabel}</span>
             </div>
             {categoryData.income.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-1">
-                  {categoryData.income.map((item) => {
-                    const totalIncome = categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0)
-                    const percentage = (item.receitas / totalIncome) * 100
-                    return (
-                      <div key={item.name}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-4 h-4 rounded"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-success-600 dark:text-success-400">
-                              {formatCurrency(item.receitas)}
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-neutral-400">
-                              {percentage.toFixed(1)}%
-                            </p>
-                          </div>
+              <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
+                {categoryData.income.map(item => {
+                  const total = categoryData.income.reduce((s, c) => s + c.receitas, 0)
+                  const pct = total > 0 ? (item.receitas / total) * 100 : 0
+                  return (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
-                          <div
-                            className="h-2 rounded-full transition-all duration-500"
-                            style={{
-                              width: `${percentage}%`,
-                              backgroundColor: item.color,
-                            }}
-                          />
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-success-600 dark:text-success-400">{fmtCurrency(item.receitas)}</p>
+                          <p className="text-xs text-gray-400">{pct.toFixed(1)}%</p>
                         </div>
                       </div>
-                    )
-                  })}
-                </div>
-                <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900 dark:text-white">Total de Receitas</span>
-                    <span className="font-bold text-success-600 dark:text-success-400 text-lg">
-                      {formatCurrency(categoryData.income.reduce((sum, cat) => sum + cat.receitas, 0))}
-                    </span>
-                  </div>
+                      <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5">
+                        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: item.color }} />
+                      </div>
+                    </div>
+                  )
+                })}
+                <div className="pt-3 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
+                  <span className="font-bold text-sm text-gray-900 dark:text-white">Total</span>
+                  <span className="font-bold text-success-600 dark:text-success-400">{fmtCurrency(summary.income)}</span>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
-                Nenhuma receita registrada este mês
-              </div>
+              <p className="text-center py-8 text-gray-400 dark:text-neutral-500 text-sm">Nenhuma receita no período</p>
             )}
           </div>
 
-          {/* Resumo de Despesas */}
+          {/* Despesas */}
           <div className="card">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <div className="w-2 h-6 bg-danger-500 rounded"></div>
-                Resumo de Despesas
+                <div className="w-2 h-5 bg-danger-500 rounded" />
+                Despesas por Categoria
               </h3>
-              <span className="text-xs text-danger-600 dark:text-danger-400 bg-danger-50 dark:bg-danger-900/20 px-3 py-1 rounded-full font-medium">
-                Mês Atual
-              </span>
+              <span className="text-xs text-danger-600 dark:text-danger-400 bg-danger-50 dark:bg-danger-900/20 px-3 py-1 rounded-full font-medium">{periodLabel}</span>
             </div>
             {categoryData.expenses.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-1">
-                  {categoryData.expenses.map((item) => {
-                    const totalExpense = categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0)
-                    const percentage = (item.despesas / totalExpense) * 100
-                    return (
-                      <div key={item.name}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-4 h-4 rounded"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-danger-600 dark:text-danger-400">
-                              {formatCurrency(item.despesas)}
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-neutral-400">
-                              {percentage.toFixed(1)}%
-                            </p>
-                          </div>
+              <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
+                {categoryData.expenses.map(item => {
+                  const total = categoryData.expenses.reduce((s, c) => s + c.despesas, 0)
+                  const pct = total > 0 ? (item.despesas / total) * 100 : 0
+                  return (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2">
-                          <div
-                            className="h-2 rounded-full transition-all duration-500"
-                            style={{
-                              width: `${percentage}%`,
-                              backgroundColor: item.color,
-                            }}
-                          />
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-danger-600 dark:text-danger-400">{fmtCurrency(item.despesas)}</p>
+                          <p className="text-xs text-gray-400">{pct.toFixed(1)}%</p>
                         </div>
                       </div>
-                    )
-                  })}
-                </div>
-                <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900 dark:text-white">Total de Despesas</span>
-                    <span className="font-bold text-danger-600 dark:text-danger-400 text-lg">
-                      {formatCurrency(categoryData.expenses.reduce((sum, cat) => sum + cat.despesas, 0))}
-                    </span>
-                  </div>
+                      <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5">
+                        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: item.color }} />
+                      </div>
+                    </div>
+                  )
+                })}
+                <div className="pt-3 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
+                  <span className="font-bold text-sm text-gray-900 dark:text-white">Total</span>
+                  <span className="font-bold text-danger-600 dark:text-danger-400">{fmtCurrency(summary.expense)}</span>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
-                Nenhuma despesa registrada este mês
-              </div>
+              <p className="text-center py-8 text-gray-400 dark:text-neutral-500 text-sm">Nenhuma despesa no período</p>
             )}
           </div>
         </div>
+
       </div>
     </PageTransition>
   )

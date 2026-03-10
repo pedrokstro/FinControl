@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import MobileNavBar from './MobileNavBar'
-import FloatingActionButton from './FloatingActionButton'
 import { useFinancialStore } from '@/store/financialStore'
 
 const MainLayout = () => {
@@ -29,7 +28,6 @@ const MainLayout = () => {
       </div>
 
       <MobileNavBar />
-      <FloatingActionButton />
     </div>
   )
 }

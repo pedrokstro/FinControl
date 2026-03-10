@@ -17,6 +17,28 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.2.0] - 2026-03-10
+
+### Adicionado
+- **Controle de Cartões de Crédito (Completo):**
+  - Página `/cartões` completamente funcional: listagem visual, cards com fatura atual calculada em tempo real, barra de progresso do limite utilizado, dias de fechamento e vencimento.
+  - Modal de criação e edição de cartões com nome, bandeira, limite (opcional), dia de fechamento e dia de vencimento.
+  - Exclusão de cartão com modal de confirmação.
+  - Ao criar ou editar uma despesa, o usuário pode vincular um **Cartão de Crédito** (dropdown opcional).
+  - Despesas vinculadas a cartões são **excluídas do total de despesas** no resumo mensal, evitando dupla contagem (a fatura já representa o total).
+  - O backend agora retorna os dados do cartão (`creditCard`) em todas as queries de transações.
+
+- **Rastreador de Assinaturas (Melhorado):**
+  - Detecção automática de marca por nome: Netflix, Spotify, Amazon/Prime, Apple/iCloud, Google/YouTube e Disney+ exibem seus ícones reais.
+  - Ícones de marcas adicionados ao `iconMapping.tsx` via `@iconify/react` (Netflix, Spotify, Amazon, Apple, Google, Disney+).
+  - Grupo **"Assinaturas"** adicionado no seletor de ícones (IconPicker) para despesas, facilitando categorizar streaming e serviços.
+
+### Corrigido
+- `creditCard` adicionado às `relations` nas queries de `create`, `findAll`, `findById` e `update` do `transaction.service.ts`.
+- Avisos de lint removidos (`useMemo`, `Wallet`) na página `Cards.tsx`.
+
+---
+
 ## [2.1.3] - 2026-03-10
 
 ### Adicionado

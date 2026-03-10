@@ -13,6 +13,7 @@ import { Category } from './Category';
 import { Transaction } from './Transaction';
 import { RefreshToken } from './RefreshToken';
 import { Budget } from './Budget';
+import { CreditCard } from './CreditCard';
 
 @Entity('users')
 export class User {
@@ -86,6 +87,9 @@ export class User {
 
   @OneToMany(() => Budget, (budget) => budget.user)
   budgets: Budget[];
+
+  @OneToMany(() => CreditCard, (creditCard) => creditCard.user)
+  creditCards: CreditCard[];
 
   // Methods
   @BeforeInsert()

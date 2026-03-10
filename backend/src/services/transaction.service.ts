@@ -76,6 +76,7 @@ export class TransactionService {
       recurrenceEndDate: data.recurrenceEndDate || null,
       nextOccurrence: data.nextOccurrence || null,
       parentTransactionId: data.parentTransactionId || null,
+      creditCardId: data.creditCardId || null,
     });
 
     const savedTransaction = await this.transactionRepository.save(transaction);
@@ -84,7 +85,7 @@ export class TransactionService {
 
     return this.transactionRepository.findOne({
       where: { id: savedTransaction.id },
-      relations: ['category'],
+      relations: ['category', 'creditCard'],
     });
   }
 
@@ -124,7 +125,7 @@ export class TransactionService {
 
     const [transactions, total] = await this.transactionRepository.findAndCount({
       where,
-      relations: ['category'],
+      relations: ['category', 'creditCard'],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip: (page - 1) * limit,
       take: limit,
@@ -192,7 +193,7 @@ export class TransactionService {
   async findById(id: string, userId: string) {
     const transaction = await this.transactionRepository.findOne({
       where: { id, userId },
-      relations: ['category'],
+      relations: ['category', 'creditCard'],
     });
 
     if (!transaction) {
@@ -337,7 +338,7 @@ export class TransactionService {
 
     return this.transactionRepository.findOne({
       where: { id: transaction.id },
-      relations: ['category'],
+      relations: ['category', 'creditCard'],
     });
   }
 
@@ -376,8 +377,9 @@ export class TransactionService {
       .filter(t => t.type === TransactionType.INCOME)
       .reduce((sum, t) => sum + Number(t.amount), 0);
 
+    // IMPORTANTE: Excluir transações de cartão de crédito do total de despesas para evitar bitributação/redundância (solicitação do usuário)
     const expense = transactions
-      .filter(t => t.type === TransactionType.EXPENSE)
+      .filter(t => t.type === TransactionType.EXPENSE && !t.creditCardId)
       .reduce((sum, t) => sum + Number(t.amount), 0);
 
     // Agrupar por categoria
