@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { createPortal } from 'react-dom';
 import { haptics } from '@/utils/haptics';
 
 export interface SelectOption {
@@ -77,10 +76,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             </button>
 
             {/* Popover Desktop & Mobile Bottom Sheet */}
-            {createPortal(
-                <AnimatePresence>
-                    {isOpen && (
-                        <>
+            <AnimatePresence>
+                {isOpen && (
+                    <>
                             {/* Mobile Overlay */}
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -155,9 +153,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                             </motion.div>
                         </>
                     )}
-                </AnimatePresence>,
-                document.body
-            )}
+            </AnimatePresence>
         </div>
     );
 };

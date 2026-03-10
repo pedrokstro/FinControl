@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { createPortal } from 'react-dom';
 import {
     format,
     addMonths,
@@ -196,11 +195,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                 <CalendarIcon className={`w-5 h-5 flex-shrink-0 transition-colors ${isOpen ? 'text-primary-500' : 'text-gray-400'}`} />
             </button>
 
-            {/* Popover */}
-            {createPortal(
-                <AnimatePresence>
-                    {isOpen && (
-                        <>
+            <AnimatePresence>
+                {isOpen && (
+                    <>
                             {/* Mobile Overlay */}
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -262,9 +259,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                             </motion.div>
                         </>
                     )}
-                </AnimatePresence>,
-                document.body
-            )}
+            </AnimatePresence>
         </div>
     );
 };
