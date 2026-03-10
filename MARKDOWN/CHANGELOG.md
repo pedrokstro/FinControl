@@ -17,6 +17,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.1.3] - 2026-03-10
+
+### Adicionado
+- **Rastreador de Assinaturas (Subscriptions Tracker):**
+  - Nova aba principal dedicada a gastos fixos recorrentes.
+  - Varre o histórico e agrupa despesas recorrentes (ex: Netflix, Spotify, Academia).
+  - Mostra projeção implacável do custo no mês ("Custo Mensal") e no ano inteiro ("Dreno Anual").
+  - Reaproveita a aba nativa de ícones "Exclusivos" para as marcas e serviços sem sujar o código.
+  - Ícone de atalho fácil pelo Menu Lateral "Assinaturas".
+  - Barra de pesquisa integrada para achar a assinatura exata.
+
+---
+
 ## [2.1.2] - 2026-03-10
 
 ### Adicionado
@@ -36,7 +49,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [2.1.0] - 2026-03-09### Adicionado
+## [2.1.0] - 2026-03-09
+
+### Adicionado
 - **Swipe-to-Action Mobile:** Gesto de deslizar para a esquerda (framer-motion) adicionado nos cartões de transação para editar/excluir deslizando o dedo no celular.
 - **Pull-to-Close:** Gesto de deslizar de cima para baixo na "barrinha" para fechar Fisicamente todos os Modais, Calendários Customizados, Dropdowns e Icon Pickers fluídos tipo iOS.
 - Teclado numérico Mobile Nativo em todos os campos que exigem moeda, taxas ou quantidades financeiras (`inputMode="decimal"`), refinando o uso no iOS/Android.
@@ -49,7 +64,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [2.0.1] - 2026-03-09### Adicionado
+## [2.0.1] - 2026-03-09
+
+### Adicionado
 - Animações escalonadas nos gráficos da Dashboard: AreaChart (receitas vs despesas), BarChart formatadas.
 - Animações circulares e lineares de PieCharts na Calculadora de Juros Compostos e em Relatórios Dinâmicos.
 - Animação padronizada de expansão e visibilidade (pulsação ascendente) para ícones TradingUp/TradingDown em modais e alertas de Upgrade e Limits.
