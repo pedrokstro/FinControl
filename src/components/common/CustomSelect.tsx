@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { haptics } from '@/utils/haptics';
 
 export interface SelectOption {
     value: string;
@@ -52,6 +53,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     }, [isOpen]);
 
     const handleSelect = (val: string) => {
+        haptics.light();
         onChange(val);
         setIsOpen(false);
     };
@@ -60,7 +62,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         <div className={`relative ${className}`} ref={containerRef}>
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => { haptics.light(); setIsOpen(!isOpen) }}
                 className="w-full h-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/20 text-left"
             >
                 <div className="flex items-center gap-2 truncate">

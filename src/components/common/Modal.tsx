@@ -2,8 +2,10 @@ import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { X } from 'lucide-react'
+import { haptics } from '@/utils/haptics'
 
 type ModalSize = 'sm' | 'md' | 'lg'
+
 
 interface ModalProps {
   isOpen: boolean
@@ -45,6 +47,8 @@ const Modal = ({
 
   useEffect(() => {
     if (!isOpen) return
+
+    haptics.light()
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

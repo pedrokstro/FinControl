@@ -38,8 +38,7 @@ import CustomDatePicker from '@/components/common/CustomDatePicker'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
-
-
+import { haptics } from '@/utils/haptics'
 
 const transactionSchema = z
   .object({
@@ -271,6 +270,7 @@ const Transactions = () => {
     if (!editingId) {
       const canCreate = await checkLimit()
       if (!canCreate) {
+        haptics.warning()
         setShowLimitModal(true)
         return
       }
@@ -289,24 +289,31 @@ const Transactions = () => {
       recurrenceMonths: isRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
     }
 
-    if (editingId) {
-      // ✅ Ao editar, enviar apenas os campos necessários
-      await updateTransaction(editingId, transactionData)
-    } else {
-      // ✅ Ao criar, adicionar category name e userId
-      await addTransaction({
-        ...transactionData,
-        category: category?.name || '',
-        userId: '1',
-      })
-      // Atualizar uso após criar transação
-      await refreshUsage()
+    try {
+      if (editingId) {
+        // ✅ Ao editar, enviar apenas os campos necessários
+        await updateTransaction(editingId, transactionData)
+      } else {
+        // ✅ Ao criar, adicionar category name e userId
+        await addTransaction({
+          ...transactionData,
+          category: category?.name || '',
+          userId: '1',
+        })
+        // Atualizar uso após criar transação
+        await refreshUsage()
+      }
+      haptics.success()
+      handleCloseModal()
+      setIsRecurring(false) // Reset recorrência
+    } catch (error) {
+      haptics.error()
+      console.error('Erro na transação', error)
     }
-    handleCloseModal()
-    setIsRecurring(false) // Reset recorrência
   }
 
   const handleDelete = (transaction: any) => {
+    haptics.warning()
     setTransactionToDelete({
       id: transaction.id,
       description: transaction.description,
@@ -318,11 +325,13 @@ const Transactions = () => {
   const confirmDelete = () => {
     if (transactionToDelete) {
       deleteTransaction(transactionToDelete.id)
+      haptics.success()
       setTransactionToDelete(null)
     }
   }
 
   const handleCancelRecurrence = (transaction: any) => {
+    haptics.warning()
     setTransactionToCancelRecurrence({
       id: transaction.id,
       description: transaction.description
@@ -336,6 +345,7 @@ const Transactions = () => {
     try {
       await api.patch(`/transactions/${transactionToCancelRecurrence.id}/cancel-recurrence`)
 
+      haptics.success()
       toast.success('Recorrência cancelada com sucesso!')
 
       // Recarregar transações

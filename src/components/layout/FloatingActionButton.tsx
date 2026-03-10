@@ -3,6 +3,7 @@ import { Plus, X, Receipt, FolderOpen, Calculator, Percent, TrendingUp, ChevronL
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
+import { haptics } from '@/utils/haptics'
 
 const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -11,6 +12,7 @@ const FloatingActionButton = () => {
   const { logout } = useAuthStore()
 
   const handleAction = (action: 'transaction' | 'category' | 'calc-percent' | 'calc-interest') => {
+    haptics.medium()
     setIsOpen(false)
     setShowCalculators(false)
     if (action === 'transaction') {
@@ -25,6 +27,7 @@ const FloatingActionButton = () => {
   }
 
   const toggleOpen = () => {
+    haptics.light()
     if (isOpen) {
       setIsOpen(false)
       // Pequeno delay para resetar o estado interno após a animação de fechar
@@ -94,7 +97,7 @@ const FloatingActionButton = () => {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ delay: 0.15 }}
-                    onClick={() => setShowCalculators(true)}
+                    onClick={() => { haptics.light(); setShowCalculators(true) }}
                     className="flex items-center gap-3 bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-primary-100 dark:border-primary-800 group"
                   >
                     <Calculator className="w-5 h-5" />
@@ -123,7 +126,7 @@ const FloatingActionButton = () => {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    onClick={() => setShowCalculators(false)}
+                    onClick={() => { haptics.light(); setShowCalculators(false) }}
                     className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 px-4 py-2 rounded-full shadow-md transition-all border border-gray-200 dark:border-neutral-700"
                   >
                     <ChevronLeft className="w-4 h-4" />

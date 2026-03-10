@@ -27,6 +27,7 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import BudgetModal from '@/components/modals/BudgetModal'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
+import { haptics } from '@/utils/haptics'
 import { Target } from 'lucide-react'
 
 const categorySchema = z.object({
@@ -217,8 +218,10 @@ const Categories = () => {
       } else {
         await addCategory({ ...data, userId: '1' })
       }
+      haptics.success()
       handleCloseModal()
     } catch (error) {
+      haptics.error()
       console.error('Erro ao salvar categoria:', error)
     }
   }
@@ -229,6 +232,7 @@ const Categories = () => {
     type: 'income' | 'expense'
     color: string
   }) => {
+    haptics.warning()
     setCategoryToDelete(category)
     setShowDeleteModal(true)
   }
@@ -245,7 +249,9 @@ const Categories = () => {
     try {
       setIsDeletingCategory(true)
       await deleteCategory(categoryToDelete.id)
+      haptics.success()
     } catch (error) {
+      haptics.error()
       console.error('Erro ao excluir categoria:', error)
     } finally {
       setIsDeletingCategory(false)

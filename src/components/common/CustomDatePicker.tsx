@@ -15,6 +15,7 @@ import {
     parseISO,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { haptics } from '@/utils/haptics';
 
 interface CustomDatePickerProps {
     value: string; // YYYY-MM-DD
@@ -57,10 +58,11 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
         };
     }, [isOpen]);
 
-    const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-    const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+    const nextMonth = () => { haptics.light(); setCurrentMonth(addMonths(currentMonth, 1)) };
+    const prevMonth = () => { haptics.light(); setCurrentMonth(subMonths(currentMonth, 1)) };
 
     const handleDateClick = (day: Date) => {
+        haptics.light();
         onChange(format(day, 'yyyy-MM-dd'));
         setIsOpen(false);
     };
@@ -180,7 +182,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
         <div className="relative w-full" ref={containerRef}>
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => { haptics.light(); setIsOpen(!isOpen) }}
                 className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-4 text-left ${isOpen ? 'border-primary-500 ring-primary-100 dark:ring-primary-900/20' : ''
                     } ${error
                         ? 'border-red-300 ring-red-50 dark:border-red-900 dark:ring-red-900/20'

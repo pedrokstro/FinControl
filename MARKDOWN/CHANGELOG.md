@@ -17,6 +17,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.1.2] - 2026-03-10
+
+### Adicionado
+- **Feedback Tátil (Haptics):** Implementação de respostas vibratórias (`navigator.vibrate`) em interações importantes no mobile, como:
+  - Salvar/Excluir transações e categorias (vibração de sucesso/aviso).
+  - Abrir e selecionar datas em calendários e opções em dropdowns personalizados (vibração leve).
+  - Navegação do Menu e botão Flutuante (vibração média e tátil de botões).
+
 ## [2.1.1] - 2026-03-09
 
 ### Adicionado
