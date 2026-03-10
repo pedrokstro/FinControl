@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ArrowLeftRight, BarChart3, Settings, FolderOpen, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, BarChart3, Settings, FolderOpen, CalendarClock, type LucideIcon } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 
 type NavItem = {
@@ -12,8 +12,9 @@ const navItems: NavItem[] = [
   { path: '/app/dashboard', label: 'Início', icon: LayoutDashboard },
   { path: '/app/transactions', label: 'Transações', icon: ArrowLeftRight },
   { path: '/app/categories', label: 'Categorias', icon: FolderOpen },
+  { path: '/app/subscriptions', label: 'Assinaturas', icon: CalendarClock },
   { path: '/app/reports', label: 'Relatórios', icon: BarChart3 },
-  { path: '/app/settings', label: 'Configurações', icon: Settings },
+  { path: '/app/settings', label: 'Config.', icon: Settings },
 ]
 
 const MobileNavBar = () => {

@@ -19,7 +19,8 @@ import {
   ChevronDown,
   ChevronUp,
   Percent,
-  TrendingUp
+  TrendingUp,
+  CalendarClock
 } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuthStore } from '@/store/authStore'
@@ -101,6 +102,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
     { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações' },
     { path: '/app/categories', icon: FolderOpen, label: 'Categorias' },
+    { path: '/app/subscriptions', icon: CalendarClock, label: 'Assinaturas' },
     { path: '/app/reports', icon: BarChart3, label: 'Relatórios' },
     { path: '/app/settings', icon: Settings, label: 'Configurações' },
   ]

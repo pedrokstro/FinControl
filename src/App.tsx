@@ -23,6 +23,7 @@ import AuthCallback from './pages/AuthCallback'
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Transactions = lazy(() => import('./pages/Transactions'))
 const Categories = lazy(() => import('./pages/Categories'))
+const Subscriptions = lazy(() => import('./pages/Subscriptions'))
 const Reports = lazy(() => import('./pages/Reports'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Plans = lazy(() => import('./pages/Plans'))
@@ -94,6 +95,7 @@ const AnimatedRoutes = () => {
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
         <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
         <Route path="/categories" element={<Navigate to="/app/categories" replace />} />
+        <Route path="/subscriptions" element={<Navigate to="/app/subscriptions" replace />} />
         <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
         <Route path="/plans" element={<Navigate to="/app/plans" replace />} />
         <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
@@ -154,6 +156,11 @@ const AnimatedRoutes = () => {
           <Route path="categories" element={
             <Suspense fallback={<PageLoader />}>
               <Categories />
+            </Suspense>
+          } />
+          <Route path="subscriptions" element={
+            <Suspense fallback={<PageLoader />}>
+              <Subscriptions />
             </Suspense>
           } />
           <Route path="reports" element={
