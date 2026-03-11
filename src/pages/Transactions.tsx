@@ -609,6 +609,11 @@ const Transactions = () => {
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-gray-900 dark:text-white">
                               {transaction.description}
+                              {transaction.totalInstallments && transaction.totalInstallments > 0 && (
+                                <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
+                                  {transaction.currentInstallment || 1}/{transaction.totalInstallments}
+                                </span>
+                              )}
                             </p>
                              {(transaction.isRecurring || transaction.parentTransactionId) && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
@@ -771,6 +776,11 @@ const Transactions = () => {
                           </p>
                           <p className="text-base font-semibold text-gray-900 dark:text-white mt-0.5" style={{ wordBreak: 'break-word', paddingRight: '1rem' }}>
                             {transaction.description}
+                            {transaction.totalInstallments && transaction.totalInstallments > 0 && (
+                              <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
+                                {transaction.currentInstallment || 1}/{transaction.totalInstallments}
+                              </span>
+                            )}
                           </p>
                           {(transaction.isRecurring || transaction.parentTransactionId) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 mt-1">
