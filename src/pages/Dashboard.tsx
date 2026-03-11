@@ -1918,7 +1918,7 @@ const Dashboard = () => {
       {/* Income Transactions Modal */}
       {
         showIncomeModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
             <div
               className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
@@ -1995,7 +1995,7 @@ const Dashboard = () => {
       {/* Expense Transactions Modal */}
       {
         showExpenseModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
             <div
               className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
