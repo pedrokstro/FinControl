@@ -57,6 +57,9 @@ export const createTransactionSchema = Joi.object({
       'number.min': 'Mínimo de 2 parcelas',
       'number.max': 'Máximo de 360 parcelas',
     }),
+  creditCardId: Joi.string().uuid().optional().allow(null, '').messages({
+    'string.guid': 'ID do cartão de crédito inválido',
+  }),
 });
 
 export const updateTransactionSchema = Joi.object({
@@ -76,6 +79,9 @@ export const updateTransactionSchema = Joi.object({
   }),
   categoryId: Joi.string().uuid().optional().messages({
     'string.guid': 'ID da categoria inválido',
+  }),
+  creditCardId: Joi.string().uuid().optional().allow(null, '').messages({
+    'string.guid': 'ID do cartão de crédito inválido',
   }),
 });
 
