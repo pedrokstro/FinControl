@@ -1293,6 +1293,80 @@ const Settings = () => {
                         </div>
                       </div>
                     </div>
+
+                    {/* v0.4.0 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.4.0</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">8 de Novembro de 2025</p>
+                        <div className="space-y-4">
+                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                            <li>Transações recorrentes.</li>
+                            <li>Modal de confirmação de exclusão.</li>
+                            <li>Atalhos de teclado.</li>
+                            <li>Paleta de cores para categorias.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v0.3.0 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.3.0</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">5 de Novembro de 2025</p>
+                        <div className="space-y-4">
+                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                            <li>Página de relatórios e painéis gráficos interativos.</li>
+                            <li>Exportação de dados.</li>
+                            <li>Filtros avançados.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v0.2.0 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.2.0</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">1 de Novembro de 2025</p>
+                        <div className="space-y-4">
+                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                            <li>CRUD de categorias e Seletor de ícones.</li>
+                            <li>Validação de formulários nativa.</li>
+                            <li>Feedback visual e aprimoramento de UI.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v0.1.0 */}
+                    <div className="relative pl-10 border-l-2 border-transparent">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-500 dark:text-neutral-400">Versão 0.1.0</span>
+                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Primeira Versão Lançada</span>
+                        </div>
+                        <p className="text-xs text-gray-400 dark:text-neutral-500 mb-4 font-medium italic">28 de Outubro de 2025</p>
+                        <div className="space-y-4">
+                          <ul className="list-disc list-inside text-sm text-gray-500 dark:text-neutral-500 space-y-1 ml-1">
+                            <li>Estrutura inicial do projeto com React.</li>
+                            <li>Sistema básico de autenticação.</li>
+                            <li>Dashboard inicial e CRUD de transações.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

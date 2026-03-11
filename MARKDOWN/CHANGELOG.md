@@ -17,6 +17,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.1] - 2026-03-11
+
+### Melhorado
+- **Fluidez e Experiência Premium Geral:**
+  - O Componente Global de Transição de Páginas (`PageTransition.tsx`) foi completamente reescrito para utilizar o motor do `framer-motion`, introduzindo um efeito moderno e suave de *Fade In + Slide Up* nas trocas de tela.
+  - O estilo global padrão dos Cards (`index.css`) ganhou um refinamento de física tátil: ao passar o mouse, o painel agora sofre uma micro-elevação (`hover:-translate-y-0.5`) junto a um contorno e sombra suavizados, passando uma incrível sensação magnética e fluida a todos os Cards do sistema.
+
+---
+
 ## [2.4.0] - 2026-03-11
 
 ### Adicionado / Melhorado
@@ -280,7 +289,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [0.1.0] - 2025-10-28
+## [0.1.0] - 2025-10-28 (Primeira Versão Lançada)
 
 ### Adicionado
 - Estrutura inicial do projeto
