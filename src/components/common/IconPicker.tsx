@@ -125,12 +125,12 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/60 z-[60] sm:p-4"
+                className="fixed inset-0 bg-black/60 z-[300] sm:p-4"
                 onClick={() => setIsOpen(false)}
               />
 
               {/* Modal Container */}
-              <div className="fixed inset-0 flex items-end sm:items-center justify-center pointer-events-none z-[60] sm:p-4">
+              <div className="fixed inset-0 flex items-end sm:items-center justify-center pointer-events-none z-[300] sm:p-4">
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
