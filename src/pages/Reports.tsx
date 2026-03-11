@@ -3,7 +3,6 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useAuthStore } from '@/store/authStore'
 import {
   Bar,
-  LineChart,
   Line,
   PieChart,
   Pie,
@@ -15,6 +14,8 @@ import {
   Legend,
   ResponsiveContainer,
   ComposedChart,
+  Area,
+  BarChart,
 } from 'recharts'
 import {
   format,
@@ -219,6 +220,27 @@ const Reports = () => {
     })
     return Array.from(map.values()).sort((a, b) => b.total - a.total).slice(0, 5)
   }, [filtered, categories])
+
+  // ── Métricas Avançadas ─────────────────────────────────────────────────────
+  const savingsRate = summary.income > 0 ? ((summary.income - summary.expense) / summary.income) * 100 : 0
+  const daysInPeriod = useMemo(() => {
+    const diffTime = Math.abs(dateRange.end.getTime() - dateRange.start.getTime())
+    return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+  }, [dateRange])
+  const avgDailySpend = summary.expense > 0 ? summary.expense / daysInPeriod : 0
+
+  // ── Gastos por Dia da Semana ────────────────────────────────────────────────
+  const spendByDayOfWeek = useMemo(() => {
+    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+    const data = days.map(day => ({ day, total: 0 }))
+    filtered.filter(t => t.type === 'expense').forEach(t => {
+      // Ajuste de fuso horário local
+      const d = parseISO(t.date)
+      const date = new Date(d.getTime() + d.getTimezoneOffset() * 60000)
+      data[date.getDay()].total += t.amount
+    })
+    return data
+  }, [filtered])
 
   // ── Exportação ────────────────────────────────────────────────────────────
   const buildExportData = () => {
@@ -475,6 +497,34 @@ const Reports = () => {
           </div>
         </div>
 
+        {/* ── MÉTRICAS PREMIUM INDICATORS ──────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+          <div className="card p-5 flex flex-col justify-center items-center text-center">
+            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Taxa de Poupança</span>
+            <p className={`text-2xl font-bold ${savingsRate >= 20 ? 'text-success-600 dark:text-success-400' : savingsRate > 0 ? 'text-primary-600 dark:text-primary-400' : 'text-danger-600 dark:text-danger-400'}`}>
+              {savingsRate.toFixed(1)}%
+            </p>
+          </div>
+          <div className="card p-5 flex flex-col justify-center items-center text-center">
+            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Média Gasto Diário</span>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {fmtCurrency(avgDailySpend)}
+            </p>
+          </div>
+          <div className="card p-5 flex flex-col justify-center items-center text-center">
+            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Maior Despesa</span>
+            <p className="text-xl font-bold text-gray-900 dark:text-white truncate w-full px-2" title={topExpense[0]?.name || '-'}>
+              {topExpense.length > 0 ? fmtCurrency(topExpense[0].total) : 'R$ 0,00'}
+            </p>
+          </div>
+          <div className="card p-5 flex flex-col justify-center items-center text-center">
+            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Dias Analisados</span>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {daysInPeriod} <span className="text-sm font-normal text-gray-400">dias</span>
+            </p>
+          </div>
+        </div>
+
         {/* ── TOP CATEGORIAS MAIS GASTADAS ─────────────────────────────────── */}
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
@@ -514,25 +564,57 @@ const Reports = () => {
           )}
         </div>
 
-        {/* ── EVOLUÇÃO MENSAL ───────────────────────────────────────────────── */}
-        <div className="card">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Evolução Financeira</h3>
-            <span className="text-xs text-gray-400 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full">{periodLabel}</span>
+        {/* ── EVOLUÇÃO MENSAL E DIAS DA SEMANA ───────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="card lg:col-span-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Evolução Financeira</h3>
+              <span className="text-xs text-gray-400 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full">{periodLabel}</span>
+            </div>
+            <div className="overflow-hidden min-w-0">
+              <ResponsiveContainer width="100%" height={350}>
+                <ComposedChart data={monthlyEvolution}>
+                  <defs>
+                    <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-10" vertical={false} />
+                  <XAxis dataKey="month" stroke="#6b7280" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
+                  <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} dx={-10} />
+                  <Tooltip formatter={(v: number) => fmtCurrency(v)} cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '4 4' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: 13, backgroundColor: 'var(--tooltip-bg, #fff)' }} />
+                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: '10px' }} />
+                  <Area type="monotone" dataKey="receitas" stroke="#22c55e" fillOpacity={1} fill="url(#colorReceitas)" strokeWidth={3} name="Receitas" />
+                  <Area type="monotone" dataKey="despesas" stroke="#ef4444" fillOpacity={1} fill="url(#colorDespesas)" strokeWidth={3} name="Despesas" />
+                  <Line type="monotone" dataKey="saldo" stroke="#0ea5e9" strokeWidth={2} name="Saldo" dot={{ fill: '#0ea5e9', r: 4, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} strokeDasharray="4 4" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="overflow-hidden min-w-0">
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={monthlyEvolution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis dataKey="month" stroke="#6b7280" tick={{ fontSize: 12 }} />
-                <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="receitas" stroke="#22c55e" strokeWidth={2.5} name="Receitas" dot={{ fill: '#22c55e', r: 4 }} />
-                <Line type="monotone" dataKey="despesas" stroke="#ef4444" strokeWidth={2.5} name="Despesas" dot={{ fill: '#ef4444', r: 4 }} />
-                <Line type="monotone" dataKey="saldo" stroke="#0ea5e9" strokeWidth={2} name="Saldo" dot={{ fill: '#0ea5e9', r: 3 }} strokeDasharray="4 2" />
-              </LineChart>
-            </ResponsiveContainer>
+
+          <div className="card lg:col-span-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Despesas por Dia</h3>
+            </div>
+            <div className="overflow-hidden min-w-0">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={spendByDayOfWeek}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-10" vertical={false} />
+                  <XAxis dataKey="day" stroke="#6b7280" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} dy={10} />
+                  <Tooltip formatter={(v: number) => fmtCurrency(v)} cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: 13 }} />
+                  <Bar dataKey="total" fill="#primary" radius={[4, 4, 0, 0]}>
+                    {spendByDayOfWeek.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.total === Math.max(...spendByDayOfWeek.map(d => d.total)) ? '#ef4444' : '#818cf8'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
