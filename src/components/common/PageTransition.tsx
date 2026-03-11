@@ -17,7 +17,7 @@ const PageTransition = ({ children, delay = 0.1 }: PageTransitionProps) => {
         ease: [0.25, 0.1, 0.25, 1], // easeOutCubic
         delay: delay 
       }}
-      className="w-full h-full will-change-transform"
+      className="w-full h-full"
     >
       {children}
     </motion.div>

@@ -17,6 +17,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.7] - 2026-03-11
+
+### Corrigido
+- **Correção de Desfoque nas Páginas (Renderização):**
+  - Removida a classe `will-change-transform` do componente `PageTransition` e as animações de `scale` no `AnimatedPage` que forçavam renderização contínua na GPU (causando perda de antialiasing subpixel em navegadores WebKit/Blink e resultando em páginas permanentemente desfocadas até receberem `hover`).
+  - O Dashboard não apresentava o problema pois não usava esses wrappers de animação. Agora todas as páginas estão 100% nítidas novamente.
+
 ## [2.4.6] - 2026-03-11
 
 ### Corrigido
