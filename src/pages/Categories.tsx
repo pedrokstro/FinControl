@@ -602,10 +602,10 @@ const Categories = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex"
                 onClick={handleCloseModal}
               />
-              <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4 z-50 pointer-events-none">
+              <div className="fixed inset-0 flex items-center justify-center p-4 z-[200] pointer-events-none">
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -621,19 +621,11 @@ const Categories = () => {
                       handleCloseModal()
                     }
                   }}
-                  className="bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden pointer-events-auto"
+                   className="bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden pointer-events-auto"
                 >
-                  <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
-                    {/* Drag Indicator para Mobile */}
-                    <div
-                      className="sm:hidden py-4 -mt-4 mb-2 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
-                      onPointerDown={(e) => dragControls.start(e)}
-                    >
-                      <div className="w-12 h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full" />
-                    </div>
-
+                  <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 sticky top-0 z-10 flex-shrink-0 bg-white dark:bg-neutral-950">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                         {editingId ? 'Editar Categoria' : 'Nova Categoria'}
                       </h2>
                       <button
@@ -646,7 +638,7 @@ const Categories = () => {
                     </div>
                   </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+                  <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
                     <div>
                       <label className="label">Nome da Categoria</label>
                       <input
@@ -718,23 +710,20 @@ const Categories = () => {
                     </div>
 
                     {/* Preview */}
-                    <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4 border border-transparent dark:border-neutral-800">
-                      <p className="text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase mb-3">
-                        Visualizacao
-                      </p>
+                    <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-3 border border-transparent dark:border-neutral-800">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${selectedColor}20` }}
                         >
                           <CategoryIcon
                             icon={selectedIcon as IconName}
                             color={selectedColor}
-                            size="lg"
+                            size="md"
                           />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className="font-semibold text-sm text-gray-900 dark:text-white">
                             {watch('name') || 'Nome da Categoria'}
                           </p>
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${selectedType === 'income'
@@ -748,7 +737,7 @@ const Categories = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 pt-6 pb-2 sm:pb-0 mt-auto sticky bottom-0 bg-white dark:bg-neutral-950 border-t border-gray-100 dark:border-neutral-800/50">
+                    <div className="flex gap-3 pt-4 pb-1 border-t border-gray-100 dark:border-neutral-800/50">
                       <button
                         type="button"
                         onClick={handleCloseModal}

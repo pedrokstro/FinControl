@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useFinancialStore } from '@/store/financialStore'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -118,6 +119,16 @@ const Transactions = () => {
   useEffect(() => {
     syncWithBackend()
   }, [])
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Abre o modal se a URL tiver ?add=true (botão + da navbar mobile)
+  useEffect(() => {
+    if (searchParams.get('add') === 'true') {
+      setShowModal(true)
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams])
+
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')

@@ -250,7 +250,7 @@ const MobileNavBar = () => {
             {/* Botão central ➕ — Nova Transação */}
             <div className="flex-1 flex justify-center">
               <button
-                onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/dashboard?quickAdd=expense') }}
+                onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/transactions?add=true') }}
                 className="w-12 h-12 bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-2xl flex items-center justify-center shadow-md shadow-primary-500/30 transition-all my-1.5"
               >
                 <Plus className="w-6 h-6 text-white" />
