@@ -611,7 +611,7 @@ const Transactions = () => {
                               {transaction.description}
                               {transaction.totalInstallments && transaction.totalInstallments > 0 && (
                                 <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
-                                  {transaction.currentInstallment || 1}/{transaction.totalInstallments}
+                                  {(!transaction.parentTransactionId && transaction.isRecurring) ? 1 : (transaction.currentInstallment || 1)}/{transaction.totalInstallments}
                                 </span>
                               )}
                             </p>
@@ -778,7 +778,7 @@ const Transactions = () => {
                             {transaction.description}
                             {transaction.totalInstallments && transaction.totalInstallments > 0 && (
                               <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
-                                {transaction.currentInstallment || 1}/{transaction.totalInstallments}
+                                {(!transaction.parentTransactionId && transaction.isRecurring) ? 1 : (transaction.currentInstallment || 1)}/{transaction.totalInstallments}
                               </span>
                             )}
                           </p>
