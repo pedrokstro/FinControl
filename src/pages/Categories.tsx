@@ -27,8 +27,10 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import BudgetModal from '@/components/modals/BudgetModal'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
+import CustomSelect from '@/components/common/CustomSelect'
 import { haptics } from '@/utils/haptics'
 import { Target } from 'lucide-react'
+import { useIsMobile } from '@/hooks'
 
 const categorySchema = z.object({
   name: z.string().min(3, 'Nome deve ter no minimo 3 caracteres'),
@@ -43,6 +45,7 @@ const Categories = () => {
   const { categories, budgets, currentMonthTransactions, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const isMobile = useIsMobile()
   const dragControls = useDragControls()
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -605,25 +608,38 @@ const Categories = () => {
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex"
                 onClick={handleCloseModal}
               />
-              <div className="fixed inset-0 flex items-center justify-center p-4 z-[200] pointer-events-none">
+              <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
                 <motion.div
-                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  drag="y"
+                  initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+                  animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+                  exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                  drag={isMobile ? 'y' : false}
                   dragControls={dragControls}
                   dragListener={false}
-                  dragConstraints={{ top: 0, bottom: 0 }}
-                  dragElastic={{ top: 0, bottom: 0.4 }}
-                  onDragEnd={(_, { offset, velocity }) => {
+                  dragConstraints={isMobile ? { top: 0, bottom: 0 } : undefined}
+                  dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
+                  onDragEnd={isMobile ? ((_, { offset, velocity }) => {
                     if (offset.y > 100 || velocity.y > 400) {
                       handleCloseModal()
                     }
-                  }}
-                   className="bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden pointer-events-auto"
+                  }) : undefined}
+                  className={`bg-white dark:bg-neutral-950 z-[200] shadow-2xl w-full max-w-lg flex flex-col overflow-hidden pointer-events-auto ${
+                    isMobile
+                      ? 'border-t border-gray-100 dark:border-neutral-800 rounded-t-[2rem] max-h-[92vh]'
+                      : 'border border-gray-100 dark:border-neutral-800 rounded-2xl max-h-[88vh]'
+                  }`}
                 >
                   <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 sticky top-0 z-10 flex-shrink-0 bg-white dark:bg-neutral-950">
+                    {/* Drag indicator no mobile */}
+                    {isMobile && (
+                      <div
+                        className="py-3 -mt-4 mb-1 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
+                        onPointerDown={(e) => dragControls.start(e)}
+                      >
+                        <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                         {editingId ? 'Editar Categoria' : 'Nova Categoria'}
@@ -654,32 +670,17 @@ const Categories = () => {
 
                     <div>
                       <label className="label">Tipo</label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                          <input
-                            type="radio"
-                            value="income"
-                            {...register('type')}
-                            className="sr-only"
-                          />
-                          <div className="text-center">
-                            <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
-                          </div>
-                        </label>
-                        <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
-                          <input
-                            type="radio"
-                            value="expense"
-                            {...register('type')}
-                            className="sr-only"
-                          />
-                          <div className="text-center">
-                            <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
-                          </div>
-                        </label>
-                      </div>
+                      <CustomSelect
+                        options={[
+                          { value: 'income', label: '📈 Receita', icon: <TrendingUp className="w-4 h-4 text-success-600" /> },
+                          { value: 'expense', label: '📉 Despesa', icon: <TrendingDown className="w-4 h-4 text-danger-600" /> },
+                        ]}
+                        value={selectedType}
+                        onChange={(val) => { haptics.light(); setValue('type', val as 'income' | 'expense') }}
+                        placeholder="Selecione o tipo..."
+                        dropdownTitle="Tipo de Categoria"
+                        className="w-full"
+                      />
                     </div>
 
                     <div>
