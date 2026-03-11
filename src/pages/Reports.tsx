@@ -16,6 +16,10 @@ import {
   ComposedChart,
   Area,
   BarChart,
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
 } from 'recharts'
 import {
   format,
@@ -220,6 +224,23 @@ const Reports = () => {
     })
     return Array.from(map.values()).sort((a, b) => b.total - a.total).slice(0, 5)
   }, [filtered, categories])
+
+  // ── Despesas Fixas vs Variáveis ─────────────────────────────────────────────
+  const fixedVsVariable = useMemo(() => {
+    let fixed = 0
+    let variable = 0
+    filtered.filter(t => t.type === 'expense').forEach(t => {
+      if (t.isRecurring || t.parentTransactionId) {
+        fixed += t.amount
+      } else {
+        variable += t.amount
+      }
+    })
+    return [
+      { name: 'Despesas Fixas', value: fixed, color: '#f59e0b' },
+      { name: 'Despesas Variáveis', value: variable, color: '#3b82f6' }
+    ].filter(i => i.value > 0)
+  }, [filtered])
 
   // ── Métricas Avançadas ─────────────────────────────────────────────────────
   const savingsRate = summary.income > 0 ? ((summary.income - summary.expense) / summary.income) * 100 : 0
@@ -795,6 +816,64 @@ const Reports = () => {
               </div>
             ) : (
               <p className="text-center py-8 text-gray-400 dark:text-neutral-500 text-sm">Nenhuma despesa no período</p>
+            )}
+          </div>
+        </div>
+
+        {/* ── ANÁLISES AVANÇADAS PREMIUM ────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* Radar - Perfil de Gastos */}
+          <div className="card">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Perfil de Gastos (Top 6)</h3>
+              <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-3 py-1 rounded-full font-medium">Radar</span>
+            </div>
+            {topExpense.length >= 3 ? (
+              <div className="overflow-hidden min-w-0 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height={300}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={topExpense.slice(0, 6)}>
+                    <PolarGrid stroke="#e5e7eb" className="dark:opacity-20" />
+                    <PolarAngleAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                    <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Radar dataKey="total" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} activeDot={{ r: 6 }} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <p className="text-center text-gray-400 dark:text-neutral-500 py-10 text-sm">Necessita de pelo menos 3 categorias de despesa para traçar o perfil</p>
+            )}
+          </div>
+
+          {/* Fixas vs Variáveis */}
+          <div className="card">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Despesas Fixas vs Variáveis</h3>
+              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full font-medium">Composição</span>
+            </div>
+            {fixedVsVariable.length > 0 ? (
+              <div className="flex flex-col items-center justify-center h-[300px]">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={fixedVsVariable}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={5}
+                      dataKey="value"
+                      isAnimationActive
+                      animationDuration={1000}
+                    >
+                      {fixedVsVariable.map((e, i) => <Cell key={i} fill={e.color} />)}
+                    </Pie>
+                    <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Legend wrapperStyle={{ fontSize: 13, paddingTop: '20px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <p className="text-center text-gray-400 dark:text-neutral-500 py-10 text-sm">Nenhuma dado de despesa mapeado</p>
             )}
           </div>
         </div>

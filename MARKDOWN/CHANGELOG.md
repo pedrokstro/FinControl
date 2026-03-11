@@ -17,6 +17,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.0] - 2026-03-11
+
+### Adicionado / Melhorado
+- **Relatórios Premium (Dashboard Avançado):**
+  - Integração de 4 novos mini-cards de métricas essenciais de controle ("Taxa de Poupança", "Média de Gasto Diário", "Maior Despesa", "Dias Analisados").
+  - Novo Gráfico de Evolução substituiu o formato de linha por `ComposedChart` moderno com Gradiente (`Area`) preenchendo receitas e despesas.
+  - Novo Gráfico de Barras laterais ("Despesas por Dia da Semana") que mapeia e exibe os padrões diários do usuário.
+  - Novo **Gráfico Radar** demonstrando o perfil e traços de consumo das 6 maiores despesas.
+  - Novo Gráfico Donut de "**Despesas Fixas vs Variáveis**", que isola e exibe a composição fundamental das finanças (diferenciando gastos recorrentes do limite discricionário).
+- **Transações e Recorrências:**
+  - Exibição inteligente de progressão de parcelas (ex: `3/8` em parcelamentos), baseada no dado de `totalInstallments` oriundo do backend.
+  - Correção na numeração visual da fatura pai nas listas (forçando exibição correta como "Fatura 1/x").
+  - Botões de ações de Detalhes de Recorrência e Cancelamento de Recorrência agora constam e funcionam perfeitamente na visualização de itens nascidos de robô de background (faturas geradas pós o registro inicial).
+  - Modernização Premium no layout (`bg-gray-50/50`) e correção ortográfica no cabeçalho ("Descrição", "Ações") da tabela Desktop de transações.
+
+---
+
 ## [2.2.0] - 2026-03-10
 
 ### Adicionado
