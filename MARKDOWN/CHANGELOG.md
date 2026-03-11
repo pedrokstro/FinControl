@@ -17,6 +17,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.3] - 2026-03-12
+
+### Corrigido / Melhorado
+- **Padronização de Camadas (Z-Index) e Portals:**
+  - Implementado `ReactDOM.createPortal` em todos os modais principais (`BudgetModal`, `CreditCardModal`, `ConfirmDeleteModal`, `RecurrenceDetailsModal`, `SetSavingsGoalModal`, `TransactionLimitModal`, `DeleteAccountModal`), garantindo que o desfoque de fundo (backdrop) ocupe 100% da tela, incluindo a barra lateral.
+  - Corrigida a sobreposição do `IconPicker` (Seletor de Ícones) sobre o Modal de Categorias, garantindo que seletores internos sempre apareçam à frente do modal pai.
+- **UX Mobile Premium (Bottom Sheets):**
+  - Introduzido o padrão de **Bottom Sheet** com funcionalidade de "arrastar para fechar" (*pull-to-close*) em todos os modais de ação no mobile, proporcionando uma experiência nativa e fluida.
+  - Adicionado indicador visual de arrasto (*drag indicator*) nos modais mobile.
+- **Navegação:**
+  - O botão central "Adicionar" na Navbar agora redireciona corretamente para a página completa de "Nova Transação", removendo a ambiguidade com o modal de inserção rápida.
+- **Interface de Categorias:**
+  - O modal de criação de categorias no desktop foi centralizado e refatorado para garantir visibilidade total dos controles e botões de ação.
+
 ## [2.4.2] - 2026-03-11
 
 ### Adicionado

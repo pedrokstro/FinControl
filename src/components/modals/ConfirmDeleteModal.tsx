@@ -1,5 +1,7 @@
 import { X, AlertTriangle } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+import { createPortal } from 'react-dom'
+import { useIsMobile } from '@/hooks'
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean
@@ -20,12 +22,15 @@ const ConfirmDeleteModal = ({
   itemName,
   isLoading = false,
 }: ConfirmDeleteModalProps) => {
+  const isMobile = useIsMobile()
+  const dragControls = useDragControls()
+
   const handleConfirm = () => {
     onConfirm()
     onClose()
   }
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -38,16 +43,39 @@ const ConfirmDeleteModal = ({
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
           />
 
-          {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-[200] p-4">
+          {/* Modal Container */}
+          <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              drag={isMobile ? 'y' : false}
+              dragControls={dragControls}
+              dragListener={false}
+              dragConstraints={isMobile ? { top: 0, bottom: 0 } : undefined}
+              dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
+              onDragEnd={isMobile ? ((_, { offset, velocity }) => {
+                if (offset.y > 100 || velocity.y > 400) {
+                  onClose()
+                }
+              }) : undefined}
+              className={`bg-white dark:bg-neutral-900 z-[200] shadow-2xl w-full max-w-md flex flex-col overflow-hidden pointer-events-auto ${
+                isMobile ? 'rounded-t-[2rem] border-t border-gray-100 dark:border-neutral-800' : 'rounded-2xl'
+              }`}
             >
+              {/* Drag indicator no mobile */}
+              {isMobile && (
+                <div
+                  className="py-3 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
+                  onPointerDown={(e) => dragControls.start(e)}
+                >
+                  <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
+                </div>
+              )}
+
               {/* Header */}
-              <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
+              <div className={`p-6 border-b border-gray-200 dark:border-neutral-800 ${isMobile ? 'pt-0' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-danger-100 dark:bg-danger-900/30 rounded-lg">
@@ -122,7 +150,8 @@ const ConfirmDeleteModal = ({
           </div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

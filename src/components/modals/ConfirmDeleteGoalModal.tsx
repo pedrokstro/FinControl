@@ -1,5 +1,6 @@
-import { X, AlertTriangle, Target } from 'lucide-react'
+﻿import { X, AlertTriangle, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 interface ConfirmDeleteGoalModalProps {
   isOpen: boolean
@@ -28,7 +29,7 @@ const ConfirmDeleteGoalModal = ({
     }).format(value)
   }
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -128,7 +129,8 @@ const ConfirmDeleteGoalModal = ({
           </div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

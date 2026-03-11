@@ -1,5 +1,6 @@
-import { X, Repeat, AlertCircle } from 'lucide-react'
+﻿import { X, Repeat, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 interface ConfirmCancelRecurrenceModalProps {
   isOpen: boolean
@@ -21,7 +22,7 @@ const ConfirmCancelRecurrenceModal = ({
     onClose()
   }
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -126,7 +127,8 @@ const ConfirmCancelRecurrenceModal = ({
           </div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

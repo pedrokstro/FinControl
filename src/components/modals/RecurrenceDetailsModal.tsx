@@ -14,12 +14,14 @@ import {
   CircleDollarSign,
   Loader2
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { Transaction } from '@/types'
 import CustomSelect from '../common/CustomSelect'
 import { useFinancialStore } from '@/store/financialStore'
 import { haptics } from '@/utils/haptics'
 import { toast } from 'react-hot-toast'
+import { useIsMobile } from '@/hooks'
 
 interface RecurrenceDetailsModalProps {
   isOpen: boolean
@@ -31,6 +33,8 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
   const [localRecurrenceType, setLocalRecurrenceType] = useState<string>('')
   const [isUpdating, setIsUpdating] = useState(false)
   const { updateTransaction } = useFinancialStore()
+  const isMobile = useIsMobile()
+  const dragControls = useDragControls()
 
   useEffect(() => {
     if (transaction) {
@@ -94,7 +98,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
 
   const isInfinite = !transaction.recurrenceEndDate && !transaction.totalInstallments
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -106,16 +110,40 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
           />
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-          >
-            <div className="w-full max-w-md">
-              <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
-                <div className={`px-6 py-4 ${transaction.type === 'income' ? 'bg-gradient-to-r from-success-500 to-success-600' : 'bg-gradient-to-r from-danger-500 to-danger-600'}`}>
-                  <div className="flex items-center justify-between">
+          {/* Modal Container */}
+          <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
+            <motion.div
+              initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              drag={isMobile ? 'y' : false}
+              dragControls={dragControls}
+              dragListener={false}
+              dragConstraints={isMobile ? { top: 0, bottom: 0 } : undefined}
+              dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
+              onDragEnd={isMobile ? ((_, { offset, velocity }) => {
+                if (offset.y > 100 || velocity.y > 400) {
+                  onClose()
+                }
+              }) : undefined}
+              className={`bg-white dark:bg-neutral-950 z-[200] shadow-2xl w-full max-w-md flex flex-col overflow-hidden pointer-events-auto ${
+                isMobile ? 'rounded-t-[2rem] border-t border-gray-100 dark:border-neutral-800' : 'rounded-2xl'
+              }`}
+            >
+              <div className={`flex flex-col h-full overflow-hidden ${isMobile ? 'max-h-[85vh]' : ''}`}>
+                {/* Drag indicator no mobile */}
+                {isMobile && (
+                  <div
+                    className="py-3 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
+                    onPointerDown={(e) => dragControls.start(e)}
+                  >
+                    <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
+                  </div>
+                )}
+
+                <div className={`${transaction.type === 'income' ? 'bg-gradient-to-r from-success-500 to-success-600' : 'bg-gradient-to-r from-danger-500 to-danger-600'} flex-shrink-0`}>
+                  <div className="px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                         <Repeat className="w-5 h-5 text-white" />
@@ -131,7 +159,7 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                   </div>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 overflow-y-auto custom-scrollbar">
                   <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-900 rounded-xl">
                     <div className="flex items-center gap-3">
                       {transaction.type === 'income' ? (
@@ -240,15 +268,16 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                   </div>
                 </div>
 
-                <div className="px-6 py-4 bg-gray-50 dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800">
+                <div className="px-6 py-4 bg-gray-50 dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 flex-shrink-0">
                   <button onClick={onClose} className="w-full btn-secondary rounded-full py-2.5">Fechar</button>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 
