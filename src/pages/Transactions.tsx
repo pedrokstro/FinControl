@@ -575,24 +575,24 @@ const Transactions = () => {
               <div className="hidden md:block table-wrapper">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200 dark:border-neutral-800">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                    <tr className="border-b border-gray-100 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-800/30 text-xs uppercase tracking-wider text-gray-500 dark:text-neutral-400">
+                      <th className="text-left py-4 px-4 font-semibold rounded-tl-lg">
                         Data
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                        Descricao
+                      <th className="text-left py-4 px-4 font-semibold">
+                        Descrição
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      <th className="text-left py-4 px-4 font-semibold">
                         Categoria
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      <th className="text-left py-4 px-4 font-semibold">
                         Tipo
                       </th>
-                      <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
+                      <th className="text-right py-4 px-4 font-semibold">
                         Valor
                       </th>
-                      <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                        Acoes
+                      <th className="text-right py-4 px-4 font-semibold rounded-tr-lg">
+                        Ações
                       </th>
                     </tr>
                   </thead>
