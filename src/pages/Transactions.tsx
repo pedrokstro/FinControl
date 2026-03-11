@@ -346,7 +346,7 @@ const Transactions = () => {
   const handleCancelRecurrence = (transaction: any) => {
     haptics.warning()
     setTransactionToCancelRecurrence({
-      id: transaction.id,
+      id: transaction.parentTransactionId || transaction.id,
       description: transaction.description
     })
     setShowCancelRecurrenceModal(true)
@@ -371,9 +371,21 @@ const Transactions = () => {
     }
   }
 
-  const handleViewRecurrenceDetails = (transaction: Transaction) => {
-    setSelectedRecurrenceTransaction(transaction)
-    setShowRecurrenceDetailsModal(true)
+  const handleViewRecurrenceDetails = async (transaction: Transaction) => {
+    try {
+      if (!transaction.isRecurring && transaction.parentTransactionId) {
+        toast.loading('Carregando...', { id: 'loadingParent' })
+        const parentRes = await api.get(`/transactions/${transaction.parentTransactionId}`)
+        toast.dismiss('loadingParent')
+        setSelectedRecurrenceTransaction(parentRes.data.data)
+      } else {
+        setSelectedRecurrenceTransaction(transaction)
+      }
+      setShowRecurrenceDetailsModal(true)
+    } catch (e) {
+      toast.dismiss('loadingParent')
+      toast.error('Erro ao carregar os detalhes da recorrência')
+    }
   }
 
   const formatCurrency = (value: number) => {
