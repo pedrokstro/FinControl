@@ -667,7 +667,7 @@ const Transactions = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-2">
-                            {transaction.isRecurring && (
+                            {(transaction.isRecurring || transaction.parentTransactionId) && (
                               <>
                                 <button
                                   onClick={() => handleViewRecurrenceDetails(transaction)}
@@ -715,7 +715,7 @@ const Transactions = () => {
                   >
                     {/* Background actions */}
                     <div className="absolute inset-y-0 right-0 flex items-center justify-end px-3 gap-3 z-0">
-                      {transaction.isRecurring && (
+                      {(transaction.isRecurring || transaction.parentTransactionId) && (
                         <>
                           <button
                             onClick={() => handleViewRecurrenceDetails(transaction)}
@@ -752,7 +752,7 @@ const Transactions = () => {
                     {/* Foreground draggable card */}
                     <motion.div
                       drag="x"
-                      dragConstraints={{ left: transaction.isRecurring ? -240 : -130, right: 0 }}
+                      dragConstraints={{ left: (transaction.isRecurring || transaction.parentTransactionId) ? -240 : -130, right: 0 }}
                       dragElastic={0.05}
                       whileTap={{ cursor: "grabbing" }}
                       className="relative z-10 w-full rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4 shadow-sm space-y-4 cursor-grab touch-pan-y"
