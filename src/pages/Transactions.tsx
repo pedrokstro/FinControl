@@ -298,7 +298,7 @@ const Transactions = () => {
       isRecurring: isRecurring,
       recurrenceType: isRecurring ? data.recurrenceType : undefined,
       recurrenceMonths: isRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
-      creditCardId: data.type === 'expense' && data.creditCardId ? data.creditCardId : undefined,
+      creditCardId: (data.type === 'expense' && data.creditCardId) ? data.creditCardId : null,
     }
 
     try {

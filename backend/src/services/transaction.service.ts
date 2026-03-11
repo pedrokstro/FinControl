@@ -247,6 +247,7 @@ export class TransactionService {
         if (data.amount !== undefined) updateData.amount = data.amount;
         if (data.type !== undefined) updateData.type = data.type;
         if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+        if (data.creditCardId !== undefined) updateData.creditCardId = data.creditCardId;
 
         // Se a data base mudou, recalcular a data desta parcela
         if (newBaseDate && transaction.recurrenceType) {

@@ -33,7 +33,7 @@ export interface Transaction {
   totalInstallments?: number
   currentInstallment?: number
   isCancelled?: boolean
-  creditCardId?: string
+  creditCardId?: string | null
   creditCard?: CreditCard
 }
 
