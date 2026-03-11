@@ -16,6 +16,8 @@ Todos os modais principais foram migrados para utilizar `ReactDOM.createPortal`.
 - `SetSavingsGoalModal.tsx`
 - `TransactionLimitModal.tsx`
 - `DeleteAccountModal.tsx`
+- `CustomSelect.tsx`
+- `CategorySelect.tsx`
 
 ### 2. UX Mobile Premium (Bottom Sheets)
 Implementado um comportamento diferenciado para dispositivos móveis:

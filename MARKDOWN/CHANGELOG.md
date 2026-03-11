@@ -17,6 +17,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.4] - 2026-03-12
+
+### Corrigido / Melhorado
+- **Global Portals para Seletores:**
+  - Implementado `createPortal` nos componentes `CustomSelect` e `CategorySelect` para a versão mobile.
+  - Isso garante que os seletores de categoria e filtros na página de Transações abram em uma camada superior, corrigindo problemas de desfoque parcial da tela e garantindo que o seletor cubra elementos de layout como o Header e a Sidebar.
+
 ## [2.4.3] - 2026-03-12
 
 ### Corrigido / Melhorado
