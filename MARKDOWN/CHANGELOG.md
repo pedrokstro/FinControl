@@ -17,6 +17,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.6] - 2026-03-11
+
+### Corrigido
+- **Ajuste de Transições de Página:**
+  - Removido o efeito de desfoque (*blur*) automático que ocorria ao navegar entre as páginas.
+  - Otimizada a duração das transições para 0.35s para uma navegação mais rápida e fluida.
+
 ## [2.4.5] - 2026-03-11
 
 ### Corrigido
