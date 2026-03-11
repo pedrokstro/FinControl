@@ -36,6 +36,7 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import CategorySelect from '@/components/common/CategorySelect'
 import CustomSelect from '@/components/common/CustomSelect'
 import CustomDatePicker from '@/components/common/CustomDatePicker'
+import BrandIcon from '@/components/common/BrandIcon'
 import Modal from '@/components/common/Modal'
 import { Transaction } from '@/types'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
@@ -996,7 +997,7 @@ const Transactions = () => {
                           ...creditCards.map(card => ({
                             value: card.id,
                             label: card.name,
-                            icon: <CreditCardIcon className="w-4 h-4 text-purple-500" />
+                            icon: <BrandIcon brand={card.brand} className="w-5 h-5" />
                           }))
                         ]}
                         value={field.value || ''}
