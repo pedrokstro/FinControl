@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useFinancialStore } from '@/store/financialStore'
 import { useAuthStore } from '@/store/authStore'
 import { useForm } from 'react-hook-form'
@@ -597,7 +598,8 @@ const Categories = () => {
           </div>
         )}
 
-        {/* Modal */}
+        {/* Modal — portal direto no body para garantir z-index global */}
+        {createPortal(
         <AnimatePresence>
           {showModal && (
             <>
@@ -756,6 +758,7 @@ const Categories = () => {
             </>
           )}
         </AnimatePresence>
+        , document.body)}
 
         {/* Upgrade Modal */}
         {showUpgradeModal && (
