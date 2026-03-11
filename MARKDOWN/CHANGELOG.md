@@ -17,6 +17,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.2] - 2026-03-11
+
+### Adicionado
+- **Mobile Premium UX (Recorrências):**
+  - Implementado o `CustomSelect` no modal de detalhes da recorrência, permitindo o ajuste de frequência diretamente da tela de detalhes.
+  - O seletor de frequência agora utiliza o padrão de **Bottom Sheet** no mobile, seguindo os melhores padrões de UX nativa.
+  - Adicionado suporte a ícones visuais (Emoji) para as frequências (Diária, Semanal, Mensal, Anual) em todo o sistema.
+
+### Corrigido
+- **Responsividade Mobile nos Relatórios:** Ajuste nos raios dos gráficos de pizza e layouts de mini-cards para evitar cortes de informações em telas pequenas.
+
+---
+
 ## [2.4.1] - 2026-03-11
 
 ### Melhorado

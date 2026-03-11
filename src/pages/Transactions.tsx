@@ -615,7 +615,7 @@ const Transactions = () => {
                                 </span>
                               )}
                             </p>
-                             {(transaction.isRecurring || transaction.parentTransactionId) && (
+                            {(transaction.isRecurring || transaction.parentTransactionId) && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                                 <Repeat className="w-3 h-3" />
                                 Recorrente
@@ -1069,13 +1069,16 @@ const Transactions = () => {
                         render={({ field }) => (
                           <CustomSelect
                             options={[
-                              { value: 'daily', label: 'Diária' },
-                              { value: 'weekly', label: 'Semanal' },
-                              { value: 'monthly', label: 'Mensal' },
-                              { value: 'yearly', label: 'Anual' }
+                              { value: 'daily', label: 'Diária', icon: '📅' },
+                              { value: 'weekly', label: 'Semanal', icon: '📆' },
+                              { value: 'monthly', label: 'Mensal', icon: '🗓️' },
+                              { value: 'yearly', label: 'Anual', icon: '🎯' }
                             ]}
                             value={field.value || ''}
-                            onChange={field.onChange}
+                            onChange={(val) => {
+                              field.onChange(val)
+                              haptics.light()
+                            }}
                             placeholder="Selecione a frequência..."
                             dropdownTitle="Frequência"
                             className="w-full"

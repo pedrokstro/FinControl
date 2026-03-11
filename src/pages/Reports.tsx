@@ -519,29 +519,29 @@ const Reports = () => {
         </div>
 
         {/* ── MÉTRICAS PREMIUM INDICATORS ──────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <div className="card p-5 flex flex-col justify-center items-center text-center">
-            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Taxa de Poupança</span>
-            <p className={`text-2xl font-bold ${savingsRate >= 20 ? 'text-success-600 dark:text-success-400' : savingsRate > 0 ? 'text-primary-600 dark:text-primary-400' : 'text-danger-600 dark:text-danger-400'}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="card p-5 flex flex-col justify-center items-center text-center min-w-0">
+            <span className="text-[10px] md:text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider block truncate w-full">Taxa de Poupança</span>
+            <p className={`text-xl md:text-2xl font-bold truncate w-full ${savingsRate >= 20 ? 'text-success-600 dark:text-success-400' : savingsRate > 0 ? 'text-primary-600 dark:text-primary-400' : 'text-danger-600 dark:text-danger-400'}`}>
               {savingsRate.toFixed(1)}%
             </p>
           </div>
-          <div className="card p-5 flex flex-col justify-center items-center text-center">
-            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Média Gasto Diário</span>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="card p-5 flex flex-col justify-center items-center text-center min-w-0">
+            <span className="text-[10px] md:text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider block truncate w-full">Gasto Diário</span>
+            <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white truncate w-full">
               {fmtCurrency(avgDailySpend)}
             </p>
           </div>
-          <div className="card p-5 flex flex-col justify-center items-center text-center">
-            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Maior Despesa</span>
-            <p className="text-xl font-bold text-gray-900 dark:text-white truncate w-full px-2" title={topExpense[0]?.name || '-'}>
+          <div className="card p-5 flex flex-col justify-center items-center text-center min-w-0">
+            <span className="text-[10px] md:text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider block truncate w-full">Maior Despesa</span>
+            <p className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate w-full px-1" title={topExpense[0]?.name || '-'}>
               {topExpense.length > 0 ? fmtCurrency(topExpense[0].total) : 'R$ 0,00'}
             </p>
           </div>
-          <div className="card p-5 flex flex-col justify-center items-center text-center">
-            <span className="text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">Dias Analisados</span>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {daysInPeriod} <span className="text-sm font-normal text-gray-400">dias</span>
+          <div className="card p-5 flex flex-col justify-center items-center text-center min-w-0">
+            <span className="text-[10px] md:text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider block truncate w-full">Dias Analisados</span>
+            <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white truncate w-full">
+              {daysInPeriod} <span className="text-xs font-normal text-gray-400">dias</span>
             </p>
           </div>
         </div>
@@ -592,7 +592,7 @@ const Reports = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Evolução Financeira</h3>
               <span className="text-xs text-gray-400 dark:text-neutral-500 px-3 py-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full">{periodLabel}</span>
             </div>
-            <div className="overflow-hidden min-w-0">
+            <div className="container-responsive">
               <ResponsiveContainer width="100%" height={350}>
                 <ComposedChart data={monthlyEvolution}>
                   <defs>
@@ -622,7 +622,7 @@ const Reports = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Despesas por Dia</h3>
             </div>
-            <div className="overflow-hidden min-w-0">
+            <div className="container-responsive">
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={spendByDayOfWeek}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-10" vertical={false} />
@@ -648,7 +648,7 @@ const Reports = () => {
             </div>
           </div>
           {categoryComparison.length > 0 ? (
-            <div className="overflow-hidden min-w-0">
+            <div className="container-responsive">
               <ResponsiveContainer width="100%" height={Math.max(300, categoryComparison.length * 40)}>
                 <ComposedChart data={categoryComparison} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
@@ -682,8 +682,7 @@ const Reports = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
+                    outerRadius={80}
                     dataKey="receitas"
                     isAnimationActive
                     animationDuration={1000}
@@ -691,6 +690,7 @@ const Reports = () => {
                     {categoryData.income.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -714,8 +714,7 @@ const Reports = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
+                    outerRadius={80}
                     dataKey="despesas"
                     isAnimationActive
                     animationDuration={1000}
@@ -723,6 +722,7 @@ const Reports = () => {
                     {categoryData.expenses.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip formatter={(v: number) => fmtCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (

@@ -538,3 +538,8 @@
 .dark .scrollbar-primary::-webkit-scrollbar-thumb:hover {
   background: #3b82f6;
 }
+
+.container-responsive {
+  @apply overflow-x-auto overflow-y-hidden;
+  scrollbar-width: thin;
+}
