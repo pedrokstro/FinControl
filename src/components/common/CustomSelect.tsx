@@ -32,6 +32,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
     const isMobile = useIsMobile();
 
@@ -39,7 +40,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            const isInsideContainer = containerRef.current?.contains(event.target as Node);
+            const isInsideDropdown = dropdownRef.current?.contains(event.target as Node);
+
+            if (!isInsideContainer && !isInsideDropdown) {
                 setIsOpen(false);
             }
         };
@@ -111,6 +115,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                                         }}
                                         className="fixed z-[201] bottom-0 left-0 right-0 w-full bg-white dark:bg-neutral-800 rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[85vh]"
                                         onClick={(e) => e.stopPropagation()}
+                                        ref={dropdownRef}
                                     >
                                         {/* Mobile handle */}
                                         <div
@@ -168,6 +173,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
                                 className="absolute z-50 top-full mt-2 w-full min-w-[240px] bg-white dark:bg-neutral-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[300px]"
+                                onClick={(e) => e.stopPropagation()}
+                                ref={dropdownRef}
                             >
                                 <div className="px-4 pb-2 pt-4">
                                     <p className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-2">{dropdownTitle}</p>

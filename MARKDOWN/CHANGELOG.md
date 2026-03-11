@@ -17,6 +17,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.5] - 2026-03-11
+
+### Corrigido
+- **Correção na Rolagem de Seletores:**
+  - Corrigido o bug onde clicar na barra de rolagem (ou dentro do seletor) em Desktop e Mobile fechava o menu.
+  - O problema ocorria porque o `handleClickOutside` não reconhecia cliques dentro do Portal global. Agora, o componente valida corretamente cliques internos usando múltiplas referências.
+
 ## [2.4.4] - 2026-03-12
 
 ### Corrigido / Melhorado
