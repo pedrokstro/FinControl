@@ -979,7 +979,7 @@ const Settings = () => {
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                        v2.4.2
+                        v2.5.1
                       </div>
                       <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                     </div>
@@ -987,13 +987,152 @@ const Settings = () => {
 
                   <div className="space-y-12">
 
-                    {/* v2.4.2 - NOVO */}
+                    {/* v2.5.1 - ATUAL */}
                     <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                       <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                       <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.2</span>
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.1</span>
                           <span className="px-2 py-0.5 bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded text-[10px] font-bold uppercase tracking-wider animate-pulse">Atual</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          12 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              Layout Desktop
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span>Largura otimizada para monitores grandes e escala de ícones aprimorada.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.5.0 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.0</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          12 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Palette className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              Nova Interface de Configurações
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span>Redesign completo estilo mobile/Telegram com lista de ícones e header de perfil.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.4.7 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.7</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          11 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                              Correção de Nitidez
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                <span>Removido desfoque indesejado causado por renderização subpixel na GPU.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.4.6 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.6</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          11 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <History className="w-5 h-5 text-purple-500 bg-purple-50 dark:bg-purple-900/30 p-1 rounded" />
+                              Transições de Página
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0" />
+                                <span>Otimização na velocidade das animações entre telas para 0.35s.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.4.4 & 2.4.3 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.4</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                          12 de Março de 2026
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                              UX & Portals
+                            </h4>
+                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Global Portals:</strong> Seletores e modais agora usam portals para evitar problemas de camada.</span>
+                              </li>
+                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                <span><strong>Bottom Sheets:</strong> Padrão "Pull-to-close" implementado para modais mobile.</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* v2.4.2 */}
+                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.2</span>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                           11 de Março de 2026
