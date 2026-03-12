@@ -5,7 +5,8 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, Crown, ArrowRight, History, Target, ShieldCheck } from 'lucide-react'
+import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react'
+import { haptics } from '@/utils/haptics'
 import toast from 'react-hot-toast'
 import { imageStorage } from '@/utils/imageStorage'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -45,7 +46,7 @@ const Settings = () => {
   const navigate = useNavigate()
   const { user, updateAvatar, loadAvatar, logout } = useAuthStore()
   const { theme, setTheme } = useTheme()
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'preferences' | 'changelog'>('profile')
+  const [activeTab, setActiveTab] = useState<'menu' | 'profile' | 'security' | 'notifications' | 'preferences' | 'changelog'>('menu')
 
   const isPremium = user?.isPremium || false
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
@@ -394,13 +395,6 @@ const Settings = () => {
     { id: 'changelog', label: 'Atualizações', icon: History },
   ]
 
-  // Função para obter saudação
-  const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 12) return 'Bom dia'
-    if (hour < 18) return 'Boa tarde'
-    return 'Boa noite'
-  }
 
   // Verificar se é avatar personalizado
   const isCustomAvatar = user?.avatar && !user.avatar.includes('dicebear')
@@ -409,76 +403,87 @@ const Settings = () => {
     <>
       <PageTransition>
         <div className="responsive-page">
-          {/* Header */}
-          <div className="responsive-header">
-            <div className="hidden sm:block">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configurações</h1>
-              <p className="text-gray-600 dark:text-neutral-400 mt-1">
-                {getGreeting()}, <span className="font-medium">{user?.name?.split(' ')[0]}</span>! Gerencie suas preferências
-              </p>
-            </div>
-          </div>
-
-          {/* Subscription Card */}
-          <button
-            onClick={() => navigate('/app/settings/subscription')}
-            className={`w-full text-left rounded-2xl p-6 transition-all duration-300 hover:shadow-lg ${isPremium
-              ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-400 dark:border-amber-600 hover:border-amber-500 dark:hover:border-amber-500'
-              : 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-600'
-              }`}
-          >
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-14 h-14 rounded-xl flex items-center justify-center ${isPremium
-                    ? 'bg-gradient-to-br from-amber-400 to-orange-500'
-                    : 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                    }`}
+          {/* Header de Perfil Estilo Telegram */}
+          {activeTab === 'menu' && (
+            <div className="flex flex-col items-center py-8 mb-4">
+              <div className="relative group mb-4">
+                <img
+                  src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
+                  alt={user?.name}
+                  className="w-28 h-28 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
+                />
+                <button
+                  onClick={handleAvatarClick}
+                  className="absolute bottom-1 right-1 w-9 h-9 bg-primary-500 rounded-full flex items-center justify-center border-4 border-[#F3F4F6] dark:border-[#171717] hover:bg-primary-600 transition-colors shadow-lg"
                 >
-                  <Crown className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    {isPremium ? 'Plano Premium Ativo' : 'Upgrade para Premium'}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-neutral-400">
-                    {isPremium
-                      ? 'Gerencie sua assinatura e benefícios'
-                      : 'Desbloqueie recursos exclusivos e avançados'}
-                  </p>
-                </div>
+                  <Camera className="w-4 h-4 text-white" />
+                </button>
               </div>
-              <ArrowRight className={`w-6 h-6 flex-shrink-0 ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'}`} />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.name}</h1>
+              <p className="text-gray-500 dark:text-neutral-500 text-sm mt-1">{user?.email}</p>
             </div>
-          </button>
+          )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar de Tabs */}
-            <div className="lg:col-span-1">
-              <div className="card p-2 sm:p-4">
-                <nav className="flex overflow-x-auto sm:flex-col gap-2 sm:space-y-2 custom-scrollbar pb-2 sm:pb-0">
+          {activeTab !== 'menu' && (
+            <div className="flex items-center gap-4 py-6 mb-2">
+              <button
+                onClick={() => { haptics.light(); setActiveTab('menu') }}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+                aria-label="Voltar para o menu"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white capitalize">
+                {tabs.find(t => t.id === activeTab)?.label}
+              </h1>
+            </div>
+          )}
+
+          <div className="max-w-2xl mx-auto">
+            {activeTab === 'menu' && (
+              <div className="card-telegram overflow-hidden">
+                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
+                    const descriptions = {
+                      profile: 'Nome, Email, Foto de Perfil',
+                      security: 'Senha, Exclusão de Conta, Exportação',
+                      notifications: 'Emails, Alertas de Orçamentos',
+                      preferences: 'Aparência, Idioma, Moeda',
+                      changelog: 'O que há de novo no sistema'
+                    }[tab.id] as string
+
+                    const bgColors = {
+                      profile: 'bg-blue-500',
+                      security: 'bg-green-500',
+                      notifications: 'bg-red-500',
+                      preferences: 'bg-orange-500',
+                      changelog: 'bg-purple-500'
+                    }[tab.id] as string
+
                     return (
                       <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
-                        className={`flex items-center gap-2 sm:gap-3 px-4 py-2.5 sm:py-3 rounded-full sm:rounded-lg whitespace-nowrap transition-all duration-200 flex-shrink-0 w-auto sm:w-full ${activeTab === tab.id
-                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium'
-                          : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:text-gray-900 dark:hover:text-white'
-                          }`}
+                        onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors text-left"
                       >
-                        <Icon className="w-5 h-5" />
-                        <span>{tab.label}</span>
+                        <div className={`w-10 h-10 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                          <Icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600" />
                       </button>
                     )
                   })}
-                </nav>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Conteúdo */}
-            <div className="lg:col-span-3">
+            {/* Conteúdo Detalhado */}
+            <div className={activeTab === 'menu' ? 'hidden' : 'block'}>
               {/* Tab: Perfil */}
               {activeTab === 'profile' && (
                 <div className="card">

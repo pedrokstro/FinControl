@@ -17,6 +17,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.5.0] - 2026-03-12
+
+### Adicionado
+- **Nova Interface de Configurações (Estilo Mobile/Telegram):**
+  - Implementado layout baseado em lista com ícones coloridos e descrições claras, otimizado para navegação rápida.
+  - Novo Header de Perfil com foto ampliada, nome e email em destaque.
+  - Navegação "drill-down" para seções de Perfil, Segurança, Notificações, Preferências e Atualizações.
+  - Feedback tátil integrado ao alternar entre seções.
+
+### Removido
+- Banner de "Plano Premium Ativo" da página principal de configurações para uma interface mais limpa e focada.
+
 ## [2.4.7] - 2026-03-11
 
 ### Corrigido

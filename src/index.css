@@ -101,6 +101,10 @@
     }
   }
 
+  .card-telegram {
+    @apply bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-neutral-800 shadow-sm transition-all duration-300;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
