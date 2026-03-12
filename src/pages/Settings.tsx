@@ -48,7 +48,6 @@ const Settings = () => {
   const { theme, setTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<'menu' | 'profile' | 'security' | 'notifications' | 'preferences' | 'changelog'>('menu')
 
-  const isPremium = user?.isPremium || false
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isSavingAvatar, setIsSavingAvatar] = useState(false)
@@ -410,7 +409,7 @@ const Settings = () => {
                 <img
                   src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                   alt={user?.name}
-                  className="w-28 h-28 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
                 />
                 <button
                   onClick={handleAvatarClick}
@@ -419,8 +418,8 @@ const Settings = () => {
                   <Camera className="w-4 h-4 text-white" />
                 </button>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.name}</h1>
-              <p className="text-gray-500 dark:text-neutral-500 text-sm mt-1">{user?.email}</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{user?.name}</h1>
+              <p className="text-gray-500 dark:text-neutral-500 text-sm md:text-base mt-1">{user?.email}</p>
             </div>
           )}
 
@@ -439,7 +438,7 @@ const Settings = () => {
             </div>
           )}
 
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-3xl lg:max-w-4xl mx-auto">
             {activeTab === 'menu' && (
               <div className="card-telegram overflow-hidden">
                 <div className="divide-y divide-gray-100 dark:divide-neutral-800">
@@ -465,16 +464,16 @@ const Settings = () => {
                       <button
                         key={tab.id}
                         onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors text-left"
+                        className="w-full flex items-center gap-4 p-4 md:p-6 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-all text-left group"
                       >
-                        <div className={`w-10 h-10 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                          <Icon className="w-5 h-5 text-white" />
+                        <div className={`w-10 h-10 md:w-12 md:h-12 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110`}>
+                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
-                          <p className="text-xs text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
+                          <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
+                          <p className="text-xs md:text-sm text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600" />
+                        <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600 group-hover:translate-x-1 transition-transform" />
                       </button>
                     )
                   })}

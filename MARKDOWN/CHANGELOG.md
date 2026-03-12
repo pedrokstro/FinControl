@@ -17,6 +17,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.5.1] - 2026-03-12
+
+### Ajustado
+- **Melhorias no Layout Desktop (Configurações):**
+  - Aumentada a largura máxima do container para preencher melhor espaços em telas grandes.
+  - Ajustado o tamanho dos ícones, textos e do avatar no modo Desktop para maior legibilidade e equilíbrio visual.
+  - Adicionados efeitos de hover e transições mais suaves nos itens da lista de configurações.
+
 ## [2.5.0] - 2026-03-12
 
 ### Adicionado
