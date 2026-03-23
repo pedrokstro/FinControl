@@ -204,143 +204,164 @@ export class TransactionService {
   }
 
   async update(id: string, userId: string, data: Partial<Transaction>) {
-    const transaction = await this.findById(id, userId);
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // Se for uma transação recorrente "pai", atualizar também as parcelas geradas
-    if (transaction.isRecurring) {
-      console.log(`🔄 [UPDATE] Atualizando parcelas geradas da recorrência ${transaction.id}`);
-
-      // Buscar todas as parcelas geradas desta recorrência, ordenadas por data
-      const childTransactions = await this.transactionRepository.find({
-        where: { parentTransactionId: transaction.id },
-        order: { date: 'ASC' }
+    try {
+      // Usa lock pessimista para evitar Lost Update Race Condition durante edições simultâneas
+      const transaction = await queryRunner.manager.findOne(Transaction, {
+        where: { id, userId },
+        lock: { mode: "pessimistic_write" }
       });
 
-      console.log(`📝 [UPDATE] Encontradas ${childTransactions.length} parcelas para atualizar`);
+      if (!transaction) {
+        throw new NotFoundError('Transação não encontrada');
+      }
 
-      // Se a data foi alterada, recalcular datas de todas as parcelas
-      let newBaseDate: Date | null = null;
+      // Se for uma transação recorrente "pai", atualizar também as parcelas geradas
+      if (transaction.isRecurring) {
+        console.log(`🔄 [UPDATE] Atualizando parcelas geradas da recorrência ${transaction.id}`);
+
+        // Buscar todas as parcelas geradas desta recorrência
+        const childTransactions = await queryRunner.manager.find(Transaction, {
+          where: { parentTransactionId: transaction.id },
+          order: { date: 'ASC' }
+        });
+
+        console.log(`📝 [UPDATE] Encontradas ${childTransactions.length} parcelas para atualizar`);
+
+        // Se a data foi alterada, recalcular datas de todas as parcelas
+        let newBaseDate: Date | null = null;
+        if (data.date) {
+          // Parse da nova data
+          if (typeof data.date === 'string') {
+            if (data.date.includes('/')) {
+              const [day, month, year] = data.date.split('/').map(Number);
+              newBaseDate = new Date(year, month - 1, day);
+            } else {
+              const [year, month, day] = data.date.split('-').map(Number);
+              newBaseDate = new Date(year, month - 1, day);
+            }
+          } else {
+            newBaseDate = new Date(data.date);
+          }
+
+          console.log(`📅 [UPDATE] Nova data base para recorrência: ${newBaseDate.toISOString()}`);
+        }
+
+        // Atualizar cada parcela
+        for (let i = 0; i < childTransactions.length; i++) {
+          const child = childTransactions[i];
+          const updateData: Partial<Transaction> = {};
+
+          // Atualizar campos permitidos
+          if (data.description !== undefined) updateData.description = data.description;
+          if (data.amount !== undefined) updateData.amount = data.amount;
+          if (data.type !== undefined) updateData.type = data.type;
+          if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+          if (data.creditCardId !== undefined) updateData.creditCardId = data.creditCardId;
+
+          // Se a data base mudou, recalcular a data desta parcela
+          if (newBaseDate && transaction.recurrenceType) {
+            const parcela = i + 1; // Primeira parcela é 1, segunda é 2, etc.
+            const parcelaDate = new Date(newBaseDate);
+
+            // Calcular data baseada no tipo de recorrência
+            switch (transaction.recurrenceType) {
+              case 'daily':
+                parcelaDate.setDate(parcelaDate.getDate() + parcela);
+                break;
+              case 'weekly':
+                parcelaDate.setDate(parcelaDate.getDate() + (parcela * 7));
+                break;
+              case 'monthly':
+                parcelaDate.setMonth(parcelaDate.getMonth() + parcela);
+                break;
+              case 'yearly':
+                parcelaDate.setFullYear(parcelaDate.getFullYear() + parcela);
+                break;
+            }
+
+            // Aplicar offset de timezone
+            const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
+            if (timezoneOffset > 0) {
+              parcelaDate.setDate(parcelaDate.getDate() + timezoneOffset);
+            }
+
+            // Formatar data
+            const year = parcelaDate.getUTCFullYear();
+            const month = String(parcelaDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(parcelaDate.getUTCDate()).padStart(2, '0');
+            updateData.date = `${year}-${month}-${day}` as any;
+
+            console.log(`📅 [UPDATE] Parcela ${parcela}: ${updateData.date}`);
+          }
+
+          if (Object.keys(updateData).length > 0) {
+            Object.assign(child, updateData);
+            await queryRunner.manager.save(Transaction, child);
+          }
+        }
+
+        console.log(`✅ [UPDATE] ${childTransactions.length} parcelas atualizadas`);
+      }
+
+      // Se a data foi alterada, aplicar o mesmo ajuste de timezone
       if (data.date) {
-        // Parse da nova data
+        console.log('📅 [UPDATE DEBUG] Data recebida:', data.date, 'Tipo:', typeof data.date);
+
+        let dateObj: Date;
+
         if (typeof data.date === 'string') {
+          // Parse da string no formato YYYY-MM-DD ou DD/MM/YYYY
           if (data.date.includes('/')) {
             const [day, month, year] = data.date.split('/').map(Number);
-            newBaseDate = new Date(year, month - 1, day);
+            dateObj = new Date(year, month - 1, day);
           } else {
             const [year, month, day] = data.date.split('-').map(Number);
-            newBaseDate = new Date(year, month - 1, day);
+            dateObj = new Date(year, month - 1, day);
           }
         } else {
-          newBaseDate = new Date(data.date);
+          dateObj = new Date(data.date);
         }
 
-        console.log(`📅 [UPDATE] Nova data base para recorrência: ${newBaseDate.toISOString()}`);
+        console.log('📅 [UPDATE DEBUG] Data antes de ajuste:', dateObj.toISOString());
+
+        // ADICIONAR dias conforme configuração de timezone
+        const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
+        if (timezoneOffset > 0) {
+          dateObj.setDate(dateObj.getDate() + timezoneOffset);
+        }
+
+        console.log('📅 [UPDATE DEBUG] Data depois de ajuste (+' + timezoneOffset + ' dia):', dateObj.toISOString());
+
+        // USAR UTC para evitar problemas de timezone
+        const year = dateObj.getUTCFullYear();
+        const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getUTCDate()).padStart(2, '0');
+        const adjustedDate = `${year}-${month}-${day}`;
+
+        console.log('📅 [UPDATE DEBUG] Data final salva:', adjustedDate);
+
+        data.date = adjustedDate as any;
       }
 
-      // Atualizar cada parcela
-      for (let i = 0; i < childTransactions.length; i++) {
-        const child = childTransactions[i];
-        const updateData: Partial<Transaction> = {};
+      Object.assign(transaction, data);
+      await queryRunner.manager.save(Transaction, transaction);
+      
+      await queryRunner.commitTransaction();
 
-        // Atualizar campos permitidos
-        if (data.description !== undefined) updateData.description = data.description;
-        if (data.amount !== undefined) updateData.amount = data.amount;
-        if (data.type !== undefined) updateData.type = data.type;
-        if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
-        if (data.creditCardId !== undefined) updateData.creditCardId = data.creditCardId;
-
-        // Se a data base mudou, recalcular a data desta parcela
-        if (newBaseDate && transaction.recurrenceType) {
-          const parcela = i + 1; // Primeira parcela é 1, segunda é 2, etc.
-          const parcelaDate = new Date(newBaseDate);
-
-          // Calcular data baseada no tipo de recorrência
-          switch (transaction.recurrenceType) {
-            case 'daily':
-              parcelaDate.setDate(parcelaDate.getDate() + parcela);
-              break;
-            case 'weekly':
-              parcelaDate.setDate(parcelaDate.getDate() + (parcela * 7));
-              break;
-            case 'monthly':
-              parcelaDate.setMonth(parcelaDate.getMonth() + parcela);
-              break;
-            case 'yearly':
-              parcelaDate.setFullYear(parcelaDate.getFullYear() + parcela);
-              break;
-          }
-
-          // Aplicar offset de timezone
-          const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
-          if (timezoneOffset > 0) {
-            parcelaDate.setDate(parcelaDate.getDate() + timezoneOffset);
-          }
-
-          // Formatar data
-          const year = parcelaDate.getUTCFullYear();
-          const month = String(parcelaDate.getUTCMonth() + 1).padStart(2, '0');
-          const day = String(parcelaDate.getUTCDate()).padStart(2, '0');
-          updateData.date = `${year}-${month}-${day}` as any;
-
-          console.log(`📅 [UPDATE] Parcela ${parcela}: ${updateData.date}`);
-        }
-
-        if (Object.keys(updateData).length > 0) {
-          Object.assign(child, updateData);
-          await this.transactionRepository.save(child);
-        }
-      }
-
-      console.log(`✅ [UPDATE] ${childTransactions.length} parcelas atualizadas`);
+      return this.transactionRepository.findOne({
+        where: { id: transaction.id },
+        relations: ['category', 'creditCard'],
+      });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    // Se a data foi alterada, aplicar o mesmo ajuste de timezone
-    if (data.date) {
-      console.log('📅 [UPDATE DEBUG] Data recebida:', data.date, 'Tipo:', typeof data.date);
-
-      let dateObj: Date;
-
-      if (typeof data.date === 'string') {
-        // Parse da string no formato YYYY-MM-DD ou DD/MM/YYYY
-        if (data.date.includes('/')) {
-          const [day, month, year] = data.date.split('/').map(Number);
-          dateObj = new Date(year, month - 1, day);
-        } else {
-          const [year, month, day] = data.date.split('-').map(Number);
-          dateObj = new Date(year, month - 1, day);
-        }
-      } else {
-        dateObj = new Date(data.date);
-      }
-
-      console.log('📅 [UPDATE DEBUG] Data antes de ajuste:', dateObj.toISOString());
-
-      // ADICIONAR dias conforme configuração de timezone
-      const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
-      if (timezoneOffset > 0) {
-        dateObj.setDate(dateObj.getDate() + timezoneOffset);
-      }
-
-      console.log('📅 [UPDATE DEBUG] Data depois de ajuste (+' + timezoneOffset + ' dia):', dateObj.toISOString());
-
-      // USAR UTC para evitar problemas de timezone
-      const year = dateObj.getUTCFullYear();
-      const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getUTCDate()).padStart(2, '0');
-      const adjustedDate = `${year}-${month}-${day}`;
-
-      console.log('📅 [UPDATE DEBUG] Data final salva:', adjustedDate);
-
-      data.date = adjustedDate as any;
-    }
-
-    Object.assign(transaction, data);
-    await this.transactionRepository.save(transaction);
-
-    return this.transactionRepository.findOne({
-      where: { id: transaction.id },
-      relations: ['category', 'creditCard'],
-    });
   }
 
   async delete(id: string, userId: string) {

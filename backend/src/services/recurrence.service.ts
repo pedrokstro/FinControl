@@ -34,16 +34,21 @@ class RecurrenceService {
    * Processar transações recorrentes que devem ser geradas
    */
   async processRecurringTransactions(): Promise<number> {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const now = new Date();
       let processedCount = 0;
 
-      // Buscar transações recorrentes que precisam gerar nova ocorrência
-      const recurringTransactions = await this.transactionRepository.find({
+      // Buscar transações recorrentes usando PESSIMISTIC LOCK (Evita Race Condition no Cron Job)
+      const recurringTransactions = await queryRunner.manager.find(Transaction, {
         where: {
           isRecurring: true,
           nextOccurrence: LessThanOrEqual(now),
         },
+        lock: { mode: "pessimistic_write", onLocked: "skip_locked" },
       });
 
       logger.info(`📅 Found ${recurringTransactions.length} recurring transactions to process`);
@@ -53,7 +58,7 @@ class RecurrenceService {
           if (!transaction.nextOccurrence) {
             logger.info(`⏸️  Recurring transaction ${transaction.id} has no next occurrence defined, skipping`);
             transaction.isRecurring = false;
-            await this.transactionRepository.save(transaction);
+            await queryRunner.manager.save(Transaction, transaction);
             continue;
           }
 
@@ -62,7 +67,7 @@ class RecurrenceService {
             logger.info(`❌ Recurring transaction ${transaction.id} was cancelled by user`);
             transaction.isRecurring = false;
             transaction.nextOccurrence = null;
-            await this.transactionRepository.save(transaction);
+            await queryRunner.manager.save(Transaction, transaction);
             continue;
           }
 
@@ -72,7 +77,7 @@ class RecurrenceService {
               logger.info(`✅ Recurring transaction ${transaction.id} completed all ${transaction.totalInstallments} installments`);
               transaction.isRecurring = false;
               transaction.nextOccurrence = null;
-              await this.transactionRepository.save(transaction);
+              await queryRunner.manager.save(Transaction, transaction);
               continue;
             }
           }
@@ -82,7 +87,7 @@ class RecurrenceService {
             logger.info(`⏹️  Recurring transaction ${transaction.id} has ended (recurrenceEndDate)`);
             transaction.isRecurring = false;
             transaction.nextOccurrence = null;
-            await this.transactionRepository.save(transaction);
+            await queryRunner.manager.save(Transaction, transaction);
             continue;
           }
 
@@ -92,7 +97,7 @@ class RecurrenceService {
 
           const currentInstallment = (transaction.currentInstallment || 0) + 1;
 
-          const newTransaction = this.transactionRepository.create({
+          const newTransaction = queryRunner.manager.create(Transaction, {
             type: transaction.type,
             amount: transaction.amount,
             description: transaction.description,
@@ -106,7 +111,7 @@ class RecurrenceService {
             creditCardId: transaction.creditCardId,
           });
 
-          await this.transactionRepository.save(newTransaction);
+          await queryRunner.manager.save(Transaction, newTransaction);
 
           const installmentInfo = transaction.totalInstallments
             ? `${currentInstallment}/${transaction.totalInstallments}`
@@ -119,7 +124,7 @@ class RecurrenceService {
             transaction.nextOccurrence!,
             transaction.recurrenceType!
           );
-          await this.transactionRepository.save(transaction);
+          await queryRunner.manager.save(Transaction, transaction);
 
           processedCount++;
         } catch (error) {
@@ -127,11 +132,15 @@ class RecurrenceService {
         }
       }
 
+      await queryRunner.commitTransaction();
       logger.info(`🎉 Processed ${processedCount} recurring transactions`);
       return processedCount;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       logger.error('❌ Error in processRecurringTransactions:', error);
       throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 
