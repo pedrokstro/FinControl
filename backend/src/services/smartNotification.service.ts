@@ -10,7 +10,7 @@ export class SmartNotificationService {
    * Analisar transação e enviar notificações relevantes
    */
   async analyzeTransaction(userId: string, transaction: any): Promise<void> {
-    const { type, amount, category, description } = transaction;
+    const { type, amount, category, categoryId, description } = transaction;
 
     // 1. Notificação de transação criada
     await this.notifyTransactionCreated(userId, type, amount, description);
@@ -25,7 +25,10 @@ export class SmartNotificationService {
 
     // 4. Alertar sobre gastos em categoria específica
     if (type === 'expense') {
-      await this.analyzeCategoryExpenses(userId, category);
+      const targetCategoryId = categoryId || (typeof category === 'string' ? category : category?.id);
+      if (targetCategoryId) {
+        await this.analyzeCategoryExpenses(userId, targetCategoryId, category?.name || category);
+      }
     }
 
     // 5. Dicas de economia baseadas em padrões
@@ -128,7 +131,7 @@ export class SmartNotificationService {
   /**
    * Analisar gastos por categoria
    */
-  private async analyzeCategoryExpenses(userId: string, category: string): Promise<void> {
+  private async analyzeCategoryExpenses(userId: string, categoryId: string, categoryNameHint?: string): Promise<void> {
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -138,12 +141,12 @@ export class SmartNotificationService {
       FROM transactions
       WHERE "userId" = $1
         AND type = 'expense'
-        AND category = $2
+        AND "categoryId" = $2
         AND EXTRACT(MONTH FROM CAST(date AS DATE)) = $3
         AND EXTRACT(YEAR FROM CAST(date AS DATE)) = $4
     `;
 
-    const result = await AppDataSource.manager.query(query, [userId, category, month, year]);
+    const result = await AppDataSource.manager.query(query, [userId, categoryId, month, year]);
     const categoryTotal = parseFloat(result[0].total);
 
     // Alertar se gastos em categoria > R$ 1000
@@ -159,12 +162,12 @@ export class SmartNotificationService {
         others: 'Outros',
       };
 
-      const categoryName = categoryNames[category] || category;
+      const finalCategoryName = categoryNames[categoryNameHint || categoryId] || categoryNameHint || 'esta categoria';
 
       await notificationService.create(
         userId,
         '📊 Análise de Gastos',
-        `Você já gastou R$ ${categoryTotal.toFixed(2)} em ${categoryName} este mês. Revise seus gastos nesta categoria para economizar mais.`,
+        `Você já gastou R$ ${categoryTotal.toFixed(2)} em ${finalCategoryName} este mês. Revise seus gastos nesta categoria para economizar mais.`,
         'info',
         'budget'
       );
