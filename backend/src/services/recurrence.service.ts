@@ -156,7 +156,33 @@ class RecurrenceService {
   ): Promise<Transaction[]> {
     console.log('🔄 [DEBUG] Data recebida (recorrente):', transactionData.date, 'Tipo:', typeof transactionData.date);
 
-    const baseDate = this.parseInputDate(transactionData.date as any);
+    // Usar o mesmo sistema de fuso da Transação Normal (transaction.service.ts)
+    let dateObj: Date;
+    if (typeof transactionData.date === 'string') {
+      if (transactionData.date.includes('/')) {
+        const [day, month, year] = transactionData.date.split('/').map(Number);
+        dateObj = new Date(year, month - 1, day);
+      } else {
+        const [year, month, day] = transactionData.date.split('-').map(Number);
+        dateObj = new Date(year, month - 1, day);
+      }
+    } else {
+      dateObj = new Date(transactionData.date as any);
+    }
+
+    const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
+    if (timezoneOffset > 0) {
+      dateObj.setDate(dateObj.getDate() + timezoneOffset);
+    }
+
+    const year = dateObj.getUTCFullYear();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getUTCDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    // Base date exata usada para calcular a próxima ocorrência
+    const baseDate = new Date(`${formattedDate}T00:00:00Z`);
+
     const totalMonths = Math.max(1, recurrenceMonths || 1);
 
     const finalEndDate =
@@ -183,7 +209,7 @@ class RecurrenceService {
       type: transactionData.type,
       amount,
       description: transactionData.description || '',
-      date: this.applyStorageOffset(baseDate),
+      date: formattedDate,
       categoryId: transactionData.categoryId,
       userId: transactionData.userId,
       isRecurring: true,
@@ -334,7 +360,10 @@ class RecurrenceService {
 
   private applyStorageOffset(date: Date): string {
     const adjusted = new Date(date);
-    adjusted.setDate(adjusted.getDate() + 2);
+    const timezoneOffset = parseInt(process.env.TIMEZONE_DATE_OFFSET || '1', 10);
+    if (timezoneOffset > 0) {
+      adjusted.setDate(adjusted.getDate() + timezoneOffset);
+    }
     return this.formatDate(adjusted);
   }
 
