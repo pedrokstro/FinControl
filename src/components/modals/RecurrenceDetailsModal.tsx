@@ -54,12 +54,9 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Não definido'
     try {
-      let dateToFormat = dateString
-      if (dateString.includes('T')) {
-        dateToFormat = dateString.split('T')[0]
-      }
-      const [year, month, day] = dateToFormat.split('-').map(Number)
-      const date = new Date(year, month - 1, day)
+      // Use direct Date parsing to ensure the Z offset correctly subtracts hours for UTC-3 timezone
+      // mimicking what's used inside VirtualTransactionList.tsx
+      const date = new Date(dateString)
       return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
     } catch {
       return 'Data inválida'
