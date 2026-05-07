@@ -6,16 +6,17 @@ const Privacy = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-8 transition-colors">
+        <div className="flex flex-col items-center mb-12">
+          <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar para Login
           </Link>
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-full mb-6 border border-emerald-100 dark:border-emerald-800/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-full border border-emerald-100 dark:border-emerald-800/30">
             <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Documento Oficial</span>
           </div>
+        </div>
           
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
             Política de <span className="text-primary-600">Privacidade</span>
