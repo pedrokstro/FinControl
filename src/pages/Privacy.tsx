@@ -1,4 +1,4 @@
-import { Lock, Eye, Database, UserCheck, AlertCircle, Scale, ShieldCheck, ArrowLeft } from 'lucide-react'
+import { Lock, Eye, Database, UserCheck, Scale, ShieldCheck, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Privacy = () => {
