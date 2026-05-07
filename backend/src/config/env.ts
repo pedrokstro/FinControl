@@ -42,10 +42,6 @@ interface Config {
     level: string;
     dir: string;
   };
-  stripe: {
-    secretKey: string;
-    webhookSecret: string;
-  };
 }
 
 export const config: Config = {
@@ -92,10 +88,6 @@ export const config: Config = {
   logging: {
     level: process.env.LOG_LEVEL || 'info',
     dir: process.env.LOG_DIR || 'logs',
-  },
-  stripe: {
-    secretKey: process.env.STRIPE_SECRET_KEY || '',
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   },
 };
 

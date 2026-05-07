@@ -68,10 +68,6 @@ class AuthService {
     await api.post('/auth/reset-password', { email, code, newPassword });
   }
 
-  async verifyResetCode(email: string, code: string): Promise<void> {
-    await api.post('/auth/verify-reset-code', { email, code });
-  }
-
   // Métodos removidos - usar Zustand authStore ao invés de localStorage
   // getCurrentUser() - usar useAuthStore((state) => state.user)
   // isAuthenticated() - usar useAuthStore((state) => state.isAuthenticated)

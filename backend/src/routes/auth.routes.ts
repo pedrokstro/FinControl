@@ -197,6 +197,5 @@ router.post('/forgot-password', authController.forgotPassword);
  *         description: Senha redefinida com sucesso
  */
 router.post('/reset-password', authController.resetPassword);
-router.post('/verify-reset-code', authController.verifyResetCode);
 
 export default router;

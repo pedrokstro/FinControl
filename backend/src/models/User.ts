@@ -26,9 +26,6 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 14, unique: true, nullable: true })
-  cpf: string | null;
-
   @Column({ type: 'varchar', length: 255 })
   password: string;
 
@@ -62,12 +59,6 @@ export class User {
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   subscriptionStatus: 'active' | 'cancelled' | 'expired' | null;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  stripeCustomerId: string | null;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  stripeSubscriptionId: string | null;
 
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;

@@ -310,38 +310,6 @@ export class SubscriptionController {
       });
     }
   }
-
-  /**
-   * POST /api/subscription/portal-session
-   * Criar sessão do Portal do Cliente Stripe
-   */
-  async createPortalSession(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.userId;
-      const { returnUrl = 'http://localhost:3000/app/settings/subscription' } = req.body;
-
-      if (!userId) {
-        res.status(401).json({
-          success: false,
-          message: 'Usuário não autenticado',
-        });
-        return;
-      }
-
-      const url = await subscriptionService.getPortalUrl(userId, returnUrl);
-
-      res.json({
-        success: true,
-        data: { url },
-      });
-    } catch (error: any) {
-      console.error('Erro ao criar sessão do portal Stripe:', error);
-      res.status(400).json({
-        success: false,
-        message: error.message || 'Erro ao criar sessão do portal',
-      });
-    }
-  }
 }
 
 export const subscriptionController = new SubscriptionController();

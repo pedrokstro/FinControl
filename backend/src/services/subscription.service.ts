@@ -34,8 +34,6 @@ export class SubscriptionService {
   async activatePremiumPlan(
     userId: string,
     durationMonths: number = 1,
-    stripeCustomerId?: string,
-    stripeSubscriptionId?: string,
     googlePayTransactionId?: string
   ): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -56,14 +54,6 @@ export class SubscriptionService {
     
     if (googlePayTransactionId) {
       user.googlePayTransactionId = googlePayTransactionId;
-    }
-
-    if (stripeCustomerId) {
-      user.stripeCustomerId = stripeCustomerId;
-    }
-
-    if (stripeSubscriptionId) {
-      user.stripeSubscriptionId = stripeSubscriptionId;
     }
 
     await this.userRepository.save(user);
@@ -111,24 +101,10 @@ export class SubscriptionService {
       throw new Error('Usuário não encontrado');
     }
 
-    // Se houver uma assinatura do Stripe, cancelar lá também
-    if (user.stripeSubscriptionId) {
-      const { stripeService } = await import('./stripe.service');
-      try {
-        await stripeService.cancelSubscription(user.stripeSubscriptionId);
-        console.log(`✅ Assinatura Stripe ${user.stripeSubscriptionId} cancelada com sucesso.`);
-      } catch (stripeError) {
-        console.error(`❌ Erro ao cancelar assinatura no Stripe para o usuário ${userId}:`, stripeError);
-        // Opcional: decidimos se paramos o processo ou se cancelamos apenas localmente
-        // Se a assinatura não existir mais no Stripe, o erro é perdoável
-      }
-    }
-
     user.planType = 'free';
     user.planEndDate = new Date(); // Expira imediatamente
     user.isPremium = false;
     user.subscriptionStatus = 'cancelled';
-    user.stripeSubscriptionId = null; // Limpa para evitar tentativas futuras de cancelar o mesmo ID
 
     await this.userRepository.save(user);
 
@@ -348,24 +324,6 @@ export class SubscriptionService {
       percentage,
       isPremium,
     };
-  }
-
-  /**
-   * Gerar URL do Portal do Cliente Stripe
-   */
-  async getPortalUrl(userId: string, returnUrl: string): Promise<string> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-
-    if (!user) {
-      throw new Error('Usuário não encontrado');
-    }
-
-    if (!user.stripeCustomerId) {
-      throw new Error('Nenhum faturamento Stripe encontrado para este usuário. Faça uma assinatura primeiro.');
-    }
-
-    const { stripeService } = await import('./stripe.service');
-    return await stripeService.createPortalSession(user.stripeCustomerId, returnUrl);
   }
 }
 

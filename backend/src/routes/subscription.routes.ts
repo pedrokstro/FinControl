@@ -76,13 +76,4 @@ router.get('/usage', authenticate, (req, res) =>
   subscriptionController.getMonthlyUsage(req, res)
 );
 
-/**
- * @route   POST /api/subscription/portal-session
- * @desc    Criar sessão do Portal do Cliente Stripe
- * @access  Private
- */
-router.post('/portal-session', authenticate, (req, res) =>
-  subscriptionController.createPortalSession(req, res)
-);
-
 export default router;

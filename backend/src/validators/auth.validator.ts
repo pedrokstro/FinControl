@@ -15,13 +15,6 @@ export const registerSchema = Joi.object({
     'string.min': 'Senha deve ter no mínimo 6 caracteres',
     'string.max': 'Senha deve ter no máximo 100 caracteres',
   }),
-  cpf: Joi.string()
-    .pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/)
-    .required()
-    .messages({
-      'string.empty': 'CPF é obrigatório',
-      'string.pattern.base': 'O CPF deve ser inválido ou formato inesperado',
-    }),
 });
 
 export const loginSchema = Joi.object({
