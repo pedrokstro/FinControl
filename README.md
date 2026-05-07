@@ -2,7 +2,7 @@
 
 # 💰 FinControl
 
-![Version](https://img.shields.io/badge/version-2.7.8-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.8.0-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)
@@ -297,13 +297,13 @@ netlify deploy --prod
 
 ## 🗺️ Roadmap
 
-- [ ] Integração com API backend real
+- [x] Integração com API backend real
 - [ ] Autenticação com OAuth (Google, Facebook)
-- [ ] Modo escuro
-- [ ] PWA (Progressive Web App)
-- [ ] Múltiplos idiomas (i18n)
-- [ ] Orçamentos e metas financeiras
-- [ ] Exportação de relatórios em PDF
+- [x] Modo escuro
+- [x] PWA (Progressive Web App)
+- [x] Múltiplos idiomas (i18n)
+- [x] Orçamentos e metas financeiras
+- [x] Exportação de relatórios em PDF
 - [ ] Integração com bancos (Open Banking)
 - [ ] Lembretes e notificações push
 - [ ] Aplicativo mobile (React Native)

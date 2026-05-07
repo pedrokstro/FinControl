@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { motion } from 'framer-motion'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -78,19 +79,25 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 p-4">
-      <div className="w-full max-w-md">
-        {/* Logo Section */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4"
+    >
+      <div className="w-full sm:max-w-md">
+        {/* Main Content Area */}
+        <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl sm:shadow-gray-200/50 dark:sm:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
+          {/* Logo Section */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-          <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
-        </div>
 
-        {/* Login Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
           <div className="mb-6 sm:mb-8 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Bem-vindo de volta</h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400">Acesse sua conta para continuar</p>
@@ -108,7 +115,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="seu@email.com"
                   disabled={isLoading}
                   required
@@ -127,7 +134,7 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="••••••••"
                   disabled={isLoading}
                   required
@@ -160,7 +167,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-primary-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-lg shadow-primary-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'CARREGANDO...' : 'ENTRAR'}
             </button>
@@ -179,7 +186,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading || isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-700 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
           >
             <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5" />
             {isGoogleLoading ? 'CONECTANDO...' : 'GOOGLE'}
@@ -195,7 +202,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

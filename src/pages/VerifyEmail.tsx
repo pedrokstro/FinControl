@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Mail, ArrowLeft, RefreshCw } from 'lucide-react';
 import authService from '@/services/auth.service';
 import { toast } from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -93,10 +94,16 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-[440px]">
-        {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center sm:p-6"
+    >
+      <div className="w-full sm:max-w-[440px]">
+        {/* Main Content Area */}
+        <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-sm border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
           {/* Header */}
           <div className="text-center mb-8 sm:mb-10">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
@@ -138,7 +145,7 @@ const VerifyEmail = () => {
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-10 h-14 sm:w-12 sm:h-16 text-center text-xl sm:text-2xl font-black border-2 border-gray-100 dark:border-neutral-700 rounded-xl focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 bg-gray-50/50 dark:bg-neutral-900 text-gray-900 dark:text-white transition-all outline-none"
+                  className="w-10 h-14 sm:w-12 sm:h-16 text-center text-xl sm:text-2xl font-black border-2 border-gray-100 dark:border-neutral-700 rounded-full focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 bg-gray-50/50 dark:bg-neutral-900 text-gray-900 dark:text-white transition-all outline-none"
                 />
               ))}
             </div>
@@ -151,7 +158,7 @@ const VerifyEmail = () => {
           <button
             onClick={handleVerify}
             disabled={isLoading || code.join('').length !== 6}
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-full font-bold text-lg shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -192,7 +199,7 @@ const VerifyEmail = () => {
           💡 Você pode colar o código completo de 6 dígitos.
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

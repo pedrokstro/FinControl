@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { KeyRound, ArrowLeft, Mail } from 'lucide-react';
 import authService from '@/services/auth.service';
 import { toast } from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -31,19 +32,25 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 p-4">
-      <div className="w-full max-w-md">
-        {/* Logo Section */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4"
+    >
+      <div className="w-full sm:max-w-md">
+        {/* Main Content Area */}
+        <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl sm:shadow-gray-200/50 dark:sm:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
+          {/* Logo Section */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Recuperação de Acesso</p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-          <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Recuperação de Acesso</p>
-        </div>
 
-        {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
           <div className="mb-6 sm:mb-8 text-center">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-primary-100 dark:border-primary-900/30">
               <KeyRound className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 drop-shadow-sm" />
@@ -64,7 +71,7 @@ const ForgotPassword = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="seu@email.com"
                   disabled={isLoading}
                   required
@@ -75,7 +82,7 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-primary-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-primary-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? 'ENVIANDO...' : 'SOLICITAR REDEFINIÇÃO'}
             </button>
@@ -92,7 +99,7 @@ const ForgotPassword = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

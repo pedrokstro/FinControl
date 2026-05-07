@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff, User, AlertCircle, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { authService } from '@/services/api'
+import { motion } from 'framer-motion'
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
@@ -93,19 +94,25 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 p-4">
-      <div className="w-full max-w-md py-8">
-        {/* Logo Section */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4"
+    >
+      <div className="w-full sm:max-w-md py-0 sm:py-8">
+        {/* Main Content Area */}
+        <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
+          {/* Logo Section */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Crie sua conta agora</p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-          <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Crie sua conta agora</p>
-        </div>
 
-        {/* Register Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
           <div className="mb-6 sm:mb-8 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Abertura de Conta</h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400">Preencha os dados abaixo para iniciar</p>
@@ -123,7 +130,7 @@ const Register = () => {
                   id="name"
                   type="text"
                   {...register('name')}
-                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.name ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
+                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.name ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
                   placeholder="Seu nome"
                   disabled={isLoading}
                 />
@@ -147,7 +154,7 @@ const Register = () => {
                   id="cpf"
                   type="text"
                   {...register('cpf')}
-                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.cpf ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
+                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.cpf ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
                   placeholder="000.000.000-00"
                   disabled={isLoading}
                   onChange={(e) => {
@@ -184,7 +191,7 @@ const Register = () => {
                   id="email"
                   type="email"
                   {...register('email')}
-                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.email ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
+                  className={`w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.email ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
                   placeholder="seu@email.com"
                   disabled={isLoading}
                 />
@@ -208,7 +215,7 @@ const Register = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   {...register('password')}
-                  className={`w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.password ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
+                  className={`w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.password ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
                   placeholder="••••••••"
                   disabled={isLoading}
                 />
@@ -256,7 +263,7 @@ const Register = () => {
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   {...register('confirmPassword')}
-                  className={`w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
+                  className={`w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-neutral-700'}`}
                   placeholder="••••••••"
                   disabled={isLoading}
                 />
@@ -307,7 +314,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-primary-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-lg hover:shadow-primary-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? 'PROCESSANDO...' : 'CRIAR CONTA'}
             </button>
@@ -323,7 +330,7 @@ const Register = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

@@ -1,5 +1,6 @@
 import { Mail, FileQuestion, Sparkles, ChevronDown, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 const Support = () => {
   const faqs = [
@@ -30,8 +31,14 @@ const Support = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.02 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-white dark:bg-neutral-900 sm:bg-gray-50 sm:dark:bg-neutral-900 sm:py-12 px-0 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-4xl mx-auto bg-white dark:bg-neutral-800 sm:bg-transparent min-h-screen sm:min-h-0 p-6 sm:p-0">
         {/* Header */}
         <div className="flex flex-col items-center mb-10 sm:mb-16">
           <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors">
@@ -95,7 +102,7 @@ const Support = () => {
             </p>
             <a
               href="mailto:suportfincontrol@gmail.com"
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-50 transition-transform active:scale-95 shadow-lg"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-primary-600 rounded-full font-bold hover:bg-gray-50 transition-transform active:scale-95 shadow-lg"
             >
               <Mail className="w-5 h-5" />
               Entrar em Contato
@@ -103,7 +110,7 @@ const Support = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
