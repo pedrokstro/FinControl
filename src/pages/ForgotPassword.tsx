@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { KeyRound, ArrowLeft, Mail } from 'lucide-react';
 import authService from '@/services/auth.service';
 import { toast } from 'react-hot-toast';
-import { motion } from 'framer-motion';
+import PageTransition from '@/components/common/PageTransition';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -32,13 +32,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4"
-    >
+    <PageTransition className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4">
       <div className="w-full sm:max-w-md">
         {/* Main Content Area */}
         <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl sm:shadow-gray-200/50 dark:sm:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
@@ -99,7 +93,7 @@ const ForgotPassword = () => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </PageTransition>
   );
 };
 

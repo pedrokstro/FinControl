@@ -175,6 +175,29 @@ router.post('/forgot-password', authController.forgotPassword);
 
 /**
  * @swagger
+ * /auth/verify-reset-code:
+ *   post:
+ *     summary: Validar código de recuperação de senha
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Código válido
+ */
+router.post('/verify-reset-code', authController.verifyResetCode);
+
+/**
+ * @swagger
  * /auth/reset-password:
  *   post:
  *     summary: Redefinir senha com código

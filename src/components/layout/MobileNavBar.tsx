@@ -213,7 +213,7 @@ const MobileNavBar = () => {
       {/* Bottom Nav Bar */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-3 mb-3">
-          <div className="bg-white/40 dark:bg-neutral-950/40 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-full shadow-lg flex items-center px-4">
+          <div className="bg-white/10 dark:bg-black/10 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-full shadow-lg flex items-center px-4">
 
             {/* Início */}
             <NavLink

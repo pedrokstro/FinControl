@@ -92,10 +92,30 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     }
     
     // Enviar código (não aguardar para não travar)
+    console.log(`[AUTH] Iniciando envio de código de recuperação para: ${email} (Usuário: ${user.name})`);
     verificationService.createAndSendCode(email, 'password_reset', user.name)
-      .catch(err => console.error('Erro ao enviar código:', err));
+      .then(() => console.log(`[AUTH] Código de recuperação enviado com sucesso para: ${email}`))
+      .catch(err => console.error(`[AUTH] Erro ao enviar código para ${email}:`, err));
     
     sendSuccess(res, null, 'Código de recuperação enviado para seu email');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyResetCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, code } = req.body;
+    const isValid = await verificationService.verifyCode(email, code, 'password_reset');
+    
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Código inválido ou expirado',
+      });
+    }
+    
+    sendSuccess(res, null, 'Código validado com sucesso');
   } catch (error) {
     next(error);
   }

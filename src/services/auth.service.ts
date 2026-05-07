@@ -64,6 +64,10 @@ class AuthService {
     await api.post('/auth/forgot-password', { email });
   }
 
+  async verifyResetCode(email: string, code: string): Promise<void> {
+    await api.post('/auth/verify-reset-code', { email, code });
+  }
+
   async resetPassword(email: string, code: string, newPassword: string): Promise<void> {
     await api.post('/auth/reset-password', { email, code, newPassword });
   }

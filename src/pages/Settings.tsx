@@ -1014,7 +1014,7 @@ const Settings = () => {
                           </div>
                           <div className="flex flex-col items-end">
                             <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                              v2.8.4
+                              v2.9.0
                             </div>
                             <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                           </div>
@@ -1022,13 +1022,48 @@ const Settings = () => {
 
                         <div className="space-y-12">
 
-                      {/* v2.8.4 - ATUAL */}
+                      {/* v2.9.0 - ATUAL */}
                       <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                         <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                         <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.4</span>
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.9.0</span>
                             <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-bold uppercase tracking-wider">Atual</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Estabilidade e Design
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Refinamento do efeito glass na navegação mobile e rodapé branco (branding).</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Remoção completa de framer-motion nas páginas de autenticação para maior leveza.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Reforço na segurança do fluxo de redefinição de senha com validação rigorosa.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.4 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.4</span>
                           </div>
                           <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                             {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}

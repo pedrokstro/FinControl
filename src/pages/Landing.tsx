@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
+import PageTransition from '@/components/common/PageTransition'
 import { useAuthStore } from '@/store/authStore'
 import AnimatedTextCycle from '@/components/ui/animated-text-cycle'
 import { MovingBorderButton } from '@/components/ui/moving-border'
@@ -91,7 +91,7 @@ const Landing = () => {
   ]
 
   return (
-    <motion.div
+    <div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
@@ -112,9 +112,9 @@ const Landing = () => {
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-primary-600/30"
+              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-primary-600/30"
             >
-              Entrar
+              Fazer Login
             </button>
           </div>
         </div>
@@ -123,7 +123,7 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -144,23 +144,18 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
               >
                 Começar Grátis
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-xl font-semibold text-lg transition-all duration-200 border-2 border-neutral-200 dark:border-neutral-700 flex items-center justify-center"
-              >
-                Fazer Login
-              </button>
+
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 mt-16 max-w-3xl mx-auto px-4">
               {stats.map((stat, index) => (
-                <motion.div
+                <div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -173,17 +168,17 @@ const Landing = () => {
                   <div className="text-sm text-neutral-600 dark:text-neutral-400">
                     {stat.label}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="py-20 px-6 bg-white dark:bg-neutral-900">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -196,11 +191,11 @@ const Landing = () => {
             <p className="text-xl text-neutral-600 dark:text-neutral-400">
               Tudo que você precisa para ter controle total das suas finanças
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -226,7 +221,7 @@ const Landing = () => {
                     {feature.description}
                   </p>
                 </MovingBorderButton>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -235,7 +230,7 @@ const Landing = () => {
       {/* Dashboard Preview */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -248,10 +243,10 @@ const Landing = () => {
             <p className="text-xl text-neutral-600 dark:text-neutral-400">
               Interface moderna e intuitiva para gerenciar suas finanças
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div
+            <div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -281,9 +276,9 @@ const Landing = () => {
                   </div>
                 </div>
               </MovingBorderButton>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -316,7 +311,7 @@ const Landing = () => {
                   ))}
                 </div>
               </MovingBorderButton>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -324,7 +319,7 @@ const Landing = () => {
       {/* Plans Section */}
       <section className="py-20 px-6 bg-white dark:bg-neutral-900">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -337,7 +332,7 @@ const Landing = () => {
             <p className="text-xl text-neutral-600 dark:text-neutral-400">
               Escolha o plano ideal para suas necessidades
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {plans.map((plan, index) => {
@@ -347,7 +342,7 @@ const Landing = () => {
                 : 'bg-[radial-gradient(var(--neutral-300)_40%,transparent_70%)]'
 
               return (
-                <motion.div
+                <div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -397,7 +392,7 @@ const Landing = () => {
                     </ul>
                     <button
                       onClick={() => navigate('/register')}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${isHighlighted
+                      className={`w-full py-3 rounded-full font-semibold transition-all duration-200 ${isHighlighted
                         ? 'bg-white text-primary-600 hover:bg-primary-50'
                         : 'bg-primary-600 text-white hover:bg-primary-700'
                         }`}
@@ -405,7 +400,7 @@ const Landing = () => {
                       Começar Agora
                     </button>
                   </MovingBorderButton>
-                </motion.div>
+                </div>
               )
             })}
           </div>
@@ -415,7 +410,7 @@ const Landing = () => {
       {/* Benefits Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-primary-600 to-primary-800 text-white">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -428,7 +423,7 @@ const Landing = () => {
             <p className="text-xl text-primary-100">
               Acesse suas finanças de onde estiver, com segurança total
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -436,7 +431,7 @@ const Landing = () => {
               { icon: <Lock />, title: 'Segurança', desc: 'Criptografia de ponta a ponta' },
               { icon: <Globe />, title: 'Multi-plataforma', desc: 'Sincronização em tempo real' }
             ].map((item, index) => (
-              <motion.div
+              <div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -449,7 +444,7 @@ const Landing = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                 <p className="text-primary-100">{item.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -458,7 +453,7 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -474,59 +469,59 @@ const Landing = () => {
             </p>
             <button
               onClick={() => navigate('/register')}
-              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl"
+              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl"
             >
               Começar Gratuitamente
             </button>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-neutral-900 text-white">
+      <footer className="py-12 px-6 bg-white border-t border-gray-100 dark:border-neutral-800 text-neutral-900">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-white p-0.5">
-                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-primary-600 p-1.5 shadow-lg shadow-primary-500/20">
+                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
-                <span className="text-xl font-bold">FinControl</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">FinControl</span>
               </div>
-              <p className="text-neutral-400 text-sm">
+              <p className="text-gray-500 dark:text-neutral-400 text-sm">
                 Sua plataforma completa de gestão financeira pessoal
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Produto</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="#" className="hover:text-white transition-colors">Recursos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Planos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Segurança</a></li>
+              <h4 className="font-semibold mb-4 text-gray-900 dark:text-white">Produto</h4>
+              <ul className="space-y-2 text-sm text-gray-500 dark:text-neutral-400">
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-white transition-colors">Recursos</a></li>
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-white transition-colors">Planos</a></li>
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-white transition-colors">Segurança</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Empresa</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="/about" className="hover:text-white transition-colors">Sobre</a></li>
-                <li><a href="/support" className="hover:text-white transition-colors">Suporte</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Termos</a></li>
+              <h4 className="font-semibold mb-4 text-gray-900 dark:text-white">Empresa</h4>
+              <ul className="space-y-2 text-sm text-gray-500 dark:text-neutral-400">
+                <li><a href="/about" className="hover:text-primary-600 dark:hover:text-white transition-colors">Sobre</a></li>
+                <li><a href="/support" className="hover:text-primary-600 dark:hover:text-white transition-colors">Suporte</a></li>
+                <li><a href="/terms" className="hover:text-primary-600 dark:hover:text-white transition-colors">Termos</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="/privacy" className="hover:text-white transition-colors">Privacidade</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Termos de Uso</a></li>
+              <h4 className="font-semibold mb-4 text-gray-900 dark:text-white">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-500 dark:text-neutral-400">
+                <li><a href="/privacy" className="hover:text-primary-600 dark:hover:text-white transition-colors">Privacidade</a></li>
+                <li><a href="/terms" className="hover:text-primary-600 dark:hover:text-white transition-colors">Termos de Uso</a></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-neutral-800 text-center text-sm text-neutral-400">
+          <div className="pt-8 border-t border-gray-100 dark:border-neutral-800 text-center text-sm text-gray-400 dark:text-neutral-500">
             <p>© 2025 FinControl. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
-    </motion.div>
+    </div>
   )
 }
 
