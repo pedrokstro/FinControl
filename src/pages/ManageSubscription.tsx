@@ -24,6 +24,7 @@ const ManageSubscription = () => {
   const [loading, setLoading] = useState(true)
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [loadingPortal, setLoadingPortal] = useState(false)
 
   const isPremium = user?.isPremium || false
 
@@ -57,6 +58,20 @@ const ManageSubscription = () => {
       toast.error(error.response?.data?.message || 'Erro ao cancelar assinatura')
     } finally {
       setCancelling(false)
+    }
+  }
+
+  const handleManageBilling = async () => {
+    try {
+      setLoadingPortal(true)
+      const returnUrl = window.location.href
+      const { url } = await subscriptionService.createPortalSession(returnUrl)
+      window.location.href = url
+    } catch (error: any) {
+      console.error('Erro ao abrir portal de faturamento:', error)
+      toast.error(error.response?.data?.message || 'Erro ao abrir configurações de faturamento')
+    } finally {
+      setLoadingPortal(false)
     }
   }
 
@@ -265,38 +280,53 @@ const ManageSubscription = () => {
         )}
       </div>
 
-      {/* Payment Method */}
+      {/* Payment Method & Billing Management */}
       {isPremium && (
         <div className="bg-white dark:bg-neutral-800 rounded-2xl p-8 border border-gray-200 dark:border-neutral-700">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-            Método de Pagamento
-          </h3>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                Dados de Faturamento
+              </h3>
+              <p className="text-gray-600 dark:text-neutral-400">
+                Gerencie seus métodos de pagamento, veja faturas e histórico de assinaturas diretamente no sistema seguro da Stripe.
+              </p>
+            </div>
+            
+            <button
+              onClick={handleManageBilling}
+              disabled={loadingPortal}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 hover:bg-gray-50 dark:hover:bg-neutral-600 text-gray-700 dark:text-white font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+            >
+              {loadingPortal ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  Carregando...
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5 text-blue-500" />
+                  Gerenciar Faturamento no Stripe
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
 
-          <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-xl">
+          <div className="mt-8 flex items-center gap-4 p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-xl">
             <div className="w-12 h-12 bg-white dark:bg-neutral-800 rounded-lg flex items-center justify-center p-2">
-              <img
-                src="https://www.gstatic.com/instantbuy/svg/dark_gpay.svg"
-                alt="Google Pay"
-                className="w-full h-full object-contain"
-              />
+              <svg viewBox="0 0 40 40" className="w-8 h-8">
+                <path fill="#635bff" d="M34.8 19.3c0-4.6-2.1-7.3-6.2-7.3-4.1 0-7.3 2.8-7.3 7.3 0 4.6 3.1 7.3 7.3 7.3 4 0 6.2-2.7 6.2-7.3zm-6.2 4.4c-2 0-3.2-1.2-3.2-4.4 0-3.3 1.2-4.4 3.2-4.4 2 0 3.2 1.1 3.2 4.4 0 3.1-1.2 4.4-3.2 4.4zM10.1 12.1h-4.3v14.5h4.3V12.1zm5.1 0h-4.3v14.5h4.2v-11c.8-.8 2-1.3 2.9-1.3.3 0 .6 0 .9.1v-4c-.4-.1-.8-.1-1.1-.1-1.3 0-2.2.6-2.6 1.8zm11.7-8.1C21.8 4 18.2 7.1 18.2 12s3.6 8 8.7 8c2.9 0 5-1 6.3-2.1l-1.4-2.8c-1.2 1-2.9 1.8-4.9 1.8-3.1 0-5.1-1.7-5.1-4.8 0-3.1 2-4.8 5.1-4.8 2 0 3.7.8 4.9 1.8l1.4-2.8c-1.3-1.1-3.4-2.2-6.3-2.2z"/>
+              </svg>
             </div>
             <div className="flex-1">
               <p className="font-medium text-gray-900 dark:text-white">
-                Google Pay
+                Pagamento seguro via Stripe
               </p>
               <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Pagamento único processado
+                Seus dados financeiros nunca tocam nossos servidores.
               </p>
             </div>
-            <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
-              Pago
-            </div>
-          </div>
-
-          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              💡 <strong>Renovação manual:</strong> Quando sua assinatura expirar, você precisará fazer um novo pagamento para renovar.
-            </p>
           </div>
         </div>
       )}

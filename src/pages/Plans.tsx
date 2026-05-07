@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Star,
   ArrowRight,
-  Gift
+  Gift,
+  Target
 } from 'lucide-react';
 import { subscriptionService } from '@/services/subscription.service';
 import { useAuthStore } from '@/store/authStore';
@@ -22,6 +23,12 @@ const Plans = () => {
   const { user, refreshPremiumStatus } = useAuthStore();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isStartingTrial, setIsStartingTrial] = useState(false);
+
+  // Stripe Official Links (Mantendo os links de teste validados)
+  const STRIPE_LINKS = {
+    monthly: 'https://buy.stripe.com/test_5kQaEQgnNd685Y2fdUcZa00',
+    yearly: 'https://buy.stripe.com/3cIaEQ6Nd7LO7264zgcZa03'
+  };
 
   const features = {
     free: [
@@ -53,7 +60,7 @@ const Plans = () => {
   const monthlyPrice = 14.99;
   const yearlyPrice = 149.99;
   const yearlyMonthlyEquivalent = (yearlyPrice / 12).toFixed(2);
-  const savings = ((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12) * 100).toFixed(0);
+  const savings = (((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100).toFixed(0);
 
   const handleStartTrial = async () => {
     try {
@@ -70,8 +77,16 @@ const Plans = () => {
   };
 
   const handleUpgrade = () => {
-    // Redirecionar para checkout com o plano selecionado
-    navigate(`/app/checkout?plan=${billingCycle}`);
+    if (!user?.id) {
+      toast.error('Usuário não identificado. Por favor, faça login novamente.');
+      return;
+    }
+
+    // Lógica técnica de checkout direto do Stripe Pró
+    const separator = STRIPE_LINKS[billingCycle].includes('?') ? '&' : '?';
+    const checkoutUrl = `${STRIPE_LINKS[billingCycle]}${separator}client_reference_id=${user.id}`;
+
+    window.location.href = checkoutUrl;
   };
 
   return (
@@ -102,8 +117,8 @@ const Plans = () => {
             <button
               onClick={() => setBillingCycle('monthly')}
               className={`px-6 py-2.5 rounded-lg font-semibold transition-all ${billingCycle === 'monthly'
-                ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-lg'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                ? 'bg-amber-500 text-white shadow-lg'
+                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 shadow-sm border border-gray-200 dark:border-neutral-700'
                 }`}
             >
               Mensal
@@ -111,12 +126,12 @@ const Plans = () => {
             <button
               onClick={() => setBillingCycle('yearly')}
               className={`px-6 py-2.5 rounded-lg font-semibold transition-all relative ${billingCycle === 'yearly'
-                ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-lg'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
+                ? 'bg-amber-500 text-white shadow-lg'
+                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 shadow-sm border border-gray-200 dark:border-neutral-700'
                 }`}
             >
               Anual
-              <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full font-bold">
+              <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-green-500 text-white text-[10px] rounded-full font-bold uppercase tracking-wider">
                 -{savings}%
               </span>
             </button>
@@ -125,41 +140,41 @@ const Plans = () => {
           {/* Plans Grid */}
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
             {/* Free Plan */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-dark-lg border-2 border-gray-200 dark:border-neutral-800 p-8 hover:shadow-xl transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-dark-lg border-2 border-gray-100 dark:border-neutral-800 p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-neutral-800 rounded-full mb-4">
-                  <Shield className="w-8 h-8 text-gray-600 dark:text-neutral-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-full mb-4">
+                  <Shield className="w-8 h-8 text-neutral-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Plano Gratuito
+                  Plano Inicial
                 </h3>
                 <div className="mb-4">
                   <span className="text-4xl font-bold text-gray-900 dark:text-white">R$ 0</span>
-                  <span className="text-gray-600 dark:text-neutral-400">/mês</span>
+                  <span className="text-gray-500">/mês</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-neutral-400">
-                  Perfeito para começar
+                <p className="text-sm text-gray-500 dark:text-neutral-400">
+                  Perfeito para começar sua jornada
                 </p>
               </div>
 
               <button
                 disabled
-                className="w-full py-3 px-6 bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-500 rounded-lg font-semibold mb-6 cursor-not-allowed"
+                className="w-full py-4 text-neutral-400 dark:text-neutral-600 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl font-bold mb-8 cursor-default border border-neutral-200 dark:border-neutral-800"
               >
-                Plano Atual
+                Seu Plano Atual
               </button>
 
-              <div className="space-y-3">
+              <div className="space-y-4 flex-1">
                 {features.free.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
                     {feature.included ? (
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <Check className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                     ) : (
-                      <X className="w-5 h-5 text-gray-300 dark:text-neutral-700 flex-shrink-0 mt-0.5" />
+                      <X className="w-5 h-5 text-neutral-300 dark:text-neutral-700 flex-shrink-0 mt-0.5" />
                     )}
                     <span className={`text-sm ${feature.included
-                      ? 'text-gray-700 dark:text-neutral-300'
-                      : 'text-gray-400 dark:text-neutral-600 line-through'
+                      ? 'text-neutral-700 dark:text-neutral-300 font-medium'
+                      : 'text-neutral-400 dark:text-neutral-600 line-through'
                       }`}>
                       {feature.name}
                     </span>
@@ -169,85 +184,80 @@ const Plans = () => {
             </div>
 
             {/* Premium Plan */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl dark:shadow-dark-2xl border-2 border-amber-400 dark:border-amber-600 p-8 relative overflow-hidden hover:shadow-3xl transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl dark:shadow-dark-2xl border-2 border-amber-400 dark:border-amber-500 p-8 relative overflow-hidden flex flex-col group hover:scale-[1.02] transition-all duration-300">
               {/* Popular Badge */}
-              <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-2 rounded-bl-2xl font-bold text-sm flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                MAIS POPULAR
+              <div className="absolute top-0 right-0 bg-amber-500 text-white px-6 py-2 rounded-bl-2xl font-bold text-xs flex items-center gap-2">
+                <Star className="w-4 h-4 fill-white" />
+                RECOMENDADO
               </div>
 
               <div className="text-center mb-6 mt-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full mb-4 shadow-lg">
-                  <Crown className="w-8 h-8 text-white" />
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full mb-4 shadow-xl ring-4 ring-amber-400/20">
+                  <Crown className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Plano Premium
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-tight">
+                  FinControl Pro
                 </h3>
                 <div className="mb-4">
                   {billingCycle === 'monthly' ? (
                     <>
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-5xl font-black text-gray-900 dark:text-white">
                         R$ {monthlyPrice.toFixed(2)}
                       </span>
-                      <span className="text-gray-600 dark:text-neutral-400">/mês</span>
+                      <span className="text-gray-500">/mês</span>
                     </>
                   ) : (
                     <>
-                      <div className="text-sm text-gray-600 dark:text-neutral-400 line-through mb-1">
+                      <div className="text-sm text-neutral-400 line-through mb-1">
                         R$ {(monthlyPrice * 12).toFixed(2)}/ano
                       </div>
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-5xl font-black text-amber-500">
                         R$ {yearlyPrice.toFixed(2)}
                       </span>
-                      <span className="text-gray-600 dark:text-neutral-400">/ano</span>
-                      <div className="text-sm text-green-600 dark:text-green-400 font-semibold mt-1">
+                      <span className="text-gray-500">/ano</span>
+                      <div className="text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-black px-2 py-1 rounded inline-block mt-2 uppercase">
                         Apenas R$ {yearlyMonthlyEquivalent}/mês
                       </div>
                     </>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-neutral-400">
-                  Controle total e estilo
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">
+                  Controle total, inteligência avançada <br />e estilo exclusivo
                 </p>
               </div>
 
-              {/* Botão de Teste Grátis - Só aparece se não for premium e não tiver usado trial */}
-              {!user?.isPremium && !user?.isTrial && (
+              <div className="space-y-4 mb-8">
+                {!user?.isPremium && !user?.isTrial && (
+                  <button
+                    onClick={handleStartTrial}
+                    disabled={isStartingTrial}
+                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-black text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-emerald-500/30 flex items-center justify-center gap-2 group disabled:opacity-50"
+                  >
+                    <Zap className="w-5 h-5 fill-white" />
+                    {isStartingTrial ? 'Preparando...' : 'Liberar 7 Dias Grátis'}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                )}
+
                 <button
-                  onClick={handleStartTrial}
-                  disabled={isStartingTrial}
-                  className="w-full py-3 px-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold mb-3 hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleUpgrade}
+                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-white rounded-xl font-black text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-amber-500/30 flex items-center justify-center gap-2 group"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  {isStartingTrial ? 'Ativando...' : 'Iniciar Teste Grátis de 7 Dias'}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <Crown className="w-5 h-5 fill-white" />
+                  {user?.isPremium ? 'Renovar Assinatura' : 'Assinar Pró Agora'}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
-              )}
+              </div>
 
-              <button
-                onClick={handleUpgrade}
-                className="w-full py-3 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-bold mb-6 hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
-              >
-                <Crown className="w-5 h-5" />
-                {user?.isPremium ? 'Renovar Agora' : 'Fazer Upgrade Agora'}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <div className="space-y-3">
+              <div className="space-y-4 flex-1">
                 {features.premium.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className={`flex-shrink-0 mt-0.5 ${feature.highlight
-                      ? 'w-5 h-5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center'
-                      : ''
-                      }`}>
-                      <Check className={`w-5 h-5 ${feature.highlight
-                        ? 'text-white w-3 h-3'
-                        : 'text-green-500'
-                        }`} />
+                  <div key={index} className="flex items-start gap-4">
+                    <div className={`w-5 h-5 flex-shrink-0 mt-0.5 rounded-full flex items-center justify-center bg-emerald-500/10`}>
+                      <Check className={`w-3.5 h-3.5 text-emerald-600 stroke-[3px]`} />
                     </div>
                     <span className={`text-sm ${feature.highlight
-                      ? 'text-gray-900 dark:text-white font-semibold'
-                      : 'text-gray-700 dark:text-neutral-300'
+                      ? 'text-neutral-900 dark:text-white font-black'
+                      : 'text-neutral-600 dark:text-neutral-300 font-bold'
                       }`}>
                       {feature.name}
                     </span>
@@ -255,132 +265,90 @@ const Plans = () => {
                 ))}
               </div>
 
-              {/* Guarantee Badge */}
-              <div className="mt-6 p-4 bg-white/50 dark:bg-neutral-800/50 rounded-lg border border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-3">
-                  <Gift className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      7 Dias Grátis
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-neutral-400">
-                      Teste sem compromisso. Cancele quando quiser.
-                    </p>
-                  </div>
+              <div className="mt-8 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/30 flex items-center gap-4">
+                <div className="p-3 bg-amber-500 rounded-lg">
+                  <Gift className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-amber-900 dark:text-amber-200 uppercase tracking-tighter">Garantia Absoluta</p>
+                  <p className="text-[11px] text-amber-700 dark:text-neutral-400 italic">Cancele quando quiser na interface Stripe.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Benefits Section */}
-          <div className="max-w-5xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-              Por Que Escolher o Premium?
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mb-4 shadow-lg">
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  Personalização Total
-                </h3>
-                <p className="text-gray-600 dark:text-neutral-400">
-                  Emojis exclusivos, cores ilimitadas e ícones personalizados para suas categorias.
-                </p>
+          {/* Value Propositions */}
+          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-24">
+            <div className="group">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+                <Target className="w-8 h-8 text-amber-500" />
               </div>
-
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mb-4 shadow-lg">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  Recursos Avançados
-                </h3>
-                <p className="text-gray-600 dark:text-neutral-400">
-                  Relatórios detalhados, exportação de dados e acesso antecipado a novidades.
-                </p>
+              <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">FOCO TOTAL</h4>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">
+                Nossa IA filtra o que realmente importa nas suas métricas financeiras diárias.
+              </p>
+            </div>
+            <div className="group">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+                <TrendingUp className="w-8 h-8 text-emerald-500" />
               </div>
-
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl mb-4 shadow-lg">
-                  <TrendingUp className="w-8 h-8 text-white animate-arrow-up" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  Suporte Prioritário
-                </h3>
-                <p className="text-gray-600 dark:text-neutral-400">
-                  Atendimento rápido, atualizações prioritárias e experiência sem anúncios.
-                </p>
+              <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">ALTA PERFORMANCE</h4>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">
+                Relatórios que carregam instantaneamente e exportação de BI para sua estratégia.
+              </p>
+            </div>
+            <div className="group">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+                <Shield className="w-8 h-8 text-blue-500" />
               </div>
+              <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">SEGURANÇA BLINDADA</h4>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">
+                Processamento oficial Stripe com criptografia de ponta a ponta nos seus dados.
+              </p>
             </div>
           </div>
 
-          {/* CTA Section */}
-          <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-12 shadow-2xl">
-            <Crown className="w-16 h-16 text-white mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Junte-se ao Plano Premium Hoje!
-            </h2>
-            <p className="text-lg text-white text-opacity-90 mb-8">
-              Experimente a liberdade de controle completo, estilo e produtividade. Comece sua jornada premium agora!
-            </p>
-            <button
-              onClick={handleUpgrade}
-              className="px-8 py-4 bg-white text-amber-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-3 group"
-            >
-              <Crown className="w-6 h-6" />
-              Começar Agora - 7 Dias Grátis
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <p className="text-sm text-white text-opacity-75 mt-4">
-              Sem cartão de crédito necessário para o teste. Cancele quando quiser.
-            </p>
+          {/* Social Proof CTA */}
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-amber-600 to-orange-500 text-white p-12 text-center shadow-3xl">
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <Crown className="w-20 h-20 mx-auto mb-8 animate-bounce transition-all duration-[2000ms]" />
+              <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter">PRONTO PARA A EVOLUÇÃO?</h2>
+              <p className="text-lg text-white/90 font-medium mb-10 leading-relaxed">
+                Junte-se a centenas de usuários que transformaram suas planilhas em um centro de comando inteligente.
+              </p>
+              <button
+                onClick={handleUpgrade}
+                className="px-10 py-5 bg-white text-orange-600 rounded-2xl font-black text-xl hover:bg-neutral-50 transition-all shadow-2xl flex items-center gap-3 mx-auto"
+              >
+                COMEÇAR AGORA
+                <ArrowRight className="w-6 h-6" />
+              </button>
+              <p className="mt-4 text-xs font-bold text-white/70 uppercase tracking-widest">Até {savings}% de desconto no plano anual</p>
+            </div>
           </div>
 
-          {/* FAQ Section */}
-          <div className="max-w-3xl mx-auto mt-16">
-            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Perguntas Frequentes
-            </h2>
-
+          {/* FAQ Area */}
+          <div className="max-w-3xl mx-auto mt-24">
+            <h2 className="text-2xl font-black text-center text-gray-900 dark:text-white mb-12 uppercase tracking-tighter">PERGUNTAS RECORRENTES</h2>
             <div className="space-y-4">
-              <details className="bg-white dark:bg-neutral-900 rounded-lg p-6 shadow-lg dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800">
-                <summary className="font-semibold text-gray-900 dark:text-white cursor-pointer">
-                  Posso cancelar a qualquer momento?
-                </summary>
-                <p className="mt-3 text-gray-600 dark:text-neutral-400">
-                  Sim! Você pode cancelar sua assinatura a qualquer momento sem taxas de cancelamento. Você continuará tendo acesso aos recursos premium até o final do período pago.
-                </p>
-              </details>
-
-              <details className="bg-white dark:bg-neutral-900 rounded-lg p-6 shadow-lg dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800">
-                <summary className="font-semibold text-gray-900 dark:text-white cursor-pointer">
-                  Como funciona o teste de 7 dias?
-                </summary>
-                <p className="mt-3 text-gray-600 dark:text-neutral-400">
-                  Você tem 7 dias completos para experimentar todos os recursos premium gratuitamente. Não é necessário cartão de crédito para começar. Após o período de teste, você pode escolher continuar com o plano premium ou voltar ao plano gratuito.
-                </p>
-              </details>
-
-              <details className="bg-white dark:bg-neutral-900 rounded-lg p-6 shadow-lg dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800">
-                <summary className="font-semibold text-gray-900 dark:text-white cursor-pointer">
-                  Qual a diferença entre o plano mensal e anual?
-                </summary>
-                <p className="mt-3 text-gray-600 dark:text-neutral-400">
-                  O plano anual oferece uma economia de {savings}% em comparação ao plano mensal. Você paga R$ {yearlyPrice.toFixed(2)} por ano (equivalente a R$ {yearlyMonthlyEquivalent}/mês) ao invés de R$ {(monthlyPrice * 12).toFixed(2)} por ano no plano mensal.
-                </p>
-              </details>
-
-              <details className="bg-white dark:bg-neutral-900 rounded-lg p-6 shadow-lg dark:shadow-dark-lg border border-gray-200 dark:border-neutral-800">
-                <summary className="font-semibold text-gray-900 dark:text-white cursor-pointer">
-                  Meus dados estarão seguros?
-                </summary>
-                <p className="mt-3 text-gray-600 dark:text-neutral-400">
-                  Absolutamente! Utilizamos criptografia de ponta e seguimos as melhores práticas de segurança para proteger seus dados financeiros. Seus dados são armazenados de forma segura e nunca são compartilhados com terceiros.
-                </p>
-              </details>
+              {[
+                { q: 'Posso cancelar a qualquer momento?', a: 'Sim. Você cancela com um clique no seu portal do Stripe e seu acesso permanece até o fim do período já pago.' },
+                { q: 'Meus dados são exportáveis?', a: 'Completamente. Usuários Premium têm exportação ilimitada para formatos Excel, CSV e PDF de alta precisão.' },
+                { q: 'O pagamento é seguro?', a: 'Usamos a infraestrutura global da Stripe. Seus dados de cartão nunca tocam nossos servidores.' }
+              ].map((item, i) => (
+                <details key={i} className="group bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700/50 rounded-2xl p-6 transition-all duration-300 open:shadow-xl">
+                  <summary className="font-black text-gray-900 dark:text-white cursor-pointer list-none flex justify-between items-center outline-none">
+                    <span className="uppercase text-sm tracking-tight">{item.q}</span>
+                    <div className="bg-neutral-100 dark:bg-neutral-700 p-1 rounded-lg group-open:rotate-180 transition-transform">
+                      <ArrowRight className="w-4 h-4 rotate-90" />
+                    </div>
+                  </summary>
+                  <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed font-medium">
+                    {item.a}
+                  </p>
+                </details>
+              ))}
             </div>
           </div>
         </div>

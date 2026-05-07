@@ -5,7 +5,7 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react'
+import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import toast from 'react-hot-toast'
 import { imageStorage } from '@/utils/imageStorage'
@@ -402,1284 +402,1796 @@ const Settings = () => {
     <>
       <PageTransition>
         <div className="responsive-page">
-          {/* Header de Perfil Estilo Telegram */}
-          {activeTab === 'menu' && (
-            <div className="flex flex-col items-center py-8 mb-4">
-              <div className="relative group mb-4">
-                <img
-                  src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
-                  alt={user?.name}
-                  className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
-                />
+          <div className="responsive-header">
+            <div className="hidden sm:block">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configurações</h1>
+              <p className="text-gray-600 dark:text-neutral-400 mt-1">
+                Gerencie suas preferências e dados da conta
+              </p>
+            </div>
+          </div>
+
+          {/* NO DESKTOP: ABAS HORIZONTAIS NO TOPO ESTILO SAAS */}
+          <div className="hidden lg:flex overflow-x-auto mb-8 border-b border-gray-200 dark:border-neutral-800 gap-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id || (activeTab === 'menu' && tab.id === 'profile')
+
+              return (
                 <button
-                  onClick={handleAvatarClick}
-                  className="absolute bottom-1 right-1 w-9 h-9 bg-primary-500 rounded-full flex items-center justify-center border-4 border-[#F3F4F6] dark:border-[#171717] hover:bg-primary-600 transition-colors shadow-lg"
+                  key={tab.id}
+                  onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
+                  className={`pb-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap px-1 ${isActive
+                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                      : 'border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                    }`}
                 >
-                  <Camera className="w-4 h-4 text-white" />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-primary-500' : ''}`} />
+                  {tab.label}
                 </button>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{user?.name}</h1>
-              <p className="text-gray-500 dark:text-neutral-500 text-sm md:text-base mt-1">{user?.email}</p>
-            </div>
-          )}
+              )
+            })}
+          </div>
 
-          {activeTab !== 'menu' && (
-            <div className="flex items-center gap-4 py-6 mb-2">
-              <button
-                onClick={() => { haptics.light(); setActiveTab('menu') }}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
-                aria-label="Voltar para o menu"
-              >
-                <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
-              </button>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white capitalize">
-                {tabs.find(t => t.id === activeTab)?.label}
-              </h1>
-            </div>
-          )}
-
-          <div className="max-w-3xl lg:max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto lg:mx-0">
+            {/* NO MOBILE: MOSTRAR MENU SE activeTab EVENTUALMENTE ESTIVER EM MENU */}
             {activeTab === 'menu' && (
-              <div className="card-telegram overflow-hidden">
-                <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon
-                    const descriptions = {
-                      profile: 'Nome, Email, Foto de Perfil',
-                      security: 'Senha, Exclusão de Conta, Exportação',
-                      notifications: 'Emails, Alertas de Orçamentos',
-                      preferences: 'Aparência, Idioma, Moeda',
-                      changelog: 'O que há de novo no sistema'
-                    }[tab.id] as string
+              <div className="lg:hidden">
+                <div className="flex flex-col items-center py-8 mb-4">
+                  <div className="relative group mb-4">
+                    <img
+                      src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
+                      alt={user?.name}
+                      className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
+                    />
+                    <button
+                      onClick={handleAvatarClick}
+                      className="absolute bottom-1 right-1 w-9 h-9 bg-primary-500 rounded-full flex items-center justify-center border-4 border-[#F3F4F6] dark:border-[#171717] lg:dark:border-neutral-900 hover:bg-primary-600 transition-colors shadow-lg cursor-pointer"
+                    >
+                      <Camera className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center pb-1">{user?.name}</h1>
+                  <p className="text-gray-500 dark:text-neutral-500 text-sm md:text-base text-center">{user?.email}</p>
+                </div>
 
-                    const bgColors = {
-                      profile: 'bg-blue-500',
-                      security: 'bg-green-500',
-                      notifications: 'bg-red-500',
-                      preferences: 'bg-orange-500',
-                      changelog: 'bg-purple-500'
-                    }[tab.id] as string
+                <div className="card-telegram overflow-hidden">
+                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon
+                      const descriptions = {
+                        profile: 'Nome, Email, Foto de Perfil',
+                        security: 'Senha, Exclusão de Conta, Exportação',
+                        notifications: 'Emails, Alertas de Orçamentos',
+                        preferences: 'Aparência, Idioma, Moeda',
+                        changelog: 'O que há de novo no sistema'
+                      }[tab.id] as string
 
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                        className="w-full flex items-center gap-4 p-4 md:p-6 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-all text-left group"
-                      >
-                        <div className={`w-10 h-10 md:w-12 md:h-12 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110`}>
-                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
-                          <p className="text-xs md:text-sm text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600 group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    )
-                  })}
+                      const bgColors = {
+                        profile: 'bg-blue-500',
+                        security: 'bg-green-500',
+                        notifications: 'bg-red-500',
+                        preferences: 'bg-orange-500',
+                        changelog: 'bg-purple-500'
+                      }[tab.id] as string
+
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
+                          className="w-full flex items-center gap-4 p-4 md:p-6 transition-all text-left group hover:bg-gray-50 dark:hover:bg-neutral-800/50"
+                        >
+                          <div className={`w-10 h-10 md:w-12 md:h-12 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110`}>
+                            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
+                            <p className="text-xs md:text-sm text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Conteúdo Detalhado */}
-            <div className={activeTab === 'menu' ? 'hidden' : 'block'}>
-              {/* Tab: Perfil */}
-              {activeTab === 'profile' && (
-                <div className="card">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                    Informações do Perfil
-                  </h2>
+            {/* CONTEÚDO PRINCIPAL (FORMULÁRIOS) */}
+            <div className={activeTab === 'menu' ? 'hidden lg:block' : 'block'}>
 
-                  {/* Avatar com Upload */}
-                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
-                    <div className="relative group self-center sm:self-start">
-                      <img
-                        src={avatarPreview || user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
-                        alt={user?.name}
-                        className={`w-24 h-24 rounded-full border-4 border-gray-200 dark:border-neutral-700 object-cover transition-all ${isUploadingAvatar || isSavingAvatar ? 'opacity-50' : ''
-                          }`}
-                      />
+              {/* Header de Voltar (Apenas Mobile/Tablet) */}
+              <div className="lg:hidden flex items-center gap-4 py-6 mb-2">
+                <button
+                  onClick={() => { haptics.light(); setActiveTab('menu') }}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+                  aria-label="Voltar para o menu"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
+                </button>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white capitalize">
+                  {tabs.find(t => t.id === activeTab)?.label}
+                </h1>
+              </div>
 
-                      {/* Overlay de upload */}
-                      <button
-                        onClick={handleAvatarClick}
-                        disabled={isUploadingAvatar || isSavingAvatar}
-                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
-                      >
-                        {isUploadingAvatar || isSavingAvatar ? (
-                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                          <Camera className="w-6 h-6 text-white" />
-                        )}
-                      </button>
+              {/* Formulários e Sub-páginas */}
+              <div className="w-full">
+                {/* Tab: Perfil */}
+                {(activeTab === 'profile' || (activeTab === 'menu')) && (
+                  <div className="card">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                      Informações do Perfil
+                    </h2>
 
-                      {/* Badge de edição */}
-                      <div
-                        className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 dark:bg-primary-500 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-950 cursor-pointer hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors"
-                        onClick={handleAvatarClick}
-                      >
-                        <Upload className="w-4 h-4 text-white" />
+                    {/* Avatar com Upload */}
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
+                      <div className="relative group self-center sm:self-start">
+                        <img
+                          src={avatarPreview || user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                          alt={user?.name}
+                          className={`w-24 h-24 rounded-full border-4 border-gray-200 dark:border-neutral-700 object-cover transition-all ${isUploadingAvatar || isSavingAvatar ? 'opacity-50' : ''
+                            }`}
+                        />
+
+                        {/* Overlay de upload */}
+                        <button
+                          onClick={handleAvatarClick}
+                          disabled={isUploadingAvatar || isSavingAvatar}
+                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+                        >
+                          {isUploadingAvatar || isSavingAvatar ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <Camera className="w-6 h-6 text-white" />
+                          )}
+                        </button>
+
+                        {/* Badge de edição */}
+                        <div
+                          className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 dark:bg-primary-500 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-950 cursor-pointer hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors"
+                          onClick={handleAvatarClick}
+                        >
+                          <Upload className="w-4 h-4 text-white" />
+                        </div>
+
+                        {/* Input oculto */}
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/jpg,image/webp,image/gif"
+                          onChange={handleAvatarChange}
+                          className="hidden"
+                          disabled={isUploadingAvatar || isSavingAvatar}
+                        />
                       </div>
 
-                      {/* Input oculto */}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/jpg,image/webp,image/gif"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                        disabled={isUploadingAvatar || isSavingAvatar}
-                      />
-                    </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {user?.name}
+                        </h3>
+                        <p className="text-gray-600 dark:text-neutral-400 text-sm mt-1">
+                          {user?.email}
+                        </p>
 
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {user?.name}
-                      </h3>
-                      <p className="text-gray-600 dark:text-neutral-400 text-sm mt-1">
-                        {user?.email}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {avatarPreview ? (
-                          <>
-                            <button
-                              onClick={handleSaveAvatar}
-                              disabled={isSavingAvatar}
-                              className="text-sm text-white bg-success-600 dark:bg-success-500 hover:bg-success-700 dark:hover:bg-success-600 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                              {isSavingAvatar ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                  Salvando...
-                                </>
-                              ) : (
-                                'Salvar foto'
-                              )}
-                            </button>
-                            <button
-                              onClick={handleCancelAvatar}
-                              disabled={isSavingAvatar}
-                              className="text-sm text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50"
-                            >
-                              Cancelar
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={handleAvatarClick}
-                              disabled={isUploadingAvatar || isSavingAvatar}
-                              className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center gap-1 disabled:opacity-50"
-                            >
-                              <Upload className="w-4 h-4" />
-                              Alterar foto
-                            </button>
-                            {isCustomAvatar && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {avatarPreview ? (
+                            <>
                               <button
-                                onClick={handleRemoveAvatar}
+                                onClick={handleSaveAvatar}
                                 disabled={isSavingAvatar}
-                                className="text-sm text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 font-medium flex items-center gap-1 disabled:opacity-50"
+                                className="text-sm text-white bg-success-600 dark:bg-success-500 hover:bg-success-700 dark:hover:bg-success-600 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                               >
                                 {isSavingAvatar ? (
                                   <>
-                                    <div className="w-4 h-4 border-2 border-danger-600 dark:border-danger-400 border-t-transparent rounded-full animate-spin"></div>
-                                    Removendo...
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Salvando...
                                   </>
                                 ) : (
-                                  <>
-                                    <X className="w-4 h-4" />
-                                    Remover
-                                  </>
+                                  'Salvar foto'
                                 )}
                               </button>
-                            )}
-                          </>
-                        )}
-                      </div>
+                              <button
+                                onClick={handleCancelAvatar}
+                                disabled={isSavingAvatar}
+                                className="text-sm text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50"
+                              >
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={handleAvatarClick}
+                                disabled={isUploadingAvatar || isSavingAvatar}
+                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center gap-1 disabled:opacity-50"
+                              >
+                                <Upload className="w-4 h-4" />
+                                Alterar foto
+                              </button>
+                              {isCustomAvatar && (
+                                <button
+                                  onClick={handleRemoveAvatar}
+                                  disabled={isSavingAvatar}
+                                  className="text-sm text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 font-medium flex items-center gap-1 disabled:opacity-50"
+                                >
+                                  {isSavingAvatar ? (
+                                    <>
+                                      <div className="w-4 h-4 border-2 border-danger-600 dark:border-danger-400 border-t-transparent rounded-full animate-spin"></div>
+                                      Removendo...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <X className="w-4 h-4" />
+                                      Remover
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
 
-                      {/* Dicas */}
-                      <div className="mt-3 text-xs text-gray-500 dark:text-neutral-400 space-y-1">
-                        <p>• Formatos aceitos: JPG, PNG, WEBP, GIF</p>
-                        <p>• Tamanho máximo: 5MB</p>
-                        <p>• Recomendado: 400x400 pixels</p>
-                        <p className="text-success-600 dark:text-success-400">• Armazenamento: IndexedDB (sem limite)</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Informações Somente Leitura */}
-                  <div className="space-y-5">
-                    <div>
-                      <label className="label">Nome completo</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={user?.name || ''}
-                          disabled
-                          className="input-field bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 cursor-not-allowed"
-                        />
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <span className="text-xs text-gray-400 dark:text-neutral-500 bg-gray-100 dark:bg-neutral-700 px-2 py-1 rounded">
-                            Somente leitura
-                          </span>
+                        {/* Dicas */}
+                        <div className="mt-3 text-xs text-gray-500 dark:text-neutral-400 space-y-1">
+                          <p>• Formatos aceitos: JPG, PNG, WEBP, GIF</p>
+                          <p>• Tamanho máximo: 5MB</p>
+                          <p>• Recomendado: 400x400 pixels</p>
+                          <p className="text-success-600 dark:text-success-400">• Armazenamento: IndexedDB (sem limite)</p>
                         </div>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-
-                      </p>
                     </div>
 
-                    <div>
-                      <label className="label">Email</label>
-                      {!isEditingEmail ? (
+                    {/* Informações Somente Leitura */}
+                    <div className="space-y-5">
+                      <div>
+                        <label className="label">Nome completo</label>
                         <div className="relative">
                           <input
-                            type="email"
-                            value={user?.email || ''}
+                            type="text"
+                            value={user?.name || ''}
                             disabled
-                            className="input-field bg-gray-50 dark:bg-neutral-800"
+                            className="input-field bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 cursor-not-allowed"
                           />
-                          <button
-                            onClick={() => setIsEditingEmail(true)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium transition-colors"
-                          >
-                            Alterar
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <input
-                            type="email"
-                            value={newEmail}
-                            onChange={(e) => setNewEmail(e.target.value)}
-                            placeholder="Digite o novo email"
-                            className="input-field"
-                            autoFocus
-                          />
-                          <div className="flex flex-col sm:flex-row gap-2">
-                            <button
-                              onClick={handleRequestEmailChange}
-                              disabled={isSendingCode}
-                              className="flex-1 btn-primary rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {isSendingCode ? 'Enviando...' : 'Enviar Código'}
-                            </button>
-                            <button
-                              onClick={handleCancelEmailEdit}
-                              className="flex-1 btn-secondary rounded-full"
-                            >
-                              Cancelar
-                            </button>
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <span className="text-xs text-gray-400 dark:text-neutral-500 bg-gray-100 dark:bg-neutral-700 px-2 py-1 rounded">
+                              Somente leitura
+                            </span>
                           </div>
                         </div>
-                      )}
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-                        {isEditingEmail
-                          ? 'Um código será enviado para o novo email'
-                          : 'Clique em "Alterar" para mudar seu email'
-                        }
-                      </p>
+                        <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="label">Email</label>
+                        {!isEditingEmail ? (
+                          <div className="relative">
+                            <input
+                              type="email"
+                              value={user?.email || ''}
+                              disabled
+                              className="input-field bg-gray-50 dark:bg-neutral-800"
+                            />
+                            <button
+                              onClick={() => setIsEditingEmail(true)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium transition-colors"
+                            >
+                              Alterar
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <input
+                              type="email"
+                              value={newEmail}
+                              onChange={(e) => setNewEmail(e.target.value)}
+                              placeholder="Digite o novo email"
+                              className="input-field"
+                              autoFocus
+                            />
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <button
+                                onClick={handleRequestEmailChange}
+                                disabled={isSendingCode}
+                                className="flex-1 btn-primary rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {isSendingCode ? 'Enviando...' : 'Enviar Código'}
+                              </button>
+                              <button
+                                onClick={handleCancelEmailEdit}
+                                className="flex-1 btn-secondary rounded-full"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                          {isEditingEmail
+                            ? 'Um código será enviado para o novo email'
+                            : 'Clique em "Alterar" para mudar seu email'
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Tab: Segurança */}
-              {activeTab === 'security' && (
-                <div className="space-y-6">
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                      Alterar Senha
-                    </h2>
+                {/* Tab: Segurança */}
+                {activeTab === 'security' && (
+                  <div className="space-y-6">
+                    <div className="card">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                        Alterar Senha
+                      </h2>
 
-                    <form
-                      onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
-                      className="space-y-5"
-                    >
-                      <div>
-                        <label className="label">Senha atual</label>
-                        <div className="relative">
-                          <input
-                            type={showCurrentPassword ? 'text' : 'password'}
-                            {...passwordForm.register('currentPassword')}
-                            className={`input-field pr-12 ${passwordForm.formState.errors.currentPassword
-                              ? 'input-error'
-                              : ''
-                              }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                          >
-                            {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      <form
+                        onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
+                        className="space-y-5"
+                      >
+                        <div>
+                          <label className="label">Senha atual</label>
+                          <div className="relative">
+                            <input
+                              type={showCurrentPassword ? 'text' : 'password'}
+                              {...passwordForm.register('currentPassword')}
+                              className={`input-field pr-12 ${passwordForm.formState.errors.currentPassword
+                                ? 'input-error'
+                                : ''
+                                }`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                            >
+                              {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
+                          </div>
+                          {passwordForm.formState.errors.currentPassword && (
+                            <p className="error-message">
+                              {passwordForm.formState.errors.currentPassword.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="label">Nova senha</label>
+                          <div className="relative">
+                            <input
+                              type={showNewPassword ? 'text' : 'password'}
+                              {...passwordForm.register('newPassword')}
+                              className={`input-field pr-12 ${passwordForm.formState.errors.newPassword
+                                ? 'input-error'
+                                : ''
+                                }`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                            >
+                              {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
+                          </div>
+                          {passwordForm.formState.errors.newPassword && (
+                            <p className="error-message">
+                              {passwordForm.formState.errors.newPassword.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="label">Confirmar nova senha</label>
+                          <div className="relative">
+                            <input
+                              type={showConfirmPassword ? 'text' : 'password'}
+                              {...passwordForm.register('confirmPassword')}
+                              className={`input-field pr-12 ${passwordForm.formState.errors.confirmPassword
+                                ? 'input-error'
+                                : ''
+                                }`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                            >
+                              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
+                          </div>
+                          {passwordForm.formState.errors.confirmPassword && (
+                            <p className="error-message">
+                              {passwordForm.formState.errors.confirmPassword.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end pt-4">
+                          <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">
+                            Alterar senha
                           </button>
                         </div>
-                        {passwordForm.formState.errors.currentPassword && (
-                          <p className="error-message">
-                            {passwordForm.formState.errors.currentPassword.message}
-                          </p>
-                        )}
-                      </div>
+                      </form>
+                    </div>
 
-                      <div>
-                        <label className="label">Nova senha</label>
-                        <div className="relative">
-                          <input
-                            type={showNewPassword ? 'text' : 'password'}
-                            {...passwordForm.register('newPassword')}
-                            className={`input-field pr-12 ${passwordForm.formState.errors.newPassword
-                              ? 'input-error'
-                              : ''
-                              }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                          >
-                            {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                        </div>
-                        {passwordForm.formState.errors.newPassword && (
-                          <p className="error-message">
-                            {passwordForm.formState.errors.newPassword.message}
-                          </p>
-                        )}
-                      </div>
+                    <div className="card">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        Autenticação de Dois Fatores
+                      </h2>
+                      <p className="text-gray-600 dark:text-neutral-400 mb-6">
+                        Adicione uma camada extra de segurança à sua conta
+                      </p>
+                      <button className="btn-secondary">
+                        Ativar autenticação em duas etapas
+                      </button>
+                    </div>
 
-                      <div>
-                        <label className="label">Confirmar nova senha</label>
-                        <div className="relative">
-                          <input
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            {...passwordForm.register('confirmPassword')}
-                            className={`input-field pr-12 ${passwordForm.formState.errors.confirmPassword
-                              ? 'input-error'
-                              : ''
-                              }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                          >
-                            {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                        </div>
-                        {passwordForm.formState.errors.confirmPassword && (
-                          <p className="error-message">
-                            {passwordForm.formState.errors.confirmPassword.message}
-                          </p>
-                        )}
-                      </div>
+                    {/* Card de Dados e Privacidade */}
+                    <div className="card">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                        Dados e Privacidade
+                      </h2>
 
-                      <div className="flex justify-end pt-4">
-                        <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">
-                          Alterar senha
+                      <div className="space-y-4">
+                        <button
+                          onClick={handleExportData}
+                          className="w-full btn-secondary flex items-center justify-center gap-2 rounded-full shadow-sm"
+                        >
+                          <Database className="w-5 h-5" />
+                          Exportar meus dados
+                        </button>
+
+                        <button
+                          onClick={handleDeleteAccount}
+                          className="w-full btn-danger flex items-center justify-center gap-2 rounded-full shadow-sm"
+                        >
+                          <Shield className="w-5 h-5" />
+                          Excluir minha conta
                         </button>
                       </div>
-                    </form>
-                  </div>
-
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                      Autenticação de Dois Fatores
-                    </h2>
-                    <p className="text-gray-600 dark:text-neutral-400 mb-6">
-                      Adicione uma camada extra de segurança à sua conta
-                    </p>
-                    <button className="btn-secondary">
-                      Ativar autenticação em duas etapas
-                    </button>
-                  </div>
-
-                  {/* Card de Dados e Privacidade */}
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                      Dados e Privacidade
-                    </h2>
-
-                    <div className="space-y-4">
-                      <button
-                        onClick={handleExportData}
-                        className="w-full btn-secondary flex items-center justify-center gap-2 rounded-full shadow-sm"
-                      >
-                        <Database className="w-5 h-5" />
-                        Exportar meus dados
-                      </button>
-
-                      <button
-                        onClick={handleDeleteAccount}
-                        className="w-full btn-danger flex items-center justify-center gap-2 rounded-full shadow-sm"
-                      >
-                        <Shield className="w-5 h-5" />
-                        Excluir minha conta
-                      </button>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Tab: Notificações */}
-              {activeTab === 'notifications' && (
-                <div className="card">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                    Preferências de Notificação
-                  </h2>
+                {/* Tab: Notificações */}
+                {activeTab === 'notifications' && (
+                  <div className="card">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                      Preferências de Notificação
+                    </h2>
 
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            Email de transações
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                            Receba emails quando novas transações forem adicionadas
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={notifications.emailTransactions}
+                            onChange={() => toggleNotification('emailTransactions')}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            Resumo semanal
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                            Receba um resumo semanal das suas finanças
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={notifications.weeklyReport}
+                            onChange={() => toggleNotification('weeklyReport')}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            Alertas de orçamento
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                            Seja notificado quando atingir limites de orçamento
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={notifications.budgetAlerts}
+                            onChange={() => toggleNotification('budgetAlerts')}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            Novidades e atualizações
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                            Receba emails sobre novos recursos e atualizações
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={notifications.newsUpdates}
+                            onChange={() => toggleNotification('newsUpdates')}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab: Preferências */}
+                {activeTab === 'preferences' && (
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Email de transações
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                          Receba emails quando novas transações forem adicionadas
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={notifications.emailTransactions}
-                          onChange={() => toggleNotification('emailTransactions')}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Resumo semanal
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                          Receba um resumo semanal das suas finanças
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={notifications.weeklyReport}
-                          onChange={() => toggleNotification('weeklyReport')}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Alertas de orçamento
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                          Seja notificado quando atingir limites de orçamento
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={notifications.budgetAlerts}
-                          onChange={() => toggleNotification('budgetAlerts')}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Novidades e atualizações
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                          Receba emails sobre novos recursos e atualizações
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={notifications.newsUpdates}
-                          onChange={() => toggleNotification('newsUpdates')}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Preferências */}
-              {activeTab === 'preferences' && (
-                <div className="space-y-6">
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                      Aparência
-                    </h2>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className="label">Tema</label>
-                        <CustomSelect
-                          value={theme}
-                          onChange={(val) => handleThemeChange(val)}
-                          options={[
-                            { value: 'light', label: 'Claro' },
-                            { value: 'dark', label: 'Escuro' }
-                          ]}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="label">Idioma</label>
-                        <CustomSelect
-                          value={preferences.language}
-                          onChange={(val) => handleLanguageChange(val)}
-                          options={[
-                            { value: 'pt-BR', label: 'Português (Brasil)' },
-                            { value: 'en', label: 'English' },
-                            { value: 'es', label: 'Español' }
-                          ]}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="label">Moeda</label>
-                        <CustomSelect
-                          value={preferences.currency}
-                          onChange={(val) => handleCurrencyChange(val)}
-                          options={[
-                            { value: 'BRL', label: 'Real (R$)' },
-                            { value: 'USD', label: 'Dólar (USD)' },
-                            { value: 'EUR', label: 'Euro (EUR)' }
-                          ]}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Changelog */}
-              {activeTab === 'changelog' && (
-                <div className="card shadow-lg border-primary-100 dark:border-primary-900/30">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-neutral-800">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <History className="w-6 h-6 text-primary-500" />
-                        Registro de Mudanças
+                    <div className="card">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                        Aparência
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1 italic">
-                        "Evoluindo constantemente para o seu sucesso financeiro"
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                        v2.5.4
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="label">Tema</label>
+                          <CustomSelect
+                            value={theme}
+                            onChange={(val) => handleThemeChange(val)}
+                            options={[
+                              { value: 'light', label: 'Claro' },
+                              { value: 'dark', label: 'Escuro' }
+                            ]}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="label">Idioma</label>
+                          <CustomSelect
+                            value={preferences.language}
+                            onChange={(val) => handleLanguageChange(val)}
+                            options={[
+                              { value: 'pt-BR', label: 'Português (Brasil)' },
+                              { value: 'en', label: 'English' },
+                              { value: 'es', label: 'Español' }
+                            ]}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="label">Moeda</label>
+                          <CustomSelect
+                            value={preferences.currency}
+                            onChange={(val) => handleCurrencyChange(val)}
+                            options={[
+                              { value: 'BRL', label: 'Real (R$)' },
+                              { value: 'USD', label: 'Dólar (USD)' },
+                              { value: 'EUR', label: 'Euro (EUR)' }
+                            ]}
+                          />
+                        </div>
                       </div>
-                      <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                     </div>
                   </div>
+                )}
 
-                  <div className="space-y-12">
-
-                    {/* v2.5.4 - ATUAL */}
-                    <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.4</span>
-                          <span className="px-2 py-0.5 bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded text-[10px] font-bold uppercase tracking-wider animate-pulse">Atual</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          23 de Março de 2026 (Hotfix)
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Correção de Fuso Horário
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Alinhamento completo da lógica de fuso horário em criações de transações Recorrentes e Normais (Timezone Date Offset), acabando com as datas lançando em +2 dias após criação.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.5.3 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.3</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          23 de Março de 2026 (Hotfix)
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Integração de Notificações
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Ajustado erro de execução global em `smartNotification.service` ao interpretar nomes de colunas do mapeamento do banco nas análises dinâmicas financeiras.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.5.2 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.2</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          23 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Correções de Segurança e Concorrência
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>Transações Recorrentes:</strong> Implementado sistema de Row-level Lock Pessimista (`FOR UPDATE`) no servidor para evitar duplicação de despesas via Cron Jobs rodando simultaneamente em múltiplos servidores.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>Concorrência de Orçamento:</strong> Resolvida a vulnerabilidade de <em>Race Condition (TOCTOU)</em> ao salvar ou atualizar orçamentos na mesma fração de segundo, migradas para queries de Upsert atômico.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>Edição de Recorrentes:</strong> Resolvidas perdas de dados (Lost Update) quando múltiplos usuários (ou requisições duplicadas em abas do navegador) alteravam descrições/datas de transações em massa ao mesmo tempo.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.5.1 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.1</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          12 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Layout Desktop
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Largura otimizada para monitores grandes e escala de ícones aprimorada.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.5.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          12 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Palette className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Nova Interface de Configurações
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Redesign completo estilo mobile/Telegram com lista de ícones e header de perfil.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.4.7 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.7</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          11 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Correção de Nitidez
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Removido desfoque indesejado causado por renderização subpixel na GPU.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.4.6 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.6</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          11 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <History className="w-5 h-5 text-purple-500 bg-purple-50 dark:bg-purple-900/30 p-1 rounded" />
-                              Transições de Página
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0" />
-                                <span>Otimização na velocidade das animações entre telas para 0.35s.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.4.4 & 2.4.3 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.4</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          12 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              UX & Portals
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Global Portals:</strong> Seletores e modais agora usam portals para evitar problemas de camada.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Bottom Sheets:</strong> Padrão "Pull-to-close" implementado para modais mobile.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.4.2 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.2</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          11 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Mobile Premium UX
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Recorrências:</strong> ajuste de frequência via CustomSelect com Bottom Sheet nativo em mobile.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Visual:</strong> Suporte a ícones de Emoji para todas as frequências de transação.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Responsividade
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>Relatórios:</strong> Gráficos de pizza redimensionados para telas menores (iPhone SE, etc).</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.4.1 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.1</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          11 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Fluidez Geral
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Transições:</strong> Novo motor Framer Motion para passagens de página ultra suaves.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Efeito Magnético:</strong> Micro-elevação tátil ao interagir com Cards de Transação.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.3.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.3.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          10 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Relatórios com Filtros
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Filtro por Mês:</strong> analise exatamente o mês que quiser com um seletor nativo.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Filtro por Período:</strong> botões rápidos de 3, 6 ou 12 meses.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Filtro Personalizado:</strong> intervalo de data livre (De → Até) com validação automática.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Todos os gráficos, cards e rankings reagem em tempo real ao filtro ativo.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Exportação Profissional
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>PDF:</strong> cabeçalho com logo FinControl, cards coloridos, tabelas separadas por tipo e rodapé profissional em todas as páginas.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>Excel:</strong> 3 abas separadas — Resumo, Categorias e Transações — com colunas otimizadas.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span><strong>CSV:</strong> com BOM UTF-8 e campos entre aspas, compatível com Excel Brasileiro.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.2.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.2.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          10 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Controle de Cartões de Crédito
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Página de cartões com fatura atual calculada em tempo real e barra de limite.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Vincule despesas a um cartão — elas <strong>não somam duas vezes</strong> no resumo mensal.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Assinaturas Melhorado
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Ícones reais de marca: Netflix, Spotify, Amazon, Apple, Google e Disney+.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Grupo "Assinaturas" adicionado no seletor de ícones para despesas.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* v2.1.3 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.3</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          10 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Rastreador de Assinaturas
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Nova aba principal que encontra todos os pagamentos da sua conta marcados como "Recorrentes".</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Visualização do "Custo Mensal" e "Dreno Anual (12x)" de todas as assinaturas.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.2</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          10 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Feedback Tátil
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Vibração nativa em interações (Sucesso de edição, Alertas de Exclusão).</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Micro-vibrações ao abrir Menu, Dropdowns e Picker de Datas (só Mobile).</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.1</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          9 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              App Nativo (PWA)
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Modo Fullscreen:</strong> Ocultamos a barra de status do sistema para imersão total.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Correções Visuais
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Ajuste automático de fonte para valores financeiros longos no mobile (sem obstrução).</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          9 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Experiência Mobile
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span><strong>Swipe-to-Action:</strong> Deslize em transações para editar ou excluir.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Interface & Teclado
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Teclado numérico nativo e extermínio do <code>&lt;select&gt;</code>.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.1</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
-                          9 de Março de 2026
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                              Orçamentos & Interface
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Definição de limites mensais personalizados por categoria com alertas visuais fluidos.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                <span>Entrada animada escalonada (Fade-in e Slide-up) nos gráficos interativos do Dashboard.</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
-                              Core & Estabilidade
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Sincronização Cloud: Orçamentos Inteligentes persistentes.</span>
-                              </li>
-                              <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                <span>Padronização do loop temporal infinito nas setas Tendência.</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">Fevereiro de 2026</p>
-                        <div className="space-y-4">
+                {/* Tab: Changelog */}
+                {activeTab === 'changelog' && (
+                  <div className="space-y-6">
+                    <div className="card shadow-lg border-primary-100 dark:border-primary-900/30">
+                      <div className="p-6 md:p-8">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-neutral-800">
                           <div>
-                            <h4 className="text-sm font-semibold text-gray-800 dark:text-neutral-200 mb-2">Lançamento da Plataforma v2</h4>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                              <History className="w-6 h-6 text-primary-500" />
+                              Registro de Mudanças
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1 italic">
+                              "Evoluindo constantemente para o seu sucesso financeiro"
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
+                              v2.7.4
+                            </div>
+                            <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-12">
+
+
+                      {/* v2.7.4 - ATUAL */}
+                      <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.7.4</span>
+                            <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-bold uppercase tracking-wider">Atual</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Padronização Visual Global
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Finalização da padronização estética em todas as páginas institucionais e de autenticação.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Otimização de performance com a remoção total de Framer Motion nas páginas auxiliares.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.7.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.7.3</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Padronização Visual Final
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Padronização das páginas: Verificação de Email e Redefinição de Senha.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Consolidação do design system estático e profissional em todos os fluxos de autenticação.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.7.2 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.7.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Padronização Visual (Extras)
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Padronização das páginas: Sobre e Suporte.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.7.1 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.7.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Padronização Visual (Auth)
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Padronização das páginas: Cadastro, Esqueci Senha, Privacidade e Termos.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Remoção completa de framer-motion e animações pesadas.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      {/* v2.7.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.7.0</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Histórico</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Limpeza Visual & Performance
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Remoção de framer-motion e animações pesadas da página de login para maior fluidez.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Simplificação do design para um visual sólido, limpo e profissional.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Database className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Correções de Ambiente
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Correção do erro de inicialização do backend local (Supabase Credentials).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.9 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.9</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Histórico</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <CreditCard className="w-5 h-5 text-blue-600 bg-blue-50 dark:bg-blue-900/30 p-1 rounded" />
+                                Gestão Stripe Pro
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                  <span>Integração do botão "Cancelar" com a API da Stripe.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.8 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.8</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Histórico</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-amber-500 bg-amber-50 dark:bg-amber-900/30 p-1 rounded" />
+                                Estética Premium Restaurada
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Restauração total do design vibrante e profissional da página de planos (Plans.tsx).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.7 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-70">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.7</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Histórico</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-amber-600 bg-amber-50 dark:bg-amber-900/30 p-1 rounded" />
+                                Automação Stripe Webhooks (Fase 4)
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Implementação de endpoint seguro para recebimento de eventos do Stripe.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Ativação instantânea do status Premium após confirmação do checkout com ID do usuário.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.6 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.6</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Infraestrutura Pro & Plano Anual
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Adição do Plano Anual (R$ 149,99/ano) com links de checkout dinâmicos.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Estabilização estrutural do layout de Configurações e correção de aninhamento JSX.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.5 */}
+                      <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.5</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Histórico</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Infraestrutura de Pagamentos Real
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                  <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                    <span>Implementação do Link de Pagamento oficial do Stripe no Plano Pro (R$ 14,99/mês) <ArrowRight className="inline-block w-4 h-4 ml-1" /></span>
+                                  </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Otimização técnica da logo do produto (Padding & Escala) para exibição profissional no Checkout.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-amber-500 bg-amber-50 dark:bg-amber-900/30 p-1 rounded" />
+                                Experiência de Checkout
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Configuração de redirecionamento direto para o Stripe em ambiente de produção.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Integração de metadados para tracking de conversão e assinaturas recorrentes.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.4 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.4</span>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Estabilidade de UI & Tipagem Avançada
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Correção de importações ausentes em ícones globais (Lucide) no layout Desktop.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Refatoração de Variantes de Animação (Framer-motion) com tipagem explícita na página de Planos, prevenindo quebras em ambiente de desenvolvimento interativo.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.3</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <LayoutDashboard className="w-5 h-5 text-blue-500 bg-blue-50 dark:bg-blue-900/30 p-1 rounded" />
+                                Modern SaaS Desktop Configuration Layout
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                  <span>Remoção final do layout dual-sidebar focado em mobile na tela de configurações para Desktop.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                  <span>Implementação de Navegação "Horizontal Top Tabs" no Desktop (estilo Modern SaaS), otimizando o aproveitamento da tela padrão, enquanto mantém a navegação grid-card para usuários de smartphone.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.2 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Palette className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Desktop UI & Layout Architecture
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                                  <span>Refatoração estrutural da tela de Configurações para displays Desktop/Laptops. A navegação foi transformada num Sidebar com layout dinâmico responsivo, abandonando o molde exclusivo mobile-first (bento view).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.1 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-amber-500 bg-amber-50 dark:bg-amber-900/30 p-1 rounded" />
+                                UI Architecture & Premium Plans
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                                  <span>Refatoração completa da tela de Assinaturas (Plans), aplicando um modelo de "Brutalismo Tipográfico" e "Tensão Assimétrica", removendo clichês de UI e reforçando a geometria premium.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.6.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.6.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            30 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Cadastro & Autenticação Segura
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Inserida a documentação CPF obrigatória no Formulário de Abertura de Contas, validando formatações no Client e no Servidor e gravando perfeitamente a Tabela na estrutura do Banco de Dados via MCP Supabase.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.5.4 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.4</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            23 de Março de 2026 (Hotfix)
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Correção de Fuso Horário
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Alinhamento completo da lógica de fuso horário em criações de transações Recorrentes e Normais (Timezone Date Offset), acabando com as datas lançando em +2 dias após criação.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.5.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.3</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            23 de Março de 2026 (Hotfix)
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Integração de Notificações
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Ajustado erro de execução global em `smartNotification.service` ao interpretar nomes de colunas do mapeamento do banco nas análises dinâmicas financeiras.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.5.2 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            23 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Correções de Segurança e Concorrência
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Transações Recorrentes:</strong> Implementado sistema de Row-level Lock Pessimista (`FOR UPDATE`) no servidor para evitar duplicação de despesas via Cron Jobs rodando simultaneamente em múltiplos servidores.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Concorrência de Orçamento:</strong> Resolvida a vulnerabilidade de <em>Race Condition (TOCTOU)</em> ao salvar ou atualizar orçamentos na mesma fração de segundo, migradas para queries de Upsert atômico.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Edição de Recorrentes:</strong> Resolvidas perdas de dados (Lost Update) quando múltiplos usuários (ou requisições duplicadas em abas do navegador) alteravam descrições/datas de transações em massa ao mesmo tempo.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.5.1 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            12 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Layout Desktop
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Largura otimizada para monitores grandes e escala de ícones aprimorada.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.5.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.5.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            12 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Palette className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Nova Interface de Configurações
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Redesign completo estilo mobile/Telegram com lista de ícones e header de perfil.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.4.7 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.7</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            11 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Correção de Nitidez
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Removido desfoque indesejado causado por renderização subpixel na GPU.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.4.6 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.6</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            11 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <History className="w-5 h-5 text-purple-500 bg-purple-50 dark:bg-purple-900/30 p-1 rounded" />
+                                Transições de Página
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0" />
+                                  <span>Otimização na velocidade das animações entre telas para 0.35s.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.4.4 & 2.4.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.4</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            12 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                UX & Portals
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Global Portals:</strong> Seletores e modais agora usam portals para evitar problemas de camada.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Bottom Sheets:</strong> Padrão "Pull-to-close" implementado para modais mobile.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.4.2 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            11 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Mobile Premium UX
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Recorrências:</strong> ajuste de frequência via CustomSelect com Bottom Sheet nativo em mobile.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Visual:</strong> Suporte a ícones de Emoji para todas as frequências de transação.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Responsividade
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Relatórios:</strong> Gráficos de pizza redimensionados para telas menores (iPhone SE, etc).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.4.1 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.4.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            11 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Fluidez Geral
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Transições:</strong> Novo motor Framer Motion para passagens de página ultra suaves.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Efeito Magnético:</strong> Micro-elevação tátil ao interagir com Cards de Transação.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.3.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.3.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            10 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Relatórios com Filtros
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Filtro por Mês:</strong> analise exatamente o mês que quiser com um seletor nativo.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Filtro por Período:</strong> botões rápidos de 3, 6 ou 12 meses.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Filtro Personalizado:</strong> intervalo de data livre (De → Até) com validação automática.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Todos os gráficos, cards e rankings reagem em tempo real ao filtro ativo.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Exportação Profissional
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>PDF:</strong> cabeçalho com logo FinControl, cards coloridos, tabelas separadas por tipo e rodapé profissional em todas as páginas.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Excel:</strong> 3 abas separadas — Resumo, Categorias e Transações — com colunas otimizadas.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span><strong>CSV:</strong> com BOM UTF-8 e campos entre aspas, compatível com Excel Brasileiro.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.2.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.2.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            10 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Controle de Cartões de Crédito
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Página de cartões com fatura atual calculada em tempo real e barra de limite.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Vincule despesas a um cartão — elas <strong>não somam duas vezes</strong> no resumo mensal.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Assinaturas Melhorado
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Ícones reais de marca: Netflix, Spotify, Amazon, Apple, Google e Disney+.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Grupo "Assinaturas" adicionado no seletor de ícones para despesas.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.1.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.3</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            10 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Rastreador de Assinaturas
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Nova aba principal que encontra todos os pagamentos da sua conta marcados como "Recorrentes".</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Visualização do "Custo Mensal" e "Dreno Anual (12x)" de todas as assinaturas.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            10 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Feedback Tátil
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Vibração nativa em interações (Sucesso de edição, Alertas de Exclusão).</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Micro-vibrações ao abrir Menu, Dropdowns e Picker de Datas (só Mobile).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            9 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                App Nativo (PWA)
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Modo Fullscreen:</strong> Ocultamos a barra de status do sistema para imersão total.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Correções Visuais
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Ajuste automático de fonte para valores financeiros longos no mobile (sem obstrução).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.1.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            9 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Experiência Mobile
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span><strong>Swipe-to-Action:</strong> Deslize em transações para editar ou excluir.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Interface & Teclado
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Teclado numérico nativo e extermínio do <code>&lt;select&gt;</code>.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            9 de Março de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
+                                Orçamentos & Interface
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Definição de limites mensais personalizados por categoria com alertas visuais fluidos.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Entrada animada escalonada (Fade-in e Slide-up) nos gráficos interativos do Dashboard.</span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-1 rounded" />
+                                Core & Estabilidade
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Sincronização Cloud: Orçamentos Inteligentes persistentes.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
+                                  <span>Padronização do loop temporal infinito nas setas Tendência.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.0.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">Fevereiro de 2026</p>
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="text-sm font-semibold text-gray-800 dark:text-neutral-200 mb-2">Lançamento da Plataforma v2</h4>
+                              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                                <li>Interface Glassmorphism redesenhada do zero.</li>
+                                <li>Modo Escuro (Dark Mode) nativo de alta fidelidade.</li>
+                                <li>Sistema de transações recorrentes inteligente.</li>
+                                <li>Gráficos animados com Recharts.</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v0.4.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.4.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">8 de Novembro de 2025</p>
+                          <div className="space-y-4">
                             <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
-                              <li>Interface Glassmorphism redesenhada do zero.</li>
-                              <li>Modo Escuro (Dark Mode) nativo de alta fidelidade.</li>
-                              <li>Sistema de transações recorrentes inteligente.</li>
-                              <li>Gráficos animados com Recharts.</li>
+                              <li>Transações recorrentes.</li>
+                              <li>Modal de confirmação de exclusão.</li>
+                              <li>Atalhos de teclado.</li>
+                              <li>Paleta de cores para categorias.</li>
                             </ul>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* v0.4.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.4.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">8 de Novembro de 2025</p>
-                        <div className="space-y-4">
-                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
-                            <li>Transações recorrentes.</li>
-                            <li>Modal de confirmação de exclusão.</li>
-                            <li>Atalhos de teclado.</li>
-                            <li>Paleta de cores para categorias.</li>
-                          </ul>
+                      {/* v0.3.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.3.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">5 de Novembro de 2025</p>
+                          <div className="space-y-4">
+                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                              <li>Página de relatórios e painéis gráficos interativos.</li>
+                              <li>Exportação de dados.</li>
+                              <li>Filtros avançados.</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* v0.3.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.3.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">5 de Novembro de 2025</p>
-                        <div className="space-y-4">
-                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
-                            <li>Página de relatórios e painéis gráficos interativos.</li>
-                            <li>Exportação de dados.</li>
-                            <li>Filtros avançados.</li>
-                          </ul>
+                      {/* v0.2.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.2.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">1 de Novembro de 2025</p>
+                          <div className="space-y-4">
+                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
+                              <li>CRUD de categorias e Seletor de ícones.</li>
+                              <li>Validação de formulários nativa.</li>
+                              <li>Feedback visual e aprimoramento de UI.</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* v0.2.0 */}
-                    <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 0.2.0</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 font-medium italic">1 de Novembro de 2025</p>
-                        <div className="space-y-4">
-                          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-neutral-400 space-y-1 ml-1">
-                            <li>CRUD de categorias e Seletor de ícones.</li>
-                            <li>Validação de formulários nativa.</li>
-                            <li>Feedback visual e aprimoramento de UI.</li>
-                          </ul>
+                      {/* v0.1.0 */}
+                      <div className="relative pl-10 border-l-2 border-transparent">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-500 dark:text-neutral-400">Versão 0.1.0</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Primeira Versão Lançada</span>
+                          </div>
+                          <p className="text-xs text-gray-400 dark:text-neutral-500 mb-4 font-medium italic">28 de Outubro de 2025</p>
+                          <div className="space-y-4">
+                            <ul className="list-disc list-inside text-sm text-gray-500 dark:text-neutral-500 space-y-1 ml-1">
+                              <li>Estrutura inicial do projeto com React.</li>
+                              <li>Sistema básico de autenticação.</li>
+                              <li>Dashboard inicial e CRUD de transações.</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
-
-                    {/* v0.1.0 */}
-                    <div className="relative pl-10 border-l-2 border-transparent">
-                      <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
-                      <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl font-bold text-gray-500 dark:text-neutral-400">Versão 0.1.0</span>
-                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded text-[10px] font-bold uppercase tracking-wider">Primeira Versão Lançada</span>
-                        </div>
-                        <p className="text-xs text-gray-400 dark:text-neutral-500 mb-4 font-medium italic">28 de Outubro de 2025</p>
-                        <div className="space-y-4">
-                          <ul className="list-disc list-inside text-sm text-gray-500 dark:text-neutral-500 space-y-1 ml-1">
-                            <li>Estrutura inicial do projeto com React.</li>
-                            <li>Sistema básico de autenticação.</li>
-                            <li>Dashboard inicial e CRUD de transações.</li>
-                          </ul>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
           </div>
         </div>
-      </PageTransition>
+      </div>
+    </div>
+  </PageTransition>
 
       {/* Modal de Verificação de Email */}
       <VerifyEmailChangeModal

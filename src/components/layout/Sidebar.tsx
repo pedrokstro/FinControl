@@ -362,7 +362,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
               </div>
               <button
                 onClick={() => {
-                  navigate('/app/settings')
+                  navigate('/app/settings/subscription')
                   onNavigate?.()
                 }}
                 className="w-full mt-2 text-xs text-amber-700 hover:text-amber-800 font-medium transition-colors text-left flex items-center gap-1"

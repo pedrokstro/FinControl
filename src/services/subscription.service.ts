@@ -90,6 +90,14 @@ class SubscriptionService {
     const response = await api.get('/subscription/usage')
     return response.data.data
   }
+
+  /**
+   * Gerar link para o Portal do Cliente Stripe
+   */
+  async createPortalSession(returnUrl: string): Promise<{ url: string }> {
+    const response = await api.post('/subscription/portal-session', { returnUrl })
+    return response.data.data
+  }
 }
 
 export const subscriptionService = new SubscriptionService()

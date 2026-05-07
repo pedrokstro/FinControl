@@ -24,7 +24,6 @@ const ResetPassword = () => {
     }
   }, [email, navigate]);
 
-  // Auto-focus no primeiro input
   useEffect(() => {
     document.getElementById('code-0')?.focus();
   }, []);
@@ -115,22 +114,22 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-[440px]">
         {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-8 md:p-10">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="text-center mb-10">
+            <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Lock className="w-8 h-8 text-primary-600 dark:text-primary-400" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
               Redefinir Senha
             </h1>
-            <p className="text-gray-600 dark:text-neutral-400">
+            <p className="text-gray-500 dark:text-neutral-400 text-sm">
               Digite o código enviado para
             </p>
-            <p className="text-primary-600 dark:text-primary-400 font-medium mt-1">
+            <p className="text-primary-600 dark:text-primary-400 font-bold mt-1">
               {email}
             </p>
           </div>
@@ -139,7 +138,7 @@ const ResetPassword = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Code Inputs */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+              <label className="block text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-3 ml-1">
                 Código de Verificação
               </label>
               <div className="flex gap-2 justify-center" onPaste={handlePaste}>
@@ -153,23 +152,23 @@ const ResetPassword = () => {
                     value={digit}
                     onChange={(e) => handleCodeChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-10 h-12 text-center text-xl font-bold border-2 border-gray-300 dark:border-neutral-600 rounded-lg focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-900/30 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white transition-all"
+                    className="w-10 h-14 text-center text-xl font-black border-2 border-gray-100 dark:border-neutral-700 rounded-xl focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 bg-gray-50/50 dark:bg-neutral-900 text-gray-900 dark:text-white transition-all outline-none"
                   />
                 ))}
               </div>
-              <p className="text-xs text-gray-500 dark:text-neutral-400 text-center mt-2">
+              <p className="text-[10px] text-gray-400 dark:text-neutral-500 text-center mt-3">
                 O código expira em 15 minutos
               </p>
             </div>
 
             {/* New Password */}
             <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+              <label htmlFor="newPassword" className="block text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-3 ml-1">
                 Nova Senha
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400 dark:text-neutral-500" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   id="newPassword"
@@ -177,52 +176,44 @@ const ResetPassword = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="input pl-10 pr-10"
+                  className="w-full bg-gray-50 dark:bg-neutral-900 border-2 border-gray-100 dark:border-neutral-700 rounded-xl py-4 pl-12 pr-12 text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none"
                   required
                   minLength={6}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary-600 transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+              <label htmlFor="confirmPassword" className="block text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-3 ml-1">
                 Confirmar Nova Senha
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400 dark:text-neutral-500" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Digite a senha novamente"
-                  className="input pl-10 pr-10"
+                  placeholder="Repita a nova senha"
+                  className="w-full bg-gray-50 dark:bg-neutral-900 border-2 border-gray-100 dark:border-neutral-700 rounded-xl py-4 pl-12 pr-12 text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary-600 transition-colors"
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300" />
-                  )}
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
@@ -231,7 +222,7 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -245,29 +236,27 @@ const ResetPassword = () => {
           </form>
 
           {/* Resend Code */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
+          <div className="mt-8 text-center pb-6 border-b border-gray-50 dark:border-neutral-700 mb-6">
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-2 font-medium">
               Não recebeu o código?
             </p>
             <button
               onClick={handleResendCode}
               disabled={isResending}
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm disabled:opacity-50"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-bold text-sm disabled:opacity-50 transition-colors"
             >
-              {isResending ? 'Reenviando...' : 'Reenviar código'}
+              {isResending ? 'Reenviando...' : 'Reenviar novo código'}
             </button>
           </div>
 
           {/* Back to Login */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-neutral-700">
-            <button
-              onClick={() => navigate('/login')}
-              className="w-full flex items-center justify-center gap-2 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar para o login
-            </button>
-          </div>
+          <button
+            onClick={() => navigate('/login')}
+            className="w-full flex items-center justify-center gap-2 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar para o login
+          </button>
         </div>
       </div>
     </div>

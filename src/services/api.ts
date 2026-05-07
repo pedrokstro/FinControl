@@ -109,6 +109,7 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
+  cpf?: string;
 }
 
 export interface LoginData {
