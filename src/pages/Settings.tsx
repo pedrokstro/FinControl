@@ -2520,6 +2520,7 @@ const Settings = () => {
                             </ul>
                           </div>
                         </div>
+                      </div>
 
 
                       {/* v0.1.0 */}
