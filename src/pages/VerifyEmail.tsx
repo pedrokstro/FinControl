@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Mail, ArrowLeft, RefreshCw } from 'lucide-react';
 import authService from '@/services/auth.service';
 import { toast } from 'react-hot-toast';
-import { motion } from 'framer-motion';
+import PageTransition from '@/components/common/PageTransition';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -94,13 +94,7 @@ const VerifyEmail = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center sm:p-6"
-    >
+    <PageTransition className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center sm:p-6">
       <div className="w-full sm:max-w-[440px]">
         {/* Main Content Area */}
         <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-sm border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
@@ -199,7 +193,7 @@ const VerifyEmail = () => {
           💡 Você pode colar o código completo de 6 dígitos.
         </p>
       </div>
-    </motion.div>
+    </PageTransition>
   );
 };
 
