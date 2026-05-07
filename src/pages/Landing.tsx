@@ -112,7 +112,7 @@ const Landing = () => {
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-primary-600/30"
+              className="hidden sm:block px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-primary-600/30"
             >
               Entrar
             </button>
@@ -144,14 +144,14 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-bold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/25 flex items-center justify-center gap-2"
               >
                 Começar Grátis
                 <ArrowRight className="w-5 h-5" />
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-xl font-semibold text-lg transition-all duration-200 border-2 border-neutral-200 dark:border-neutral-700 flex items-center justify-center"
+                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border-2 border-neutral-100 dark:border-neutral-700 rounded-full font-bold text-lg transition-all duration-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center justify-center gap-2"
               >
                 Fazer Login
               </button>
@@ -397,7 +397,7 @@ const Landing = () => {
                     </ul>
                     <button
                       onClick={() => navigate('/register')}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${isHighlighted
+                      className={`w-full py-3 rounded-full font-semibold transition-all duration-200 ${isHighlighted
                         ? 'bg-white text-primary-600 hover:bg-primary-50'
                         : 'bg-primary-600 text-white hover:bg-primary-700'
                         }`}
@@ -474,7 +474,7 @@ const Landing = () => {
             </p>
             <button
               onClick={() => navigate('/register')}
-              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl"
+              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl"
             >
               Começar Gratuitamente
             </button>
@@ -483,7 +483,7 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-neutral-900 text-white">
+      <footer className="py-12 px-6 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white border-t border-neutral-100 dark:border-neutral-800">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -493,35 +493,35 @@ const Landing = () => {
                 </div>
                 <span className="text-xl font-bold">FinControl</span>
               </div>
-              <p className="text-neutral-400 text-sm">
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm">
                 Sua plataforma completa de gestão financeira pessoal
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Produto</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="#" className="hover:text-white transition-colors">Recursos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Planos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Segurança</a></li>
+              <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Recursos</a></li>
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Planos</a></li>
+                <li><a href="#" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Segurança</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Empresa</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="/about" className="hover:text-white transition-colors">Sobre</a></li>
-                <li><a href="/support" className="hover:text-white transition-colors">Suporte</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Termos</a></li>
+              <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+                <li><a href="/about" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Sobre</a></li>
+                <li><a href="/support" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Suporte</a></li>
+                <li><a href="/terms" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Termos</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="/privacy" className="hover:text-white transition-colors">Privacidade</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Termos de Uso</a></li>
+              <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+                <li><a href="/privacy" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Privacidade</a></li>
+                <li><a href="/terms" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Termos de Uso</a></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-neutral-800 text-center text-sm text-neutral-400">
+          <div className="pt-8 border-t border-neutral-100 dark:border-neutral-800 text-center text-sm text-neutral-500 dark:text-neutral-400">
             <p>© 2025 FinControl. Todos os direitos reservados.</p>
           </div>
         </div>

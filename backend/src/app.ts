@@ -47,6 +47,10 @@ if (config.nodeEnv === 'production') {
   logger.info('Rate limiting habilitado');
 }
 
+// Pre-middleware for specific routes (like Stripe Webhooks that need raw body)
+import webhookRoutes from '@/routes/webhook.routes';
+app.use('/api/v1/webhooks', webhookRoutes);
+
 // Global Body Parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

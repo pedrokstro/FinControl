@@ -46,3 +46,9 @@ Thumbs.db
 
 # Uploads
 backend/uploads/
+
+# Agent and Tools
+.agent/
+stripe.exe
+*.zip
+dev-dist/

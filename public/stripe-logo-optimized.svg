@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <!-- Optimized for Stripe Checkout: White Background + 35% margin (padding) to make the logo look balanced -->
+  
+  <!-- Outer container: Rounded white base like the user's PNG -->
+  <rect width="512" height="512" rx="64" fill="white"/>
+  
+  <!-- Content Group Centralized (Scale mitigation) -->
+  <g transform="translate(144, 144)">
+    <!-- Original Wallet Icon Reconstructed from the PNG design -->
+    <!-- Wallet Core -->
+    <rect x="0" y="20" width="224" height="160" rx="24" fill="none" stroke="#0EA5E9" stroke-width="20"/>
+    
+    <!-- Wallet Flap/Pocket -->
+    <rect x="0" y="80" width="224" height="100" rx="24" fill="#0EA5E9"/>
+    
+    <!-- Wallet Top Line -->
+    <path d="M0 60 C 0 30, 30 15, 60 15 L 164 15 C 194 15, 224 30, 224 60" stroke="#0EA5E9" stroke-width="20" fill="none"/>
+    
+    <!-- Button Detail -->
+    <circle cx="176" cy="130" r="28" fill="white"/>
+    <circle cx="176" cy="130" r="10" fill="#0EA5E9"/>
+  </g>
+</svg>

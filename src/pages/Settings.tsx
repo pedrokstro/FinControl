@@ -206,7 +206,7 @@ const Settings = () => {
         preferences: preferences,
         notifications: notifications,
         exportDate: new Date().toISOString(),
-        version: '2.0.1'
+        version: "2.8.9"
       }
 
       // Converter para JSON formatado
@@ -1014,7 +1014,7 @@ const Settings = () => {
                           </div>
                           <div className="flex flex-col items-end">
                             <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                              v2.8.4
+                              v2.8.9
                             </div>
                             <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                           </div>
@@ -1022,16 +1022,159 @@ const Settings = () => {
 
                         <div className="space-y-12">
 
-                      {/* v2.8.4 - ATUAL */}
+                      {/* v2.8.9 - ATUAL */}
                       <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                         <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                         <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.4</span>
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.9</span>
                             <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-bold uppercase tracking-wider">Atual</span>
                           </div>
                           <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                             {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Refinamento de UX & Segurança
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Verificação de código de redefinição de senha agora é validada pelo servidor antes da troca.</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Padronização total dos botões da Landing Page para o estilo "Pill" (rounded-full).</span>
+                                </li>
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Remoção de elementos redundantes no cabeçalho mobile para uma navegação mais limpa.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.8 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.8</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Fluxo de Segurança
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Redefinição de senha dividida em duas etapas (Código → Nova Senha) para maior clareza.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.7 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.7</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Estilo Pill Unificado
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Todos os botões da Landing Page agora utilizam o estilo "Pill".</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.6 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.6</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Branding Landing Page
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Rodapé da Landing Page alterado para branco para alinhar com o branding do projeto.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.5 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.5</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Limpeza de UI Landing
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Removido botão redundante de login no cabeçalho mobile.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.4 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.4</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
@@ -1042,7 +1185,7 @@ const Settings = () => {
                               <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
                                 <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                   <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                  <span>Efeito glass levado ao extremo com 40% de opacidade e blur ultra-fino (2xl).</span>
+                                  <span>Efeito glass aprimorado com 40% de opacidade e blur 2xl.</span>
                                 </li>
                               </ul>
                             </div>

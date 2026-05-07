@@ -9,14 +9,21 @@ export class AuthService {
   private userRepository = AppDataSource.getRepository(User);
   private refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 
-  async register(name: string, email: string, password: string) {
+  async register(name: string, email: string, password: string, cpf?: string) {
     const existingUser = await this.userRepository.findOne({ where: { email } });
     
     if (existingUser) {
       throw new ConflictError('Email já cadastrado');
     }
 
-    const user = this.userRepository.create({ name, email, password });
+    if (cpf) {
+      const existingCpf = await this.userRepository.findOne({ where: { cpf } });
+      if (existingCpf) {
+        throw new ConflictError('CPF já cadastrado');
+      }
+    }
+
+    const user = this.userRepository.create({ name, email, password, cpf });
     await this.userRepository.save(user);
 
     const tokens = await this.generateTokens(user);

@@ -10,7 +10,7 @@ const authService = new AuthService();
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, cpf } = req.body;
     
     // Validar força da senha
     const validation = PasswordValidator.validate(password);
@@ -18,7 +18,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       throw new BadRequestError(validation.errors.join('. '));
     }
     
-    const result = await authService.register(name, email, password);
+    const result = await authService.register(name, email, password, cpf);
     
     // Enviar código de verificação de email (não aguardar para não travar)
     verificationService.createAndSendCode(email, 'email_verification', name)
@@ -123,6 +123,29 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     await authService.resetPassword(email, newPassword);
     
     sendSuccess(res, null, 'Senha redefinida com sucesso');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyResetCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, code } = req.body;
+    
+    if (!email || !code) {
+      throw new BadRequestError('Email e código são obrigatórios');
+    }
+
+    const isValid = await verificationService.verifyCode(email, code, 'password_reset');
+    
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Código inválido ou expirado',
+      });
+    }
+
+    sendSuccess(res, { valid: true }, 'Código verificado com sucesso');
   } catch (error) {
     next(error);
   }
