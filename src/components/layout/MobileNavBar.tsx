@@ -213,7 +213,7 @@ const MobileNavBar = () => {
       {/* Bottom Nav Bar */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-3 mb-3">
-          <div className="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-xl flex items-center px-2">
+          <div className="bg-white/40 dark:bg-neutral-950/40 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-full shadow-lg flex items-center px-4">
 
             {/* Início */}
             <NavLink
@@ -251,7 +251,7 @@ const MobileNavBar = () => {
             <div className="flex-1 flex justify-center">
               <button
                 onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/transactions?add=true') }}
-                className="w-12 h-12 bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-2xl flex items-center justify-center shadow-md shadow-primary-500/30 transition-all my-1.5"
+                className="w-12 h-12 bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-full flex items-center justify-center shadow-lg shadow-primary-500/20 transition-all my-2"
               >
                 <Plus className="w-6 h-6 text-white" />
               </button>

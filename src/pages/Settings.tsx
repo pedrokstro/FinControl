@@ -5,7 +5,7 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard } from 'lucide-react'
+import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard, Smartphone } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import toast from 'react-hot-toast'
 import { imageStorage } from '@/utils/imageStorage'
@@ -1014,7 +1014,7 @@ const Settings = () => {
                           </div>
                           <div className="flex flex-col items-end">
                             <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                              v2.8.0
+                              v2.8.4
                             </div>
                             <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                           </div>
@@ -1022,16 +1022,124 @@ const Settings = () => {
 
                         <div className="space-y-12">
 
-                      {/* v2.8.0 - ATUAL */}
+                      {/* v2.8.4 - ATUAL */}
                       <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                         <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                         <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.0</span>
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.4</span>
                             <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-bold uppercase tracking-wider">Atual</span>
                           </div>
                           <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
                             {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Glassmorphism Ultra-Refinado
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Efeito glass levado ao extremo com 40% de opacidade e blur ultra-fino (2xl).</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.3 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.3</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Refinamento Visual
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Efeito glass aprimorado e correção de ícones no changelog.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.2 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.2</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Smartphone className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Ajustes Landing Page
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Correção de responsividade na Landing Page para dispositivos móveis.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.1 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.1</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                Refinamento MobileNavBar
+                              </h4>
+                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                  <span>Barra de navegação inferior estilo "Pill" com backdrop-blur.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* v2.8.0 */}
+                      <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
+                        <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                        <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.8.0</span>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                            07 de Maio de 2026
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
@@ -1042,27 +1150,7 @@ const Settings = () => {
                               <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
                                 <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
                                   <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                  <span>Design de "White Card" em tela cheia para mobile em todas as páginas de autenticação e institucionais.</span>
-                                </li>
-                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-                                  <span>Padronização de botões e campos de entrada para estilo "Pill" (totalmente arredondados).</span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div className="space-y-4">
-                              <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                                <Zap className="w-5 h-5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 p-1 rounded" />
-                                UX & Navegação
-                              </h4>
-                              <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
-                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
-                                  <span>Transições de página fluidas entre Login, Cadastro e demais páginas institucionais.</span>
-                                </li>
-                                <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
-                                  <span>Ajuste de visibilidade do botão "Voltar" para evitar obstruções em telas pequenas.</span>
+                                  <span>Design de "White Card" em tela cheia para mobile em todas as páginas de autenticação.</span>
                                 </li>
                               </ul>
                             </div>

@@ -129,7 +129,7 @@ const Landing = () => {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight px-4">
               Potencialize seu{' '}
               <AnimatedTextCycle
                 words={['Futuro', 'Negócio', 'Bolso']}
@@ -138,27 +138,27 @@ const Landing = () => {
               />{' '}
               com FinControl
             </h1>
-            <p className="text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto px-4">
               A plataforma completa para gerenciar suas finanças pessoais com inteligência e simplicidade
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/register')}
-                className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
               >
                 Começar Grátis
                 <ArrowRight className="w-5 h-5" />
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-xl font-semibold text-lg transition-all duration-200 border-2 border-neutral-200 dark:border-neutral-700"
+                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-xl font-semibold text-lg transition-all duration-200 border-2 border-neutral-200 dark:border-neutral-700 flex items-center justify-center"
               >
                 Fazer Login
               </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-16 max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 mt-16 max-w-3xl mx-auto px-4">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
