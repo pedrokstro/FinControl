@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 
 const Privacy = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col items-center mb-12">
+        <div className="flex flex-col items-center mb-8 sm:mb-12 text-center">
           <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar para Login
@@ -17,19 +17,17 @@ const Privacy = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Documento Oficial</span>
           </div>
         </div>
-          
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4 text-center">
             Política de <span className="text-primary-600">Privacidade</span>
           </h1>
-          <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base text-center">
             Atualizada em {new Date().toLocaleDateString('pt-BR')}. Seus dados financeiros encriptados, soberanos e intocáveis sob os mais rígidos protocolos de sigilo.
           </p>
-        </div>
 
         {/* Content Sections */}
         <div className="space-y-8">
           {/* Section 1 */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <Lock className="w-6 h-6" />
@@ -42,7 +40,7 @@ const Privacy = () => {
           </div>
 
           {/* Section 2 */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <Database className="w-6 h-6" />
@@ -68,7 +66,7 @@ const Privacy = () => {
           </div>
 
           {/* Section 3 */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                 <Eye className="w-6 h-6" />
@@ -91,7 +89,7 @@ const Privacy = () => {
           </div>
 
           {/* Section 4 */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-neutral-700">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <UserCheck className="w-6 h-6" />
@@ -106,15 +104,15 @@ const Privacy = () => {
           </div>
 
           {/* Footer Card */}
-          <div className="bg-primary-600 dark:bg-primary-700 rounded-3xl p-10 text-center text-white shadow-xl shadow-primary-500/20">
+          <div className="bg-primary-600 dark:bg-primary-700 rounded-3xl p-8 sm:p-10 text-center text-white shadow-xl shadow-primary-500/20">
             <Scale className="w-10 h-10 mx-auto mb-6 opacity-80" />
-            <h3 className="text-2xl font-bold mb-4">Dúvidas sobre Segurança?</h3>
-            <p className="text-primary-100 mb-8 max-w-md mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4">Dúvidas sobre Segurança?</h3>
+            <p className="text-primary-100 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
               Nossa equipe de segurança está pronta para esclarecer qualquer ponto sobre a proteção dos seus dados.
             </p>
             <a
               href="mailto:suportfincontrol@gmail.com"
-              className="inline-block px-8 py-3 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-50 transition-colors shadow-lg"
+              className="inline-block px-8 py-3.5 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-50 transition-colors shadow-lg"
             >
               Falar com Segurança
             </a>

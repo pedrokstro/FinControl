@@ -96,13 +96,13 @@ const VerifyEmail = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-[440px]">
         {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-8 md:p-10">
+        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Mail className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+          <div className="text-center mb-8 sm:mb-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Mail className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
               Verifique seu Email
             </h1>
             
@@ -127,7 +127,7 @@ const VerifyEmail = () => {
 
           {/* Code Inputs */}
           <div className="mb-8">
-            <div className="flex gap-2 justify-center" onPaste={handlePaste}>
+            <div className="flex gap-1.5 sm:gap-2 justify-center" onPaste={handlePaste}>
               {code.map((digit, index) => (
                 <input
                   key={index}
@@ -138,7 +138,7 @@ const VerifyEmail = () => {
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-16 text-center text-2xl font-black border-2 border-gray-100 dark:border-neutral-700 rounded-xl focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 bg-gray-50/50 dark:bg-neutral-900 text-gray-900 dark:text-white transition-all outline-none"
+                  className="w-10 h-14 sm:w-12 sm:h-16 text-center text-xl sm:text-2xl font-black border-2 border-gray-100 dark:border-neutral-700 rounded-xl focus:border-primary-500 dark:focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10 bg-gray-50/50 dark:bg-neutral-900 text-gray-900 dark:text-white transition-all outline-none"
                 />
               ))}
             </div>

@@ -81,19 +81,19 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 p-4">
       <div className="w-full max-w-md">
         {/* Logo Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
             <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-          <p className="text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-8 sm:p-10">
-          <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Bem-vindo de volta</h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400">Acesse sua conta para continuar</p>
+        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
+          <div className="mb-6 sm:mb-8 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Bem-vindo de volta</h2>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400">Acesse sua conta para continuar</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

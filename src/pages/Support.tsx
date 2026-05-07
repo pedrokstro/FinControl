@@ -30,10 +30,10 @@ const Support = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col items-center mb-16">
+        <div className="flex flex-col items-center mb-10 sm:mb-16">
           <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar para Login
@@ -44,14 +44,12 @@ const Support = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-400">Suporte ao Cliente</span>
           </div>
         </div>
-          
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4 text-center">
             Central de Ajuda
           </h1>
-          <p className="text-gray-500 dark:text-neutral-400 text-lg">
+          <p className="text-gray-500 dark:text-neutral-400 text-base sm:text-lg text-center">
             Estamos aqui para ajudar você a aproveitar ao máximo o FinControl
           </p>
-        </div>
 
         {/* FAQ Section */}
         <div className="mb-16">
@@ -87,17 +85,17 @@ const Support = () => {
         </div>
 
         {/* Contact CTA */}
-        <div className="bg-primary-600 dark:bg-primary-700 rounded-3xl p-8 md:p-12 text-center shadow-xl">
+        <div className="bg-primary-600 dark:bg-primary-700 rounded-3xl p-6 sm:p-12 text-center shadow-xl">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            <h2 className="text-xl sm:text-3xl font-bold text-white mb-4">
               Não encontrou o que procura?
             </h2>
-            <p className="text-primary-100 mb-8 opacity-90">
+            <p className="text-primary-100 mb-6 sm:mb-8 opacity-90 text-sm sm:text-base">
               Nossa equipe de suporte está pronta para ajudar você
             </p>
             <a
               href="mailto:suportfincontrol@gmail.com"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-50 transition-transform active:scale-95 shadow-lg"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-50 transition-transform active:scale-95 shadow-lg"
             >
               <Mail className="w-5 h-5" />
               Entrar em Contato

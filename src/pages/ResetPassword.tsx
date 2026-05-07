@@ -117,13 +117,13 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-[440px]">
         {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-8 md:p-10">
+        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Lock className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+          <div className="text-center mb-8 sm:mb-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Lock className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
               Redefinir Senha
             </h1>
             <p className="text-gray-500 dark:text-neutral-400 text-sm">

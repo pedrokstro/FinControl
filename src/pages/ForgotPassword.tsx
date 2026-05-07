@@ -34,22 +34,22 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 p-4">
       <div className="w-full max-w-md">
         {/* Logo Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
             <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-          <p className="text-gray-500 dark:text-neutral-400 mt-2 font-medium">Recuperação de Acesso</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Recuperação de Acesso</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-8 sm:p-10">
-          <div className="mb-8 text-center">
-            <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary-100 dark:border-primary-900/30">
-              <KeyRound className="w-7 h-7 text-primary-600 drop-shadow-sm" />
+        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-neutral-700 p-6 sm:p-10">
+          <div className="mb-6 sm:mb-8 text-center">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-primary-100 dark:border-primary-900/30">
+              <KeyRound className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 drop-shadow-sm" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Esqueceu a senha?</h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400">Insira seu e-mail para receber as instruções.</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Esqueceu a senha?</h2>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400">Insira seu e-mail para receber as instruções.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

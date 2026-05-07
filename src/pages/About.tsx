@@ -73,14 +73,12 @@ const About = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">Sobre o Projeto</span>
           </div>
         </div>
-          
-          <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight mb-4 text-center">
             <span className="text-primary-600">Fin</span>Control
           </h1>
-          <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mx-auto text-lg text-center">
             Nós não queremos apenas guardar números. Nossa engenharia existe para empoderar cada movimento financeiro da sua vida.
           </p>
-        </div>
 
         {/* Vision & Mission Cards */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
