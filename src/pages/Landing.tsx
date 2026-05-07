@@ -11,7 +11,6 @@ import {
   Shield,
   Smartphone,
   BarChart3,
-
   Target,
   ArrowRight,
   CheckCircle2,
@@ -117,12 +116,7 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
+          <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight px-4">
               Potencialize seu{' '}
               <AnimatedTextCycle
@@ -143,7 +137,6 @@ const Landing = () => {
                 Começar Grátis
                 <ArrowRight className="w-5 h-5" />
               </button>
-
             </div>
 
             {/* Stats */}
@@ -151,10 +144,7 @@ const Landing = () => {
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                  className="text-center"
+                  className="flex flex-col items-center gap-2"
                 >
                   <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
                     {stat.value}
@@ -172,13 +162,7 @@ const Landing = () => {
       {/* Features Section */}
       <section className="py-20 px-6 bg-white dark:bg-neutral-900">
         <div className="container mx-auto max-w-6xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               A escolha estratégica
             </h2>
@@ -191,10 +175,6 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="w-full"
               >
                 <MovingBorderButton
@@ -224,13 +204,7 @@ const Landing = () => {
       {/* Dashboard Preview */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               O futuro bancário que você precisa
             </h2>
@@ -240,13 +214,7 @@ const Landing = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="w-full"
-            >
+            <div className="space-y-6">
               <MovingBorderButton
                 as="div"
                 borderRadius="1.75rem"
@@ -272,13 +240,7 @@ const Landing = () => {
               </MovingBorderButton>
             </div>
 
-            <div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="w-full"
-            >
+            <div className="relative">
               <MovingBorderButton
                 as="div"
                 borderRadius="1.75rem"
@@ -313,13 +275,7 @@ const Landing = () => {
       {/* Plans Section */}
       <section className="py-20 px-6 bg-white dark:bg-neutral-900">
         <div className="container mx-auto max-w-6xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Planos para cada orçamento
             </h2>
@@ -338,15 +294,11 @@ const Landing = () => {
               return (
                 <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="w-full"
                 >
                   <MovingBorderButton
                     as="div"
-                    borderRadius="1.5rem"
+                    borderRadius="1.4rem"
                     duration={isHighlighted ? 2500 : 4000}
                     containerClassName="w-full h-full"
                     borderClassName={borderGlow}
@@ -404,13 +356,7 @@ const Landing = () => {
       {/* Benefits Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-primary-600 to-primary-800 text-white">
         <div className="container mx-auto max-w-6xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Compre em qualquer lugar, a qualquer hora
             </h2>
@@ -427,10 +373,6 @@ const Landing = () => {
             ].map((item, index) => (
               <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
               >
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
@@ -447,13 +389,7 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="p-12 rounded-3xl bg-gradient-to-br from-primary-600 to-primary-800 text-white text-center"
-          >
+          <div className="p-12 rounded-3xl bg-gradient-to-br from-primary-600 to-primary-800 text-white text-center">
             <Zap className="w-16 h-16 mx-auto mb-6" />
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Simplifique o gerenciamento de pagamentos

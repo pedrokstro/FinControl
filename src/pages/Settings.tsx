@@ -1083,9 +1083,8 @@ const Settings = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                      {/* v2.8.4 */}
+                        {/* v2.8.4 */}
                       <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800 opacity-80">
                         <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-300 dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                         <div className="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl">
@@ -2521,7 +2520,7 @@ const Settings = () => {
                             </ul>
                           </div>
                         </div>
-                      </div>
+
 
                       {/* v0.1.0 */}
                       <div className="relative pl-10 border-l-2 border-transparent">
@@ -2541,16 +2540,16 @@ const Settings = () => {
                           </div>
                         </div>
                       </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                )}
+                </div>
+              </div>
+            )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </PageTransition>
+      </PageTransition>
 
       {/* Modal de Verificação de Email */}
       <VerifyEmailChangeModal
