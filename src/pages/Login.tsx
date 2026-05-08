@@ -84,11 +84,18 @@ const Login = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4"
+      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950 sm:p-4 relative overflow-hidden"
     >
-      <div className="w-full sm:max-w-md">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:20px_20px] opacity-60" />
+      
+      {/* Soft Glows for Premium Vibe */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="w-full sm:max-w-md relative z-10">
         {/* Main Content Area */}
-        <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl sm:shadow-gray-200/50 dark:sm:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
+        <div className="bg-white dark:bg-neutral-900 sm:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border-x-0 sm:border border-gray-100 dark:border-neutral-800 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
           {/* Logo Section */}
           <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
@@ -115,7 +122,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="seu@email.com"
                   disabled={isLoading}
                   required
@@ -134,7 +141,7 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="••••••••"
                   disabled={isLoading}
                   required
@@ -159,7 +166,7 @@ const Login = () => {
                   Lembrar de mim
                 </span>
               </label>
-              <Link to="/forgot-password" weights="bold" className="text-sm text-primary-600 hover:text-primary-800 font-bold transition-colors">
+              <Link to="/forgot-password" className="text-sm text-primary-600 hover:text-primary-800 font-bold transition-colors">
                 Esqueceu a senha?
               </Link>
             </div>
@@ -167,7 +174,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-lg shadow-primary-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-xl transition-all shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.23)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'CARREGANDO...' : 'ENTRAR'}
             </button>
@@ -175,10 +182,10 @@ const Login = () => {
 
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-100 dark:border-neutral-700"></div>
+              <div className="w-full border-t border-gray-100 dark:border-neutral-800"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white dark:bg-neutral-800 px-4 text-gray-400 font-bold tracking-widest">Ou continuar com</span>
+              <span className="bg-white dark:bg-neutral-900 px-4 text-gray-400 font-bold tracking-widest">Ou continuar com</span>
             </div>
           </div>
 
@@ -186,7 +193,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading || isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-700 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-800 rounded-xl hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
           >
             <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5" />
             {isGoogleLoading ? 'CONECTANDO...' : 'GOOGLE'}

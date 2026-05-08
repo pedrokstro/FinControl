@@ -184,7 +184,7 @@ const Plans = () => {
             </div>
 
             {/* Premium Plan */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl dark:shadow-dark-2xl border-2 border-amber-400 dark:border-amber-500 p-8 relative overflow-hidden flex flex-col group hover:scale-[1.02] transition-all duration-300">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl dark:shadow-dark-2xl border-2 border-amber-400 dark:border-amber-500 p-8 relative overflow-hidden flex flex-col group transition-all duration-300">
               {/* Popular Badge */}
               <div className="absolute top-0 right-0 bg-amber-500 text-white px-6 py-2 rounded-bl-2xl font-bold text-xs flex items-center gap-2">
                 <Star className="w-4 h-4 fill-white" />
@@ -280,7 +280,7 @@ const Plans = () => {
           {/* Value Propositions */}
           <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-24">
             <div className="group">
-              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 transition-transform border border-neutral-100 dark:border-neutral-800">
                 <Target className="w-8 h-8 text-amber-500" />
               </div>
               <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">FOCO TOTAL</h4>
@@ -289,7 +289,7 @@ const Plans = () => {
               </p>
             </div>
             <div className="group">
-              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 transition-transform border border-neutral-100 dark:border-neutral-800">
                 <TrendingUp className="w-8 h-8 text-emerald-500" />
               </div>
               <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">ALTA PERFORMANCE</h4>
@@ -298,7 +298,7 @@ const Plans = () => {
               </p>
             </div>
             <div className="group">
-              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:-translate-y-1 transition-transform border border-neutral-100 dark:border-neutral-800">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-2xl flex items-center justify-center shadow-lg mb-6 transition-transform border border-neutral-100 dark:border-neutral-800">
                 <Shield className="w-8 h-8 text-blue-500" />
               </div>
               <h4 className="text-lg font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">SEGURANÇA BLINDADA</h4>

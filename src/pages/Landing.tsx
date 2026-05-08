@@ -105,7 +105,7 @@ const Landing = () => {
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-primary-600/30"
+              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium transition-all duration-200 shadow-lg shadow-primary-600/30"
             >
               Fazer Login
             </button>
@@ -132,7 +132,7 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold text-lg transition-all duration-200 shadow-xl shadow-primary-600/30 flex items-center justify-center gap-2"
               >
                 Começar Grátis
                 <ArrowRight className="w-5 h-5" />
@@ -183,7 +183,7 @@ const Landing = () => {
                   duration={3200 + index * 300}
                   containerClassName="w-full h-full"
                   borderClassName={feature.glowClass}
-                  className="rounded-[1.15rem] p-6 bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-900 dark:to-neutral-800 border border-white/40 dark:border-white/5 hover:-translate-y-1 transition-all duration-300"
+                  className="rounded-[1.15rem] p-6 bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-900 dark:to-neutral-800 border border-white/40 dark:border-white/5 transition-all duration-300"
                 >
                   <div className="w-16 h-16 bg-gradient-to-br from-primary-600 to-primary-400 rounded-xl flex items-center justify-center text-white mb-4">
                     {feature.icon}
@@ -302,7 +302,7 @@ const Landing = () => {
                     duration={isHighlighted ? 2500 : 4000}
                     containerClassName="w-full h-full"
                     borderClassName={borderGlow}
-                    className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 ${isHighlighted
+                    className={`rounded-[1.4rem] p-8 flex flex-col h-full transition-all duration-300 ${isHighlighted
                       ? 'bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-2xl shadow-primary-600/30'
                       : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700'
                       }`}
@@ -399,7 +399,7 @@ const Landing = () => {
             </p>
             <button
               onClick={() => navigate('/register')}
-              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-xl"
+              className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-lg transition-all duration-200 shadow-xl"
             >
               Começar Gratuitamente
             </button>

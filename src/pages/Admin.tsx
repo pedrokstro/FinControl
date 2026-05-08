@@ -172,7 +172,7 @@ const Admin = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <button
             onClick={() => handleCardClick('all')}
-            className="card bg-gradient-to-br from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all duration-200 cursor-pointer transform hover:scale-105"
+            className="card bg-gradient-to-br from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all duration-200 cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -185,7 +185,7 @@ const Admin = () => {
 
           <button
             onClick={() => handleCardClick('premium')}
-            className="card bg-gradient-to-br from-success-500 to-success-600 text-white hover:from-success-600 hover:to-success-700 transition-all duration-200 cursor-pointer transform hover:scale-105"
+            className="card bg-gradient-to-br from-success-500 to-success-600 text-white hover:from-success-600 hover:to-success-700 transition-all duration-200 cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div>

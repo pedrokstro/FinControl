@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
   ComposedChart,
   Area,
+  AreaChart,
   BarChart,
   Radar,
   RadarChart,
@@ -27,6 +28,9 @@ import {
   endOfMonth,
   subMonths,
   eachMonthOfInterval,
+  eachDayOfInterval,
+  startOfDay,
+  endOfDay,
   parseISO,
   isValid,
 } from 'date-fns'
@@ -120,6 +124,55 @@ const Reports = () => {
     const expense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
     return { income, expense, balance: income - expense, count: filtered.length }
   }, [filtered])
+
+  // ── Saldo Acumulado (Evolução) ─────────────────────────────────────────────
+  const accumulatedBalanceData = useMemo(() => {
+    const sorted = [...transactions].sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
+    let runningBalance = 0
+    
+    const diffDays = Math.abs(dateRange.end.getTime() - dateRange.start.getTime()) / (1000 * 60 * 60 * 24)
+    
+    const beforePeriod = sorted.filter(t => parseISO(t.date) < dateRange.start)
+    beforePeriod.forEach(t => {
+      runningBalance += t.type === 'income' ? t.amount : -t.amount
+    })
+
+    if (diffDays > 60) {
+      const months = eachMonthOfInterval({ start: dateRange.start, end: dateRange.end })
+      return months.map(month => {
+        const ms = startOfMonth(month)
+        const me = endOfMonth(month)
+        const periodTxs = sorted.filter(t => {
+          const d = parseISO(t.date)
+          return d >= ms && d <= me
+        })
+        periodTxs.forEach(t => {
+          runningBalance += t.type === 'income' ? t.amount : -t.amount
+        })
+        return {
+          date: format(month, 'MMM/yy', { locale: ptBR }),
+          saldo: runningBalance
+        }
+      })
+    } else {
+      const days = eachDayOfInterval({ start: dateRange.start, end: dateRange.end })
+      return days.map(day => {
+        const ms = startOfDay(day)
+        const me = endOfDay(day)
+        const dayTxs = sorted.filter(t => {
+          const d = parseISO(t.date)
+          return d >= ms && d <= me
+        })
+        dayTxs.forEach(t => {
+          runningBalance += t.type === 'income' ? t.amount : -t.amount
+        })
+        return {
+          date: format(day, 'dd/MM', { locale: ptBR }),
+          saldo: runningBalance
+        }
+      })
+    }
+  }, [transactions, dateRange])
 
   // ── Comparação com período anterior ───────────────────────────────────────
   const comparison = useMemo(() => {
@@ -459,6 +512,62 @@ const Reports = () => {
             <span className="text-xs text-gray-400 dark:text-neutral-500 ml-auto">
               {summary.count} transação{summary.count !== 1 ? 'ões' : ''} no período
             </span>
+          </div>
+        </div>
+
+        {/* ── GRÁFICO DE SALDO ACUMULADO (NOVO) ────────────────────────────── */}
+        <div className="card mb-6 p-0 overflow-hidden relative border border-primary-100/50 dark:border-primary-900/30 shadow-sm">
+          <div className="p-5 md:p-6 pb-2 md:pb-0">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-4">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Evolução do Saldo</h3>
+                <p className={`text-2xl md:text-3xl font-bold ${
+                  (accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldo || 0) >= 0 
+                    ? 'text-gray-900 dark:text-white' 
+                    : 'text-danger-600 dark:text-danger-400'
+                }`}>
+                  {fmtCurrency(accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldo || 0)}
+                </p>
+              </div>
+              <div className="text-xs text-gray-500 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800/50 px-3 py-1.5 rounded-full font-medium inline-flex items-center w-fit border border-gray-200 dark:border-neutral-700/50">
+                Saldo acumulado real
+              </div>
+            </div>
+          </div>
+          <div className="w-full h-[220px] md:h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={accumulatedBalanceData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorSaldoAcumulado" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#9ca3af" 
+                  tick={{ fontSize: 11 }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dy={10} 
+                  minTickGap={30}
+                />
+                <Tooltip 
+                  formatter={(v: number) => [fmtCurrency(v), 'Saldo']} 
+                  cursor={{ stroke: '#0ea5e9', strokeWidth: 1, strokeDasharray: '4 4' }} 
+                  contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: 13, backgroundColor: 'var(--tooltip-bg, #fff)' }} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="saldo" 
+                  stroke="#0ea5e9" 
+                  strokeWidth={3} 
+                  fillOpacity={1} 
+                  fill="url(#colorSaldoAcumulado)" 
+                  animationDuration={1500}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
