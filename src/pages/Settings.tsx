@@ -848,6 +848,13 @@ const Settings = () => {
                           )}
                         </div>
 
+
+                        <div className="flex justify-end pt-4">
+                          <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">
+                            Alterar senha
+                          </button>
+                        </div>
+                      </form>
                     </div>
 
                     <div className="card overflow-hidden border-2 border-primary-100 dark:border-primary-900/20 shadow-lg shadow-primary-500/5">
@@ -902,12 +909,6 @@ const Settings = () => {
                         </div>
                       )}
 
-                        <div className="flex justify-end pt-4">
-                          <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">
-                            Alterar senha
-                          </button>
-                        </div>
-                      </form>
                     </div>
 
                     <div className="card">

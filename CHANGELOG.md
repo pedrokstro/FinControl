@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.4] - 2026-05-08
+
+### Corrigido
+- **Build/Vercel:** Correção de erro de aninhamento JSX no componente de Configurações que impedia o deploy.
+
 ## [2.11.3] - 2026-05-08
 
 ### Alterado
