@@ -6,26 +6,28 @@ import React from 'react'
  * sejam encontrados corretamente em servidores Linux (case-sensitive).
  */
 const BRAND_SLUG_MAP: Record<string, string> = {
-  'Visa':       'visa.png',
-  'Mastercard': 'Mastercard.png',
-  'Elo':        'elo.png',
-  'Hipercard':  'hipercard.png',
-  'Amex':       'American_Express.png',
-  'Nubank':     'nubank.png',
-  'Inter':      'banco-inter.png',
-  'Neon':       'banco-neon.png',
-  'C6':         'c6-bank.png',
-  'PicPay':     'picpay.png',
-  'PICPAY':     'picpay.png',
+  'visa':       'visa.png',
+  'mastercard': 'Mastercard.png',
+  'elo':        'elo.png',
+  'hipercard':  'hipercard.png',
+  'amex':       'American_Express.png',
+  'american express': 'American_Express.png',
+  'nubank':     'nubank.png',
+  'inter':      'banco-inter.png',
+  'neon':       'banco-neon.png',
+  'c6':         'c6-bank.png',
+  'c6 bank':    'c6-bank.png',
+  'picpay':     'picpay.png',
 }
 
 /**
  * Converte o nome do banco/bandeira para o slug do arquivo PNG.
- * Verificar o BRAND_SLUG_MAP primeiro; caso não encontrado, normaliza automaticamente.
- * Ex: "PICPAY" → "picpay.png" | "Banco XYZ" → "banco-xyz.png"
+ * Verificar o BRAND_SLUG_MAP primeiro (case-insensitive); caso não encontrado, normaliza automaticamente.
  */
-export const brandToSlug = (brand: string): string =>
-  BRAND_SLUG_MAP[brand] ?? brand.toLowerCase().trim().replace(/\s+/g, '-') + '.png'
+export const brandToSlug = (brand: string): string => {
+  const normalized = brand.toLowerCase().trim()
+  return BRAND_SLUG_MAP[normalized] ?? normalized.replace(/\s+/g, '-') + '.png'
+}
 
 interface BrandIconProps {
   /** Nome do banco — mapeado via BRAND_SLUG_MAP ou convertido automaticamente */

@@ -51,6 +51,12 @@ import {
 import PageTransition from '@/components/common/PageTransition'
 import { exportService } from '@/services/exportService'
 import { toast } from 'react-hot-toast'
+import CustomDatePicker from '@/components/common/CustomDatePicker'
+import CustomMonthPicker from '@/components/common/CustomMonthPicker'
+import CategorySelect from '@/components/common/CategorySelect'
+import CustomSelect from '@/components/common/CustomSelect'
+import { X } from 'lucide-react'
+import { haptics } from '@/utils/haptics'
 
 // ─── Tipos de filtro ──────────────────────────────────────────────────────────
 type FilterMode = 'month' | 'period' | 'custom'
@@ -81,6 +87,9 @@ const Reports = () => {
   // intervalo personalizado
   const [customFrom, setCustomFrom] = useState<string>(format(subMonths(new Date(), 1), 'yyyy-MM-dd'))
   const [customTo, setCustomTo] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedType, setSelectedType] = useState<string>('all')
 
   const [isExporting, setIsExporting] = useState(false)
 
@@ -114,9 +123,13 @@ const Reports = () => {
   const filtered = useMemo(() => {
     return transactions.filter(t => {
       const d = parseISO(t.date)
-      return d >= dateRange.start && d <= dateRange.end
+      const inDateRange = d >= dateRange.start && d <= dateRange.end
+      const matchesCategory = selectedCategory === 'all' || t.categoryId === selectedCategory
+      const matchesType = selectedType === 'all' || t.type === selectedType
+      
+      return inDateRange && matchesCategory && matchesType
     })
-  }, [transactions, dateRange])
+  }, [transactions, dateRange, selectedCategory, selectedType])
 
   // ── Resumo do período ──────────────────────────────────────────────────────
   const summary = useMemo(() => {
@@ -442,7 +455,10 @@ const Reports = () => {
             ] as const).map(({ mode, label, icon: Icon }) => (
               <button
                 key={mode}
-                onClick={() => setFilterMode(mode)}
+                onClick={() => {
+                  setFilterMode(mode);
+                  haptics.light();
+                }}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border ${filterMode === mode
                   ? 'bg-primary-600 dark:bg-primary-500 text-white border-primary-600 dark:border-primary-500 shadow-sm'
                   : 'bg-white dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800'
@@ -455,63 +471,109 @@ const Reports = () => {
           </div>
 
           {/* Controles dinâmicos */}
-          <div className="flex items-center flex-wrap gap-3">
+          <div className="flex items-center flex-wrap gap-4">
             {filterMode === 'month' && (
-              <input
-                type="month"
-                value={selectedMonth}
-                max={format(new Date(), 'yyyy-MM')}
-                onChange={e => setSelectedMonth(e.target.value)}
-                className="input-field max-w-[220px]"
-              />
+              <div className="w-full sm:max-w-[280px]">
+                <CustomMonthPicker
+                  value={selectedMonth}
+                  onChange={setSelectedMonth}
+                  label="Mês de Referência"
+                />
+              </div>
             )}
 
             {filterMode === 'period' && (
-              <div className="flex gap-2 flex-wrap">
-                {PERIODS.map(p => (
-                  <button
-                    key={p.value}
-                    onClick={() => setSelectedPeriod(p.value)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${selectedPeriod === p.value
-                      ? 'bg-primary-600 dark:bg-primary-500 text-white border-transparent'
-                      : 'bg-white dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+              <div className="flex gap-2 flex-wrap items-end">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider ml-1">Tempo de Análise</span>
+                  <div className="flex gap-2 flex-wrap">
+                    {PERIODS.map(p => (
+                      <button
+                        key={p.value}
+                        onClick={() => {
+                          setSelectedPeriod(p.value);
+                          haptics.light();
+                        }}
+                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${selectedPeriod === p.value
+                          ? 'bg-primary-600 dark:bg-primary-500 text-white border-transparent shadow-md shadow-primary-500/20 scale-105'
+                          : 'bg-white dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
             {filterMode === 'custom' && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 dark:text-neutral-400 font-medium">De</label>
-                  <input
-                    type="date"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider ml-1">Início</span>
+                  <CustomDatePicker
                     value={customFrom}
-                    max={customTo}
-                    onChange={e => setCustomFrom(e.target.value)}
-                    className="input-field max-w-[180px]"
+                    onChange={setCustomFrom}
+                    maxDate={customTo}
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 dark:text-neutral-400 font-medium">Até</label>
-                  <input
-                    type="date"
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider ml-1">Fim</span>
+                  <CustomDatePicker
                     value={customTo}
-                    min={customFrom}
-                    max={format(new Date(), 'yyyy-MM-dd')}
-                    onChange={e => setCustomTo(e.target.value)}
-                    className="input-field max-w-[180px]"
+                    onChange={setCustomTo}
+                    minDate={customFrom}
+                    maxDate={format(new Date(), 'yyyy-MM-dd')}
                   />
                 </div>
               </div>
             )}
 
-            <span className="text-xs text-gray-400 dark:text-neutral-500 ml-auto">
-              {summary.count} transação{summary.count !== 1 ? 'ões' : ''} no período
-            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider ml-1">Filtrar por Categoria</span>
+              <CategorySelect
+                categories={[{ id: 'all', name: 'Todas as Categorias', icon: 'LayoutGrid', color: '#6366f1' }, ...categories]}
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider ml-1">Filtrar por Tipo</span>
+              <CustomSelect
+                options={[
+                  { value: 'all', label: 'Todos os Tipos' },
+                  { value: 'income', label: 'Apenas Receitas' },
+                  { value: 'expense', label: 'Apenas Despesas' },
+                ]}
+                value={selectedType}
+                onChange={setSelectedType}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <button
+              onClick={() => {
+                setSelectedCategory('all');
+                setSelectedType('all');
+                setFilterMode('period');
+                setSelectedPeriod('6');
+                haptics.medium();
+              }}
+              className="flex items-center gap-2 text-xs font-bold text-danger-600 hover:text-danger-700 dark:text-danger-400 uppercase tracking-widest transition-colors"
+            >
+              <X className="w-3 h-3" />
+              Limpar Filtros
+            </button>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-neutral-800/50 rounded-xl border border-gray-100 dark:border-neutral-700/50">
+              <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+              <span className="text-xs text-gray-600 dark:text-neutral-400 font-medium">
+                {summary.count} transação{summary.count !== 1 ? 'ões' : ''} encontrada{summary.count !== 1 ? 's' : ''}
+              </span>
+            </div>
           </div>
         </div>
 

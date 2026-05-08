@@ -235,8 +235,8 @@ const Cards = () => {
                     </div>
 
                     <div className="flex items-center gap-4 mb-8">
-                      <div className={`w-16 h-10 bg-gradient-to-br ${cardGradient.split(' ')[0]} ${cardGradient.split(' ')[1]} rounded-xl flex items-center justify-center overflow-hidden p-2 shadow-sm border border-white/20`}>
-                        <BrandIcon brand={card.brand} className="h-full w-auto filter brightness-0 invert opacity-90" />
+                      <div className="w-16 h-10 bg-gray-50 dark:bg-neutral-800 rounded-xl flex items-center justify-center overflow-hidden p-2 shadow-inner border border-gray-100 dark:border-neutral-700">
+                        <BrandIcon brand={card.brand} className="h-full w-auto object-contain" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-bold text-xl text-gray-900 dark:text-white truncate pr-16">{card.name}</h3>

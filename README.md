@@ -2,7 +2,7 @@
 
 # 💰 FinControl
 
-![Version](https://img.shields.io/badge/version-2.9.11-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.10.1-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)

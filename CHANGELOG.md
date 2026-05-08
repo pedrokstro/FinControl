@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.10.1] - 2024-05-08
+
+### Corrigido
+- Exibição dos ícones de bandeira (Mastercard, Visa, etc.) nos cartões. Removido o filtro que forçava a cor branca, permitindo a visualização das cores originais das marcas.
+- Mapeamento de ícones agora é *case-insensitive*, garantindo que o ícone correto seja carregado independente de como o nome foi digitado (ex: Mastercard vs mastercard).
+- Melhoria no contraste do container de ícones dos cartões com fundo neutro.
+
+## [2.10.0] - 2024-05-08
+
+### Adicionado
+- Novo componente `CustomMonthPicker` com suporte a *bottom sheet* e design premium.
+- Filtro por Categoria na página de Relatórios para análise granular.
+- Filtro por Tipo (Receita/Despesa) na página de Relatórios.
+- Botão "Limpar Filtros" para reset rápido da visualização.
+
+### Alterado
+- Substituição de inputs nativos de data e mês por `CustomDatePicker` e `CustomMonthPicker`.
+- Redesign completo da seção de filtros em Relatórios para melhor UX mobile.
+- Refinamento do indicador de transações encontradas com animação de pulso.
+
 ## [2.9.11] - 2026-05-08
 
 ### Corrigido
