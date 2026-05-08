@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.10.3] - 2024-05-08
+
+### Adicionado
+- Sistema de **Cascata de Resolução (Fallback)** para ícones: Local ⮕ Simple Icons ⮕ Logo.dev ⮕ Google Favicon.
+- Garantia de que todos os bancos brasileiros e marcas globais tenham ícones representativos.
+- Lógica de tratamento de erro para percorrer todas as APIs disponíveis antes de ocultar o ícone.
+
+## [2.10.2] - 2024-05-08
+
+### Adicionado
+- Integração com a API **Logo.dev** para resolução automática de logotipos de bancos e bandeiras.
+- Novo utilitário `brandUtils.ts` para mapeamento inteligente de nomes para domínios.
+- Suporte a centenas de bancos brasileiros e marcas globais sem necessidade de download manual de imagens.
+- Fallback automático para o Google Favicon API caso o domínio não seja encontrado no Logo.dev.
+
 ## [2.10.1] - 2024-05-08
 
 ### Corrigido

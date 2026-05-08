@@ -1,58 +1,86 @@
-import React from 'react'
-
-/**
- * Mapa de slugs exatos para brands conhecidos.
- * Garante que os nomes de arquivo com casing diferente (ex: Mastercard.png)
- * sejam encontrados corretamente em servidores Linux (case-sensitive).
- */
-const BRAND_SLUG_MAP: Record<string, string> = {
-  'visa':       'visa.png',
-  'mastercard': 'Mastercard.png',
-  'elo':        'elo.png',
-  'hipercard':  'hipercard.png',
-  'amex':       'American_Express.png',
-  'american express': 'American_Express.png',
-  'nubank':     'nubank.png',
-  'inter':      'banco-inter.png',
-  'neon':       'banco-neon.png',
-  'c6':         'c6-bank.png',
-  'c6 bank':    'c6-bank.png',
-  'picpay':     'picpay.png',
-}
-
-/**
- * Converte o nome do banco/bandeira para o slug do arquivo PNG.
- * Verificar o BRAND_SLUG_MAP primeiro (case-insensitive); caso não encontrado, normaliza automaticamente.
- */
-export const brandToSlug = (brand: string): string => {
-  const normalized = brand.toLowerCase().trim()
-  return BRAND_SLUG_MAP[normalized] ?? normalized.replace(/\s+/g, '-') + '.png'
-}
+import React, { useState, useEffect } from 'react'
+import { 
+  getLogoDevUrl, 
+  getGoogleFaviconUrl, 
+  getSimpleIconUrl, 
+  brandToSlug 
+} from '@/utils/brandUtils'
 
 interface BrandIconProps {
-  /** Nome do banco — mapeado via BRAND_SLUG_MAP ou convertido automaticamente */
+  /** Nome do banco ou marca — será mapeado para domínio automaticamente */
   brand: string
-  /** Slug exato do arquivo (com extensão). Quando passado, ignora o brandToSlug. */
+  /** Slug exato do arquivo local (com extensão). Quando passado, ignora a busca automática. */
   slug?: string
   className?: string
 }
 
 /**
- * Componente de ícone de bandeira/banco.
- * Resolve o arquivo correto via BRAND_SLUG_MAP → brandToSlug → slug prop.
- * Se o arquivo não existir, esconde silenciosamente via onError.
+ * Componente de ícone de bandeira/banco com resolução automática multinível.
+ * Fluxo de resolução (Cascata):
+ * 1. Arquivo local em /icons/
+ * 2. Simple Icons (SVG de alta qualidade para marcas globais)
+ * 3. Logo.dev (API Premium via Domínio)
+ * 4. Google Favicon (Fallback universal)
  */
 const BrandIcon: React.FC<BrandIconProps> = ({ brand, slug, className = 'h-6 w-auto max-w-[48px]' }) => {
-  const filename = slug ?? brandToSlug(brand)
+  const localSrc = `/icons/${slug ?? brandToSlug(brand)}`
+  const simpleSrc = getSimpleIconUrl(brand)
+  const logoDevSrc = getLogoDevUrl(brand)
+  const googleSrc = getGoogleFaviconUrl(brand)
+  
+  const [imgSrc, setImgSrc] = useState<string>(localSrc)
+  const [stage, setStage] = useState<'local' | 'simple' | 'logodev' | 'google' | 'failed'>('local')
+
+  // Reset state if brand changes
+  useEffect(() => {
+    setImgSrc(localSrc)
+    setStage('local')
+  }, [brand, slug, localSrc])
+
+  const handleError = () => {
+    if (stage === 'local') {
+      if (simpleSrc) {
+        setStage('simple')
+        setImgSrc(simpleSrc)
+      } else if (logoDevSrc) {
+        setStage('logodev')
+        setImgSrc(logoDevSrc)
+      } else if (googleSrc) {
+        setStage('google')
+        setImgSrc(googleSrc)
+      } else {
+        setStage('failed')
+      }
+    } else if (stage === 'simple') {
+      if (logoDevSrc) {
+        setStage('logodev')
+        setImgSrc(logoDevSrc)
+      } else if (googleSrc) {
+        setStage('google')
+        setImgSrc(googleSrc)
+      } else {
+        setStage('failed')
+      }
+    } else if (stage === 'logodev') {
+      if (googleSrc) {
+        setStage('google')
+        setImgSrc(googleSrc)
+      } else {
+        setStage('failed')
+      }
+    } else {
+      setStage('failed')
+    }
+  }
+
+  if (stage === 'failed') return null
+
   return (
     <img
-      src={`/icons/${filename}`}
+      src={imgSrc}
       alt={brand}
-      className={`object-contain flex-shrink-0 ${className}`}
-      onError={(e) => {
-        const img = e.currentTarget as HTMLImageElement
-        img.style.display = 'none'
-      }}
+      className={`object-contain flex-shrink-0 transition-opacity duration-300 ${className}`}
+      onError={handleError}
     />
   )
 }
