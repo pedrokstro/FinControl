@@ -9,6 +9,8 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import LoadingSkeleton from './components/common/LoadingSkeleton'
 import PWAInstallPrompt from './components/common/PWAInstallPrompt'
 import OfflineIndicator from './components/common/OfflineIndicator'
+import BiometricLock from './components/common/BiometricLock'
+import { useSecurityStore } from './store/securityStore'
 
 // Auth Pages (não lazy - carregam rápido)
 import Login from './pages/Login'
@@ -226,10 +228,28 @@ const AnimatedRoutes = () => {
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
   const isInitialized = useAuthStore((state) => state.isInitialized)
+  const { isBiometricEnabled, setLocked } = useSecurityStore()
 
   useEffect(() => {
     initializeAuth()
-  }, [initializeAuth])
+    
+    // Bloquear app ao iniciar se biometria estiver ativa
+    if (isBiometricEnabled) {
+      setLocked(true)
+    }
+  }, [initializeAuth, isBiometricEnabled, setLocked])
+
+  // Lógica para bloquear quando o app volta do background
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isBiometricEnabled) {
+        setLocked(true)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [isBiometricEnabled, setLocked])
 
   if (!isInitialized) {
     return (
@@ -242,6 +262,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
+        <BiometricLock />
         <AnimatedRoutes />
         <Toaster
           position="top-right"

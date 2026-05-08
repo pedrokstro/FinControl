@@ -5,7 +5,7 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard, Smartphone } from 'lucide-react'
+import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard, Smartphone, Fingerprint, Lock } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import toast from 'react-hot-toast'
 import { imageStorage } from '@/utils/imageStorage'
@@ -17,6 +17,7 @@ import ExportDataModal from '@/components/modals/ExportDataModal'
 import DeleteAccountModal from '@/components/modals/DeleteAccountModal'
 import userService from '@/services/user.service'
 import CustomSelect from '@/components/common/CustomSelect'
+import { useSecurityStore } from '@/store/securityStore'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
@@ -110,6 +111,45 @@ const Settings = () => {
     localStorage.setItem('user-preferences', JSON.stringify(preferences))
   }, [preferences])
 
+    const { isBiometricEnabled, setBiometricEnabled, isSupported, setLocked } = useSecurityStore()
+  const [biometricSupported, setBiometricSupported] = useState(false)
+
+  useEffect(() => {
+    isSupported().then(setBiometricSupported)
+  }, [isSupported])
+
+  const handleToggleBiometric = async () => {
+    if (!biometricSupported) {
+      toast.error('Seu dispositivo não suporta biometria neste navegador.')
+      return
+    }
+
+    if (!isBiometricEnabled) {
+      try {
+        const challenge = new Uint8Array(32)
+        window.crypto.getRandomValues(challenge)
+        
+        await navigator.credentials.get({
+          publicKey: {
+            challenge,
+            rpId: window.location.hostname,
+            userVerification: 'required'
+          }
+        })
+        
+        setBiometricEnabled(true)
+        haptics.success()
+        toast.success('Login por digital ativado!')
+      } catch (e) {
+        console.error(e)
+        toast.error('Falha ao validar biometria.')
+      }
+    } else {
+      setBiometricEnabled(false)
+      haptics.medium()
+      toast.success('Login por digital desativado.')
+    }
+  }
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
   })
@@ -807,6 +847,60 @@ const Settings = () => {
                             </p>
                           )}
                         </div>
+
+                    </div>
+
+                    <div className="card overflow-hidden border-2 border-primary-100 dark:border-primary-900/20 shadow-lg shadow-primary-500/5">
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-primary-100 dark:bg-primary-900/40 rounded-2xl text-primary-600 dark:text-primary-400">
+                            <Fingerprint className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                              Acesso por Biometria
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-neutral-400">
+                              Digital ou reconhecimento facial
+                            </p>
+                          </div>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={isBiometricEnabled}
+                            onChange={handleToggleBiometric}
+                            disabled={!biometricSupported}
+                          />
+                          <div className="w-12 h-7 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                        </label>
+                      </div>
+
+                      {!biometricSupported ? (
+                        <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl flex gap-3 border border-amber-100 dark:border-amber-900/30">
+                          <Smartphone className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                          <p className="text-sm text-amber-700 dark:text-amber-300">
+                            Seu dispositivo não possui suporte para autenticação biométrica nativa no navegador.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">
+                            Ao ativar, o aplicativo solicitará sua biometria sempre que for aberto ou retornar do segundo plano, garantindo que apenas você acesse seus dados financeiros.
+                          </p>
+                          {isBiometricEnabled && (
+                            <button 
+                              type="button"
+                              onClick={() => setLocked(true)}
+                              className="w-full btn-secondary flex items-center justify-center gap-2 rounded-2xl py-3 border-dashed border-2"
+                            >
+                              <Lock className="w-4 h-4" />
+                              Testar bloqueio biométrico
+                            </button>
+                          )}
+                        </div>
+                      )}
 
                         <div className="flex justify-end pt-4">
                           <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">

@@ -103,7 +103,7 @@ const MobileNavBar = () => {
                   className="p-4 space-y-2"
                 >
                   {/* Ações rápidas */}
-                  <p className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest px-1 mb-3">Ações Rápidas</p>
+                  <p className="text-[10px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest px-1 mb-3">Ações Rápidas</p>
                   <button
                     onClick={() => goTo('/app/categories?add=true')}
                     className="w-full flex items-center gap-3 bg-gray-50 dark:bg-neutral-800 px-4 py-3 rounded-2xl active:scale-[0.98] transition-transform"
@@ -113,7 +113,7 @@ const MobileNavBar = () => {
                   </button>
 
                   {/* Navegação */}
-                  <p className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest px-1 mt-4 mb-3">Navegar</p>
+                  <p className="text-[10px] font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest px-1 mt-4 mb-3">Navegar</p>
                   <div className="grid grid-cols-4 gap-2">
                     {[
                       { path: '/app/cards',         label: 'Cartões',     icon: CreditCard },
@@ -131,7 +131,7 @@ const MobileNavBar = () => {
                           <div className="w-11 h-11 bg-gray-100 dark:bg-neutral-800 rounded-xl flex items-center justify-center">
                             <Icon className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
                           </div>
-                          <span className="text-[10px] font-medium text-gray-500 dark:text-neutral-500 text-center">{item.label}</span>
+                          <span className="text-[10px] font-semibold text-gray-600 dark:text-neutral-300 text-center">{item.label}</span>
                         </button>
                       )
                     })}
@@ -213,14 +213,14 @@ const MobileNavBar = () => {
       {/* Bottom Nav Bar */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-3 mb-3">
-          <div className="bg-white/10 dark:bg-black/10 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-full shadow-lg flex items-center px-4">
+          <div className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-neutral-700/50 rounded-full shadow-2xl flex items-center px-4">
 
             {/* Início */}
             <NavLink
               to={mainItems[0].path}
               onClick={() => { haptics.light(); setIsMoreOpen(false) }}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`
+                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
               }
             >
               {({ isActive }) => (
@@ -236,7 +236,7 @@ const MobileNavBar = () => {
               to={mainItems[1].path}
               onClick={() => { haptics.light(); setIsMoreOpen(false) }}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`
+                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
               }
             >
               {({ isActive }) => (
@@ -262,7 +262,7 @@ const MobileNavBar = () => {
               to={mainItems[2].path}
               onClick={() => { haptics.light(); setIsMoreOpen(false) }}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`
+                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
               }
             >
               {({ isActive }) => (
@@ -276,7 +276,7 @@ const MobileNavBar = () => {
             {/* Mais / rotativo */}
             <button
               onClick={isMoreOpen ? closeMore : openMore}
-              className={`flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}
+              className={`flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`}
             >
               <MoreHorizontal className="w-5 h-5" />
               <span className="text-[10px] font-medium">Mais</span>

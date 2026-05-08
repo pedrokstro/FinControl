@@ -214,7 +214,7 @@ const Cards = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="bg-white dark:bg-neutral-900 rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-neutral-800 relative group overflow-hidden flex flex-col h-full hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-500"
+                    className="bg-white dark:bg-neutral-900 rounded-[32px] p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-neutral-800 relative group overflow-hidden flex flex-col h-full hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-500"
                   >
                     {/* Background Glossy Effect */}
                     <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${cardGradient.split(' ')[0]} ${cardGradient.split(' ')[1]} blur-3xl opacity-20 rounded-full group-hover:scale-150 transition-transform duration-700`} />
@@ -252,11 +252,11 @@ const Cards = () => {
                     </div>
 
                     {/* Fatura / Limite section */}
-                    <div className="bg-gray-50/50 dark:bg-neutral-800/30 backdrop-blur-sm rounded-[24px] p-5 mb-4 border border-gray-100/50 dark:border-white/5 shadow-inner">
-                      <div className="flex justify-between items-start mb-6">
+                    <div className="bg-gray-50/50 dark:bg-neutral-800/30 backdrop-blur-sm rounded-[24px] p-4 sm:p-5 mb-4 border border-gray-100/50 dark:border-white/5 shadow-inner">
+                      <div className="flex flex-row justify-between items-start mb-4 sm:mb-6">
                         <div>
                           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fatura Atual</p>
-                          <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                          <p className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(spent)}
                           </p>
                         </div>
@@ -373,8 +373,8 @@ const Cards = () => {
                     </AnimatePresence>
 
                     {/* Dates section */}
-                    <div className="flex flex-col gap-4 border-t border-gray-100 dark:border-neutral-800 pt-5 mt-auto">
-                      <div className="flex gap-4">
+                    <div className="flex flex-col gap-3 border-t border-gray-100 dark:border-neutral-800 pt-5 mt-auto">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {card.closingDay && (
                           <div className="flex items-center gap-3 flex-1 bg-gray-50/50 dark:bg-neutral-800/30 p-2 rounded-2xl border border-transparent hover:border-gray-200 dark:hover:border-neutral-700 transition-colors">
                             <div className="w-9 h-9 bg-white dark:bg-neutral-800 rounded-xl flex items-center justify-center shadow-sm">

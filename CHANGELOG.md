@@ -1,6 +1,38 @@
 # Changelog
 
+## [2.11.3] - 2026-05-08
+
+### Alterado
+- **UI de Recuperação:** Remoção da logo redundante na página de esqueci a senha para um visual mais limpo focado na ação.
+
+## [2.11.2] - 2026-05-08
+
+### Corrigido
+- **Especificação WebAuthn:** Removida propriedade `userVerification` do nível incorreto nas opções de criação de credencial.
+
+## [2.11.1] - 2026-05-08
+
+### Corrigido
+- **Tipagem WebAuthn:** Correção de erros de TypeScript no componente de bloqueio biométrico.
+- **Limpeza de Código:** Remoção de imports não utilizados.
+
+## [2.11.0] - 2026-05-08
+
 All notable changes to this project will be documented in this file.
+
+## [2.10.5] - 2024-05-08
+
+### Corrigido
+- Layout dos **Cartões**: Ajustada a responsividade para evitar que o conteúdo fique "espremido" no mobile.
+- Otimização de espaço: Reduzido o padding lateral e implementado layout em coluna para as datas de fechamento/vencimento em telas pequenas.
+- Tipografia dinâmica: O valor da fatura agora ajusta o tamanho automaticamente para evitar quebras em telas menores.
+
+## [2.10.4] - 2024-05-08
+
+### Corrigido
+- Legibilidade da **MobileNavBar**: Aumentada a opacidade do fundo (de 10% para 90%) e o desfoque de fundo para evitar interferência visual com o conteúdo em scroll.
+- Contraste do menu **Ações Rápidas**: Ajustadas as cores de texto e ícones para garantir leitura clara em qualquer condição de iluminação e fundo.
+- Definição visual: Adicionada borda mais nítida e sombra profunda na barra de navegação mobile.
 
 ## [2.10.3] - 2024-05-08
 

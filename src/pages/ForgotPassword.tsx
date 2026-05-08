@@ -34,16 +34,8 @@ const ForgotPassword = () => {
   return (
     <PageTransition className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900 sm:p-4">
       <div className="w-full sm:max-w-md">
-        {/* Main Content Area */}
+          {/* Main Content Area */}
         <div className="bg-white dark:bg-neutral-800 sm:rounded-3xl shadow-xl sm:shadow-gray-200/50 dark:sm:shadow-none border-x-0 sm:border border-gray-100 dark:border-neutral-700 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
-          {/* Logo Section */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Recuperação de Acesso</p>
-          </div>
 
           <div className="mb-6 sm:mb-8 text-center">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-primary-100 dark:border-primary-900/30">
