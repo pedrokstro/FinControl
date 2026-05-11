@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { X } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
+import { useIsMobile } from '@/hooks'
 
 type ModalSize = 'sm' | 'md' | 'lg'
 
@@ -40,6 +41,7 @@ const Modal = ({
 }: ModalProps) => {
   const [mounted, setMounted] = useState(false)
   const dragControls = useDragControls()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     setMounted(true)
@@ -129,7 +131,7 @@ const Modal = ({
                         </p>
                       )}
                     </div>
-                    {!hideCloseButton && (
+                    {!hideCloseButton && !isMobile && (
                       <button
                         type="button"
                         onClick={onClose}

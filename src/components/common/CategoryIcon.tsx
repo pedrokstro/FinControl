@@ -1,5 +1,6 @@
 import { getIcon, getExclusiveImageIcon, type IconName } from '@/utils/iconMapping'
 import { Icon as IconifyIcon } from '@iconify/react'
+import BrandIcon from './BrandIcon'
 
 interface CategoryIconProps {
   icon: IconName | string
@@ -28,10 +29,10 @@ const CategoryIcon = ({
   size = 'md',
   className = '',
 }: CategoryIconProps) => {
-  // Verificar se é emoji
   const isEmoji = (str: string) => /\p{Emoji}/u.test(str) && str.length <= 4
-  const isIconifyIcon = typeof icon === 'string' && icon.includes(':')
+  const isIconifyIcon = typeof icon === 'string' && icon.includes(':') && !icon.startsWith('brand:') && !icon.startsWith('exclusive:')
   const isExclusiveIcon = typeof icon === 'string' && icon.startsWith('exclusive:')
+  const isBrandIcon = typeof icon === 'string' && icon.startsWith('brand:')
 
   // Se for emoji, renderizar como texto
   if (isEmoji(icon as string)) {
@@ -43,6 +44,16 @@ const CategoryIcon = ({
       >
         {icon}
       </span>
+    )
+  }
+
+  if (isBrandIcon) {
+    const brandName = (icon as string).split(':')[1]
+    return (
+      <BrandIcon
+        brand={brandName}
+        className={`${sizeClasses[size]} ${className} object-contain`}
+      />
     )
   }
 

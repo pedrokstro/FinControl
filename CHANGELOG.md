@@ -1,5 +1,38 @@
 # Changelog
 
+## [2.12.14] - 2026-05-11
+
+### Melhorado
+- **UX Mobile (Modais):** Removido o botão de fechar (X) em modais estilo bottom-sheet no mobile. Como esses modais já possuem a alça visual (handle) e suporte a deslizar para fechar, a remoção do botão libera espaço e limpa a interface, seguindo padrões modernos de design mobile.
+
+## [2.12.13] - 2026-05-11
+
+### Corrigido
+- **Limpeza de Código:** Removidos ícones e variáveis não utilizados em `Transactions.tsx` para otimização e redução de avisos do compilador.
+
+## [2.12.12] - 2026-05-11
+
+### Adicionado
+- **Categorias (Logos de Marcas):** Implementada a funcionalidade de utilizar logotipos reais de marcas (Netflix, Spotify, iFood, etc.) como ícones de categoria.
+- **IconPicker:** Adicionada a aba "Marcas" no seletor de ícones, permitindo buscar e visualizar logos automaticamente através de integração com bancos de imagens (Logo.dev, Google, Simple Icons).
+- **Componente CategoryIcon:** Agora suporta renderização dinâmica de logos de marcas via prefixo `brand:`.
+
+## [2.12.11] - 2026-05-11
+
+### Melhorado
+- **UI (Modal de Transação):** Redesign completo dos seletores de tipo (Receita/Despesa). Agora utilizam bordas arredondadas (2xl), ícones em círculos coloridos, tipografia em negrito e efeitos visuais de sombra e escala ao selecionar, proporcionando uma experiência mais premium e tátil.
+
+## [2.12.9] - 2026-05-11
+
+### Melhorado
+- **Layout Mobile (Transações):** Reorganizados os cards de KPI para melhor visibilidade. O card de "Saldo do Mês" agora aparece no topo com largura total, enquanto os cards de "Lançamentos", "Receitas" e "Despesas" ficam alinhados em uma única linha (grid de 3 colunas) com design ultra-compacto.
+
+## [2.12.8] - 2026-05-11
+
+### Melhorado
+- **UX (Limite de Plano):** O banner estático de limite de transações foi transformado em uma notificação flutuante (estilo Toast/FAB) mais discreta e moderna. 
+- **Interatividade:** Adicionado botão para fechar o aviso e animações suaves com Framer Motion. O aviso agora aparece de forma flutuante sobre o conteúdo, otimizando o espaço das páginas.
+
 ## [2.12.6] - 2026-05-11
 
 ### Corrigido

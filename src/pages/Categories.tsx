@@ -646,13 +646,15 @@ const Categories = () => {
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                         {editingId ? 'Editar Categoria' : 'Nova Categoria'}
                       </h2>
-                      <button
-                        type="button"
-                        onClick={handleCloseModal}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
+                      {!isMobile && (
+                        <button
+                          type="button"
+                          onClick={handleCloseModal}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   </div>
 

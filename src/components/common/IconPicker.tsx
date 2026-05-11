@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Search, X, Package, Smile } from 'lucide-react'
+import { Search, X, Package, Smile, Globe } from 'lucide-react'
 import { iconCategories, type IconName, type IconCategoryItem } from '@/utils/iconMapping'
 import EmojiPickerTab from './EmojiPickerTab'
+import BrandPickerTab from './BrandPickerTab'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import CategoryIcon from './CategoryIcon'
+import { useIsMobile } from '@/hooks'
 
 interface IconPickerProps {
   selectedIcon: IconName | string
@@ -19,12 +21,18 @@ type IconItem = { name: string; label: string }
 const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpgradeClick }: IconPickerProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState<'icons' | 'emojis'>('icons')
+  const [activeTab, setActiveTab] = useState<'icons' | 'emojis' | 'brands'>('icons')
   const dragControls = useDragControls()
+  const isMobile = useIsMobile()
 
   // Verificar se é emoji
   const isEmoji = (icon: string) => {
     return /\p{Emoji}/u.test(icon) && icon.length <= 4
+  }
+
+  // Verificar se é marca
+  const isBrand = (icon: string) => {
+    return typeof icon === 'string' && icon.startsWith('brand:')
   }
 
   // Get categories to show based on type
@@ -111,7 +119,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
           )}
         </div>
         <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
-          {isEmoji(selectedIcon as string) ? 'Selecionar emoji ou icone' : 'Selecionar icone'}
+          {isEmoji(selectedIcon as string) ? 'Selecionar emoji ou icone' : isBrand(selectedIcon as string) ? 'Marca selecionada' : 'Selecionar icone'}
         </span>
       </button>
 
@@ -171,13 +179,15 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                         {activeTab === 'icons' ? `${totalIcons} ícones disponíveis` : 'Milhares de emojis'}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
+                    {!isMobile && (
+                      <button
+                        type="button"
+                        onClick={() => setIsOpen(false)}
+                        className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    )}
                   </div>
 
                   {/* Tabs */}
@@ -207,6 +217,20 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                         <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-xs rounded-full font-bold">PRO</span>
                       )}
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('brands')}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium transition-all ${activeTab === 'brands'
+                        ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm'
+                        : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                        }`}
+                    >
+                      <Globe className="w-4 h-4" />
+                      <span className="text-sm">Marcas</span>
+                      {!isPremium && (
+                        <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-xs rounded-full font-bold">PRO</span>
+                      )}
+                    </button>
                   </div>
 
                   {/* Search Input - Only for Icons Tab */}
@@ -225,11 +249,21 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                 </div>
 
                 {/* Content */}
-                <div className={`flex-1 ${activeTab === 'emojis' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+                <div className={`flex-1 ${activeTab !== 'icons' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
                   {activeTab === 'emojis' ? (
                     <EmojiPickerTab
                       onSelectEmoji={handleSelectEmoji}
                       selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
+                      isPremium={isPremium}
+                      onUpgradeClick={onUpgradeClick}
+                    />
+                  ) : activeTab === 'brands' ? (
+                    <BrandPickerTab
+                      onSelectBrand={(icon) => {
+                        onSelectIcon(icon, false)
+                        setIsOpen(false)
+                      }}
+                      selectedIcon={selectedIcon}
                       isPremium={isPremium}
                       onUpgradeClick={onUpgradeClick}
                     />

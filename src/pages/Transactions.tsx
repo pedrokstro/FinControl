@@ -22,8 +22,6 @@ import {
   Info,
   Wallet,
   Activity,
-  ArrowUpRight,
-  ArrowDownRight,
   CreditCard as CreditCardIcon,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
@@ -483,75 +481,17 @@ const Transactions = () => {
         <TransactionLimitBanner />
 
         {/* Month Summary */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {/* Lançamentos no Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-3 sm:p-5">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Lançamentos</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
-                  {monthSummary.count}
-                </h3>
-              </div>
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-neutral-800 ring-4 ring-gray-100/50 dark:ring-neutral-800/10 flex items-center justify-center flex-shrink-0">
-                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-neutral-400" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-gray-400 dark:text-neutral-500">Este mês</span>
-            </div>
-          </div>
-
-          {/* Receitas do Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-3 sm:p-5">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-success-600 dark:text-success-400 mt-0.5 sm:mt-1 truncate">
-                  {formatCurrency(monthSummary.income)}
-                </h3>
-              </div>
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success-600 dark:text-success-400" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
-              <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Total recebido</span>
-            </div>
-          </div>
-
-          {/* Despesas do Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-3 sm:p-5">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-danger-600 dark:text-danger-400 mt-0.5 sm:mt-1 truncate">
-                  {formatCurrency(monthSummary.expense)}
-                </h3>
-              </div>
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
-                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-danger-600 dark:text-danger-400" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
-              <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Total gasto</span>
-            </div>
-          </div>
-
-          {/* Saldo do Mês */}
-          <div className="relative col-span-2 lg:col-span-1 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30 overflow-hidden p-4 sm:p-5">
+        <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+          {/* Saldo do Mês - DEVE SER O PRIMEIRO NO MOBILE */}
+          <div className="relative col-span-3 lg:col-span-1 order-first bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30 overflow-hidden p-4 sm:p-5">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1 min-w-0">
-                <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
-                <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate">
+                <p className="text-primary-100 text-[10px] sm:text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
+                <h3 className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 truncate">
                   {formatCurrency(monthSummary.balance)}
                 </h3>
               </div>
-              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
                 <Wallet className="w-5 h-5 text-white" />
               </div>
             </div>
@@ -567,6 +507,62 @@ const Transactions = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Lançamentos no Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
+              <div className="flex flex-col">
+                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Lançamentos</p>
+                <h3 className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
+                  {monthSummary.count}
+                </h3>
+              </div>
+              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-gray-50 dark:bg-neutral-800 ring-4 ring-gray-100/50 dark:ring-neutral-800/10 items-center justify-center flex-shrink-0">
+                <Activity className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] sm:text-xs text-gray-400 dark:text-neutral-500 truncate">Este mês</span>
+            </div>
+          </div>
+
+          {/* Receitas do Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
+              <div className="flex flex-col">
+                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Receitas</p>
+                <h3 className="text-base sm:text-2xl font-bold text-success-600 dark:text-success-400 mt-0.5 sm:mt-1 truncate">
+                  {formatCurrency(monthSummary.income).replace('R$', '').trim()}
+                </h3>
+              </div>
+              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] sm:text-xs text-success-600 dark:text-success-400 font-semibold truncate">Recebido</span>
+            </div>
+          </div>
+
+          {/* Despesas do Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
+              <div className="flex flex-col">
+                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Despesas</p>
+                <h3 className="text-base sm:text-2xl font-bold text-danger-600 dark:text-danger-400 mt-0.5 sm:mt-1 truncate">
+                  {formatCurrency(monthSummary.expense).replace('R$', '').trim()}
+                </h3>
+              </div>
+              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 items-center justify-center flex-shrink-0">
+                <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] sm:text-xs text-danger-600 dark:text-danger-400 font-semibold truncate">Gasto</span>
+            </div>
           </div>
         </div>
 
@@ -959,9 +955,9 @@ const Transactions = () => {
 
             <form id="transaction-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div>
-                <label className="label">Tipo</label>
+                <label className="label">Tipo de Lançamento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-success-500 has-[:checked]:bg-success-50 dark:has-[:checked]:bg-success-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                  <label className="relative flex items-center justify-center p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 border-gray-100 dark:border-neutral-800 hover:border-success-200 dark:hover:border-success-900/30 has-[:checked]:border-success-500 has-[:checked]:bg-success-50/50 dark:has-[:checked]:bg-success-900/20 has-[:checked]:shadow-lg has-[:checked]:shadow-success-500/10 active:scale-[0.98]">
                     <input
                       type="radio"
                       value="income"
@@ -969,11 +965,13 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <TrendingUp className="w-6 h-6 mx-auto text-success-600 dark:text-success-400 mb-1" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Receita</span>
+                      <div className="w-10 h-10 rounded-full bg-success-50 dark:bg-success-900/30 flex items-center justify-center mx-auto mb-2 transition-colors group-has-[:checked]:bg-success-100">
+                        <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">Receita</span>
                     </div>
                   </label>
-                  <label className="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50 dark:has-[:checked]:bg-danger-900/20 hover:bg-gray-50 dark:hover:bg-neutral-900 dark:border-neutral-700">
+                  <label className="relative flex items-center justify-center p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 border-gray-100 dark:border-neutral-800 hover:border-danger-200 dark:hover:border-danger-900/30 has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50/50 dark:has-[:checked]:bg-danger-900/20 has-[:checked]:shadow-lg has-[:checked]:shadow-danger-500/10 active:scale-[0.98]">
                     <input
                       type="radio"
                       value="expense"
@@ -981,8 +979,10 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <TrendingDown className="w-6 h-6 mx-auto text-danger-600 dark:text-danger-400 mb-1" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Despesa</span>
+                      <div className="w-10 h-10 rounded-full bg-danger-50 dark:bg-danger-900/30 flex items-center justify-center mx-auto mb-2 transition-colors group-has-[:checked]:bg-danger-100">
+                        <TrendingDown className="w-6 h-6 text-danger-600 dark:text-danger-400" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">Despesa</span>
                     </div>
                   </label>
                 </div>
