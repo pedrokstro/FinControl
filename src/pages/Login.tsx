@@ -4,8 +4,9 @@ import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
-import walletVideo from '@/assets/icons/walletanimation.mp4'
 import logoPng from '@/assets/icons/logofincontrol.png'
+
+const walletVideo = new URL('../assets/icons/walletanimation.mp4', import.meta.url).href
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -109,20 +110,14 @@ const Login = () => {
             >
               <video 
                 poster={logoPng}
-                onMouseEnter={(e) => e.currentTarget.play()}
-                onMouseLeave={(e) => {
-                  e.currentTarget.pause()
-                  e.currentTarget.currentTime = 0
-                }}
+                autoPlay
                 muted 
                 loop 
                 playsInline
-                preload="none"
+                preload="auto"
+                src={walletVideo}
                 className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen brightness-[1.15] contrast-[1.1]"
-              >
-                <source src={walletVideo} type="video/mp4" />
-                <img src={logoPng} alt="FinControl" className="w-full h-full object-contain" />
-              </video>
+              />
             </motion.div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
             <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>

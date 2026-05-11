@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.12.27] - 2026-05-11
+
+### Alterado
+- **UI (Login):** Logotipo animado configurado para reprodução contínua e automática (`autoPlay`). Removida a necessidade de interação (hover) para iniciar a animação, garantindo um visual dinâmico constante na tela de login.
+
+## [2.12.26] - 2026-05-11
+
+### Melhorado
+- **UI (Login):** Reaplicados os filtros de brilho e contraste no logotipo animado agora que o carregamento via Vercel foi estabilizado. O fundo cinza foi novamente neutralizado para garantir uma integração visual perfeita com a interface.
+
+## [2.12.25] - 2026-05-11
+
+### Corrigido
+- **UI (Login):** Implementada uma nova estratégia de carregamento para o vídeo do logotipo utilizando o construtor `new URL(..., import.meta.url)`. Esta é a forma recomendada pelo Vite para lidar com assets que precisam de caminhos dinâmicos em produção. Além disso, os filtros de brilho/contraste foram simplificados para garantir que o vídeo seja visível em todos os navegadores após o deploy.
+
+## [2.12.24] - 2026-05-11
+
+### Corrigido
+- **Geral:** Corrigidas as referências da logo (`logofincontrol.png`) em toda a aplicação (Sidebar, Landing Page, Registro e Login). Como o arquivo foi movido para a pasta de assets para otimização de build, todos os componentes foram atualizados para importar o recurso corretamente via Vite, garantindo que a logo seja exibida em todos os ambientes.
+
 ## [2.12.23] - 2026-05-11
 
 ### Melhorado

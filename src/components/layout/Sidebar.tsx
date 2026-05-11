@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuthStore } from '@/store/authStore'
+import logoPng from '@/assets/icons/logofincontrol.png'
 
 type SidebarProps = {
   onNavigate?: () => void
@@ -133,7 +134,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
       <div className="p-6 border-b border-primary-400/30 dark:border-primary-500/30">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center transition-colors flex-shrink-0 overflow-hidden p-1">
-            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+            <img src={logoPng} alt="FinControl" className="w-full h-full object-contain" />
           </div>
           {!isCollapsed && (
             <div className="overflow-hidden">
