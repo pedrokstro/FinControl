@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.12.0] - 2026-05-11
+
+### Melhorado
+- **Página de Transações:** Redesenho completo com cabeçalho compacto e cards premium (Receitas, Despesas, Saldo).
+- **Consistência Visual:** Página de transações agora segue o mesmo padrão estético moderno do dashboard.
+
+### Corrigido
+- **Página de Transações:** Corrigido crash causado por importações faltantes de ícones (`ArrowUpRight`, `ArrowDownRight`).
+
+## [2.11.8] - 2026-05-11
+
+### Melhorado
+- **Página de Transações:** Redesenho completo do cabeçalho e dos cards de resumo.
+- **Navegação de Mês:** Integrada ao cabeçalho para melhor aproveitamento de espaço.
+- **Cards de Resumo:** Aplicado o estilo "premium" com gradientes, barras de progresso e ícones destacados.
+
 ## [2.11.7] - 2026-05-11
 
 ### Melhorado

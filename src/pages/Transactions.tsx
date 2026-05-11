@@ -22,6 +22,8 @@ import {
   Info,
   Wallet,
   Activity,
+  ArrowUpRight,
+  ArrowDownRight,
   CreditCard as CreditCardIcon,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
@@ -418,111 +420,153 @@ const Transactions = () => {
   return (
     <PageTransition>
       <div className="responsive-page">
-        <div className="responsive-header">
+        {/* Header com Navegação de Mês integrada */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="hidden sm:block">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Transações</h1>
-            <p className="text-gray-600 dark:text-neutral-400 mt-1">
-              Gerencie todas as suas transações financeiras
+            <p className="text-gray-500 dark:text-neutral-400 mt-1 text-sm">
+              {format(selectedMonth, "MMMM 'de' yyyy", { locale: ptBR })}
             </p>
           </div>
-          <button
-            onClick={() => handleOpenModal()}
-            className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-full shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Nova Transacao
-          </button>
-        </div>
 
-        {/* Month Navigation */}
-        <div className="card shadow-sm py-4">
-          <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={handlePreviousMonth}
-              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors group"
-              title="Mês anterior"
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
-            </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            {/* Controle de mês - compacto e elegante */}
+            <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-3 py-2 shadow-sm w-full sm:w-auto">
+              <button
+                onClick={handlePreviousMonth}
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
+                title="Mês anterior"
+              >
+                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
+              </button>
 
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white capitalize">
+              <div className="flex items-center gap-2 flex-1 justify-center px-2">
+                <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400 flex-shrink-0" />
+                <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize whitespace-nowrap">
                   {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
-                </h2>
+                </span>
               </div>
+
               {!isCurrentMonth && (
                 <button
                   onClick={handleCurrentMonth}
-                  className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium mt-1 transition-colors"
+                  className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
                 >
-                  Voltar para mes atual
+                  Hoje
                 </button>
               )}
+              <button
+                onClick={handleNextMonth}
+                disabled={isCurrentMonth}
+                className={`p-1.5 rounded-xl transition-colors ${isCurrentMonth
+                  ? 'opacity-30 cursor-not-allowed'
+                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
+                  }`}
+                title="Próximo mês"
+              >
+                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
+              </button>
             </div>
 
             <button
-              onClick={handleNextMonth}
-              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors group"
-              title="Próximo mês"
+              onClick={() => handleOpenModal()}
+              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl shadow-md h-[42px] px-6"
             >
-              <ChevronRight className="w-6 h-6 text-gray-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+              <Plus className="w-5 h-5" />
+              Nova Transação
             </button>
           </div>
         </div>
+
 
         {/* Banner de Limite de Transações */}
         <TransactionLimitBanner />
 
         {/* Month Summary */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="card p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+          {/* Lançamentos no Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-4 sm:p-5">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col">
+                <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Lançamentos</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
+                  {monthSummary.count}
+                </h3>
+              </div>
+              <div className="w-11 h-11 rounded-2xl bg-gray-50 dark:bg-neutral-800 ring-4 ring-gray-100/50 dark:ring-neutral-800/10 flex items-center justify-center flex-shrink-0">
                 <Activity className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
               </div>
-              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Transacoes no mes</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-              {monthSummary.count}
-            </p>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-gray-400 dark:text-neutral-500">Este mês</span>
+            </div>
           </div>
 
-          <div className="card p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
+          {/* Receitas do Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-4 sm:p-5">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col">
+                <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
+                <h3 className="text-2xl font-bold text-success-600 dark:text-success-400 mt-1 truncate">
+                  {formatCurrency(monthSummary.income)}
+                </h3>
+              </div>
+              <div className="w-11 h-11 rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
                 <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
               </div>
-              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Receitas</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-success-600 dark:text-success-400">
-              {formatCurrency(monthSummary.income)}
-            </p>
+            <div className="flex items-center gap-1">
+              <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
+              <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Total recebido</span>
+            </div>
           </div>
 
-          <div className="card p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
+          {/* Despesas do Mês */}
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-4 sm:p-5">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col">
+                <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
+                <h3 className="text-2xl font-bold text-danger-600 dark:text-danger-400 mt-1 truncate">
+                  {formatCurrency(monthSummary.expense)}
+                </h3>
+              </div>
+              <div className="w-11 h-11 rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
                 <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
               </div>
-              <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">Total Despesas</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-danger-600 dark:text-danger-400">
-              {formatCurrency(monthSummary.expense)}
-            </p>
+            <div className="flex items-center gap-1">
+              <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
+              <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Total gasto</span>
+            </div>
           </div>
 
-          <div className="card p-4 bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 border-0 shadow-lg shadow-primary-500/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+          {/* Saldo do Mês */}
+          <div className="relative col-span-1 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30 overflow-hidden p-4 sm:p-5">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
+                <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate">
+                  {formatCurrency(monthSummary.balance)}
+                </h3>
+              </div>
+              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
                 <Wallet className="w-5 h-5 text-white" />
               </div>
-              <p className="text-sm font-medium text-primary-100 dark:text-primary-200">Saldo do Mes</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-white">
-              {formatCurrency(monthSummary.balance)}
-            </p>
+            
+            {/* Barra de progresso simplificada */}
+            {(monthSummary.income > 0 || monthSummary.expense > 0) && (
+              <div className="mt-2">
+                <div className="w-full bg-white/20 rounded-full h-1.5">
+                  <div
+                    className="bg-white rounded-full h-1.5 transition-all duration-500"
+                    style={{ width: `${Math.min(monthSummary.income > 0 ? (monthSummary.expense / monthSummary.income) * 100 : 0, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
