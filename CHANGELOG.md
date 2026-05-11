@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.12.21] - 2026-05-11
+
+### Corrigido
+- **UI (Login):** Refatorada a implementação do vídeo do logotipo para usar a tag `<source type="video/mp4">`. Isso aumenta a compatibilidade com diferentes navegadores e servidores de hospedagem (como a Vercel), garantindo que a animação seja carregada e reproduzida corretamente em produção.
+
 ## [2.12.20] - 2026-05-11
 
 ### Corrigido

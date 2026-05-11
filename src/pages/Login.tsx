@@ -106,13 +106,15 @@ const Login = () => {
               }}
             >
               <video 
-                src="/icons/walletanimation.mp4" 
                 autoPlay 
                 muted 
                 loop 
                 playsInline
                 className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen brightness-[1.15] contrast-[1.1]"
-              />
+              >
+                <source src="/icons/walletanimation.mp4" type="video/mp4" />
+                Seu navegador não suporta vídeos.
+              </video>
             </motion.div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
             <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
