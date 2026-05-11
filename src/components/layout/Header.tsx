@@ -78,20 +78,12 @@ const Header = () => {
                     {user?.email}
                   </p>
                 </div>
-                <a
-                  href="/settings"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 mt-1 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-colors"
                 >
-                  Configurações
-                </a>
-                <div className="border-t border-gray-200 dark:border-neutral-800 mt-2 pt-2">
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-colors"
-                  >
-                    Sair
-                  </button>
-                </div>
+                  Sair
+                </button>
               </div>
             )}
           </div>

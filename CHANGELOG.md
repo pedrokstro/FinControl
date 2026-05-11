@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.11.7] - 2026-05-11
+
+### Melhorado
+- **Cards de KPI:** Redesenho premium com barra de cor no topo (verde/vermelho), ícone com anel sutil e layout label → valor → info.
+- **Header Dropdown:** Removido o atalho de "Configurações" do menu do perfil, deixando apenas "Sair".
+
+## [2.11.6] - 2026-05-11
+
+### Melhorado
+- **Dashboard UI:** Redesenho do topo do painel — navegação de mês integrada ao header em um seletor compacto e elegante.
+- **Dashboard UI:** Removidos os cards redundantes de data/hora e atalhos de teclado, liberando espaço para o conteúdo.
+- **Cards de KPI:** Enriquecidos com contagem de lançamentos, atalho "Ver detalhes" e barra de progresso de gasto vs. receita no card de saldo.
+
 ## [2.11.5] - 2026-05-11
 
 ### Adicionado

@@ -704,149 +704,165 @@ const Dashboard = () => {
 
   return (
     <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="responsive-header">
+
+      {/* Header com Navegação de Mês integrada */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="hidden sm:block">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-neutral-400 mt-1">
-            Visão geral das suas finanças
+          <p className="text-gray-500 dark:text-neutral-400 mt-1 text-sm">
+            {format(new Date(selectedDate.year, selectedDate.month - 1), "MMMM 'de' yyyy", { locale: ptBR })}
           </p>
         </div>
-      </div>
 
-      {/* Navegação de Mês/Ano */}
-      <div className="card">
-        <div className="flex items-center justify-between gap-4">
+        {/* Controle de mês - compacto e elegante */}
+        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-3 py-2 shadow-sm w-full sm:w-auto">
           <button
             onClick={goToPreviousMonth}
-            className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
             title="Mês anterior"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
+            <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
           </button>
 
-          <div className="flex items-center gap-3 flex-1 justify-center">
-            <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            <span className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center gap-2 flex-1 justify-center px-2">
+            <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400 flex-shrink-0" />
+            <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize whitespace-nowrap">
               {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
             </span>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2">
-            {!isCurrentMonth() && (
-              <button
-                onClick={goToCurrentMonth}
-                className="px-3 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-colors"
-              >
-                Hoje
-              </button>
-            )}
+          {!isCurrentMonth() && (
             <button
-              onClick={goToNextMonth}
-              disabled={isCurrentMonth()}
-              className={`p-2 sm:p-2.5 rounded-full transition-colors ${isCurrentMonth()
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
-                }`}
-              title="Próximo mês"
+              onClick={goToCurrentMonth}
+              className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
             >
-              <ChevronRight className="w-5 h-5 text-gray-700 dark:text-neutral-300" />
+              Hoje
             </button>
-          </div>
+          )}
+          <button
+            onClick={goToNextMonth}
+            disabled={isCurrentMonth()}
+            className={`p-1.5 rounded-xl transition-colors ${isCurrentMonth()
+              ? 'opacity-30 cursor-not-allowed'
+              : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
+              }`}
+            title="Próximo mês"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
+          </button>
         </div>
       </div>
 
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
 
-      <div className="section-grid">
-        <CurrentDateCard />
-        <div className="card hidden lg:flex items-center gap-3">
-          <span className="text-sm text-gray-600 dark:text-neutral-400 font-medium">Atalhos de teclado</span>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <kbd className="px-2 py-1 text-xs font-semibold text-success-700 dark:text-success-300 bg-success-100 dark:bg-success-900/30 border border-success-300 dark:border-success-700 rounded">+</kbd>
-              <span className="text-xs text-gray-600 dark:text-neutral-400">Receita</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <kbd className="px-2 py-1 text-xs font-semibold text-danger-700 dark:text-danger-300 bg-danger-100 dark:bg-danger-900/30 border border-danger-300 dark:border-danger-700 rounded">-</kbd>
-              <span className="text-xs text-gray-600 dark:text-neutral-400">Despesa</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <kbd className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 border border-primary-300 dark:border-primary-700 rounded">C</kbd>
-              <span className="text-xs text-gray-600 dark:text-neutral-400">Calculadora</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div className="card col-span-2 lg:col-span-1 bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-primary-100 dark:text-primary-200 text-sm font-medium">Saldo do Mês</p>
-              <h3 className="text-3xl font-bold mt-2 truncate max-w-[200px]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Saldo do Mês - Card Principal */}
+        <div className="card col-span-2 lg:col-span-1 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
+              <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate">
                 {formatCurrency(financialSummary.monthBalance)}
               </h3>
+              <p className="text-primary-200 text-xs mt-2">
+                {financialSummary.monthBalance >= 0 ? '✓ Saldo positivo' : '⚠ Saldo negativo'}
+              </p>
             </div>
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
-              <Wallet className="w-6 h-6" />
+            <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
+              <Wallet className="w-5 h-5" />
             </div>
           </div>
+          {/* Barra de progresso receita vs despesa */}
+          {(financialSummary.monthIncome > 0 || financialSummary.monthExpense > 0) && (
+            <div className="mt-4">
+              <div className="flex justify-between text-xs text-primary-200 mb-1">
+                <span>Gasto</span>
+                <span>{financialSummary.monthIncome > 0 ? Math.round((financialSummary.monthExpense / financialSummary.monthIncome) * 100) : 0}%</span>
+              </div>
+              <div className="w-full bg-white/20 rounded-full h-1.5">
+                <div
+                  className="bg-white rounded-full h-1.5 transition-all duration-500"
+                  style={{ width: `${Math.min(financialSummary.monthIncome > 0 ? (financialSummary.monthExpense / financialSummary.monthIncome) * 100 : 0, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* Receitas do Mês */}
         <div
-          className="card col-span-1 cursor-pointer hover:shadow-lg transition-all p-3 sm:p-5"
+          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-4 sm:p-5"
           onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && incomeTransactions.length) {
-              setShowIncomeModal(true)
-            }
+            if (e.key === 'Enter' && incomeTransactions.length) setShowIncomeModal(true)
           }}
         >
-          <div className="flex flex-col gap-2 sm:gap-0 sm:flex-row sm:items-center sm:justify-between h-full w-full">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-success-50 dark:bg-success-900/20 rounded-full flex items-center justify-center flex-shrink-0 block sm:order-2">
-              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-success-600 dark:text-success-400" />
-            </div>
-            <div className="flex-1 min-w-0 sm:order-1">
-              <p className="text-gray-600 dark:text-neutral-400 text-xs sm:text-sm font-medium">Receitas <span className="hidden sm:inline">do Mês</span></p>
-              <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-2 truncate w-full">
+          {/* Top accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
+
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
                 {formatCurrency(financialSummary.monthIncome)}
               </h3>
-              <div className="hidden sm:flex items-center gap-1 mt-2">
-                <ArrowUpRight className="w-4 h-4 text-success-600 dark:text-success-400" />
-                <span className="text-sm text-success-600 dark:text-success-400 font-medium">+12.5%</span>
-              </div>
             </div>
+            <div className="w-11 h-11 rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-400 dark:text-neutral-500">
+              {incomeTransactions.length > 0 ? `${incomeTransactions.length} lançamento${incomeTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
+            </span>
+            {incomeTransactions.length > 0 && (
+              <div className="flex items-center gap-1">
+                <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
+                <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Ver</span>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Despesas do Mês */}
         <div
-          className="card col-span-1 cursor-pointer hover:shadow-lg transition-all p-3 sm:p-5"
+          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-4 sm:p-5"
           onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && expenseTransactions.length) {
-              setShowExpenseModal(true)
-            }
+            if (e.key === 'Enter' && expenseTransactions.length) setShowExpenseModal(true)
           }}
         >
-          <div className="flex flex-col gap-2 sm:gap-0 sm:flex-row sm:items-center sm:justify-between h-full w-full">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-danger-50 dark:bg-danger-900/20 rounded-full flex items-center justify-center flex-shrink-0 block sm:order-2">
-              <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-danger-600 dark:text-danger-400" />
-            </div>
-            <div className="flex-1 min-w-0 sm:order-1">
-              <p className="text-gray-600 dark:text-neutral-400 text-xs sm:text-sm font-medium">Despesas <span className="hidden sm:inline">do Mês</span></p>
-              <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-2 truncate w-full">
+          {/* Top accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
                 {formatCurrency(financialSummary.monthExpense)}
               </h3>
-              <div className="hidden sm:flex items-center gap-1 mt-2">
-                <ArrowDownRight className="w-4 h-4 text-danger-600 dark:text-danger-400" />
-                <span className="text-sm text-danger-600 dark:text-danger-400 font-medium">-8.2%</span>
-              </div>
             </div>
+            <div className="w-11 h-11 rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
+              <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-400 dark:text-neutral-500">
+              {expenseTransactions.length > 0 ? `${expenseTransactions.length} lançamento${expenseTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
+            </span>
+            {expenseTransactions.length > 0 && (
+              <div className="flex items-center gap-1">
+                <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
+                <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Ver</span>
+              </div>
+            )}
           </div>
         </div>
 
