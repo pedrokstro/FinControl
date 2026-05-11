@@ -18,7 +18,6 @@ import {
   Lock,
   Globe
 } from 'lucide-react'
-import logoPng from '@/assets/icons/logofincontrol.png'
 
 const Landing = () => {
   const navigate = useNavigate()
@@ -98,7 +97,7 @@ const Landing = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl">
-                <img src={logoPng} alt="FinControl" className="w-full h-full object-contain" />
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
                 FinControl
@@ -415,7 +414,7 @@ const Landing = () => {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-primary-600 p-1.5 shadow-lg shadow-primary-500/20">
-                  <img src={logoPng} alt="FinControl" className="w-full h-full object-contain brightness-0 invert" />
+                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
                 <span className="text-xl font-bold text-gray-900 dark:text-white">FinControl</span>
               </div>

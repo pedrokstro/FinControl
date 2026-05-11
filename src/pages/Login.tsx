@@ -1,16 +1,22 @@
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, useEffect, useRef, FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
-import logoPng from '@/assets/icons/logofincontrol.png'
-
-const walletVideo = new URL('../assets/icons/walletanimation.mp4', import.meta.url).href
 
 const Login = () => {
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.error("Erro ao iniciar vídeo automaticamente:", error)
+      })
+    }
+  }, [])
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
@@ -109,13 +115,14 @@ const Login = () => {
               }}
             >
               <video 
-                poster={logoPng}
+                ref={videoRef}
+                poster="/icons/logofincontrol.png"
                 autoPlay
                 muted 
                 loop 
                 playsInline
                 preload="auto"
-                src={walletVideo}
+                src="https://raw.githubusercontent.com/pedrokstro/FinControl/main/public/icons/walletanimation.mp4"
                 className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen brightness-[1.15] contrast-[1.1]"
               />
             </motion.div>

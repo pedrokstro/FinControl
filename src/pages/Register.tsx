@@ -8,7 +8,6 @@ import { Lock, Mail, Eye, EyeOff, User, AlertCircle, CreditCard } from 'lucide-r
 import toast from 'react-hot-toast'
 import { authService } from '@/services/api'
 import { motion } from 'framer-motion'
-import logoPng from '@/assets/icons/logofincontrol.png'
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
@@ -108,7 +107,7 @@ const Register = () => {
           {/* Logo Section */}
           <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-              <img src={logoPng} alt="FinControl" className="w-full h-full object-contain" />
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
             <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Crie sua conta agora</p>

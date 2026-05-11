@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.12.29] - 2026-05-11
+
+### Alterado
+- **UI (Login):** Vídeo do logotipo agora é carregado via **GitHub Raw URL**. Esta mudança garante que o vídeo seja servido por um CDN externo estável, eliminando qualquer problema de processamento ou bloqueio de assets pelo servidor de produção (Vercel).
+
+## [2.12.28] - 2026-05-11
+
+### Corrigido
+- **Geral:** Restaurados os assets (`logofincontrol.png` e `walletanimation.mp4`) para a pasta `public`. Esta mudança visa garantir a máxima compatibilidade com o servidor da Vercel, evitando que o bundler do Vite altere os arquivos de mídia.
+- **UI (Login):** Implementado um `useEffect` para forçar a reprodução do vídeo via JavaScript, garantindo que a animação inicie corretamente em dispositivos onde o `autoPlay` nativo pode ser bloqueado ou ignorado.
+
 ## [2.12.27] - 2026-05-11
 
 ### Alterado
