@@ -791,7 +791,7 @@ const Dashboard = () => {
 
         {/* Receitas do Mês */}
         <div
-          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-4 sm:p-5"
+          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
           onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
           role="button"
           tabIndex={0}
@@ -804,13 +804,13 @@ const Dashboard = () => {
 
           <div className="flex items-start justify-between mb-4">
             <div className="flex flex-col">
-              <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
                 {formatCurrency(financialSummary.monthIncome)}
               </h3>
             </div>
-            <div className="w-11 h-11 rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success-600 dark:text-success-400" />
             </div>
           </div>
 
@@ -829,7 +829,7 @@ const Dashboard = () => {
 
         {/* Despesas do Mês */}
         <div
-          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-4 sm:p-5"
+          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
           onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
           role="button"
           tabIndex={0}
@@ -842,13 +842,13 @@ const Dashboard = () => {
 
           <div className="flex items-start justify-between mb-4">
             <div className="flex flex-col">
-              <p className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
                 {formatCurrency(financialSummary.monthExpense)}
               </h3>
             </div>
-            <div className="w-11 h-11 rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
-              <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
+              <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-danger-600 dark:text-danger-400" />
             </div>
           </div>
 

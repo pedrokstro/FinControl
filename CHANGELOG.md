@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.12.6] - 2026-05-11
+
+### Corrigido
+- **TypeScript:** Corrigido erro de tipagem implícita no evento de alteração do checkbox de recorrência na página de Transações.
+
+## [2.12.5] - 2026-05-11
+
+### Corrigido
+- **Consistência de Saldo:** Corrigida inconsistência onde despesas no cartão de crédito não eram descontadas do saldo mensal na página de Transações, embora fossem no Dashboard. Agora ambas as páginas refletem o mesmo resultado mensal (Receitas - Despesas totais).
+
+## [2.12.3] - 2026-05-11
+
+### Melhorado
+- **Responsividade (Mobile):** Aplicados os mesmos ajustes de otimização de espaço (padding e fontes reduzidas) nos cards do Dashboard, garantindo consistência visual em todo o app.
+
+## [2.12.2] - 2026-05-11
+
+### Melhorado
+- **Responsividade (Mobile):** Ajustados os cards de KPI na página de Transações para evitar quebras em telas pequenas.
+- **Otimização de Layout:** Card de Saldo agora ocupa a largura total (2 colunas) em mobile, enquanto os demais cards tiveram padding, tamanhos de ícones e fontes reduzidos proporcionalmente para garantir que os valores fiquem visíveis.
+
 ## [2.12.0] - 2026-05-11
 
 ### Melhorado
