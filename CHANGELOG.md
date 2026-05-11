@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.12.23] - 2026-05-11
+
+### Melhorado
+- **UI/Performance (Login):** Otimizado o carregamento do logotipo animado. Agora o sistema exibe inicialmente a imagem estática (PNG) e só carrega/inicia o vídeo quando o usuário passa o mouse sobre o logo. Isso reduz o consumo de dados inicial e garante que a imagem estática sirva como um fallback perfeito enquanto o vídeo é ativado sob demanda.
+
+## [2.12.22] - 2026-05-11
+
+### Corrigido
+- **UI (Login):** Movido o vídeo `walletanimation.mp4` da pasta `public` para `src/assets`. Ao importar o vídeo como um módulo do Vite, garantimos que o bundler gere uma URL válida e rastreável durante o build, resolvendo problemas de caminhos quebrados em ambientes de produção como a Vercel.
+
 ## [2.12.21] - 2026-05-11
 
 ### Corrigido
