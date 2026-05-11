@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.12.20] - 2026-05-11
+
+### Corrigido
+- **UI (Login):** Refinado o ajuste do vídeo do logotipo. Foram aplicados filtros de brilho e contraste (`brightness-[1.15] contrast-[1.1]`) para "estourar" o fundo cinza do vídeo para branco puro, garantindo que a mesclagem com o fundo do card seja invisível e o logo pareça 100% transparente.
+
+## [2.12.19] - 2026-05-11
+
+### Corrigido
+- **UI (Login):** Ajustado o vídeo do logotipo para remover o fundo cinza. Utilizada a propriedade `mix-blend-mode: multiply` para garantir que o fundo do vídeo se funda perfeitamente com o fundo branco do card, resultando em uma aparência de transparência total.
+
+## [2.12.18] - 2026-05-11
+
+### Adicionado
+- **UI (Login):** Implementado logotipo animado em vídeo (`walletanimation.mp4`). O ícone estático foi substituído por uma animação fluida em loop, conferindo um aspecto mais dinâmico e moderno à tela de login. O vídeo está configurado para reprodução automática, sem áudio e em loop infinito.
+
+## [2.12.17] - 2026-05-11
+
+### Melhorado
+- **UI (Login):** Atualizado o estilo dos botões "Entrar" e "Google" para o formato *pill* (totalmente arredondados), conferindo um visual mais moderno e amigável que se alinha com os novos padrões de interface do sistema.
+
+## [2.12.16] - 2026-05-11
+
+### Melhorado
+- **UI (Login):** Refinamento da animação do logotipo. Removidas as moedas flutuantes em favor de um efeito mais sóbrio e elegante. Agora o logo apresenta um brilho radial sutil ao fundo e um efeito de "varredura de luz" (glint) que atravessa o ícone ao passar o mouse, mantendo a sofisticação da interface.
+
+## [2.12.15] - 2026-05-11
+
+### Melhorado
+- **UI (Login):** Adicionada uma animação interativa premium ao logotipo na página de login. Agora, ao passar o mouse sobre o ícone da carteira, ele realiza um movimento 3D suave (tilt) e "dispara" moedas e cédulas flutuantes, criando um feedback visual divertido e temático relacionado ao universo financeiro.
+
 ## [2.12.14] - 2026-05-11
 
 ### Melhorado

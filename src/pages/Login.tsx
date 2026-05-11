@@ -97,10 +97,23 @@ const Login = () => {
         {/* Main Content Area */}
         <div className="bg-white dark:bg-neutral-900 sm:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border-x-0 sm:border border-gray-100 dark:border-neutral-800 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
           {/* Logo Section */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-neutral-900 sm:bg-white sm:dark:bg-neutral-800 rounded-2xl shadow-sm mb-4 p-3 sm:p-4">
-              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
-            </div>
+          <div className="text-center mb-6 sm:mb-8 flex flex-col items-center">
+            <motion.div 
+              className="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-neutral-900 rounded-2xl mb-4 relative group cursor-pointer overflow-hidden flex items-center justify-center"
+              whileHover={{ 
+                scale: 1.05,
+                transition: { type: "spring", stiffness: 400, damping: 15 }
+              }}
+            >
+              <video 
+                src="/icons/walletanimation.mp4" 
+                autoPlay 
+                muted 
+                loop 
+                playsInline
+                className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen brightness-[1.15] contrast-[1.1]"
+              />
+            </motion.div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
             <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
           </div>
@@ -174,7 +187,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-xl transition-all shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.23)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.23)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'CARREGANDO...' : 'ENTRAR'}
             </button>
@@ -193,7 +206,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading || isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-800 rounded-xl hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-800 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
           >
             <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5" />
             {isGoogleLoading ? 'CONECTANDO...' : 'GOOGLE'}
