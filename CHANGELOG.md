@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.5] - 2026-05-11
+
+### Adicionado
+- **Transações Recorrentes Fixas:** Agora é possível criar transações sem limite de parcelas (tempo indeterminado) ao deixar o campo de parcelas vazio. A recorrência continuará até que a transação pai seja removida ou a recorrência cancelada.
+
 ## [2.11.4] - 2026-05-08
 
 ### Corrigido

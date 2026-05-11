@@ -65,14 +65,8 @@ const transactionSchema = z
         })
       }
 
-      // Validação do número de parcelas
-      if (!data.totalInstallments) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['totalInstallments'],
-          message: 'Número de parcelas é obrigatório',
-        })
-      } else {
+      // Validação do número de parcelas (opcional para tempo indeterminado)
+      if (data.totalInstallments) {
         const installments = parseInt(data.totalInstallments)
         if (isNaN(installments) || installments < 2) {
           ctx.addIssue({
@@ -1108,7 +1102,7 @@ const Transactions = () => {
                         type="number"
                         min="2"
                         max="360"
-                        placeholder="Ex: 12"
+                        placeholder="Ex: 12 (vazio para tempo indeterminado)"
                         {...register('totalInstallments')}
                         className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
                       />
@@ -1119,7 +1113,7 @@ const Transactions = () => {
 
                     <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
                       <p className="text-xs text-primary-700 dark:text-primary-300">
-                        <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente conforme a frequência selecionada até completar o total.
+                        <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa (tempo indeterminado).
                       </p>
                     </div>
                   </div>

@@ -183,11 +183,16 @@ class RecurrenceService {
     // Base date exata usada para calcular a próxima ocorrência
     const baseDate = new Date(`${formattedDate}T00:00:00Z`);
 
-    const totalMonths = Math.max(1, recurrenceMonths || 1);
+    const totalMonths = recurrenceMonths || 1;
+    
+    const installmentsLimit =
+      totalInstallments ??
+      transactionData.totalInstallments ??
+      (totalMonths > 1 ? totalMonths : undefined);
 
     const finalEndDate =
       recurrenceEndDate ??
-      this.addMonths(baseDate, totalMonths > 0 ? totalMonths - 1 : 0);
+      (installmentsLimit ? this.addMonths(baseDate, installmentsLimit > 0 ? installmentsLimit - 1 : 0) : null);
 
     const amount =
       typeof transactionData.amount === 'string'
@@ -197,11 +202,6 @@ class RecurrenceService {
     if (!transactionData.type || !transactionData.categoryId || !transactionData.userId || amount === undefined) {
       throw new Error('Missing data to create recurring transaction');
     }
-
-    const installmentsLimit =
-      totalInstallments ??
-      transactionData.totalInstallments ??
-      (recurrenceMonths > 1 ? recurrenceMonths : undefined);
 
     const nextOccurrenceDate = this.calculateNextOccurrence(baseDate, recurrenceType);
 

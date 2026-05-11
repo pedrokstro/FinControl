@@ -148,14 +148,8 @@ const transactionSchema = z
         })
       }
 
-      // Validação do número de parcelas
-      if (!data.totalInstallments) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['totalInstallments'],
-          message: 'Número de parcelas é obrigatório',
-        })
-      } else {
+      // Validação do número de parcelas (opcional para tempo indeterminado)
+      if (data.totalInstallments) {
         const installments = parseInt(data.totalInstallments)
         if (isNaN(installments) || installments < 2) {
           ctx.addIssue({
@@ -1873,7 +1867,7 @@ const Dashboard = () => {
                       type="number"
                       min="2"
                       max="360"
-                      placeholder="Ex: 12"
+                      placeholder="Ex: 12 (vazio para tempo indeterminado)"
                       {...register('totalInstallments')}
                       className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
                     />
@@ -1885,7 +1879,7 @@ const Dashboard = () => {
                   </div>
                   <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
                     <p className="text-xs text-primary-700 dark:text-primary-300">
-                      <strong>ℹ️ Como funciona:</strong> Uma parcela será gerada automaticamente todo mês até completar o total.
+                      <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa (tempo indeterminado).
                     </p>
                   </div>
                 </div>
