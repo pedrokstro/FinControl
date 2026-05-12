@@ -4,7 +4,7 @@
  */
 
 const BRAND_DOMAIN_MAP: Record<string, string> = {
-    // Brazilian Banks
+    // Brazilian Banks & Finance
     'nubank': 'nubank.com.br',
     'itau': 'itau.com.br',
     'itaú': 'itau.com.br',
@@ -31,6 +31,65 @@ const BRAND_DOMAIN_MAP: Record<string, string> = {
     'safra': 'safra.com.br',
     'original': 'original.com.br',
     'banrisul': 'banrisul.com.br',
+    
+    // Services & Tech
+    'netflix': 'netflix.com',
+    'spotify': 'spotify.com',
+    'amazon': 'amazon.com',
+    'apple': 'apple.com',
+    'google': 'google.com',
+    'disney': 'disneyplus.com',
+    'disney+': 'disneyplus.com',
+    'hbo max': 'hbomax.com',
+    'hbomax': 'hbomax.com',
+    'globoplay': 'globoplay.globo.com',
+    'youtube': 'youtube.com',
+    'uber': 'uber.com',
+    'ifood': 'ifood.com.br',
+    '99app': '99app.com',
+    'mercado livre': 'mercadolivre.com.br',
+    'airbnb': 'airbnb.com',
+    'playstation': 'playstation.com',
+    'xbox': 'xbox.com',
+    'steam': 'steampowered.com',
+    'adobe': 'adobe.com',
+    'canva': 'canva.com',
+    'office 365': 'office.com',
+    'microsoft': 'microsoft.com',
+    
+    // Telecom & Utilities
+    'claro': 'claro.com.br',
+    'vivo': 'vivo.com.br',
+    'tim': 'tim.com.br',
+    'oi': 'oi.com.br',
+    'enel': 'enel.com.br',
+    'sabesp': 'sabesp.com.br',
+    'comgas': 'comgas.com.br',
+    'sem parar': 'semparar.com.br',
+    'veloe': 'veloe.com.br',
+    
+    // Fuel & Retail
+    'shell': 'shell.com',
+    'ipiranga': 'ipiranga.com.br',
+    'petrobras': 'petrobras.com.br',
+    'carrefour': 'carrefour.com.br',
+    'extra': 'extra.com.br',
+    'pão de açúcar': 'paodeacucar.com',
+    'assai': 'assai.com.br',
+    'assaí': 'assai.com.br',
+    'atacadao': 'atacadao.com.br',
+    'atacadão': 'atacadao.com.br',
+    'gpa': 'gpabr.com',
+    'smartfit': 'smartfit.com.br',
+    'bluefit': 'bluefit.com.br',
+    'nike': 'nike.com',
+    'adidas': 'adidas.com',
+    'zara': 'zara.com',
+    'h&m': 'hm.com',
+    'shein': 'shein.com',
+    'shopee': 'shopee.com.br',
+    'aliexpress': 'aliexpress.com',
+    'amazon prime': 'amazon.com',
     
     // Cards & Brands
     'visa': 'visa.com',
@@ -64,6 +123,14 @@ const BRAND_SLUG_MAP: Record<string, string> = {
 };
 
 /**
+ * Verifica se a marca tem um ícone local definido.
+ */
+export const isLocalBrand = (brand: string): boolean => {
+    const normalized = brand.toLowerCase().trim();
+    return !!BRAND_SLUG_MAP[normalized];
+};
+
+/**
  * Converte o nome do banco/bandeira para o slug do arquivo PNG local.
  */
 export const brandToSlug = (brand: string): string => {
@@ -87,6 +154,12 @@ export const resolveDomain = (brandName: string): string | null => {
         return normalized;
     }
     
+    // Heuristic: try common suffixes if not in map
+    if (normalized.length > 2) {
+        // If it's a common Brazilian service name, .com.br is likely
+        return `${normalized.replace(/\s+/g, '')}.com.br`;
+    }
+    
     return null;
 };
 
@@ -97,8 +170,12 @@ export const getLogoDevUrl = (brandName: string): string | null => {
     const domain = resolveDomain(brandName);
     if (!domain) return null;
     
+    // We use a public token or a fallback if not provided
     const token = import.meta.env.VITE_LOGO_DEV_TOKEN;
-    if (!token) return null;
+    if (!token) {
+        // If no token, we fallback to Google which is more reliable for free
+        return null;
+    }
     
     return `https://img.logo.dev/${domain}?token=${token}`;
 };
@@ -117,7 +194,12 @@ export const getGoogleFaviconUrl = (brandName: string): string | null => {
  * Generates a Simple Icons URL for common brands (SVG).
  */
 export const getSimpleIconUrl = (brandName: string): string | null => {
-    const brands = ['visa', 'mastercard', 'americanexpress', 'nubank', 'itau', 'santander', 'mercadopago', 'picpay'];
+    const brands = [
+        'visa', 'mastercard', 'americanexpress', 'nubank', 'itau', 'santander', 
+        'mercadopago', 'picpay', 'netflix', 'spotify', 'amazon', 'apple', 
+        'google', 'disneyplus', 'youtube', 'uber', 'ifood', 'airbnb', 
+        'playstation', 'xbox', 'steam', 'adobe', 'canva', 'microsoft'
+    ];
     const normalized = brandName.toLowerCase().replace(/\s+/g, '');
     
     if (brands.includes(normalized)) {

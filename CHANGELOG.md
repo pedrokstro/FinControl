@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.30] - 2026-05-12
+
+### Corrigido
+- **UI (IconPicker):** Resolvido o problema de logos de marcas que não carregavam. O sistema agora possui um mapeamento de domínios muito mais abrangente e uma lógica de resolução inteligente para marcas desconhecidas.
+- **Otimização:** Otimizado o componente `BrandIcon` para evitar requisições de arquivos locais inexistentes, eliminando os erros 404 no console do navegador e melhorando a performance de carregamento da aba de marcas.
+
 ## [2.12.29] - 2026-05-11
 
 ### Alterado

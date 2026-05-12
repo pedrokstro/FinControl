@@ -3,85 +3,114 @@ import {
   getLogoDevUrl, 
   getGoogleFaviconUrl, 
   getSimpleIconUrl, 
-  brandToSlug 
+  brandToSlug,
+  isLocalBrand
 } from '@/utils/brandUtils'
+import { Globe } from 'lucide-react'
 
 interface BrandIconProps {
-  /** Nome do banco ou marca — será mapeado para domínio automaticamente */
   brand: string
-  /** Slug exato do arquivo local (com extensão). Quando passado, ignora a busca automática. */
   slug?: string
   className?: string
 }
 
-/**
- * Componente de ícone de bandeira/banco com resolução automática multinível.
- * Fluxo de resolução (Cascata):
- * 1. Arquivo local em /icons/
- * 2. Simple Icons (SVG de alta qualidade para marcas globais)
- * 3. Logo.dev (API Premium via Domínio)
- * 4. Google Favicon (Fallback universal)
- */
-const BrandIcon: React.FC<BrandIconProps> = ({ brand, slug, className = 'h-6 w-auto max-w-[48px]' }) => {
-  const localSrc = `/icons/${slug ?? brandToSlug(brand)}`
-  const simpleSrc = getSimpleIconUrl(brand)
-  const logoDevSrc = getLogoDevUrl(brand)
-  const googleSrc = getGoogleFaviconUrl(brand)
-  
-  const [imgSrc, setImgSrc] = useState<string>(localSrc)
-  const [stage, setStage] = useState<'local' | 'simple' | 'logodev' | 'google' | 'failed'>('local')
+type Stage = 'local' | 'simple' | 'logodev' | 'google' | 'failed';
 
-  // Reset state if brand changes
+const BrandIcon: React.FC<BrandIconProps> = ({ brand, slug, className = 'h-6 w-auto max-w-[48px]' }) => {
+  const [stage, setStage] = useState<Stage>('local')
+  const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
-    setImgSrc(localSrc)
-    setStage('local')
-  }, [brand, slug, localSrc])
+    const init = () => {
+      setIsLoading(true)
+      
+      // 1. Check local first IF it's in our map or explicitly requested via slug
+      if (slug || isLocalBrand(brand)) {
+        setStage('local')
+        setImgSrc(`/icons/${slug ?? brandToSlug(brand)}`)
+        return
+      }
+
+      // 2. Simple Icons
+      const simple = getSimpleIconUrl(brand)
+      if (simple) {
+        setStage('simple')
+        setImgSrc(simple)
+        return
+      }
+
+      // 3. Logo.dev
+      const logoDev = getLogoDevUrl(brand)
+      if (logoDev) {
+        setStage('logodev')
+        setImgSrc(logoDev)
+        return
+      }
+
+      // 4. Google Favicon (fallback final)
+      const google = getGoogleFaviconUrl(brand)
+      if (google) {
+        setStage('google')
+        setImgSrc(google)
+        return
+      }
+
+      setStage('failed')
+      setIsLoading(false)
+    }
+
+    init()
+  }, [brand, slug])
 
   const handleError = () => {
+    // Cascata de erros
     if (stage === 'local') {
-      if (simpleSrc) {
-        setStage('simple')
-        setImgSrc(simpleSrc)
-      } else if (logoDevSrc) {
-        setStage('logodev')
-        setImgSrc(logoDevSrc)
-      } else if (googleSrc) {
-        setStage('google')
-        setImgSrc(googleSrc)
-      } else {
-        setStage('failed')
-      }
+      const next = getSimpleIconUrl(brand) || getLogoDevUrl(brand) || getGoogleFaviconUrl(brand)
+      if (next === getSimpleIconUrl(brand)) setStage('simple')
+      else if (next === getLogoDevUrl(brand)) setStage('logodev')
+      else if (next === getGoogleFaviconUrl(brand)) setStage('google')
+      else setStage('failed')
+      
+      setImgSrc(next)
     } else if (stage === 'simple') {
-      if (logoDevSrc) {
-        setStage('logodev')
-        setImgSrc(logoDevSrc)
-      } else if (googleSrc) {
-        setStage('google')
-        setImgSrc(googleSrc)
-      } else {
-        setStage('failed')
-      }
+      const next = getLogoDevUrl(brand) || getGoogleFaviconUrl(brand)
+      if (next === getLogoDevUrl(brand)) setStage('logodev')
+      else if (next === getGoogleFaviconUrl(brand)) setStage('google')
+      else setStage('failed')
+      
+      setImgSrc(next)
     } else if (stage === 'logodev') {
-      if (googleSrc) {
-        setStage('google')
-        setImgSrc(googleSrc)
-      } else {
-        setStage('failed')
-      }
+      const next = getGoogleFaviconUrl(brand)
+      if (next) setStage('google')
+      else setStage('failed')
+      
+      setImgSrc(next)
     } else {
       setStage('failed')
+      setIsLoading(false)
     }
   }
 
-  if (stage === 'failed') return null
+  if (stage === 'failed') {
+    return <Globe className={`text-gray-300 ${className}`} />
+  }
 
   return (
-    <img
-      src={imgSrc}
-      alt={brand}
-      className={`object-contain flex-shrink-0 transition-opacity duration-300 ${className}`}
-      onError={handleError}
-    />
+    <div className={`relative flex items-center justify-center ${className}`}>
+      {isLoading && (
+        <div className="absolute inset-0 animate-pulse bg-gray-100 dark:bg-neutral-800 rounded" />
+      )}
+      {imgSrc && (
+        <img
+          src={imgSrc}
+          alt={brand}
+          className={`object-contain flex-shrink-0 transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
+          onLoad={() => setIsLoading(false)}
+          onError={handleError}
+        />
+      )}
+    </div>
   )
 }
 
