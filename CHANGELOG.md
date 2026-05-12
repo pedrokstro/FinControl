@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.32] - 2026-05-12
+
+### Alterado
+- **UI (IconPicker):** Unificada a barra de busca no topo do modal para as abas de ícones e marcas.
+- **UX:** Adicionado indicador de carregamento proeminente ("Buscando ícones...") na aba de marcas para fornecer feedback visual claro durante a busca assíncrona.
+
 ## [2.12.31] - 2026-05-12
 
 ### Adicionado

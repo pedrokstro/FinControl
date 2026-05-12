@@ -233,41 +233,43 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                     </button>
                   </div>
 
-                  {/* Search Input - Only for Icons Tab */}
-                  {activeTab === 'icons' && (
+                  {/* Search Input - Shared for Icons and Brands */}
+                  {activeTab !== 'emojis' && (
                     <div className="relative">
                       <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500" />
                       <input
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Buscar ícone..."
+                        placeholder={activeTab === 'icons' ? "Buscar ícone..." : "Buscar marca ou palavra-chave..."}
                         className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 rounded-full focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-colors"
                       />
                     </div>
                   )}
                 </div>
-
-                {/* Content */}
-                <div className={`flex-1 ${activeTab !== 'icons' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
-                  {activeTab === 'emojis' ? (
-                    <EmojiPickerTab
-                      onSelectEmoji={handleSelectEmoji}
-                      selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
-                      isPremium={isPremium}
-                      onUpgradeClick={onUpgradeClick}
-                    />
-                  ) : activeTab === 'brands' ? (
-                    <BrandPickerTab
-                      onSelectBrand={(icon) => {
-                        onSelectIcon(icon, false)
-                        setIsOpen(false)
-                      }}
-                      selectedIcon={selectedIcon}
-                      isPremium={isPremium}
-                      onUpgradeClick={onUpgradeClick}
-                    />
-                  ) : (
+ 
+                 {/* Content */}
+                 <div className={`flex-1 ${activeTab !== 'icons' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+                   {activeTab === 'emojis' ? (
+                     <EmojiPickerTab
+                       onSelectEmoji={handleSelectEmoji}
+                       selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
+                       isPremium={isPremium}
+                       onUpgradeClick={onUpgradeClick}
+                     />
+                   ) : activeTab === 'brands' ? (
+                     <BrandPickerTab
+                       onSelectBrand={(icon) => {
+                         onSelectIcon(icon, false)
+                         setIsOpen(false)
+                         setSearchTerm('')
+                       }}
+                       selectedIcon={selectedIcon}
+                       isPremium={isPremium}
+                       onUpgradeClick={onUpgradeClick}
+                       externalSearchTerm={searchTerm}
+                     />
+                   ) : (
                     <div className="p-4">
                       {Object.keys(filteredCategories).length === 0 ? (
                         <div className="text-center py-12 text-gray-500 dark:text-neutral-400 text-sm">

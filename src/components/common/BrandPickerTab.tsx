@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Globe, Crown, Sparkles, Check, Hash } from 'lucide-react';
+import { Globe, Crown, Sparkles, Check, Hash } from 'lucide-react';
 import BrandIcon from './BrandIcon';
 import { haptics } from '@/utils/haptics';
 import { searchGenericIcons } from '@/utils/brandUtils';
@@ -10,6 +10,7 @@ interface BrandPickerTabProps {
   selectedIcon?: string;
   isPremium: boolean;
   onUpgradeClick?: () => void;
+  externalSearchTerm?: string;
 }
 
 const COMMON_BRANDS = [
@@ -25,30 +26,30 @@ const BrandPickerTab = ({
   onSelectBrand,
   selectedIcon,
   isPremium,
-  onUpgradeClick
+  onUpgradeClick,
+  externalSearchTerm = ''
 }: BrandPickerTabProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [genericIcons, setGenericIcons] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const filteredBrands = useMemo(() => {
-    if (!searchTerm) return COMMON_BRANDS;
-    const filtered = COMMON_BRANDS.filter(b => b.toLowerCase().includes(searchTerm.toLowerCase()));
+    if (!externalSearchTerm) return COMMON_BRANDS;
+    const filtered = COMMON_BRANDS.filter(b => b.toLowerCase().includes(externalSearchTerm.toLowerCase()));
     
     // Se não houver correspondência exata, adiciona o termo de busca como uma opção "custom"
-    if (searchTerm.length > 2 && !filtered.some(b => b.toLowerCase() === searchTerm.toLowerCase())) {
-      return [...filtered, searchTerm];
+    if (externalSearchTerm.length > 2 && !filtered.some(b => b.toLowerCase() === externalSearchTerm.toLowerCase())) {
+      return [...filtered, externalSearchTerm];
     }
     
     return filtered;
-  }, [searchTerm]);
+  }, [externalSearchTerm]);
 
   // Busca ícones genéricos quando o termo muda
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (searchTerm.length > 1) {
+      if (externalSearchTerm.length > 1) {
         setIsSearching(true);
-        const icons = await searchGenericIcons(searchTerm);
+        const icons = await searchGenericIcons(externalSearchTerm);
         setGenericIcons(icons);
         setIsSearching(false);
       } else {
@@ -57,7 +58,7 @@ const BrandPickerTab = ({
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [externalSearchTerm]);
 
   const handleSelectIcon = (icon: string, isBrand = true) => {
     if (!isPremium) {
@@ -74,8 +75,20 @@ const BrandPickerTab = ({
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-neutral-950">
+      {/* Loading Overlay for Search Results */}
+      {isSearching && (
+        <div className="absolute inset-0 top-[110px] bg-white/50 dark:bg-neutral-950/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-neutral-800">
+            <div className="w-8 h-8 border-3 border-primary-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">
+              Buscando ícones...
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Header Info */}
-      <div className="p-4 border-b border-gray-100 dark:border-neutral-900 bg-gray-50/50 dark:bg-neutral-900/50">
+      <div className="p-4 border-b border-gray-100 dark:border-neutral-900 bg-gray-50/50 dark:bg-neutral-900/50 flex-shrink-0">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
             <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
@@ -86,28 +99,9 @@ const BrandPickerTab = ({
               {!isPremium && <Crown className="w-3.5 h-3.5 text-amber-500" />}
             </h4>
             <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
-              Busque por marcas ou palavras-chave (ex: academia, viagem)
+              Busque por marcas ou palavras-chave no campo acima
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Search Input */}
-      <div className="p-4 border-b border-gray-100 dark:border-neutral-900">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="O que você está buscando?"
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all"
-          />
-          {isSearching && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
         </div>
       </div>
 

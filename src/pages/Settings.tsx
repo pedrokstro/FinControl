@@ -1109,22 +1109,53 @@ const Settings = () => {
                           </div>
                           <div className="flex flex-col items-end">
                             <div className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold ring-1 ring-primary-200 dark:ring-primary-800">
-                              v2.9.1
+                              v2.12.32
                             </div>
                             <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Estável</span>
                           </div>
                         </div>
 
                         <div className="space-y-12">
-                          {/* v2.9.1 - ATUAL */}
+                          {/* v2.12.32 - ATUAL */}
                           <div className="relative pl-10 border-l-2 border-primary-500 dark:border-primary-600">
                             <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
                             <div className="bg-primary-50/30 dark:bg-primary-900/10 p-6 rounded-2xl border border-primary-100 dark:border-primary-900/20">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.9.1</span>
+                                <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.12.32</span>
                                 <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-bold uppercase tracking-wider">Atual</span>
                               </div>
                               <p className="text-xs text-gray-500 dark:text-neutral-500 mb-6 font-medium italic flex items-center gap-1">
+                                12 de Maio de 2026
+                              </p>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                  <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-primary-600 bg-primary-50 dark:bg-primary-900/30 p-1 rounded" />
+                                    Busca Universal de Ícones
+                                  </h4>
+                                  <ul className="space-y-3 text-sm text-gray-600 dark:text-neutral-400">
+                                    <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                      <span>Integração com Iconify API para busca de milhares de ícones genéricos por palavra-chave.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 bg-white/50 dark:bg-neutral-800/50 p-2 rounded-lg">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
+                                      <span>Nova barra de busca unificada e indicadores de carregamento em tempo real.</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* v2.9.1 */}
+                          <div className="relative pl-10 border-l-2 border-gray-200 dark:border-neutral-800">
+                            <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-gray-200 dark:bg-neutral-800 ring-4 ring-white dark:ring-neutral-900 shadow-sm z-10" />
+                            <div className="bg-gray-50/50 dark:bg-neutral-800/30 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xl font-bold text-gray-900 dark:text-white">Versão 2.9.1</span>
+                              </div>
+                              <p className="text-xs text-gray-400 dark:text-neutral-500 mb-6">
                                 07 de Maio de 2026
                               </p>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
