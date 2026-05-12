@@ -249,7 +249,7 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                 </div>
  
                  {/* Content */}
-                 <div className={`flex-1 ${activeTab !== 'icons' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+                 <div className={`flex-1 flex flex-col ${activeTab === 'icons' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
                    {activeTab === 'emojis' ? (
                      <EmojiPickerTab
                        onSelectEmoji={handleSelectEmoji}

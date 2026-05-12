@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.12.33] - 2026-05-12
+
+### Corrigido
+- **UI (IconPicker):** Resolvido problema onde a barra de rolagem não funcionava na aba de Marcas devido a restrições de overflow e layout flexbox.
+
 ## [2.12.32] - 2026-05-12
 
 ### Alterado
