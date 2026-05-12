@@ -105,6 +105,46 @@ const BRAND_DOMAIN_MAP: Record<string, string> = {
 };
 
 /**
+ * Mapeamento de termos comuns para inglês para melhorar a busca no Iconify
+ */
+const TRANSLATION_MAP: Record<string, string> = {
+    'academia': 'gym fitness dumbbell',
+    'comida': 'food restaurant dinner',
+    'restaurante': 'restaurant food',
+    'viagem': 'travel airplane flight',
+    'carro': 'car auto vehicle',
+    'saude': 'health medical doctor',
+    'saúde': 'health medical doctor',
+    'educacao': 'education book school',
+    'educação': 'education book school',
+    'casa': 'home house',
+    'lazer': 'leisure fun party',
+    'cinema': 'movie cinema film',
+    'mercado': 'market shopping grocery',
+    'supermercado': 'market shopping grocery',
+    'pet': 'pet dog cat animal',
+    'cachorro': 'dog pet',
+    'gato': 'cat pet',
+    'festa': 'party celebration drink',
+    'bar': 'bar drink beer',
+    'cerveja': 'beer drink',
+    'cafe': 'coffee break morning',
+    'café': 'coffee break morning',
+    'trabalho': 'work office business',
+    'salario': 'salary money payment',
+    'salário': 'salary money payment',
+    'investimento': 'investment chart stock',
+    'bitcoin': 'bitcoin crypto',
+    'cartao': 'credit card payment',
+    'cartão': 'credit card payment',
+    'internet': 'wifi internet network',
+    'celular': 'phone mobile smartphone',
+    'telefone': 'phone call',
+    'roupa': 'clothing t-shirt fashion',
+    'presente': 'gift present surprise',
+};
+
+/**
  * Mapa de slugs exatos para arquivos locais.
  */
 const BRAND_SLUG_MAP: Record<string, string> = {
@@ -207,4 +247,28 @@ export const getSimpleIconUrl = (brandName: string): string | null => {
     }
     
     return null;
+};
+
+/**
+ * Busca ícones genéricos na API do Iconify baseado em palavras-chave.
+ */
+export const searchGenericIcons = async (query: string): Promise<string[]> => {
+    if (!query || query.length < 2) return [];
+
+    const normalized = query.toLowerCase().trim();
+    // Tenta traduzir ou usa o original
+    const searchTerm = TRANSLATION_MAP[normalized] || normalized;
+
+    try {
+        const response = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(searchTerm)}&limit=24`);
+        const data = await response.json();
+        
+        if (data && data.icons) {
+            return data.icons;
+        }
+        return [];
+    } catch (error) {
+        console.error('Erro ao buscar ícones no Iconify:', error);
+        return [];
+    }
 };

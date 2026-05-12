@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.31] - 2026-05-12
+
+### Adicionado
+- **UI (IconPicker):** Implementada a **Busca Universal de Ícones**. Agora o usuário pode buscar por termos genéricos (ex: "academia", "pet", "viagem") e receber sugestões de ícones relacionados via Iconify API, além das logos de marcas oficiais.
+- **Utilidades:** Adicionada camada de tradução automática para termos de busca comuns, melhorando a precisão dos resultados em bibliotecas de ícones globais.
+
 ## [2.12.30] - 2026-05-12
 
 ### Corrigido
