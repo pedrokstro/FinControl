@@ -211,27 +211,26 @@ const MobileNavBar = () => {
         )}
       </AnimatePresence>
 
-      {/* Bottom Nav Bar — sempre na frente (z-40 > z-30 do overlay, z-50 do popup) */}
+      {/* Bottom Nav Bar — sempre na frente (z-50) */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-lg border-t border-gray-200/50 dark:border-neutral-800/40 shadow-2xl rounded-t-[2rem] pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center px-4 justify-around">
+        <div className="flex items-center px-2 justify-around">
 
           {/* Início */}
           <NavLink
             to={mainItems[0].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-t-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
-            }
+            className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
           >
             {({ isActive }) => (
               <>
                 <motion.div
-                  animate={isActive ? { y: -2, scale: 1.15 } : { y: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                  className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isActive ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
                 >
-                  <LayoutDashboard className="w-5 h-5" />
+                  <LayoutDashboard className={`w-5 h-5 transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
                 </motion.div>
-                <span className="text-[10px] font-medium">Início</span>
+                <span className={`text-[10px] font-semibold transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>Início</span>
               </>
             )}
           </NavLink>
@@ -240,19 +239,18 @@ const MobileNavBar = () => {
           <NavLink
             to={mainItems[1].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-t-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
-            }
+            className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
           >
             {({ isActive }) => (
               <>
                 <motion.div
-                  animate={isActive ? { y: -2, scale: 1.15 } : { y: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                  className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isActive ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
                 >
-                  <ArrowLeftRight className="w-5 h-5" />
+                  <ArrowLeftRight className={`w-5 h-5 transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
                 </motion.div>
-                <span className="text-[10px] font-medium">Transações</span>
+                <span className={`text-[10px] font-semibold transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>Transações</span>
               </>
             )}
           </NavLink>
@@ -263,7 +261,7 @@ const MobileNavBar = () => {
               whileTap={{ scale: 0.9, rotate: 90 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/transactions?add=true') }}
-              className="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 rotate-45 border border-white/20 cursor-pointer -top-2 relative"
+              className="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 rotate-45 border border-white/20 cursor-pointer -top-1 relative"
               title="Nova Transação"
             >
               <Plus className="-rotate-45 w-5 h-5 text-white" />
@@ -274,35 +272,35 @@ const MobileNavBar = () => {
           <NavLink
             to={mainItems[2].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-t-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
-            }
+            className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
           >
             {({ isActive }) => (
               <>
                 <motion.div
-                  animate={isActive ? { y: -2, scale: 1.15 } : { y: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                  className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isActive ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
                 >
-                  <BarChart3 className="w-5 h-5" />
+                  <BarChart3 className={`w-5 h-5 transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
                 </motion.div>
-                <span className="text-[10px] font-medium">Relatórios</span>
+                <span className={`text-[10px] font-semibold transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>Relatórios</span>
               </>
             )}
           </NavLink>
 
-          {/* Mais / rotativo */}
+          {/* Mais */}
           <button
             onClick={isMoreOpen ? closeMore : openMore}
-            className={`flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-t-2 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`}
+            className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
           >
             <motion.div
-              animate={isMoreOpen ? { rotate: 90, scale: 1.15, y: -2 } : { rotate: 0, scale: 1, y: 0 }}
+              animate={isMoreOpen ? { rotate: 90, scale: 1.05 } : { rotate: 0, scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isMoreOpen ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
             >
-              <MoreHorizontal className="w-5 h-5" />
+              <MoreHorizontal className={`w-5 h-5 transition-colors duration-200 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
             </motion.div>
-            <span className="text-[10px] font-medium">Mais</span>
+            <span className={`text-[10px] font-semibold transition-colors duration-200 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>Mais</span>
           </button>
 
         </div>
