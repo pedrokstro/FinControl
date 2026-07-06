@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -10,9 +10,6 @@ import {
 
   Moon,
   Sun,
-  Crown,
-  Sparkles,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
   Shield,
@@ -34,7 +31,6 @@ type SidebarProps = {
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
   const { theme, toggleTheme } = useTheme()
-  const navigate = useNavigate()
   const { user, logout, loadAvatar } = useAuthStore()
 
   // Carregar avatar ao montar
@@ -103,7 +99,6 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
   }, [user?.id])
 
   // Obter status premium e admin do usuário autenticado
-  const isPremium = user?.isPremium || false
   const isAdmin = (user as any)?.isAdmin || false
 
   const menuSections = [
