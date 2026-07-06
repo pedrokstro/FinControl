@@ -293,13 +293,16 @@ const MobileNavBar = () => {
             onClick={isMoreOpen ? closeMore : openMore}
             className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
           >
-            <motion.div
-              animate={isMoreOpen ? { rotate: 90, scale: 1.05 } : { rotate: 0, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isMoreOpen ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
-            >
-              <MoreHorizontal className={`w-5 h-5 transition-colors duration-200 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
-            </motion.div>
+            {/* Pílula estática — não gira */}
+            <div className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isMoreOpen ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}>
+              {/* Só o ícone gira */}
+              <motion.div
+                animate={isMoreOpen ? { rotate: 90 } : { rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <MoreHorizontal className={`w-5 h-5 transition-colors duration-200 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
+              </motion.div>
+            </div>
             <span className={`text-[10px] font-semibold transition-colors duration-200 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>Mais</span>
           </button>
 
