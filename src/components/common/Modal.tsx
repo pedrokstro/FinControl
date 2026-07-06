@@ -106,10 +106,10 @@ const Modal = ({
                   onClose()
                 }
               }}
-              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2rem] sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh] pointer-events-auto overflow-hidden`}
+              className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border-t sm:border border-transparent dark:border-neutral-800 rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[92vh] pointer-events-auto overflow-hidden`}
             >
               {(title || !hideCloseButton) && (
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0 rounded-t-[2.5rem] sm:rounded-t-3xl">
                   {/* Drag Indicator para Mobile */}
                   <div
                     className="sm:hidden py-4 -mt-4 mb-2 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
@@ -131,11 +131,11 @@ const Modal = ({
                         </p>
                       )}
                     </div>
-                    {!hideCloseButton && !isMobile && (
+                    {!hideCloseButton && (
                       <button
                         type="button"
                         onClick={onClose}
-                        className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+                        className="hidden sm:flex p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
                         aria-label="Fechar modal"
                       >
                         <X className="w-5 h-5" />

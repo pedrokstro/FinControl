@@ -1,5 +1,146 @@
 # Changelog
 
+## [2.12.59] - 2026-07-06
+
+### Alterado
+- **UX/UI (Footer Geral):**
+  - Substituído o logo antigo de carteira (`Wallet` do lucide) no [Footer.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/Footer.tsx) pela nova imagem de logo oficial corporativa (`/icons/logofincontrol.png`), harmonizando a marca em todo o projeto.
+  - Implementada a exibição dinâmica da versão do aplicativo no Footer, importando as informações diretamente do `package.json` do projeto, eliminando dados estáticos legados (`2.12.33`).
+
+## [2.12.58] - 2026-07-06
+
+### Alterado
+- **UX/UI (Header & Sidebar):**
+  - Migradas a imagem de perfil do usuário e a ação de logout (Sair) do Header para a base da Sidebar Desktop.
+  - Implementado bloco de perfil do usuário elegante na base da Sidebar que se adapta de forma responsiva ao estado colapsado (exibindo foto e botão de logout em empilhamento centralizado) e ao estado expandido (exibindo foto, nome, email e botão de logout lado a lado com transição suave).
+  - O Header foi simplificado, permanecendo focado apenas no boas-vindas/saudação dinâmica e no dropdown de notificações.
+
+## [2.12.57] - 2026-07-06
+
+### Alterado
+- **UX/UI (Layout Geral):**
+  - Removidos os cantos arredondados na lateral direita da Sidebar e ajustada sua altura para preencher toda a tela verticalmente (`h-screen`, `my-0`). Isso alinha visualmente a Sidebar de ponta a ponta com o Header no topo, eliminando frestas e criando uma interface contínua, integrada e muito mais corporativa.
+
+## [2.12.56] - 2026-07-06
+
+### Alterado
+- **UX/UI (Sidebar Desktop):**
+  - Abreviados os nomes das sub-opções do menu "Cálculos" de `Calc. de Porcentagem` para `Porcentagem` e de `Calc. de Juros Compostos` para `Juros Compostos`, otimizando o espaço horizontal e eliminando cortes de texto.
+  - Ocultadas as barras de rolagem vertical e horizontal no contêiner de navegação da Sidebar (`overflow-x-hidden` e `.scrollbar-hide`), garantindo que o menu lateral mantenha sempre um aspecto visual monolítico e limpo, sem barras quebrando a estética, mesmo quando expandido.
+
+## [2.12.55] - 2026-07-06
+
+### Adicionado
+- **UX/UI (Layout Desktop):**
+  - **Saudação Dinâmica:** Adicionada uma seção de saudação de boas-vindas no lado esquerdo do `Header` com ícones animados baseados no horário (Sol giratório lento para o dia, Sol fraco pulsante para a tarde e Lua/Estrelas flutuando verticalmente para a noite), integrada com a tipografia Outfit.
+  - **Sidebar Premium:** Adicionado o efeito de indicador vertical deslizante (`motion.div` com `layoutId` do Framer Motion) na borda esquerda do item ativo na `Sidebar`, acompanhado de um gradiente de brilho interno suave e arredondamento aprimorado (`rounded-xl`).
+  - **Scrollbar Glassmorphic:** Implementada uma barra de rolagem minimalista, ultrafina (6px), com fundo da pista transparente e cursor translúcido com opacidades adaptativas no hover/click, integrando-se organicamente aos temas escuro e claro.
+
+## [2.12.52] - 2026-07-06
+
+### Adicionado
+- **UX/UI (Layout & Mobile NavBar):** 
+  - Adicionado suporte a gestos de arrastar para fechar (drag-to-close) no bottom sheet "Mais" da `MobileNavBar` utilizando `useDragControls` e propriedades físicas do `framer-motion` (consistente com o gesto presente nos demais modais do app).
+  - Adicionado espaçamento superior seguro para a safe-area de status bar (`pt-[calc(1rem+env(safe-area-inset-top))]`) em todas as páginas na visualização móvel no [MainLayout.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx), prevenindo que os dashboards ou cabeçalhos colidam com o relógio ou notch do celular.
+
+## [2.12.51] - 2026-07-06
+
+### Alterado
+- **Layout (Header):** Removido o cabeçalho (`Header`) na versão mobile do aplicativo (telas menores que `lg`), envolvendo-o em um contêiner responsivo `hidden lg:block` no [MainLayout.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx). Isso otimiza o espaço vertical em smartphones, já que o app utiliza a barra inferior (`MobileNavBar`) para navegação móvel.
+
+## [2.12.50] - 2026-07-06
+
+### Alterado
+- **UX/UI (Modal Cartão):** Refatorada a responsividade do `CreditCardModal` para utilizar classes responsivas do Tailwind CSS nativo (evitando bugs com hooks de resize do React). Agora, em telas móveis, o modal se posiciona obrigatoriamente no rodapé (Bottom Sheet) com cantos superiores arredondados pronunciados (`rounded-t-[2.5rem]`) em todas as camadas (incluindo o contêiner do header para evitar vazamentos visuais), e o botão `X` de fechar é ocultado (`hidden sm:flex`), confiando estritamente no gesto de arrastar para fechar.
+
+## [2.12.49] - 2026-07-06
+
+### Alterado
+- **UX/UI (Modal / Bottom Sheet):** Refinado o comportamento responsivo de modais no mobile no [Modal.tsx](file:///f:/CURSOR/fincontrol/src/components/common/Modal.tsx). Aumentamos o arredondamento dos cantos superiores para `rounded-t-[2.5rem]` (e aplicamos no próprio contêiner do cabeçalho para evitar vazamento visual de cores nos cantos), e removemos a exibição do botão `X` de fechar em telas móveis (`hidden sm:flex`), priorizando a navegação gestual nativa (deslizar para baixo/drag-to-close) já presente no app.
+
+## [2.12.48] - 2026-07-06
+
+### Alterado
+- **UX/UI (Mobile NavBar):** Remodelado o formato do botão central de "Nova Transação" na barra inferior móvel. Abandonamos o círculo padrão e adotamos um **diamante/losango arredondado flutuante (`rotate-45 rounded-xl`)**, que remete a moedas, joias e ao nicho de finanças/investimentos. O botão foi posicionado ligeiramente suspenso e o ícone centralizado de forma correta (`-rotate-45`).
+
+## [2.12.47] - 2026-07-06
+
+### Alterado
+- **UX/UI (Mobile NavBar):** Alterado o fundo do bottom sheet "Mais" de vidro fosco translúcido (`backdrop-blur-lg`) para fundo sólido (`bg-white` no light mode e `bg-neutral-950` no dark mode), garantindo maior consistência visual, privacidade e contraste do conteúdo quando aberto sobre o dashboard.
+
+## [2.12.46] - 2026-07-06
+
+### Corrigido
+- **UX/UI (Mobile NavBar):** Corrigido o corte do conteúdo na base do bottom sheet "Mais". Elevamos o z-index do sheet para `z-50` para que ele sobreponha corretamente a barra de navegação inferior (`z-40`), e aumentamos o padding inferior (`pb-[calc(2rem+env(safe-area-inset-bottom))]`) para garantir que botões na base do sheet (como "Sair do App") fiquem totalmente visíveis e clicáveis em qualquer aparelho móvel.
+
+## [2.12.45] - 2026-07-06
+
+### Alterado
+- **UX/UI (Mobile NavBar):** Redesenhado o seletor ativo da barra de navegação móvel (`MobileNavBar`) com base no design de abas clássico. O item selecionado agora recebe uma linha azul sólida na borda inferior (`border-b-2 border-primary-600`) e um preenchimento translúcido sutil (`bg-primary-500/5 dark:bg-white/5`) no fundo do bloco correspondente, idêntico aos padrões de aplicativos premium.
+
+## [2.12.44] - 2026-07-06
+
+### Alterado
+- **UX/UI (Mobile NavBar):** Adicionados cantos superiores arredondados (`rounded-t-[2rem]`) na barra de navegação móvel (`MobileNavBar`), suavizando a transição com o conteúdo superior e mantendo a base e laterais 100% unificadas com as bordas da tela.
+
+## [2.12.43] - 2026-07-06
+
+### Alterado
+- **UX/UI (Mobile NavBar):** Removido o visual flutuante da barra de navegação móvel (`MobileNavBar`) e do painel de opções deslizante ("Mais"). Ambos agora são **unificados com o fundo e colados** na borda inferior da tela, estendendo-se por toda a largura, exatamente como o padrão de aplicativos nativos mobile. A animação do painel "Mais" foi ajustada para nascer e deslizar verticalmente a partir de 100% da base (`y: '100%'`).
+
+## [2.12.42] - 2026-07-06
+
+### Alterado
+- **UX/UI (Sidebar Toggle):** Retornado o formato do botão de toggle da Sidebar para o design redondo original (`rounded-full` com diâmetro `w-7 h-7`), mantendo a cor de fundo azul e o ícone branco destacados e a correção de z-index para evitar que seja sobreposto pelo Header sticky.
+
+## [2.12.41] - 2026-07-06
+
+### Corrigido
+- **UX/UI (Layout):** Corrigida a sobreposição do botão de toggle da Sidebar pelo Header sticky da página. Elevamos o z-index do contêiner da Sidebar no [MainLayout.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx) para `z-40`, o que supera o `z-30` do Header, garantindo que o puxador do toggle fique visível e acessível a todo momento.
+
+## [2.12.40] - 2026-07-06
+
+### Alterado
+- **UX/UI (Sidebar Toggle):** Redesenhado o formato do botão de toggle de recolhimento da Sidebar. Em vez de uma bolinha flutuante solta, ele agora é uma **aba/puxador vertical alongado (Pill/Tab)** com cantos arredondados na direita (`rounded-r-xl`) encostada na borda da Sidebar. Posicionado estrategicamente em `top-10` para evitar conflito com a curvatura do topo da Sidebar, possui também uma micro-animação de expansão suave ao passar o mouse (`hover:w-6`).
+
+## [2.12.39] - 2026-07-06
+
+### Corrigido
+- **UX/UI (Layout):** Corrigido o bug onde o botão de toggle de recolhimento da Sidebar ficava coberto ou oculto pela área de conteúdo principal da direita (Header/Main). Adicionamos posicionamento relativo e z-index superior (`relative z-20`) ao contêiner pai da Sidebar no [MainLayout.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx), garantindo que ela e seu botão de toggle flutuem livremente sobre as outras seções do dashboard.
+
+## [2.12.38] - 2026-07-06
+
+### Corrigido
+- **UX/UI (Sidebar):** Resolvido o problema de corte (clipping) do botão de toggle da Sidebar, que era causado pela renderização de `backdrop-filter` combinada com o `border-radius` do elemento pai. O efeito de Glassmorphism e cantos arredondados foram movidos para uma camada de background absoluto independente, garantindo que o botão de toggle flutue livremente e permaneça 100% redondo e visível.
+
+## [2.12.37] - 2026-07-06
+
+### Alterado
+- **UX/UI (Sidebar):** Ajustada a `Sidebar` para alinhar-se perfeitamente à lateral esquerda da tela (removido o recuo `ml-4` e cantos arredondados na esquerda), mantendo apenas as bordas do topo, fundo e lateral direita arredondadas (`rounded-r-[2rem]`).
+- **UX/UI (Sidebar Toggle):** Corrigido o contraste do botão de toggle de recolhimento da Sidebar. A cor de fundo foi alterada de branco para azul (`bg-primary-600 dark:bg-primary-500`) e o ícone Chevron para branco (`text-white`), garantindo destaque perfeito em relação ao fundo claro do dashboard.
+
+## [2.12.36] - 2026-07-06
+
+### Alterado
+- **UX/UI (Layout):** Redesenhada a `Sidebar` no desktop para o modelo flutuante premium com cantos altamente arredondados (`rounded-[2rem]`), margem lateral/superior (`my-4 ml-4`) e borda contínua, abandonando o formato de barra reta colada.
+
+## [2.12.35] - 2026-07-06
+
+### Adicionado
+- **UX/UI (Dashboard):** Implementada a assinatura visual **Saúde Financeira (FinancialHealthRing)**: um indicador radial animado que resume a saúde das finanças do mês em tempo real, baseando-se no saldo, receitas, despesas e limites de orçamentos configurados.
+- **Tipografia:** Integrada a fonte de exibição premium **Outfit** do Google Fonts para títulos e displays numéricos de saldos em destaque.
+- **Navegação (Glassmorphism):** Refinamento visual da `Sidebar`, `MobileNavBar` e `Header` com fundos translúcidos (efeito vidro fosco) e micro-animações de hover suaves nos itens.
+- **Transições:** Ativadas as animações globais de transição de página (`PageTransition`) entre as telas do dashboard.
+
+### Corrigido
+- **UX/UI (Layout):** Ajustado o grid de cards de resumos no topo do Dashboard para resolver o espaço vazio ("buraco") ao lado do card de Despesas, configurando o card de Saldo do Mês para ocupar a largura total do sub-grid (2 colunas) em harmonia com as receitas e despesas.
+- **Visualização de Dados (Recharts):** Corrigido o visual dos Tooltips dos gráficos de linha, área, barras e pizza no Dark Mode (agora adaptam-se ao tema escuro com fundo cinza translúcido e bordas sutis).
+
+## [2.12.34] - 2026-07-06
+
+### Adicionado
+- **Ambiente de Desenvolvimento:** Instalada a ferramenta Impeccable Skills e adicionada a skill `frontend-design` no projeto para aprimoramento e verificação das diretrizes visuais do frontend.
+
 ## [2.12.33] - 2026-05-12
 
 ### Corrigido

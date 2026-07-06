@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Github, Mail, Shield, FileText, HelpCircle, Wallet } from 'lucide-react'
+import { Github, Mail, Shield, FileText, HelpCircle } from 'lucide-react'
+import packageInfo from '../../../package.json'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -11,8 +12,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4 md:w-1/3 flex flex-col items-center sm:items-start text-center sm:text-left">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
-                <Wallet className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-gray-50/50 dark:bg-neutral-800 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 overflow-hidden p-1.5 border border-gray-100 dark:border-neutral-700/60">
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 FinControl
@@ -118,7 +119,7 @@ const Footer = () => {
             <div className="text-sm text-gray-600 dark:text-neutral-400 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
               <p className="font-medium">© {currentYear} FinControl — Todos os direitos reservados</p>
               <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
-                Versão 2.12.33
+                Versão {packageInfo.version}
               </p>
             </div>
             <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/50 p-2 px-4 rounded-full order-1 md:order-2">

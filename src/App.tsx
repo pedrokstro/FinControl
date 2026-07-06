@@ -9,6 +9,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import LoadingSkeleton from './components/common/LoadingSkeleton'
 import PWAInstallPrompt from './components/common/PWAInstallPrompt'
 import OfflineIndicator from './components/common/OfflineIndicator'
+import PageTransition from './components/common/PageTransition'
 import BiometricLock from './components/common/BiometricLock'
 import { useSecurityStore } from './store/securityStore'
 
@@ -148,74 +149,102 @@ const AnimatedRoutes = () => {
           <Route index element={<Navigate to="/app/transactions" replace />} />
           <Route path="dashboard" element={
             <Suspense fallback={<PageLoader />}>
-              <Dashboard />
+              <PageTransition>
+                <Dashboard />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="transactions" element={
             <Suspense fallback={<PageLoader />}>
-              <Transactions />
+              <PageTransition>
+                <Transactions />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="categories" element={
             <Suspense fallback={<PageLoader />}>
-              <Categories />
+              <PageTransition>
+                <Categories />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="subscriptions" element={
             <Suspense fallback={<PageLoader />}>
-              <Subscriptions />
+              <PageTransition>
+                <Subscriptions />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="cards" element={
             <Suspense fallback={<PageLoader />}>
-              <Cards />
+              <PageTransition>
+                <Cards />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="reports" element={
             <Suspense fallback={<PageLoader />}>
-              <Reports />
+              <PageTransition>
+                <Reports />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="plans" element={
             <Suspense fallback={<PageLoader />}>
-              <Plans />
+              <PageTransition>
+                <Plans />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="upgrade" element={
             <Suspense fallback={<PageLoader />}>
-              <Plans />
+              <PageTransition>
+                <Plans />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="checkout" element={
             <Suspense fallback={<PageLoader />}>
-              <Checkout />
+              <PageTransition>
+                <Checkout />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="settings" element={
             <Suspense fallback={<PageLoader />}>
-              <Settings />
+              <PageTransition>
+                <Settings />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="settings/subscription" element={
             <Suspense fallback={<PageLoader />}>
-              <ManageSubscription />
+              <PageTransition>
+                <ManageSubscription />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="profile" element={<Navigate to="/app/settings" replace />} />
           <Route path="calculadora-porcentagem" element={
             <Suspense fallback={<PageLoader />}>
-              <PercentageCalculator />
+              <PageTransition>
+                <PercentageCalculator />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="calculadora-juros" element={
             <Suspense fallback={<PageLoader />}>
-              <CompoundInterestCalculator />
+              <PageTransition>
+                <CompoundInterestCalculator />
+              </PageTransition>
             </Suspense>
           } />
           <Route path="admin" element={
             <AdminRoute>
               <Suspense fallback={<PageLoader />}>
-                <Admin />
+                <PageTransition>
+                  <Admin />
+                </PageTransition>
               </Suspense>
             </AdminRoute>
           } />

@@ -68,6 +68,7 @@ import { type IconName } from '@/utils/iconMapping'
 import Modal from '@/components/common/Modal'
 import { useSearchParams, Link } from 'react-router-dom'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
+import { FinancialHealthRing } from '@/components/ui/FinancialHealthRing'
 
 const RADIAN = Math.PI / 180
 
@@ -755,203 +756,218 @@ const Dashboard = () => {
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* Saldo do Mês - Card Principal */}
-        <div className="card col-span-2 lg:col-span-1 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
-              <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate">
-                {formatCurrency(financialSummary.monthBalance)}
-              </h3>
-              <p className="text-primary-200 text-xs mt-2">
-                {financialSummary.monthBalance >= 0 ? '✓ Saldo positivo' : '⚠ Saldo negativo'}
-              </p>
-            </div>
-            <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
-              <Wallet className="w-5 h-5" />
-            </div>
-          </div>
-          {/* Barra de progresso receita vs despesa */}
-          {(financialSummary.monthIncome > 0 || financialSummary.monthExpense > 0) && (
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-primary-200 mb-1">
-                <span>Gasto</span>
-                <span>{financialSummary.monthIncome > 0 ? Math.round((financialSummary.monthExpense / financialSummary.monthIncome) * 100) : 0}%</span>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
+        {/* Lado Esquerdo: Cards de Resumo */}
+        <div className="lg:col-span-3 grid grid-cols-2 gap-3 sm:gap-4">
+          {/* Saldo do Mês - Card Principal */}
+          <div className="card col-span-2 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
+                <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate font-display">
+                  {formatCurrency(financialSummary.monthBalance)}
+                </h3>
+                <p className="text-primary-200 text-xs mt-2">
+                  {financialSummary.monthBalance >= 0 ? '✓ Saldo positivo' : '⚠ Saldo negativo'}
+                </p>
               </div>
-              <div className="w-full bg-white/20 rounded-full h-1.5">
-                <div
-                  className="bg-white rounded-full h-1.5 transition-all duration-500"
-                  style={{ width: `${Math.min(financialSummary.monthIncome > 0 ? (financialSummary.monthExpense / financialSummary.monthIncome) * 100 : 0, 100)}%` }}
-                />
+              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
+                <Wallet className="w-5 h-5" />
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Receitas do Mês */}
-        <div
-          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
-          onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && incomeTransactions.length) setShowIncomeModal(true)
-          }}
-        >
-          {/* Top accent bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
-
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex flex-col">
-              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
-                {formatCurrency(financialSummary.monthIncome)}
-              </h3>
-            </div>
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success-600 dark:text-success-400" />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400 dark:text-neutral-500">
-              {incomeTransactions.length > 0 ? `${incomeTransactions.length} lançamento${incomeTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
-            </span>
-            {incomeTransactions.length > 0 && (
-              <div className="flex items-center gap-1">
-                <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
-                <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Ver</span>
+            {/* Barra de progresso receita vs despesa */}
+            {(financialSummary.monthIncome > 0 || financialSummary.monthExpense > 0) && (
+              <div className="mt-4">
+                <div className="flex justify-between text-xs text-primary-200 mb-1">
+                  <span>Gasto</span>
+                  <span>{financialSummary.monthIncome > 0 ? Math.round((financialSummary.monthExpense / financialSummary.monthIncome) * 100) : 0}%</span>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-1.5">
+                  <div
+                    className="bg-white rounded-full h-1.5 transition-all duration-500"
+                    style={{ width: `${Math.min(financialSummary.monthIncome > 0 ? (financialSummary.monthExpense / financialSummary.monthIncome) * 100 : 0, 100)}%` }}
+                  />
+                </div>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Despesas do Mês */}
-        <div
-          className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
-          onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && expenseTransactions.length) setShowExpenseModal(true)
-          }}
-        >
-          {/* Top accent bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+          {/* Receitas do Mês */}
+          <div
+            className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
+            onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && incomeTransactions.length) setShowIncomeModal(true)
+            }}
+          >
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
 
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex flex-col">
-              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
-                {formatCurrency(financialSummary.monthExpense)}
-              </h3>
-            </div>
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
-              <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-danger-600 dark:text-danger-400" />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400 dark:text-neutral-500">
-              {expenseTransactions.length > 0 ? `${expenseTransactions.length} lançamento${expenseTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
-            </span>
-            {expenseTransactions.length > 0 && (
-              <div className="flex items-center gap-1">
-                <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
-                <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Ver</span>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
+                  {formatCurrency(financialSummary.monthIncome)}
+                </h3>
               </div>
-            )}
-          </div>
-        </div>
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success-600 dark:text-success-400" />
+              </div>
+            </div>
 
-        <div className="card col-span-2 lg:col-span-1 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Meta de Economia</p>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400 dark:text-neutral-500">
+                {incomeTransactions.length > 0 ? `${incomeTransactions.length} lançamento${incomeTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
+              </span>
+              {incomeTransactions.length > 0 && (
                 <div className="flex items-center gap-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setShowGoalModal(true)
-                    }}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded transition-colors"
-                    title={currentGoal ? 'Editar meta' : 'Definir meta'}
-                  >
-                    {currentGoal ? (
-                      <Edit3 className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
-                    ) : (
-                      <Plus className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
-                    )}
-                  </button>
-                  {currentGoal && (
+                  <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
+                  <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Ver</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Despesas do Mês */}
+          <div
+            className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
+            onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && expenseTransactions.length) setShowExpenseModal(true)
+            }}
+          >
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
+                  {formatCurrency(financialSummary.monthExpense)}
+                </h3>
+              </div>
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
+                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-danger-600 dark:text-danger-400" />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400 dark:text-neutral-500">
+                {expenseTransactions.length > 0 ? `${expenseTransactions.length} lançamento${expenseTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
+              </span>
+              {expenseTransactions.length > 0 && (
+                <div className="flex items-center gap-1">
+                  <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
+                  <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Ver</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Meta de Economia */}
+          <div className="card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Meta de Economia</p>
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        handleDeleteGoal()
+                        setShowGoalModal(true)
                       }}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
-                      title="Excluir meta"
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded transition-colors"
+                      title={currentGoal ? 'Editar meta' : 'Definir meta'}
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
+                      {currentGoal ? (
+                        <Edit3 className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
+                      )}
                     </button>
-                  )}
-                </div>
-              </div>
-
-              {isLoadingGoal ? (
-                <div className="animate-pulse">
-                  <div className="h-8 bg-gray-200 dark:bg-neutral-700 rounded w-32 mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-24"></div>
-                </div>
-              ) : currentGoal ? (
-                <>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {formatCurrency(currentGoal.targetAmount)}
-                  </h3>
-                  <div className="mt-2 space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-500 dark:text-neutral-400">Progresso</span>
-                      <span className="font-medium text-gray-700 dark:text-neutral-300">
-                        {formatCurrency(currentGoal.currentAmount)} / {formatCurrency(currentGoal.targetAmount)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all ${currentGoal.currentAmount >= currentGoal.targetAmount
-                          ? 'bg-success-500'
-                          : 'bg-primary-500'
-                          }`}
-                        style={{
-                          width: `${Math.min(100, (currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%`,
+                    {currentGoal && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteGoal()
                         }}
-                      />
-                    </div>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Target className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                      <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
-                        {currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida! 🎉' :
-                          `${Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}% concluído`}
-                      </span>
-                    </div>
+                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                        title="Excluir meta"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
+                      </button>
+                    )}
                   </div>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-2xl font-bold text-gray-400 dark:text-neutral-500">
-                    Sem meta
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-                    Clique para definir sua meta
-                  </p>
-                </>
-              )}
-            </div>
-            <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110">
-              <Target className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                </div>
+
+                {isLoadingGoal ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 bg-gray-200 dark:bg-neutral-700 rounded w-32 mb-2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-24"></div>
+                  </div>
+                ) : currentGoal ? (
+                  <>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                      {formatCurrency(currentGoal.targetAmount)}
+                    </h3>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-neutral-400">Progresso</span>
+                        <span className="font-medium text-gray-700 dark:text-neutral-300">
+                          {formatCurrency(currentGoal.currentAmount)} / {formatCurrency(currentGoal.targetAmount)}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all ${currentGoal.currentAmount >= currentGoal.targetAmount
+                            ? 'bg-success-500'
+                            : 'bg-primary-500'
+                            }`}
+                          style={{
+                            width: `${Math.min(100, (currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Target className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                        <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
+                          {currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida! 🎉' :
+                            `${Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}% concluído`}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-2xl font-bold text-gray-400 dark:text-neutral-500 font-display">
+                      Sem meta
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+                      Clique para definir sua meta
+                    </p>
+                  </>
+                )}
+              </div>
+              <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110">
+                <Target className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Lado Direito: Indicador de Saúde Financeira */}
+        <div className="lg:col-span-1">
+          <FinancialHealthRing
+            income={financialSummary.monthIncome}
+            expense={financialSummary.monthExpense}
+            budgets={budgets}
+            transactions={transactions}
+            selectedDate={selectedDate}
+          />
         </div>
       </div>
 

@@ -14,6 +14,35 @@ import {
 } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
 
+// Componente de Tooltip Customizado com suporte a Glassmorphism e Dark Mode
+const CustomTooltip = ({ active, payload, label, formatCurrency, labelPrefix = '' }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border border-gray-200/50 dark:border-neutral-800/50 rounded-xl shadow-xl p-3 text-xs sm:text-sm">
+        {label !== undefined && label !== null && (
+          <p className="font-bold text-gray-900 dark:text-white mb-1.5 font-display">
+            {labelPrefix ? `${labelPrefix}: ${label}` : label}
+          </p>
+        )}
+        <div className="space-y-1.5">
+          {payload.map((item: any, idx: number) => (
+            <div key={idx} className="flex items-center gap-4 justify-between">
+              <span className="flex items-center gap-1.5 text-gray-500 dark:text-neutral-400">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color || item.fill }} />
+                {item.name}:
+              </span>
+              <span className="font-semibold text-gray-900 dark:text-white font-display">
+                {formatCurrency(item.value)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 // ============================================
 // 1. FLUXO DE CAIXA DIÁRIO
 // ============================================
@@ -70,13 +99,7 @@ export const CashFlowChart = memo<CashFlowChartProps>(({ data, formatCurrency })
             }}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-            }}
+            content={<CustomTooltip formatCurrency={formatCurrency} labelPrefix="Dia" />}
             animationDuration={300}
             isAnimationActive={true}
           />
@@ -166,12 +189,7 @@ export const TopExpensesChart = memo<TopExpensesChartProps>(({ data, formatCurre
             width={90}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-            }}
+            content={<CustomTooltip formatCurrency={formatCurrency} labelPrefix="Despesa" />}
             animationDuration={300}
             isAnimationActive={true}
           />
@@ -330,12 +348,7 @@ export const ExpensesByWeekdayChart = memo<ExpensesByWeekdayChartProps>(({ data,
             tickFormatter={(value) => formatCurrency(value)}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-            }}
+            content={<CustomTooltip formatCurrency={formatCurrency} labelPrefix="" />}
             animationDuration={300}
             isAnimationActive={true}
           />
@@ -407,12 +420,7 @@ export const BudgetVsActualChart = memo<BudgetVsActualChartProps>(({ data, forma
             width={90}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-            }}
+            content={<CustomTooltip formatCurrency={formatCurrency} labelPrefix="" />}
             animationDuration={300}
             isAnimationActive={true}
           />

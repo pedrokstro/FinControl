@@ -6,7 +6,7 @@ import {
   Calculator, Percent, TrendingUp, LogOut, ChevronRight,
   type LucideIcon
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { useIsMobile } from '@/hooks'
 import { haptics } from '@/utils/haptics'
 import { useAuthStore } from '@/store/authStore'
@@ -32,6 +32,7 @@ const MobileNavBar = () => {
   const [moreView, setMoreView] = useState<MoreView>('main')
   const navigate = useNavigate()
   const { logout } = useAuthStore()
+  const dragControls = useDragControls()
 
   if (!isMobile) return null
 
@@ -69,7 +70,7 @@ const MobileNavBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-md"
             onClick={closeMore}
           />
         )}
@@ -79,14 +80,27 @@ const MobileNavBar = () => {
       <AnimatePresence>
         {isMoreOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
+            exit={{ opacity: 0, y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className="fixed inset-x-3 bottom-[84px] z-40 bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden"
+            drag="y"
+            dragControls={dragControls}
+            dragListener={false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.4 }}
+            onDragEnd={(_, { offset, velocity }) => {
+              if (offset.y > 100 || velocity.y > 400) {
+                closeMore()
+              }
+            }}
+            className="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-neutral-950 rounded-t-[2rem] shadow-2xl border-t border-gray-100/40 dark:border-neutral-800/30 overflow-hidden pb-[calc(2rem+env(safe-area-inset-bottom))]"
           >
             {/* Handle */}
-            <div className="flex justify-center pt-3 pb-1">
+            <div
+              className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+              onPointerDown={(e) => dragControls.start(e)}
+            >
               <div className="w-10 h-1 bg-gray-200 dark:bg-neutral-700 rounded-full" />
             </div>
 
@@ -211,78 +225,77 @@ const MobileNavBar = () => {
       </AnimatePresence>
 
       {/* Bottom Nav Bar */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-3 mb-3">
-          <div className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-neutral-700/50 rounded-full shadow-2xl flex items-center px-4">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-lg border-t border-gray-200/50 dark:border-neutral-800/40 shadow-2xl rounded-t-[2rem] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center px-4 justify-around">
 
-            {/* Início */}
-            <NavLink
-              to={mainItems[0].path}
-              onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <LayoutDashboard className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
-                  <span className="text-[10px] font-medium">Início</span>
-                </>
-              )}
-            </NavLink>
+          {/* Início */}
+          <NavLink
+            to={mainItems[0].path}
+            onClick={() => { haptics.light(); setIsMoreOpen(false) }}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <LayoutDashboard className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <span className="text-[10px] font-medium">Início</span>
+              </>
+            )}
+          </NavLink>
 
-            {/* Transações */}
-            <NavLink
-              to={mainItems[1].path}
-              onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <ArrowLeftRight className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
-                  <span className="text-[10px] font-medium">Transações</span>
-                </>
-              )}
-            </NavLink>
+          {/* Transações */}
+          <NavLink
+            to={mainItems[1].path}
+            onClick={() => { haptics.light(); setIsMoreOpen(false) }}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <ArrowLeftRight className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <span className="text-[10px] font-medium">Transações</span>
+              </>
+            )}
+          </NavLink>
 
-            {/* Botão central ➕ — Nova Transação */}
-            <div className="flex-1 flex justify-center">
-              <button
-                onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/transactions?add=true') }}
-                className="w-12 h-12 bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-full flex items-center justify-center shadow-lg shadow-primary-500/20 transition-all my-2"
-              >
-                <Plus className="w-6 h-6 text-white" />
-              </button>
-            </div>
-
-            {/* Relatórios */}
-            <NavLink
-              to={mainItems[2].path}
-              onClick={() => { haptics.light(); setIsMoreOpen(false) }}
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <BarChart3 className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
-                  <span className="text-[10px] font-medium">Relatórios</span>
-                </>
-              )}
-            </NavLink>
-
-            {/* Mais / rotativo */}
+          {/* Botão central ➕ — Nova Transação (Formato de Diamante de Finanças) */}
+          <div className="flex-1 flex justify-center relative">
             <button
-              onClick={isMoreOpen ? closeMore : openMore}
-              className={`flex flex-col items-center gap-1 py-3 flex-1 transition-colors ${isMoreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-neutral-400'}`}
+              onClick={() => { haptics.medium(); setIsMoreOpen(false); navigate('/app/transactions?add=true') }}
+              className="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 active:scale-90 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 transition-all rotate-45 border border-white/20 cursor-pointer -top-2 relative"
+              title="Nova Transação"
             >
-              <MoreHorizontal className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Mais</span>
+              <Plus className="-rotate-45 w-5 h-5 text-white" />
             </button>
-
           </div>
+
+          {/* Relatórios */}
+          <NavLink
+            to={mainItems[2].path}
+            onClick={() => { haptics.light(); setIsMoreOpen(false) }}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <BarChart3 className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <span className="text-[10px] font-medium">Relatórios</span>
+              </>
+            )}
+          </NavLink>
+
+          {/* Mais / rotativo */}
+          <button
+            onClick={isMoreOpen ? closeMore : openMore}
+            className={`flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`}
+          >
+            <MoreHorizontal className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Mais</span>
+          </button>
+
         </div>
       </div>
     </>

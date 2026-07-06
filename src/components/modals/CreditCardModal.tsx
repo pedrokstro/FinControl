@@ -142,7 +142,7 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
           />
 
           {/* Modal Container */}
-          <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
+          <div className="fixed inset-0 flex justify-center z-[200] pointer-events-none items-end sm:items-center p-0 sm:p-4">
             <motion.div
               initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
               animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
@@ -158,23 +158,19 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
                   onClose()
                 }
               }) : undefined}
-              className={`bg-white dark:bg-neutral-900 z-[200] shadow-2xl w-full max-w-md flex flex-col overflow-hidden pointer-events-auto ${
-                isMobile ? 'rounded-t-[3xl] border-t border-gray-100 dark:border-neutral-800' : 'rounded-3xl'
-              }`}
+              className="bg-white dark:bg-neutral-900 z-[200] shadow-2xl w-full max-w-md flex flex-col overflow-hidden pointer-events-auto rounded-t-[2.5rem] sm:rounded-3xl border-t border-transparent sm:border border-gray-100 dark:border-neutral-800"
             >
-              <div className={`flex flex-col h-full overflow-hidden ${isMobile ? 'max-h-[85vh]' : ''}`}>
+              <div className="flex flex-col h-full overflow-hidden max-h-[85vh] sm:max-h-[92vh]">
                 {/* Drag indicator no mobile */}
-                {isMobile && (
-                  <div
-                    className="py-3 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
-                    onPointerDown={(e) => dragControls.start(e)}
-                  >
-                    <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
-                  </div>
-                )}
+                <div
+                  className="sm:hidden py-3 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
+                  onPointerDown={(e) => dragControls.start(e)}
+                >
+                  <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
+                </div>
 
                 {/* Header */}
-                <div className={`flex items-center justify-between p-6 border-b border-gray-100 dark:border-neutral-800 flex-shrink-0 ${isMobile ? 'pt-0' : ''}`}>
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-neutral-800 flex-shrink-0 pt-0 sm:pt-6 rounded-t-[2.5rem] sm:rounded-t-3xl">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                       <CardIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
@@ -188,7 +184,7 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
                       haptics.light()
                       onClose()
                     }}
-                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    className="hidden sm:flex p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                   >
                     <X className="w-6 h-6" />
                   </button>
