@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.61] - 2026-07-06
+
+### Corrigido
+- **UX/UI (Modais):**
+  - Ajustado o overlay de fundo (backdrop) dos modais de Receitas e Despesas do Mês no [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) e no componente comum [Modal.tsx](file:///f:/CURSOR/fincontrol/src/components/common/Modal.tsx), substituindo `inset-0` por `-inset-1`. Isso expande a área do overlay em 4px para fora de todas as extremidades, eliminando vazamentos de luz e frestas brancas no topo causadas por safe-areas ou arredondamentos de sub-pixels no mobile e desktop.
+
 ## [2.12.60] - 2026-07-06
 
 ### Removido
