@@ -233,12 +233,19 @@ const MobileNavBar = () => {
             to={mainItems[0].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all active:scale-95 ${isActive && !isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5' : 'text-gray-500 dark:text-neutral-400'}`
             }
           >
             {({ isActive }) => (
               <>
-                <LayoutDashboard className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                {isActive && !isMoreOpen && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    transition={{ type: 'spring', stiffness: 550, damping: 35 }}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[3px] bg-gradient-to-r from-primary-400 to-primary-600 rounded-full shadow-[0_1px_8px_rgba(59,130,246,0.6)]"
+                  />
+                )}
+                <LayoutDashboard className={`w-5 h-5 transition-transform ${isActive && !isMoreOpen ? 'scale-110 text-primary-600 dark:text-primary-400' : ''}`} />
                 <span className="text-[10px] font-medium">Início</span>
               </>
             )}
@@ -249,12 +256,19 @@ const MobileNavBar = () => {
             to={mainItems[1].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all active:scale-95 ${isActive && !isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5' : 'text-gray-500 dark:text-neutral-400'}`
             }
           >
             {({ isActive }) => (
               <>
-                <ArrowLeftRight className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                {isActive && !isMoreOpen && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    transition={{ type: 'spring', stiffness: 550, damping: 35 }}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[3px] bg-gradient-to-r from-primary-400 to-primary-600 rounded-full shadow-[0_1px_8px_rgba(59,130,246,0.6)]"
+                  />
+                )}
+                <ArrowLeftRight className={`w-5 h-5 transition-transform ${isActive && !isMoreOpen ? 'scale-110 text-primary-600 dark:text-primary-400' : ''}`} />
                 <span className="text-[10px] font-medium">Transações</span>
               </>
             )}
@@ -276,12 +290,19 @@ const MobileNavBar = () => {
             to={mainItems[2].path}
             onClick={() => { haptics.light(); setIsMoreOpen(false) }}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isActive ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`
+              `flex flex-col items-center gap-1 py-3 flex-1 relative transition-all active:scale-95 ${isActive && !isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5' : 'text-gray-500 dark:text-neutral-400'}`
             }
           >
             {({ isActive }) => (
               <>
-                <BarChart3 className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                {isActive && !isMoreOpen && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    transition={{ type: 'spring', stiffness: 550, damping: 35 }}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[3px] bg-gradient-to-r from-primary-400 to-primary-600 rounded-full shadow-[0_1px_8px_rgba(59,130,246,0.6)]"
+                  />
+                )}
+                <BarChart3 className={`w-5 h-5 transition-transform ${isActive && !isMoreOpen ? 'scale-110 text-primary-600 dark:text-primary-400' : ''}`} />
                 <span className="text-[10px] font-medium">Relatórios</span>
               </>
             )}
@@ -290,9 +311,16 @@ const MobileNavBar = () => {
           {/* Mais / rotativo */}
           <button
             onClick={isMoreOpen ? closeMore : openMore}
-            className={`flex flex-col items-center gap-1 py-3 flex-1 relative transition-all border-b-2 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5 border-primary-600 dark:border-primary-400' : 'text-gray-500 dark:text-neutral-400 border-transparent'}`}
+            className={`flex flex-col items-center gap-1 py-3 flex-1 relative transition-all active:scale-95 ${isMoreOpen ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-white/5' : 'text-gray-500 dark:text-neutral-400'}`}
           >
-            <MoreHorizontal className="w-5 h-5" />
+            {isMoreOpen && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                transition={{ type: 'spring', stiffness: 550, damping: 35 }}
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[3px] bg-gradient-to-r from-primary-400 to-primary-600 rounded-full shadow-[0_1px_8px_rgba(59,130,246,0.6)]"
+              />
+            )}
+            <MoreHorizontal className={`w-5 h-5 transition-transform ${isMoreOpen ? 'scale-110 text-primary-600 dark:text-primary-400' : ''}`} />
             <span className="text-[10px] font-medium">Mais</span>
           </button>
 

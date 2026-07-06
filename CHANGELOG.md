@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.62] - 2026-07-06
+
+### Alterado
+- **UX/UI (MobileNavBar):**
+  - Reposicionado o indicador de aba ativa da barra de navegação móvel (MobileNavBar) para o **topo** de cada botão.
+  - Implementada uma animação de transição deslizante rápida e fluida do indicador usando a propriedade `layoutId` do Framer Motion.
+  - Adicionado efeito de brilho suave (glow azul) no indicador de topo.
+  - Inserido feedback tátil visual rápido nos botões das abas com a classe `active:scale-95` no toque/clique.
+
 ## [2.12.61] - 2026-07-06
 
 ### Corrigido
