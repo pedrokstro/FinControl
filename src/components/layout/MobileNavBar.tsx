@@ -32,7 +32,7 @@ const MobileNavBar = () => {
   const [moreView, setMoreView] = useState<MoreView>('main')
   const navigate = useNavigate()
   const { logout } = useAuthStore()
-  const popupRef = useRef<HTMLDivElement>(null)
+
 
   if (!isMobile) return null
 
