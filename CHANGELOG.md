@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.60] - 2026-07-06
+
+### Removido
+- **UX/UI (Sidebar Desktop):**
+  - Removidos por completo os blocos de convite Premium ("Torne-se Premium") e de status de membro ativo ("Membro Pro") do rodapé do [Sidebar.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/Sidebar.tsx), simplificando e liberando espaço vertical valioso na barra lateral de navegação.
+
 ## [2.12.59] - 2026-07-06
 
 ### Alterado

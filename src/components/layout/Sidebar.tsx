@@ -366,68 +366,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         </div>
       </nav>
 
-      {!isCollapsed && (
-        <div className="p-4 border-t border-gray-100 dark:border-neutral-800/60">
-          {!isPremium ? (
-            /* Premium Banner */
-            <button
-              onClick={() => {
-                navigate('/plans')
-                onNavigate?.()
-              }}
-              className="w-full bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl p-4 transition-all duration-300 shadow-lg hover:shadow-xl group relative overflow-hidden border border-amber-400/20"
-            >
-              {/* Animated Background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
 
-              <div className="relative">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Crown className="w-5 h-5 text-white" />
-                    <span className="font-bold text-white text-sm">Premium</span>
-                  </div>
-                  <Sparkles className="w-4 h-4 text-yellow-200 animate-pulse" />
-                </div>
-
-                <p className="text-xs text-white text-opacity-95 mb-3 text-left">
-                  Desbloqueie emojis exclusivos e recursos avançados!
-                </p>
-
-                <div className="flex items-center justify-between text-white">
-                  <span className="text-xs font-semibold">Torne-se Premium</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </button>
-          ) : (
-            /* Premium Active Status */
-            <div className="bg-amber-505/5 dark:bg-amber-500/5 backdrop-blur-sm rounded-2xl p-4 border border-amber-500/30 dark:border-amber-500/20 shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
-                  <Crown className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-gray-900 dark:text-white font-display">
-                    Membro Pro
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-neutral-450">
-                    Acesso completo ativo! 🎉
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  navigate('/app/settings/subscription')
-                  onNavigate?.()
-                }}
-                className="w-full mt-2.5 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold transition-colors text-left flex items-center gap-1 hover:underline"
-              >
-                Gerenciar assinatura →
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Bloco do Usuário (Foto e Logout) */}
       <div className="p-4 border-t border-gray-100 dark:border-neutral-800/60">
