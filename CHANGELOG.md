@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.63] - 2026-07-06
+
+### Alterado
+- **UX/UI (MobileNavBar):**
+  - Redesenhado o painel de ações rápidas "Mais": de um *bottom sheet* de tela cheia para um **popup flutuante compacto** que surge acima da barra de navegação, mantendo a `MobileNavBar` sempre visível e na frente.
+  - O popup possui animação de entrada `scale + opacity + y` com mola (`spring`), ancorando-se acima da barra no canto direito.
+  - Overlay de fundo suave com `bg-black/30 backdrop-blur-[2px]` no `z-30`, garantindo que a `MobileNavBar` (`z-50`) fique sempre acessível.
+  - Removido o gesto de arrastar para fechar (`useDragControls`), simplificando a lógica e melhorando a performace.
+
 ## [2.12.62] - 2026-07-06
 
 ### Alterado
