@@ -4,10 +4,10 @@
 
 ### Alterado
 - **UX/UI (MobileNavBar):**
-  - Reposicionado o indicador de aba ativa da barra de navegação móvel (MobileNavBar) para o **topo** de cada botão.
-  - Implementada uma animação de transição deslizante rápida e fluida do indicador usando a propriedade `layoutId` do Framer Motion.
-  - Adicionado efeito de brilho suave (glow azul) no indicador de topo.
-  - Inserido feedback tátil visual rápido nos botões das abas com a classe `active:scale-95` no toque/clique.
+  - Invertido o seletor visual ativo da barra de navegação móvel de baixo (`border-b-2`) para cima (`border-t-2`), combinando com o padrão estético moderno de barras flutuantes.
+  - Adicionadas micro-animações de mola premium (`spring`) nos ícones de navegação ao serem ativados (`y: -2`, `scale: 1.15`).
+  - Adicionada micro-animação de rotação e escala no botão rotativo "Mais" (`rotate: 90`, `scale: 1.15`) quando expandido.
+  - Adicionada animação de clique e rotação (`whileTap`) no botão central flutuante de Nova Transação ("➕").
 
 ## [2.12.61] - 2026-07-06
 
