@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.68] - 2026-07-07
+
+### Adicionado
+- **Configuração (Agente):**
+  - Criado o arquivo de regras de desenvolvimento do projeto [AGENTS.md](file:///f:/CURSOR/fincontrol/.agents/AGENTS.md).
+  - Adicionada regra proibindo o agente de detalhar ou imprimir códigos de implementação inteiros no chat antes de realizar as alterações.
+
 ## [2.12.67] - 2026-07-07
 
 ### Alterado
