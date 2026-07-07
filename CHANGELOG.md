@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.12.65] - 2026-07-07
+
+### Otimizado
+- **Performance (Dashboard):** 
+  - Removida chamada duplicada e redundante à API de Analytics (`/api/v1/analytics`) no carregamento inicial do Dashboard. A função agora é chamada apenas uma vez na montagem inicial e re-executada de forma reativa apenas quando a data selecionada (`selectedDate`) sofrer alterações.
+
+## [2.12.64] - 2026-07-06
+
+### Corrigido
+- **UX/UI (MobileNavBar):**
+  - Substituído o seletor `border-t-2` por um indicador em pílula contida (`rounded-full`) ao redor do ícone ativo, evitando vazamento visual nos cantos arredondados da barra.
+  - Corrigida a animação de rotação do botão "Mais" para girar apenas o ícone `⋯`, mantendo a pílula de fundo estática.
+
 ## [2.12.63] - 2026-07-06
 
 ### Alterado

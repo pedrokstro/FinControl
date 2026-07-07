@@ -237,7 +237,7 @@ const Dashboard = () => {
   // Sincronizar com backend ao carregar o dashboard
   useEffect(() => {
     const loadData = async () => {
-      await Promise.all([syncWithBackend(), loadCurrentGoal(), loadAnalytics()])
+      await Promise.all([syncWithBackend(), loadCurrentGoal()])
       // Pequeno delay para garantir renderização suave
       setTimeout(() => setIsInitialLoad(false), 100)
     }
