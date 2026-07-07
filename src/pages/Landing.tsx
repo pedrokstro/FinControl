@@ -20,7 +20,7 @@ import {
   Globe
 } from 'lucide-react'
 
-const CreditCard = () => {
+const BrandCreditCard = () => {
   return (
     <div className="w-[280px] sm:w-[320px] h-[170px] sm:h-[190px] bg-gradient-to-br from-primary-600 via-primary-500 to-indigo-700 rounded-2xl p-5 shadow-2xl relative overflow-hidden text-white border border-white/10 select-none backdrop-blur-xs">
       {/* Reflexo brilhante diagonal */}
@@ -88,7 +88,7 @@ const Landing = () => {
 
   const fadeInUp = useMemo(() => shouldAnimate ? {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const } }
   } : {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.4 } }
@@ -238,7 +238,7 @@ const Landing = () => {
                 }}
                 className="absolute z-10"
               >
-                <CreditCard />
+                <BrandCreditCard />
               </motion.div>
             </div>
 
