@@ -196,43 +196,6 @@ const Dashboard = () => {
     return { month: now.getMonth() + 1, year: now.getFullYear() }
   })
 
-  // Calcular as 3 maiores despesas do mês selecionado
-  const topExpensesCurrentMonth = useMemo(() => {
-    if (!transactions.length || !categories.length) return []
-
-    // 1. Filtrar transações de despesa do mês selecionado
-    const expenses = transactions.filter((t) => {
-      if (t.type !== 'expense') return false
-      const date = parseISO(t.date)
-      return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
-    })
-
-    // 2. Agrupar por categoria
-    const categoryTotals: { [key: string]: number } = {}
-    expenses.forEach((t) => {
-      categoryTotals[t.categoryId] = (categoryTotals[t.categoryId] || 0) + t.amount
-    })
-
-    // 3. Mapear para array e enriquecer com dados da categoria
-    const sorted = Object.keys(categoryTotals)
-      .map((catId) => {
-        const category = categories.find((c) => c.id === catId)
-        return {
-          categoryId: catId,
-          name: category?.name || 'Outros',
-          color: category?.color || '#9ca3af',
-          icon: category?.icon || 'FolderOpen',
-          amount: categoryTotals[catId],
-          percentage: financialSummary.monthExpense > 0
-            ? (categoryTotals[catId] / financialSummary.monthExpense) * 100
-            : 0
-        }
-      })
-      .sort((a, b) => b.amount - a.amount)
-
-    return sorted.slice(0, 3) // Pegar as top 3
-  }, [transactions, categories, selectedDate, financialSummary.monthExpense])
-
   // Carregar dados de analytics
   const loadAnalytics = async () => {
     try {
@@ -551,6 +514,43 @@ const Dashboard = () => {
       monthBalance,
     }
   }, [selectedMonthTransactions])
+
+  // Calcular as 3 maiores despesas do mês selecionado
+  const topExpensesCurrentMonth = useMemo(() => {
+    if (!transactions.length || !categories.length) return []
+
+    // 1. Filtrar transações de despesa do mês selecionado
+    const expenses = transactions.filter((t) => {
+      if (t.type !== 'expense') return false
+      const date = parseISO(t.date)
+      return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
+    })
+
+    // 2. Agrupar por categoria
+    const categoryTotals: { [key: string]: number } = {}
+    expenses.forEach((t) => {
+      categoryTotals[t.categoryId] = (categoryTotals[t.categoryId] || 0) + t.amount
+    })
+
+    // 3. Mapear para array e enriquecer com dados da categoria
+    const sorted = Object.keys(categoryTotals)
+      .map((catId) => {
+        const category = categories.find((c) => c.id === catId)
+        return {
+          categoryId: catId,
+          name: category?.name || 'Outros',
+          color: category?.color || '#9ca3af',
+          icon: category?.icon || 'FolderOpen',
+          amount: categoryTotals[catId],
+          percentage: financialSummary.monthExpense > 0
+            ? (categoryTotals[catId] / financialSummary.monthExpense) * 100
+            : 0
+        }
+      })
+      .sort((a, b) => b.amount - a.amount)
+
+    return sorted.slice(0, 3) // Pegar as top 3
+  }, [transactions, categories, selectedDate, financialSummary.monthExpense])
 
   const incomeTransactions = useMemo(() => {
     return [...selectedMonthTransactions]

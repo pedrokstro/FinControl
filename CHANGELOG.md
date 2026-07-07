@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.72] - 2026-07-07
+
+### Corrigido
+- **Dashboard (Bugfix):**
+  - Corrigido erro de runtime `ReferenceError: Cannot access 'w' before initialization` causado pela ordem de declaração da constante `topExpensesCurrentMonth` em [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx).
+  - A constante foi movida para baixo da declaração de `financialSummary`, resolvendo a referência temporal e estabilizando o carregamento inicial da página.
+
 ## [2.12.71] - 2026-07-07
 
 ### Alterado
