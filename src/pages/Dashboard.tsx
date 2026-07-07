@@ -1026,7 +1026,7 @@ const Dashboard = () => {
                             <CategoryIcon
                               icon={item.icon as IconName}
                               color={item.color}
-                              size="xs"
+                              size="sm"
                             />
                           </div>
                           <span className="text-gray-700 dark:text-neutral-300 truncate">

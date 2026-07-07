@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.73] - 2026-07-07
+
+### Corrigido
+- **Dashboard (Bugfix TS):**
+  - Corrigido erro de tipagem reportado pelo TypeScript no componente `CategoryIcon` na página de [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx). A propriedade `size` recebeu o valor adequado (`sm`) em vez do incorreto (`xs`).
+
 ## [2.12.72] - 2026-07-07
 
 ### Corrigido
