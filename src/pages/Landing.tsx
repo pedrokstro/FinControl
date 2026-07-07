@@ -29,8 +29,8 @@ const BrandCreditCard = () => {
       {/* Logo e Chip */}
       <div className="flex justify-between items-start relative z-10">
         <div className="flex items-center gap-1.5">
-          <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center overflow-hidden p-1">
-            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain brightness-0 invert" />
+          <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-md">
+            <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
           </div>
           <span className="text-sm font-bold tracking-wide font-display">FinControl</span>
         </div>
@@ -609,8 +609,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-primary-600 p-1.5 shadow-lg shadow-primary-500/20">
-                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain brightness-0 invert" />
+                <div className="w-8 h-8 flex items-center justify-center overflow-hidden rounded-lg">
+                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-xl font-bold text-gray-900 dark:text-white">FinControl</span>
               </div>
