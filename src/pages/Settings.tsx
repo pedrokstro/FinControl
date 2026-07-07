@@ -451,8 +451,8 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* NO DESKTOP: ABAS HORIZONTAIS NO TOPO ESTILO SAAS */}
-          <div className="hidden lg:flex overflow-x-auto mb-8 border-b border-gray-200 dark:border-neutral-800 gap-8">
+          {/* NO DESKTOP: ABAS HORIZONTAIS NO TOPO ESTILO SAAS REFINADO */}
+          <div className="hidden lg:flex items-center gap-2 p-1.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-150/80 dark:border-neutral-800/60 rounded-2xl mb-8 w-fit">
             {tabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id || (activeTab === 'menu' && tab.id === 'profile')
@@ -461,12 +461,12 @@ const Settings = () => {
                 <button
                   key={tab.id}
                   onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                  className={`pb-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap px-1 ${isActive
-                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                      : 'border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                  className={`flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap active:scale-[0.98] ${isActive
+                      ? 'bg-white dark:bg-neutral-900 text-primary-600 dark:text-white shadow-sm border border-gray-100 dark:border-neutral-800/40'
+                      : 'text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-neutral-800/30 border border-transparent'
                     }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-primary-500' : ''}`} />
+                  <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
                   {tab.label}
                 </button>
               )
@@ -477,26 +477,26 @@ const Settings = () => {
             {/* NO MOBILE: MOSTRAR MENU SE activeTab EVENTUALMENTE ESTIVER EM MENU */}
             {activeTab === 'menu' && (
               <div className="lg:hidden">
-                <div className="flex flex-col items-center py-8 mb-4">
+                <div className="flex flex-col items-center py-8 mb-6">
                   <div className="relative group mb-4">
                     <img
                       src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                       alt={user?.name}
-                      className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
+                      className="w-28 h-28 md:w-32 md:h-32 rounded-[2rem] border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
                     />
                     <button
                       onClick={handleAvatarClick}
-                      className="absolute bottom-1 right-1 w-9 h-9 bg-primary-500 rounded-full flex items-center justify-center border-4 border-[#F3F4F6] dark:border-[#171717] lg:dark:border-neutral-900 hover:bg-primary-600 transition-colors shadow-lg cursor-pointer"
+                      className="absolute bottom-0 right-0 w-9 h-9 bg-primary-600 hover:bg-primary-700 rounded-xl flex items-center justify-center border-4 border-gray-50 dark:border-neutral-900 hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
                     >
                       <Camera className="w-4 h-4 text-white" />
                     </button>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center pb-1">{user?.name}</h1>
-                  <p className="text-gray-500 dark:text-neutral-500 text-sm md:text-base text-center">{user?.email}</p>
+                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white text-center pb-0.5 font-display tracking-tight">{user?.name}</h1>
+                  <p className="text-gray-500 dark:text-neutral-500 text-xs md:text-sm text-center">{user?.email}</p>
                 </div>
 
-                <div className="card-telegram overflow-hidden">
-                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-[2rem] shadow-sm overflow-hidden mb-6">
+                  <div className="divide-y divide-gray-100 dark:divide-neutral-800/60">
                     {tabs.map((tab) => {
                       const Icon = tab.icon
                       const descriptions = {
@@ -507,28 +507,28 @@ const Settings = () => {
                         changelog: 'O que há de novo no sistema'
                       }[tab.id] as string
 
-                      const bgColors = {
-                        profile: 'bg-blue-500',
-                        security: 'bg-green-500',
-                        notifications: 'bg-red-500',
-                        preferences: 'bg-orange-500',
-                        changelog: 'bg-purple-500'
+                      const themeColors = {
+                        profile: 'bg-blue-50/60 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-900/10',
+                        security: 'bg-green-50/60 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100/50 dark:border-green-900/10',
+                        notifications: 'bg-red-50/60 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100/50 dark:border-red-900/10',
+                        preferences: 'bg-orange-50/60 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100/50 dark:border-orange-900/10',
+                        changelog: 'bg-purple-50/60 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border border-purple-100/50 dark:border-purple-900/10'
                       }[tab.id] as string
 
                       return (
                         <button
                           key={tab.id}
                           onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                          className="w-full flex items-center gap-4 p-4 md:p-6 transition-all text-left group hover:bg-gray-50 dark:hover:bg-neutral-800/50"
+                          className="w-full flex items-center gap-4 p-4 md:p-6.5 transition-colors text-left group hover:bg-gray-50/50 dark:hover:bg-neutral-800/30"
                         >
-                          <div className={`w-10 h-10 md:w-12 md:h-12 ${bgColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110`}>
-                            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                          <div className={`w-10 h-10 md:w-12 md:h-12 ${themeColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105`}>
+                            <Icon className="w-5 h-5 md:w-5.5 md:h-5.5" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{tab.label}</h3>
-                            <p className="text-xs md:text-sm text-gray-500 dark:text-neutral-500 truncate">{descriptions}</p>
+                            <h3 className="text-base font-bold text-gray-800 dark:text-white">{tab.label}</h3>
+                            <p className="text-xs text-gray-500 dark:text-neutral-500 truncate mt-0.5 font-medium">{descriptions}</p>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-300 dark:text-neutral-600 group-hover:translate-x-1 transition-transform" />
+                          <ChevronRight className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:translate-x-0.5 transition-transform" />
                         </button>
                       )
                     })}
@@ -558,18 +558,21 @@ const Settings = () => {
               <div className="w-full">
                 {/* Tab: Perfil */}
                 {(activeTab === 'profile' || (activeTab === 'menu')) && (
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                    {/* Acento superior de cor */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600" />
+
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 font-display">
                       Informações do Perfil
                     </h2>
 
                     {/* Avatar com Upload */}
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center mb-8 pb-8 border-b border-gray-200 dark:border-neutral-800">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center mb-8 pb-8 border-b border-gray-100 dark:border-neutral-800/60">
                       <div className="relative group self-center sm:self-start">
                         <img
                           src={avatarPreview || user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                           alt={user?.name}
-                          className={`w-24 h-24 rounded-full border-4 border-gray-200 dark:border-neutral-700 object-cover transition-all ${isUploadingAvatar || isSavingAvatar ? 'opacity-50' : ''
+                          className={`w-24 h-24 rounded-3xl border-4 border-gray-50 dark:border-neutral-800 object-cover shadow-md transition-all duration-300 ${isUploadingAvatar || isSavingAvatar ? 'opacity-50 scale-95' : ''
                             }`}
                         />
 
@@ -577,21 +580,21 @@ const Settings = () => {
                         <button
                           onClick={handleAvatarClick}
                           disabled={isUploadingAvatar || isSavingAvatar}
-                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+                          className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed cursor-pointer"
                         >
                           {isUploadingAvatar || isSavingAvatar ? (
                             <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
-                            <Camera className="w-6 h-6 text-white" />
+                            <Camera className="w-5 h-5 text-white" />
                           )}
                         </button>
 
                         {/* Badge de edição */}
                         <div
-                          className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 dark:bg-primary-500 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-950 cursor-pointer hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors"
+                          className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center border-2 border-white dark:border-neutral-900 cursor-pointer hover:bg-primary-700 dark:hover:bg-primary-600 transition-all hover:scale-105 active:scale-95 shadow"
                           onClick={handleAvatarClick}
                         >
-                          <Upload className="w-4 h-4 text-white" />
+                          <Upload className="w-3.5 h-3.5 text-white" />
                         </div>
 
                         {/* Input oculto */}
@@ -605,25 +608,25 @@ const Settings = () => {
                         />
                       </div>
 
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="flex-1 text-center lg:text-left">
+                        <h3 className="text-base font-bold text-gray-800 dark:text-white font-display">
                           {user?.name}
                         </h3>
-                        <p className="text-gray-600 dark:text-neutral-400 text-sm mt-1">
+                        <p className="text-xs text-gray-500 dark:text-neutral-450 mt-1 font-medium">
                           {user?.email}
                         </p>
 
-                        <div className="flex flex-wrap gap-2 mt-4">
+                        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-4">
                           {avatarPreview ? (
                             <>
                               <button
                                 onClick={handleSaveAvatar}
                                 disabled={isSavingAvatar}
-                                className="text-sm text-white bg-success-600 dark:bg-success-500 hover:bg-success-700 dark:hover:bg-success-600 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="text-xs text-white bg-success-600 hover:bg-success-700 h-9 px-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow shadow-success-500/10"
                               >
                                 {isSavingAvatar ? (
                                   <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Salvando...
                                   </>
                                 ) : (
@@ -633,7 +636,7 @@ const Settings = () => {
                               <button
                                 onClick={handleCancelAvatar}
                                 disabled={isSavingAvatar}
-                                className="text-sm text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50"
+                                className="text-xs text-gray-750 dark:text-neutral-300 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-850 dark:hover:bg-neutral-800 h-9 px-4 rounded-xl font-bold transition-all disabled:opacity-50"
                               >
                                 Cancelar
                               </button>
@@ -643,26 +646,26 @@ const Settings = () => {
                               <button
                                 onClick={handleAvatarClick}
                                 disabled={isUploadingAvatar || isSavingAvatar}
-                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center gap-1 disabled:opacity-50"
+                                className="text-xs text-primary-650 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50"
                               >
-                                <Upload className="w-4 h-4" />
+                                <Upload className="w-3.5 h-3.5" />
                                 Alterar foto
                               </button>
                               {isCustomAvatar && (
                                 <button
                                   onClick={handleRemoveAvatar}
                                   disabled={isSavingAvatar}
-                                  className="text-sm text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 font-medium flex items-center gap-1 disabled:opacity-50"
+                                  className="text-xs text-danger-655 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 ml-2"
                                 >
                                   {isSavingAvatar ? (
                                     <>
-                                      <div className="w-4 h-4 border-2 border-danger-600 dark:border-danger-400 border-t-transparent rounded-full animate-spin"></div>
+                                      <div className="w-3.5 h-3.5 border-2 border-danger-600 dark:border-danger-400 border-t-transparent rounded-full animate-spin"></div>
                                       Removendo...
                                     </>
                                   ) : (
                                     <>
-                                      <X className="w-4 h-4" />
-                                      Remover
+                                      <X className="w-3.5 h-3.5" />
+                                      Remover foto
                                     </>
                                   )}
                                 </button>
@@ -672,85 +675,82 @@ const Settings = () => {
                         </div>
 
                         {/* Dicas */}
-                        <div className="mt-3 text-xs text-gray-500 dark:text-neutral-400 space-y-1">
-                          <p>• Formatos aceitos: JPG, PNG, WEBP, GIF</p>
-                          <p>• Tamanho máximo: 5MB</p>
-                          <p>• Recomendado: 400x400 pixels</p>
-                          <p className="text-success-600 dark:text-success-400">• Armazenamento: IndexedDB (sem limite)</p>
+                        <div className="mt-4 text-[10px] text-gray-400 dark:text-neutral-500 space-y-1 text-center lg:text-left font-medium">
+                          <p>• Formatos: JPG, PNG, WEBP, GIF (máximo 5MB)</p>
+                          <p className="text-success-600 dark:text-success-500/80">• Armazenamento em IndexedDB local</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Informações Somente Leitura */}
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       <div>
-                        <label className="label">Nome completo</label>
-                        <div className="relative">
+                        <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Nome completo</label>
+                        <div className="relative mt-1">
                           <input
                             type="text"
                             value={user?.name || ''}
                             disabled
-                            className="input-field bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 cursor-not-allowed"
+                            className="input-field bg-gray-50/50 dark:bg-neutral-850/30 text-gray-400 dark:text-neutral-500 border-gray-150 dark:border-neutral-800/80 cursor-not-allowed select-none"
                           />
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <span className="text-xs text-gray-400 dark:text-neutral-500 bg-gray-100 dark:bg-neutral-700 px-2 py-1 rounded">
-                              Somente leitura
+                          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+                            <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 bg-gray-100 dark:bg-neutral-800 border border-gray-200/40 dark:border-neutral-700/50 px-2 py-0.5 rounded-md">
+                              Leitura
                             </span>
                           </div>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-
-                        </p>
                       </div>
 
                       <div>
-                        <label className="label">Email</label>
-                        {!isEditingEmail ? (
-                          <div className="relative">
-                            <input
-                              type="email"
-                              value={user?.email || ''}
-                              disabled
-                              className="input-field bg-gray-50 dark:bg-neutral-800"
-                            />
-                            <button
-                              onClick={() => setIsEditingEmail(true)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium transition-colors"
-                            >
-                              Alterar
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="space-y-3">
-                            <input
-                              type="email"
-                              value={newEmail}
-                              onChange={(e) => setNewEmail(e.target.value)}
-                              placeholder="Digite o novo email"
-                              className="input-field"
-                              autoFocus
-                            />
-                            <div className="flex flex-col sm:flex-row gap-2">
+                        <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Email</label>
+                        <div className="mt-1">
+                          {!isEditingEmail ? (
+                            <div className="relative">
+                              <input
+                                type="email"
+                                value={user?.email || ''}
+                                disabled
+                                className="input-field bg-gray-50/50 dark:bg-neutral-850/30 text-gray-450 dark:text-neutral-500 border-gray-150 dark:border-neutral-800/80"
+                              />
                               <button
-                                onClick={handleRequestEmailChange}
-                                disabled={isSendingCode}
-                                className="flex-1 btn-primary rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={() => setIsEditingEmail(true)}
+                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-xs font-bold transition-colors cursor-pointer"
                               >
-                                {isSendingCode ? 'Enviando...' : 'Enviar Código'}
-                              </button>
-                              <button
-                                onClick={handleCancelEmailEdit}
-                                className="flex-1 btn-secondary rounded-full"
-                              >
-                                Cancelar
+                                Alterar
                               </button>
                             </div>
-                          </div>
-                        )}
-                        <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                          ) : (
+                            <div className="space-y-3">
+                              <input
+                                type="email"
+                                value={newEmail}
+                                onChange={(e) => setNewEmail(e.target.value)}
+                                placeholder="Digite seu novo email"
+                                className="input-field"
+                                autoFocus
+                              />
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <button
+                                  onClick={handleRequestEmailChange}
+                                  disabled={isSendingCode}
+                                  className="flex-1 btn-primary h-10 rounded-xl text-xs font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                >
+                                  {isSendingCode ? 'Enviando...' : 'Enviar Código'}
+                                </button>
+                                <button
+                                  onClick={handleCancelEmailEdit}
+                                  className="flex-1 btn-secondary h-10 rounded-xl text-xs font-bold cursor-pointer"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-semibold text-gray-450 dark:text-neutral-500 mt-1">
                           {isEditingEmail
-                            ? 'Um código será enviado para o novo email'
-                            : 'Clique em "Alterar" para mudar seu email'
+                            ? 'Enviaremos um código de verificação para o novo e-mail informado'
+                            : 'Para modificar o e-mail de acesso, clique em "Alterar"'
                           }
                         </p>
                       </div>
@@ -758,21 +758,25 @@ const Settings = () => {
                   </div>
                 )}
 
-                {/* Tab: Segurança */}
-                {activeTab === 'security' && (
+                  {/* Tab: Segurança */}
+                  {activeTab === 'security' && (
                   <div className="space-y-6">
-                    <div className="card">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    {/* Card: Alterar Senha */}
+                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                      {/* Acento superior de cor */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-green-600" />
+
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 font-display">
                         Alterar Senha
                       </h2>
 
                       <form
                         onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
-                        className="space-y-5"
+                        className="space-y-4"
                       >
                         <div>
-                          <label className="label">Senha atual</label>
-                          <div className="relative">
+                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Senha atual</label>
+                          <div className="relative mt-1">
                             <input
                               type={showCurrentPassword ? 'text' : 'password'}
                               {...passwordForm.register('currentPassword')}
@@ -784,9 +788,9 @@ const Settings = () => {
                             <button
                               type="button"
                               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
                             >
-                              {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
                           {passwordForm.formState.errors.currentPassword && (
@@ -797,8 +801,8 @@ const Settings = () => {
                         </div>
 
                         <div>
-                          <label className="label">Nova senha</label>
-                          <div className="relative">
+                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Nova senha</label>
+                          <div className="relative mt-1">
                             <input
                               type={showNewPassword ? 'text' : 'password'}
                               {...passwordForm.register('newPassword')}
@@ -810,9 +814,9 @@ const Settings = () => {
                             <button
                               type="button"
                               onClick={() => setShowNewPassword(!showNewPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
                             >
-                              {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
                           {passwordForm.formState.errors.newPassword && (
@@ -823,8 +827,8 @@ const Settings = () => {
                         </div>
 
                         <div>
-                          <label className="label">Confirmar nova senha</label>
-                          <div className="relative">
+                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Confirmar nova senha</label>
+                          <div className="relative mt-1">
                             <input
                               type={showConfirmPassword ? 'text' : 'password'}
                               {...passwordForm.register('confirmPassword')}
@@ -836,9 +840,9 @@ const Settings = () => {
                             <button
                               type="button"
                               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
                             >
-                              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
                           {passwordForm.formState.errors.confirmPassword && (
@@ -848,26 +852,29 @@ const Settings = () => {
                           )}
                         </div>
 
-
-                        <div className="flex justify-end pt-4">
-                          <button type="submit" className="btn-primary w-full sm:w-auto rounded-full shadow-sm">
+                        <div className="flex justify-end pt-2">
+                          <button type="submit" className="btn-primary w-full sm:w-auto h-11 px-6 rounded-xl text-xs font-bold shadow-md shadow-primary-500/10 active:scale-[0.98] transition-transform cursor-pointer">
                             Alterar senha
                           </button>
                         </div>
                       </form>
                     </div>
 
-                    <div className="card overflow-hidden border-2 border-primary-100 dark:border-primary-900/20 shadow-lg shadow-primary-500/5">
+                    {/* Card: Biometria */}
+                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                      {/* Acento superior de cor */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600" />
+
                       <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="p-3 bg-primary-100 dark:bg-primary-900/40 rounded-2xl text-primary-600 dark:text-primary-400">
-                            <Fingerprint className="w-6 h-6" />
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center border border-emerald-100/30 dark:border-emerald-900/10">
+                            <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                           </div>
                           <div>
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                            <h2 className="text-base font-bold text-gray-900 dark:text-white font-display">
                               Acesso por Biometria
                             </h2>
-                            <p className="text-sm text-gray-500 dark:text-neutral-400">
+                            <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
                               Digital ou reconhecimento facial
                             </p>
                           </div>
@@ -880,70 +887,76 @@ const Settings = () => {
                             onChange={handleToggleBiometric}
                             disabled={!biometricSupported}
                           />
-                          <div className="w-12 h-7 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500"></div>
                         </label>
                       </div>
 
                       {!biometricSupported ? (
-                        <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl flex gap-3 border border-amber-100 dark:border-amber-900/30">
-                          <Smartphone className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-                          <p className="text-sm text-amber-700 dark:text-amber-300">
-                            Seu dispositivo não possui suporte para autenticação biométrica nativa no navegador.
+                        <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl flex gap-3 border border-amber-100/50 dark:border-amber-900/10">
+                          <Smartphone className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                          <p className="text-xs text-amber-700 dark:text-amber-300 font-medium leading-relaxed">
+                            Seu dispositivo ou navegador atual não possui suporte nativo para autenticação biométrica (WebAuthn).
                           </p>
                         </div>
                       ) : (
                         <div className="space-y-4">
-                          <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">
-                            Ao ativar, o aplicativo solicitará sua biometria sempre que for aberto ou retornar do segundo plano, garantindo que apenas você acesse seus dados financeiros.
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 leading-relaxed font-medium">
+                            Ao ativar, o aplicativo solicitará sua biometria sempre que for aberto ou retornar do segundo plano, garantindo máxima segurança para suas informações.
                           </p>
                           {isBiometricEnabled && (
                             <button 
                               type="button"
                               onClick={() => setLocked(true)}
-                              className="w-full btn-secondary flex items-center justify-center gap-2 rounded-2xl py-3 border-dashed border-2"
+                              className="w-full h-10 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold border-dashed border-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                             >
-                              <Lock className="w-4 h-4" />
+                              <Lock className="w-3.5 h-3.5 text-gray-500" />
                               Testar bloqueio biométrico
                             </button>
                           )}
                         </div>
                       )}
-
                     </div>
 
-                    <div className="card">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                        Autenticação de Dois Fatores
+                    {/* Card: Autenticação de 2 Fatores */}
+                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                      {/* Acento superior de cor */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-orange-655" />
+
+                      <h2 className="text-base font-bold text-gray-900 dark:text-white font-display mb-2">
+                        Autenticação de Dois Fatores (2FA)
                       </h2>
-                      <p className="text-gray-600 dark:text-neutral-400 mb-6">
-                        Adicione uma camada extra de segurança à sua conta
+                      <p className="text-xs text-gray-500 dark:text-neutral-400 mb-6 font-medium leading-relaxed">
+                        Adicione uma camada extra de proteção blindando seu login com um aplicativo autenticador.
                       </p>
-                      <button className="btn-secondary">
-                        Ativar autenticação em duas etapas
+                      <button className="btn-secondary h-10 px-4 rounded-xl text-xs font-bold cursor-pointer">
+                        Configurar autenticação em duas etapas
                       </button>
                     </div>
 
                     {/* Card de Dados e Privacidade */}
-                    <div className="card">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                      {/* Acento superior de cor */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-400 to-rose-600" />
+
+                      <h2 className="text-base font-bold text-gray-900 dark:text-white font-display mb-6">
                         Dados e Privacidade
                       </h2>
 
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <button
                           onClick={handleExportData}
-                          className="w-full btn-secondary flex items-center justify-center gap-2 rounded-full shadow-sm"
+                          className="w-full h-11 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
                         >
-                          <Database className="w-5 h-5" />
-                          Exportar meus dados
+                          <Database className="w-4 h-4 text-gray-550" />
+                          Exportar todos os meus dados (JSON)
                         </button>
 
                         <button
                           onClick={handleDeleteAccount}
-                          className="w-full btn-danger flex items-center justify-center gap-2 rounded-full shadow-sm"
+                          className="w-full h-11 btn-danger flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
                         >
-                          <Shield className="w-5 h-5" />
-                          Excluir minha conta
+                          <Shield className="w-4 h-4 text-white" />
+                          Excluir minha conta permanentemente
                         </button>
                       </div>
                     </div>
@@ -952,19 +965,22 @@ const Settings = () => {
 
                 {/* Tab: Notificações */}
                 {activeTab === 'notifications' && (
-                  <div className="card">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                    {/* Acento superior de cor */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-400 to-red-655" />
+
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 font-display">
                       Preferências de Notificação
                     </h2>
 
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                    <div className="space-y-5">
+                      <div className="flex items-center justify-between pb-5 border-b border-gray-100 dark:border-neutral-800/60">
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-sm font-bold text-gray-800 dark:text-white">
                             Email de transações
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                            Receba emails quando novas transações forem adicionadas
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
+                            Receba alertas por e-mail imediatamente quando novas movimentações forem registradas
                           </p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -974,17 +990,17 @@ const Settings = () => {
                             checked={notifications.emailTransactions}
                             onChange={() => toggleNotification('emailTransactions')}
                           />
-                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 dark:peer-checked:bg-red-550"></div>
                         </label>
                       </div>
 
-                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                      <div className="flex items-center justify-between pb-5 border-b border-gray-100 dark:border-neutral-800/60">
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-sm font-bold text-gray-800 dark:text-white">
                             Resumo semanal
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                            Receba um resumo semanal das suas finanças
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
+                            Receba um relatório detalhado semanal consolidando o desempenho de suas finanças
                           </p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -994,17 +1010,17 @@ const Settings = () => {
                             checked={notifications.weeklyReport}
                             onChange={() => toggleNotification('weeklyReport')}
                           />
-                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 dark:peer-checked:bg-red-550"></div>
                         </label>
                       </div>
 
-                      <div className="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-neutral-800">
+                      <div className="flex items-center justify-between pb-5 border-b border-gray-100 dark:border-neutral-800/60">
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-sm font-bold text-gray-800 dark:text-white">
                             Alertas de orçamento
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                            Seja notificado quando atingir limites de orçamento
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
+                            Seja avisado quando os gastos em alguma categoria atingirem os limites de orçamento planejados
                           </p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -1014,17 +1030,17 @@ const Settings = () => {
                             checked={notifications.budgetAlerts}
                             onChange={() => toggleNotification('budgetAlerts')}
                           />
-                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 dark:peer-checked:bg-red-550"></div>
                         </label>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-sm font-bold text-gray-800 dark:text-white">
                             Novidades e atualizações
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-                            Receba emails sobre novos recursos e atualizações
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
+                            Acompanhe novidades, novos recursos e dicas de uso do FinControl
                           </p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -1034,7 +1050,7 @@ const Settings = () => {
                             checked={notifications.newsUpdates}
                             onChange={() => toggleNotification('newsUpdates')}
                           />
-                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-700 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 dark:peer-checked:bg-red-550"></div>
                         </label>
                       </div>
                     </div>
@@ -1043,46 +1059,53 @@ const Settings = () => {
 
                 {/* Tab: Preferências */}
                 {activeTab === 'preferences' && (
-                  <div className="space-y-6">
-                    <div className="card">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                        Aparência
-                      </h2>
+                  <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+                    {/* Acento superior de cor */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600" />
 
-                      <div className="space-y-4">
-                        <div>
-                          <label className="label">Tema</label>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 font-display">
+                      Preferências Gerais
+                    </h2>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Tema do Sistema</label>
+                        <div className="mt-1">
                           <CustomSelect
                             value={theme}
                             onChange={(val) => handleThemeChange(val)}
                             options={[
-                              { value: 'light', label: 'Claro' },
-                              { value: 'dark', label: 'Escuro' }
+                              { value: 'light', label: '☀️ Modo Claro' },
+                              { value: 'dark', label: '🌙 Modo Escuro' }
                             ]}
                           />
                         </div>
+                      </div>
 
-                        <div>
-                          <label className="label">Idioma</label>
+                      <div>
+                        <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Idioma</label>
+                        <div className="mt-1">
                           <CustomSelect
                             value={preferences.language}
                             onChange={(val) => handleLanguageChange(val)}
                             options={[
-                              { value: 'pt-BR', label: 'Português (Brasil)' },
-                              { value: 'en', label: 'English' },
-                              { value: 'es', label: 'Español' }
+                              { value: 'pt-BR', label: '🇧🇷 Português (Brasil)' },
+                              { value: 'en', label: '🇺🇸 English' },
+                              { value: 'es', label: '🇪🇸 Español' }
                             ]}
                           />
                         </div>
+                      </div>
 
-                        <div>
-                          <label className="label">Moeda</label>
+                      <div>
+                        <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Moeda Padrão</label>
+                        <div className="mt-1">
                           <CustomSelect
                             value={preferences.currency}
                             onChange={(val) => handleCurrencyChange(val)}
                             options={[
-                              { value: 'BRL', label: 'Real (R$)' },
-                              { value: 'USD', label: 'Dólar (USD)' },
+                              { value: 'BRL', label: 'Real Brasileiro (R$)' },
+                              { value: 'USD', label: 'Dólar Americano (USD)' },
                               { value: 'EUR', label: 'Euro (EUR)' }
                             ]}
                           />
@@ -1095,15 +1118,18 @@ const Settings = () => {
                 {/* Tab: Changelog */}
                 {activeTab === 'changelog' && (
                   <div className="space-y-6">
-                    <div className="card shadow-lg border-primary-100 dark:border-primary-900/30">
+                    <div className="relative card bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-[2rem] shadow-sm overflow-hidden">
+                      {/* Acento superior de cor */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600" />
+                      
                       <div className="p-6 md:p-8">
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-neutral-800">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-neutral-850">
                           <div>
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                              <History className="w-6 h-6 text-primary-500" />
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 font-display">
+                              <History className="w-5 h-5 text-purple-500 animate-spin-reverse" />
                               Registro de Mudanças
                             </h2>
-                            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1 italic">
+                            <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1 italic">
                               "Evoluindo constantemente para o seu sucesso financeiro"
                             </p>
                           </div>

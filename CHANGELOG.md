@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.71] - 2026-07-07
+
+### Alterado
+- **Configurações (UX/UI):**
+  - Refatorada a interface visual da página de [Settings.tsx](file:///f:/CURSOR/fincontrol/src/pages/Settings.tsx) com design moderno, limpo e profissional.
+  - Abas de navegação desktop estilizadas no formato de pílulas flutuantes com fundos e bordas leves em hover/active.
+  - Menu de opções mobile (estilo Telegram) redesenhado com avatares e contêineres arredondados `rounded-2xl`, além de ícones envoltos em fundos desbotados de cores correspondentes à identidade visual da Sidebar.
+  - Formulários e cards das abas de Perfil, Segurança, Notificações e Preferências atualizados para contêineres modernos com acentos superiores em gradiente e inputs limpos e bem-espaçados.
+
 ## [2.12.70] - 2026-07-07
 
 ### Alterado
