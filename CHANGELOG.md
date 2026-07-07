@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.12.66] - 2026-07-07
+
+### Adicionado
+- **UX/UI (Sidebar):**
+  - Adicionadas animações interativas de hover nos ícones da Sidebar baseadas na classe pai `group` e transições do Tailwind CSS:
+    - **Dashboard:** Efeito de escala e pequena inclinação (`group-hover:scale-110 group-hover:rotate-6`).
+    - **Transações:** Deslocamento lateral suave (`group-hover:scale-110 group-hover:translate-x-0.5`).
+    - **Cartões:** Inclinação acentuada e aumento de escala (`group-hover:scale-115 group-hover:rotate-12`).
+    - **Categorias:** Deslocamento vertical de elevação (`group-hover:scale-110 group-hover:-translate-y-0.5`).
+    - **Relatórios:** Efeito de subida simulando crescimento (`group-hover:scale-110 group-hover:-translate-y-1`).
+    - **Assinaturas:** Rotação suave do relógio (`group-hover:scale-110 group-hover:rotate-12`).
+    - **Configurações:** Rotação de 90° da engrenagem (`group-hover:rotate-90 duration-500`).
+    - **Admin:** Escudo inclina e ganha escala (`group-hover:scale-110 group-hover:rotate-6`).
+    - **Cálculos:** Calculadora dá zoom e rotaciona (`group-hover:scale-110 group-hover:rotate-6`).
+    - **Submenus (Percent e Juros Compostos):** Movimentos direcionais e zoom.
+    - **Dark Mode (Lua e Sol):** Lua rotaciona e Sol gira em 90°.
+    - **Sair (LogOut):** Ícone desliza horizontalmente simulando "porta de saída" (`group-hover:translate-x-0.5`).
+
 ## [2.12.65] - 2026-07-07
 
 ### Otimizado

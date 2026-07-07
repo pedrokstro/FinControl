@@ -105,24 +105,24 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
     {
       title: 'Geral',
       items: [
-        { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard', activeColor: 'text-primary-600 dark:text-primary-400', activeBg: 'from-primary-500/10 to-transparent dark:from-primary-500/5' },
-        { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações', activeColor: 'text-emerald-500 dark:text-emerald-400', activeBg: 'from-emerald-500/10 to-transparent dark:from-emerald-500/5' },
-        { path: '/app/cards', icon: CreditCard, label: 'Cartões', activeColor: 'text-orange-500 dark:text-orange-400', activeBg: 'from-orange-500/10 to-transparent dark:from-orange-500/5' },
-        { path: '/app/categories', icon: FolderOpen, label: 'Categorias', activeColor: 'text-violet-500 dark:text-violet-400', activeBg: 'from-violet-500/10 to-transparent dark:from-violet-500/5' },
+        { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard', activeColor: 'text-primary-600 dark:text-primary-400', activeBg: 'from-primary-500/10 to-transparent dark:from-primary-500/5', hoverClass: 'group-hover:scale-110 group-hover:rotate-6' },
+        { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações', activeColor: 'text-emerald-500 dark:text-emerald-400', activeBg: 'from-emerald-500/10 to-transparent dark:from-emerald-500/5', hoverClass: 'group-hover:scale-110 group-hover:translate-x-0.5' },
+        { path: '/app/cards', icon: CreditCard, label: 'Cartões', activeColor: 'text-orange-500 dark:text-orange-400', activeBg: 'from-orange-500/10 to-transparent dark:from-orange-500/5', hoverClass: 'group-hover:scale-115 group-hover:rotate-12' },
+        { path: '/app/categories', icon: FolderOpen, label: 'Categorias', activeColor: 'text-violet-500 dark:text-violet-400', activeBg: 'from-violet-500/10 to-transparent dark:from-violet-500/5', hoverClass: 'group-hover:scale-110 group-hover:-translate-y-0.5' },
       ]
     },
     {
       title: 'Análise',
       items: [
-        { path: '/app/reports', icon: BarChart3, label: 'Relatórios', activeColor: 'text-sky-500 dark:text-sky-400', activeBg: 'from-sky-500/10 to-transparent dark:from-sky-500/5' },
-        { path: '/app/subscriptions', icon: CalendarClock, label: 'Assinaturas', activeColor: 'text-pink-500 dark:text-pink-400', activeBg: 'from-pink-500/10 to-transparent dark:from-pink-500/5' },
+        { path: '/app/reports', icon: BarChart3, label: 'Relatórios', activeColor: 'text-sky-500 dark:text-sky-400', activeBg: 'from-sky-500/10 to-transparent dark:from-sky-500/5', hoverClass: 'group-hover:scale-110 group-hover:-translate-y-1' },
+        { path: '/app/subscriptions', icon: CalendarClock, label: 'Assinaturas', activeColor: 'text-pink-500 dark:text-pink-400', activeBg: 'from-pink-500/10 to-transparent dark:from-pink-500/5', hoverClass: 'group-hover:scale-110 group-hover:rotate-12' },
       ]
     },
     {
       title: 'Preferências',
       items: [
-        { path: '/app/settings', icon: Settings, label: 'Configurações', activeColor: 'text-slate-500 dark:text-slate-400', activeBg: 'from-slate-500/10 to-transparent dark:from-slate-500/5' },
-        ...(isAdmin ? [{ path: '/admin', icon: Shield, label: 'Admin', activeColor: 'text-red-500 dark:text-red-400', activeBg: 'from-red-500/10 to-transparent dark:from-red-500/5' }] : [])
+        { path: '/app/settings', icon: Settings, label: 'Configurações', activeColor: 'text-slate-500 dark:text-slate-400', activeBg: 'from-slate-500/10 to-transparent dark:from-slate-500/5', hoverClass: 'group-hover:rotate-90 duration-500' },
+        ...(isAdmin ? [{ path: '/admin', icon: Shield, label: 'Admin', activeColor: 'text-red-500 dark:text-red-400', activeBg: 'from-red-500/10 to-transparent dark:from-red-500/5', hoverClass: 'group-hover:scale-110 group-hover:rotate-6' }] : [])
       ]
     }
   ]
@@ -177,9 +177,9 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                       to={item.path}
                       onClick={onNavigate}
                       className={({ isActive }) =>
-                        `flex items-center relative ${isCollapsed ? 'justify-center hover:scale-105' : 'gap-3 hover:translate-x-1.5'} px-4 py-3 rounded-xl transition-all duration-300 overflow-visible ${isActive
+                        `group flex items-center relative ${isCollapsed ? 'justify-center hover:scale-105' : 'gap-3 hover:translate-x-1.5'} px-4 py-3 rounded-xl transition-all duration-300 overflow-visible ${isActive
                           ? 'bg-primary-50/50 dark:bg-primary-950/20 text-primary-600 dark:text-white font-bold border border-primary-100/50 dark:border-primary-900/10'
-                          : 'text-gray-500 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white'
+                          : 'text-gray-555 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white'
                         }`
                       }
                       title={isCollapsed ? item.label : ''}
@@ -200,7 +200,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                             <div className={`absolute inset-0 bg-gradient-to-r ${item.activeBg} rounded-xl pointer-events-none`} />
                           )}
 
-                          <Icon className={`w-5 h-5 flex-shrink-0 relative z-10 transition-colors ${isActive ? item.activeColor : 'text-gray-400 dark:text-neutral-400 group-hover:text-gray-600 dark:group-hover:text-neutral-200'}`} />
+                          <Icon className={`w-5 h-5 flex-shrink-0 relative z-10 transition-all duration-300 ${isActive ? item.activeColor : 'text-gray-400 dark:text-neutral-400 group-hover:text-gray-600 dark:group-hover:text-neutral-200'} ${item.hoverClass || ''}`} />
                           {!isCollapsed && <span className="whitespace-nowrap relative z-10">{item.label}</span>}
                         </>
                       )}
@@ -234,23 +234,22 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                   handleDropdownLeave()
                 }
               }}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-xl transition-all duration-300 text-gray-500 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white`}
+              className={`group w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-xl transition-all duration-300 text-gray-500 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white`}
               title={isCollapsed ? 'Cálculos' : ''}
             >
               <div className={`flex items-center ${isCollapsed ? '' : 'gap-3'}`}>
-                <Calculator className="w-5 h-5 flex-shrink-0 text-amber-500" />
+                <Calculator className="w-5 h-5 flex-shrink-0 text-amber-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
                 {!isCollapsed && <span className="whitespace-nowrap">Cálculos</span>}
               </div>
               {!isCollapsed && (
                 isCalculosOpen ? (
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronUp className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
                 ) : (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:translate-y-0.5" />
                 )
               )}
             </button>
 
-            {/* Submenu - Expandido */}
             {!isCollapsed && isCalculosOpen && (
               <ul className="mt-2 ml-4 space-y-1.5 animate-in slide-in-from-top-2 duration-200 border-l border-gray-100 dark:border-neutral-800/60 pl-3">
                 <li>
@@ -258,13 +257,13 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                     to="/app/calculadora-porcentagem"
                     onClick={onNavigate}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 text-sm hover:translate-x-1.5 ${isActive
+                      `group flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 text-sm hover:translate-x-1.5 ${isActive
                         ? 'bg-primary-50/50 dark:bg-primary-950/20 text-primary-600 dark:text-white font-semibold border-l-2 border-primary-500/80 pl-3'
                         : 'text-gray-550 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white'
                       }`
                     }
                   >
-                    <Percent className="w-4 h-4 flex-shrink-0 text-violet-500" />
+                    <Percent className="w-4 h-4 flex-shrink-0 text-violet-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                     <span className="whitespace-nowrap">Porcentagem</span>
                   </NavLink>
                 </li>
@@ -273,13 +272,13 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                     to="/app/calculadora-juros"
                     onClick={onNavigate}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 text-sm hover:translate-x-1.5 ${isActive
+                      `group flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 text-sm hover:translate-x-1.5 ${isActive
                         ? 'bg-primary-50/50 dark:bg-primary-950/20 text-primary-600 dark:text-white font-semibold border-l-2 border-primary-500/80 pl-3'
                         : 'text-gray-555 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white'
                       }`
                     }
                   >
-                    <TrendingUp className="w-4 h-4 flex-shrink-0 text-emerald-500 animate-arrow-up" />
+                    <TrendingUp className="w-4 h-4 flex-shrink-0 text-emerald-500 animate-arrow-up transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     <span className="whitespace-nowrap">Juros Compostos</span>
                   </NavLink>
                 </li>
@@ -333,14 +332,14 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <div className="mt-6 pt-6 border-t border-gray-100 dark:border-neutral-800/60">
           <button
             onClick={toggleTheme}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-xl transition-all duration-300 bg-gray-50 dark:bg-neutral-900/50 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-100/50 dark:border-neutral-800/30`}
+            className={`group w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-xl transition-all duration-300 bg-gray-50 dark:bg-neutral-900/50 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-100/50 dark:border-neutral-800/30`}
             title={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
           >
             <div className={`flex items-center ${isCollapsed ? '' : 'gap-3'}`}>
               {theme === 'light' ? (
-                <Moon className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
+                <Moon className="w-5 h-5 text-gray-600 dark:text-neutral-400 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
               ) : (
-                <Sun className="w-5 h-5 text-amber-500 animate-spin-slow" />
+                <Sun className="w-5 h-5 text-amber-500 animate-spin-slow transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
               )}
               {!isCollapsed && (
                 <span className="font-medium whitespace-nowrap">
@@ -378,10 +377,10 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
             />
             <button
               onClick={logout}
-              className="p-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:text-red-600 rounded-xl transition-colors cursor-pointer"
+              className="group p-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:text-red-600 rounded-xl transition-colors cursor-pointer"
               title="Sair da conta"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110" />
             </button>
           </div>
         ) : (
@@ -407,10 +406,10 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
             </div>
             <button
               onClick={logout}
-              className="p-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:text-red-600 rounded-xl transition-colors cursor-pointer flex-shrink-0"
+              className="group p-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:text-red-600 rounded-xl transition-colors cursor-pointer flex-shrink-0"
               title="Sair da conta"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110" />
             </button>
           </div>
         )}
