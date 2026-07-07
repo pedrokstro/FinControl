@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.70] - 2026-07-07
+
+### Alterado
+- **Configuração (Agente):**
+  - Regra de comportamento do agente no arquivo [AGENTS.md](file:///f:/CURSOR/fincontrol/.agents/AGENTS.md) foi expandida e endurecida.
+  - O agente está terminantemente proibido de enviar quaisquer blocos de código (completo, trechos de refatoração, exemplos ou correções) no chat, devendo realizar as correções diretamente nos arquivos e explicar conceitos teoricamente.
+
 ## [2.12.69] - 2026-07-07
 
 ### Alterado
