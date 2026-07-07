@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.12.75] - 2026-07-07
+
+### Adicionado
+- **Landing Page (Animações de Scroll & Branding):**
+  - Implementado o Cartão de Crédito 3D premium estilizado com o branding oficial do FinControl (gradiente Azul Confiança profundo a Indigo, chip metálico, logo e tipografia `Outfit`/`Inter`).
+  - Desenvolvidas animações de scroll link do cartão 3D, fazendo-o flutuar no Hero e rotacionar no eixo Z/transladar verticalmente até preencher o centro do grid de recursos na seção seguinte.
+  - Implementada reestruturação em 3 colunas responsivas para a seção de recursos ("A escolha estratégica"), reservando o meio para aterrissagem visual do cartão no desktop e otimizando layout limpo no mobile.
+  - Aplicados efeitos de surgimento progressivo (scroll reveal) com fade-in e slide-up suave em todas as seções (Features, Preview, Planos, Benefícios e CTA).
+  - Adicionado suporte a `prefers-reduced-motion` no React para desabilitar translações físicas complexas e manter apenas fades simples para acessibilidade.
+
 ## [2.12.74] - 2026-07-07
 
 ### Alterado

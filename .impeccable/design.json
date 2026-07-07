@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-07T19:36:30Z",
+  "title": "Design System: FinControl",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Azul Confiança Profundo", "canonical": "#0284c7" },
+      "success": { "role": "success", "displayName": "Verde Sucesso Limpo", "canonical": "#16a34a" },
+      "danger": { "role": "danger", "displayName": "Vermelho Alerta Dinâmico", "canonical": "#dc2626" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Títulos Hero e agregados financeiros grandes." }
+    },
+    "shadows": [
+      { "name": "shadow-sm", "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)", "purpose": "Separação sutil de cards." },
+      { "name": "shadow-dark", "value": "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18)", "purpose": "Elevação para tooltips e menus flutuantes." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Botão Primário",
+      "kind": "button",
+      "refersTo": "btn-primary",
+      "description": "Botão padrão principal para a interface.",
+      "html": "<button class=\"ds-btn-primary\">CONFIRMAR</button>",
+      "css": ".ds-btn-primary { background: #0284c7; color: #ffffff; padding: 0.5rem 1rem; font-weight: 500; font-family: Inter, sans-serif; border: none; border-radius: 0.5rem; transition: background-color 0.2s; cursor: pointer; } .ds-btn-primary:hover { background: #0369a1; }"
+    },
+    {
+      "name": "Card Base",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Base visual para agrupamento de widgets.",
+      "html": "<div class=\"ds-card\"><h3>Resumo</h3><p>Conteúdo do card.</p></div>",
+      "css": ".ds-card { background: #ffffff; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e5e5; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.3s; font-family: Inter, sans-serif; } .ds-card h3 { margin-top: 0; font-family: Outfit, sans-serif; font-weight: 600; color: #111827; } .ds-card p { color: #4b5563; margin-bottom: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Painel de Confiança",
+    "overview": "O design do FinControl é construído sobre os alicerces da precisão, robustez e do apuro técnico. As interfaces privilegiam o espaço em branco, linhas limpas e o agrupamento coerente da informação para minimizar a carga cognitiva. O objetivo é transmitir, em cada pixel, que as finanças do usuário estão sob absoluto controle técnico em uma ferramenta estável e imaculada. Evitamos ruídos decorativos, tabelas engessadas e densidade sufocante (típica de ERPs legados). A interface é direta e funcional, mas respira.",
+    "keyCharacteristics": [
+      "Clareza Absoluta: A visualização de dados prevalece sobre os elementos decorativos.",
+      "Espaçamento Intencional: A 'tranquilidade visual' é aplicada reduzindo componentes densos em prol de margens e preenchimentos generosos.",
+      "Interações Suaves: Elementos interativos nunca quebram o layout e reagem de forma sutil, encorajadora e polida."
+    ],
+    "rules": [
+      { "name": "The Strict Semantic Rule", "body": "Cores de sucesso (verde), erro (vermelho) e alerta (laranja/amarelo) são puramente funcionais. Elas não podem ser utilizadas como decoração ou em fundos de áreas genéricas que não possuam significado inerente a estes estados.", "section": "colors" },
+      { "name": "The Data Contrast Rule", "body": "Valores monetários, especialmente o balanço geral, não precisam apenas ser 'grandes'. Devem possuir peso (bold/extrabold) e forte contraste com o elemento pai, além de se valerem da cor semântica caso denotem receita ou despesa de maneira inerente.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Superfícies são planas em repouso. Sombras espalhadas não devem ser o mecanismo primário de separação. A estrutura deve se manter legível através de bordas sutis e contraste de tons de fundo em primeiro lugar.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do utilizar espaços em branco abundantes ao redor de valores financeiros para realçar a importância e legibilidade do dado.",
+      "Do reservar o uso do Outfit estritamente para cabeçalhos e números totais/destaques; garantindo o impacto sem comprometer os pequenos textos onde o Inter brilha.",
+      "Do manter a elevação restrita: bordas suaves de 1px definem as regiões muito melhor que sombras pesadas."
+    ],
+    "donts": [
+      "Don't utilizar painéis corporativos densos, confusos e repletos de tabelas engessadas (ERPs legados). Tabelas no FinControl devem ter ar fresco, borders horizontais delicadas (ou inexistentes) e espaçamento farto.",
+      "Don't utilizar excesso de linhas de grade rígidas em volta de todos os elementos da interface.",
+      "Don't usar cores berrantes simultâneas sem propósito semântico ou layouts congestionados. Não decore com cores aleatórias os cartões de informação vital.",
+      "Don't adicionar sombras 'Ghost' largas e pesadas (e.g. blur maior que 16px) como mera decoração nas bordas de blocos centrais; a superfície plana é regra."
+    ]
+  }
+}
