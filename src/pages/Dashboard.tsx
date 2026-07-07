@@ -19,7 +19,9 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  Calendar
+  Calendar,
+  Minus,
+  Bell
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
@@ -738,11 +740,49 @@ const Dashboard = () => {
     }
   }
 
+  const splitBalance = (value: number) => {
+    const formatted = formatCurrency(value)
+    const separatorIndex = formatted.lastIndexOf(',') !== -1 ? formatted.lastIndexOf(',') : formatted.lastIndexOf('.')
+    if (separatorIndex === -1) {
+      return { integer: formatted, decimal: '' }
+    }
+    return {
+      integer: formatted.substring(0, separatorIndex),
+      decimal: formatted.substring(separatorIndex)
+    }
+  }
+
+  const lastMonthSummary = useMemo(() => {
+    let prevMonth = selectedDate.month - 1
+    let prevYear = selectedDate.year
+    if (prevMonth === 0) {
+      prevMonth = 12
+      prevYear = selectedDate.year - 1
+    }
+
+    const prevTransactions = transactions.filter((t) => {
+      const date = parseISO(t.date)
+      return date.getFullYear() === prevYear && (date.getMonth() + 1) === prevMonth
+    })
+
+    const income = prevTransactions
+      .filter((t) => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0)
+
+    const expense = prevTransactions
+      .filter((t) => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0)
+
+    const balance = income - expense
+
+    return { income, expense, balance }
+  }, [transactions, selectedDate])
+
   return (
     <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
 
-      {/* Header com Navegação de Mês integrada */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      {/* Header com Navegação de Mês integrada - Desktop */}
+      <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="hidden sm:block">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-500 dark:text-neutral-400 mt-1 text-sm">
@@ -767,7 +807,7 @@ const Dashboard = () => {
             </span>
           </div>
 
-          {!isCurrentMonth() && (
+          {!isInitialLoad && !isCurrentMonth() && (
             <button
               onClick={goToCurrentMonth}
               className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
@@ -789,6 +829,137 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Header Premium Mobile (Card com Saldo, Calendário Integrado e Ações) */}
+      {isMobile && (
+        <div className="block sm:hidden mb-6">
+          <div className="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-indigo-600 rounded-[32px] p-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
+            {/* Linhas de grade/onda decorativas */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
+              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,45 C30,35 70,55 100,45 L100,100 L0,100 Z" fill="white" />
+                <path d="M0,25 C50,55 50,15 100,35 L100,100 L0,100 Z" fill="white" opacity="0.5" />
+              </svg>
+            </div>
+
+            <div className="relative z-10 flex flex-col justify-between min-h-[160px]">
+              {/* Linha Superior: Período / Navegação e Utilidades */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-white/70 uppercase tracking-widest font-semibold">Período</span>
+                  <div className="flex items-center gap-1.5 mt-1 -ml-1">
+                    <button 
+                      onClick={goToPreviousMonth} 
+                      className="p-1 hover:bg-white/10 active:bg-white/20 rounded-lg text-white transition-colors"
+                      title="Mês anterior"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-sm font-bold capitalize text-white whitespace-nowrap">
+                      {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMM yyyy', { locale: ptBR })}
+                    </span>
+                    <button 
+                      onClick={goToNextMonth} 
+                      disabled={isCurrentMonth()} 
+                      className={`p-1 rounded-lg text-white transition-colors ${isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 active:bg-white/20'}`}
+                      title="Próximo mês"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Utilidades: Calculadora e Notificação */}
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setShowCalculator(true)} 
+                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm"
+                    title="Calculadora"
+                  >
+                    <Calculator className="w-5 h-5 text-white" />
+                  </button>
+                  <button 
+                    onClick={() => toast.success("Você está em dia! Nenhuma notificação recente.")} 
+                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm"
+                    title="Notificações"
+                  >
+                    <Bell className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Linha Central: Rótulo do Saldo, Montante e Botões de Atalho */}
+              <div className="flex items-end justify-between mt-auto">
+                <div>
+                  <span className="text-xs text-white/80 font-medium tracking-wide">Saldo do Mês</span>
+                  <div className="flex items-baseline gap-0.5 mt-0.5">
+                    <span className="text-3xl font-extrabold tracking-tight font-display">
+                      {splitBalance(financialSummary.monthBalance).integer}
+                    </span>
+                    <span className="text-lg font-bold opacity-90 align-super">
+                      {splitBalance(financialSummary.monthBalance).decimal}
+                    </span>
+                    <span className="text-[10px] font-semibold bg-white/15 px-1.5 py-0.5 rounded ml-1.5 select-none uppercase">
+                      BRL
+                    </span>
+                  </div>
+                </div>
+
+                {/* Botões de Ação Rápida no Mobile (+ Receita, - Despesa) */}
+                <div className="flex flex-col gap-2 ml-4">
+                  <button
+                    onClick={() => openQuickAdd('income')}
+                    className="w-11 h-11 bg-white hover:bg-gray-50 active:scale-95 text-primary-600 rounded-full flex items-center justify-center shadow-lg transition-all"
+                    title="Adicionar Receita"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => openQuickAdd('expense')}
+                    className="w-11 h-11 bg-white hover:bg-gray-50 active:scale-95 text-danger-600 rounded-full flex items-center justify-center shadow-lg transition-all"
+                    title="Adicionar Despesa"
+                  >
+                    <Minus className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Linha Inferior: Indicador de Tendência baseada no mês anterior */}
+              <div className="mt-4 flex items-center">
+                {(() => {
+                  const lastMonth = lastMonthSummary.balance
+                  const currentMonth = financialSummary.monthBalance
+                  const diff = currentMonth - lastMonth
+                  const percentChange = lastMonth !== 0 ? Math.round((diff / Math.abs(lastMonth)) * 100) : (currentMonth > 0 ? 100 : (currentMonth < 0 ? -100 : 0))
+
+                  if (diff > 0) {
+                    return (
+                      <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full text-xs font-bold text-success-600 shadow-sm">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        <span>+{formatCurrency(diff)} (+{percentChange}%)</span>
+                      </div>
+                    )
+                  } else if (diff < 0) {
+                    return (
+                      <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full text-xs font-bold text-danger-600 shadow-sm">
+                        <TrendingDown className="w-3.5 h-3.5" />
+                        <span>-{formatCurrency(Math.abs(diff))} ({percentChange}%)</span>
+                      </div>
+                    )
+                  } else {
+                    return (
+                      <div className="inline-flex items-center gap-1 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-gray-500 shadow-sm">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        <span>R$ 0,00 (0%)</span>
+                      </div>
+                    )
+                  }
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
 
@@ -796,7 +967,7 @@ const Dashboard = () => {
         {/* Lado Esquerdo: Cards de Resumo */}
         <div className="lg:col-span-3 grid grid-cols-2 gap-3 sm:gap-4">
           {/* Saldo do Mês - Card Principal */}
-          <div className="card col-span-2 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
+          <div className="hidden sm:block card col-span-2 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>

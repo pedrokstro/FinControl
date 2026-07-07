@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.12.74] - 2026-07-07
+
+### Alterado
+- **Dashboard (UX/UI Mobile):**
+  - Implementado novo header premium para a versão mobile em [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx).
+  - Integrada a navegação mensal diretamente no cabeçalho do card superior no mobile, otimizando o espaço vertical.
+  - Adicionado atalhos rápidos com botões flutuantes para incluir receitas e despesas no celular.
+  - Adicionado indicador visual de tendência (pílula) comparativo com o saldo do mês anterior.
+  - Dividida a renderização do saldo exibindo centavos menores em alinhamento superior para visual sofisticado.
+
 ## [2.12.73] - 2026-07-07
 
 ### Corrigido
