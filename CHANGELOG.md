@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.69] - 2026-07-07
+
+### Alterado
+- **Admin (UX/UI):**
+  - Refatorada completamente a interface da página [Admin.tsx](file:///f:/CURSOR/fincontrol/src/pages/Admin.tsx) para um design premium e elegante condizente com a Sidebar e o Dashboard do app.
+  - Stats Cards ganharam fundos limpos (sóbrios), bordas finas semi-transparentes, acentos de gradiente superior e efeitos de hover de micro-interação.
+  - Formulário de envio de notificações e lista de templates rápidos foram modernizados com layouts em cantos arredondados, focos sutis em campos e botões dinâmicos.
+  - Modal de visualização de usuários remodelado usando cantos arredondados `rounded-[2rem]`, efeito `backdrop-blur-sm` no overlay e tabelas modernizadas de dados.
+
 ## [2.12.68] - 2026-07-07
 
 ### Adicionado
