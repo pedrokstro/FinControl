@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.12.67] - 2026-07-07
+
+### Alterado
+- **Dashboard (UX/UI):**
+  - Substituído o card abstrato de **Saúde Financeira** (`FinancialHealthRing`) pelo widget **Maiores Gastos** no topo direito do painel.
+  - O novo widget calcula e exibe de forma clara as 3 principais categorias de despesas que mais consumiram recursos no mês selecionado.
+  - Inclui barras de progresso horizontais com as cores originais de cada categoria, porcentagem correspondente em relação ao total de gastos e indicador visual de zero despesas (`empty state`).
+
 ## [2.12.66] - 2026-07-07
 
 ### Adicionado

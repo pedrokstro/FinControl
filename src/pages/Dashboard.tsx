@@ -68,7 +68,6 @@ import { type IconName } from '@/utils/iconMapping'
 import Modal from '@/components/common/Modal'
 import { useSearchParams, Link } from 'react-router-dom'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
-import { FinancialHealthRing } from '@/components/ui/FinancialHealthRing'
 
 const RADIAN = Math.PI / 180
 
@@ -196,6 +195,43 @@ const Dashboard = () => {
     const now = new Date()
     return { month: now.getMonth() + 1, year: now.getFullYear() }
   })
+
+  // Calcular as 3 maiores despesas do mês selecionado
+  const topExpensesCurrentMonth = useMemo(() => {
+    if (!transactions.length || !categories.length) return []
+
+    // 1. Filtrar transações de despesa do mês selecionado
+    const expenses = transactions.filter((t) => {
+      if (t.type !== 'expense') return false
+      const date = parseISO(t.date)
+      return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
+    })
+
+    // 2. Agrupar por categoria
+    const categoryTotals: { [key: string]: number } = {}
+    expenses.forEach((t) => {
+      categoryTotals[t.categoryId] = (categoryTotals[t.categoryId] || 0) + t.amount
+    })
+
+    // 3. Mapear para array e enriquecer com dados da categoria
+    const sorted = Object.keys(categoryTotals)
+      .map((catId) => {
+        const category = categories.find((c) => c.id === catId)
+        return {
+          categoryId: catId,
+          name: category?.name || 'Outros',
+          color: category?.color || '#9ca3af',
+          icon: category?.icon || 'FolderOpen',
+          amount: categoryTotals[catId],
+          percentage: financialSummary.monthExpense > 0
+            ? (categoryTotals[catId] / financialSummary.monthExpense) * 100
+            : 0
+        }
+      })
+      .sort((a, b) => b.amount - a.amount)
+
+    return sorted.slice(0, 3) // Pegar as top 3
+  }, [transactions, categories, selectedDate, financialSummary.monthExpense])
 
   // Carregar dados de analytics
   const loadAnalytics = async () => {
@@ -959,15 +995,87 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Lado Direito: Indicador de Saúde Financeira */}
+        {/* Lado Direito: Maiores Gastos do Mês */}
         <div className="lg:col-span-1">
-          <FinancialHealthRing
-            income={financialSummary.monthIncome}
-            expense={financialSummary.monthExpense}
-            budgets={budgets}
-            transactions={transactions}
-            selectedDate={selectedDate}
-          />
+          <div className="card h-full flex flex-col justify-between p-5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+            <div>
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-9 h-9 bg-danger-50 dark:bg-danger-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white font-display tracking-tight">
+                    Maiores Gastos
+                  </h3>
+                  <p className="text-[10px] text-gray-500 dark:text-neutral-400 leading-none mt-0.5">
+                    Categorias que mais consumiram saldo
+                  </p>
+                </div>
+              </div>
+
+              {topExpensesCurrentMonth.length > 0 ? (
+                <div className="space-y-4">
+                  {topExpensesCurrentMonth.map((item) => (
+                    <div key={item.categoryId} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-semibold">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div
+                            className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${item.color}15` }}
+                          >
+                            <CategoryIcon
+                              icon={item.icon as IconName}
+                              color={item.color}
+                              size="xs"
+                            />
+                          </div>
+                          <span className="text-gray-700 dark:text-neutral-300 truncate">
+                            {item.name}
+                          </span>
+                        </div>
+                        <span className="text-gray-900 dark:text-white font-mono flex-shrink-0">
+                          {formatCurrency(item.amount)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="h-1.5 rounded-full transition-all duration-500"
+                            style={{
+                              backgroundColor: item.color,
+                              width: `${item.percentage}%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 w-7 text-right flex-shrink-0">
+                          {Math.round(item.percentage)}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800/60 rounded-full flex items-center justify-center mb-3">
+                    <TrendingDown className="w-5 h-5 text-gray-400 dark:text-neutral-500 opacity-60" />
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-neutral-500 font-medium px-2">
+                    Nenhum gasto registrado neste mês
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {topExpensesCurrentMonth.length > 0 && (
+              <div className="border-t border-gray-100 dark:border-neutral-800 pt-3.5 mt-4 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span>Total em categorias:</span>
+                <span className="font-bold text-gray-700 dark:text-neutral-300 font-mono">
+                  {formatCurrency(topExpensesCurrentMonth.reduce((sum, item) => sum + item.amount, 0))}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
