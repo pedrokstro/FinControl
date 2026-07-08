@@ -30,6 +30,7 @@ interface CustomDatePickerProps {
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, error, minDate, maxDate, align = 'bottom' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
     const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 640);
@@ -76,7 +77,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            const clickedInsideInput = containerRef.current?.contains(event.target as Node);
+            const clickedInsidePopover = popoverRef.current?.contains(event.target as Node);
+            
+            if (!clickedInsideInput && !clickedInsidePopover) {
                 setIsOpen(false);
             }
         };
@@ -243,6 +247,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
 
                             {/* Dropdown / Bottom Sheet */}
                             <motion.div
+                                ref={popoverRef}
                                 initial={align === 'top' ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 0, y: 50, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={align === 'top' ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 0, y: 50, scale: 0.95 }}

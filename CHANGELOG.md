@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.83] - 2026-07-08
+
+### Corrigido
+- **Componente de Calendário (CustomDatePicker - Click Outside Portal):**
+  - Corrigido o fechamento imediato do calendário renderizado via Portal. Adicionada a referência `popoverRef` no contêiner do calendário para validar cliques de forma combinada com o `containerRef` do input, evitando que cliques de abertura ou interações na grade de dias fechem o date picker incorretamente.
+
 ## [2.12.82] - 2026-07-08
 
 ### Alterado
