@@ -658,14 +658,14 @@ const Categories = () => {
                     </div>
                   </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+                  <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar text-left">
                     <div>
-                      <label className="label">Nome da Categoria</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Nome da Categoria</label>
                       <input
                         type="text"
                         placeholder="Ex: Alimentacao, Transporte, Salario..."
                         {...register('name')}
-                        className={`input-field ${errors.name ? 'input-error' : ''}`}
+                        className={`input-field rounded-xl ${errors.name ? 'input-error' : ''}`}
                       />
                       {errors.name && (
                         <p className="error-message">{errors.name.message}</p>
@@ -673,22 +673,57 @@ const Categories = () => {
                     </div>
 
                     <div>
-                      <label className="label">Tipo</label>
-                      <CustomSelect
-                        options={[
-                          { value: 'income', label: '📈 Receita', icon: <TrendingUp className="w-4 h-4 text-success-600" /> },
-                          { value: 'expense', label: '📉 Despesa', icon: <TrendingDown className="w-4 h-4 text-danger-600" /> },
-                        ]}
-                        value={selectedType}
-                        onChange={(val) => { haptics.light(); setValue('type', val as 'income' | 'expense') }}
-                        placeholder="Selecione o tipo..."
-                        dropdownTitle="Tipo de Categoria"
-                        className="w-full"
-                      />
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <label className={`relative flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                          selectedType === 'income'
+                            ? 'border-success-500 bg-success-50/20 dark:bg-success-950/15 shadow-md shadow-success-500/5'
+                            : 'border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60'
+                        }`}>
+                          <input
+                            type="radio"
+                            name="category-type"
+                            value="income"
+                            checked={selectedType === 'income'}
+                            onChange={() => { haptics.light(); setValue('type', 'income') }}
+                            className="sr-only"
+                          />
+                          <div className="text-center">
+                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-1.5 transition-colors ${
+                              selectedType === 'income' ? 'bg-success-100/60 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                            }`}>
+                              <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
+                            </div>
+                            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Receita</span>
+                          </div>
+                        </label>
+                        <label className={`relative flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                          selectedType === 'expense'
+                            ? 'border-danger-500 bg-danger-50/20 dark:bg-danger-950/15 shadow-md shadow-danger-500/5'
+                            : 'border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60'
+                        }`}>
+                          <input
+                            type="radio"
+                            name="category-type"
+                            value="expense"
+                            checked={selectedType === 'expense'}
+                            onChange={() => { haptics.light(); setValue('type', 'expense') }}
+                            className="sr-only"
+                          />
+                          <div className="text-center">
+                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-1.5 transition-colors ${
+                              selectedType === 'expense' ? 'bg-danger-100/60 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                            }`}>
+                              <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+                            </div>
+                            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Despesa</span>
+                          </div>
+                        </label>
+                      </div>
                     </div>
 
                     <div>
-                      <label className="label">Ícone</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Ícone</label>
                       <IconPicker
                         selectedIcon={selectedIcon}
                         onSelectIcon={(icon) => setValue('icon', icon as string)}
@@ -702,7 +737,7 @@ const Categories = () => {
                     </div>
 
                     <div>
-                      <label className="label">Cor</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cor</label>
                       <ColorPicker
                         selectedColor={selectedColor}
                         onSelectColor={(color) => setValue('color', color)}
@@ -715,11 +750,18 @@ const Categories = () => {
                     </div>
 
                     {/* Preview */}
-                    <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-3 border border-transparent dark:border-neutral-800">
+                    <div className="bg-gray-50/40 dark:bg-neutral-900/40 border border-gray-250/50 dark:border-neutral-800/60 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                      <div 
+                        className="absolute right-0 top-0 bottom-0 w-[4px] transition-all duration-300" 
+                        style={{ 
+                          backgroundColor: selectedColor,
+                          boxShadow: `0 0 10px ${selectedColor}`
+                        }} 
+                      />
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${selectedColor}20` }}
+                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                          style={{ backgroundColor: `${selectedColor}18` }}
                         >
                           <CategoryIcon
                             icon={selectedIcon as IconName}
@@ -728,16 +770,18 @@ const Categories = () => {
                           />
                         </div>
                         <div>
-                          <p className="font-semibold text-sm text-gray-900 dark:text-white">
+                          <p className="font-bold text-base text-gray-900 dark:text-white font-display leading-tight">
                             {watch('name') || 'Nome da Categoria'}
                           </p>
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${selectedType === 'income'
-                            ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                            : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                            }`}>
-                            {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                            {selectedType === 'income' ? 'Receita' : 'Despesa'}
-                          </span>
+                          <div className="flex items-center gap-1 mt-1">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${selectedType === 'income'
+                              ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-350 border-success-100/50 dark:border-success-900/10'
+                              : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-350 border-danger-100/50 dark:border-danger-900/10'
+                              }`}>
+                              {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                              {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

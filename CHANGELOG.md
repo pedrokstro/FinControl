@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.12.80] - 2026-07-08
+
+### Alterado
+- **Modal de Nova/Editar Categoria (Renovação de UX/UI):**
+  - Substituído o seletor clássico de dropdown por cartões de tipo (Receita/Despesa) táteis de escala elástica com feedback de clique e bordas brilhantes semânticas.
+  - Redesenhada a caixa de visualização em tempo real (Preview) com bordas finas sólidas e uma faixa vertical luminosa na direita que assume de forma reativa a cor hexadecimal escolhida.
+  - Padronizados todos os rótulos (labels) com a tipografia Outfit em formato de mini-cabeçalho uppercase.
+
 ## [2.12.79] - 2026-07-08
 
 ### Otimizado
