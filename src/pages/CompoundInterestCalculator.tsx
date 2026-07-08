@@ -303,7 +303,7 @@ const CompoundInterestCalculator = () => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-2">
                 Data de Início
               </label>
-              <div className="relative rounded-2xl overflow-hidden shadow-sm">
+              <div className="relative rounded-2xl shadow-sm">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-500 via-primary-500 to-indigo-500 opacity-0 group-focus-within:opacity-100 transition duration-300 blur-sm pointer-events-none"></div>
                 <div className="relative bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl group-focus-within:border-transparent">
                   <CustomDatePicker

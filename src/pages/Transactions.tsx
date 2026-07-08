@@ -1094,6 +1094,7 @@ const Transactions = () => {
                         value={field.value}
                         onChange={field.onChange}
                         error={errors.date?.message}
+                        align="top"
                       />
                     )}
                   />

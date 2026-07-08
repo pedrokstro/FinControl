@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.81] - 2026-07-08
+
+### Corrigido
+- **Componente de Calendário (CustomDatePicker):**
+  - Implementada a renderização do popover do calendário via React Portals (`createPortal`) montada diretamente no `document.body` e com posicionamento dinâmico e absoluto via `getBoundingClientRect()`. Isso impede que o calendário seja cortado por modais, barras de rolagem ou contêineres que possuem propriedades `overflow-hidden` ou `overflow-y-auto`.
+  - Adicionados cálculos automáticos de posição, mantendo o calendário perfeitamente alinhado à borda direita do campo de entrada no desktop e permitindo que flutue por cima de cabeçalhos fixos e rodapés.
+  - Corrigido o bug do calendário na Calculadora de Juros Compostos ao remover a classe `overflow-hidden` do contêiner de entrada da Data de Início, permitindo que a seleção ocorra perfeitamente.
+  - Implementada sincronização de escopo de redimensionamento e escuta de scroll para que a caixa do calendário acompanhe o campo de origem mesmo durante interações de tela.
+
 ## [2.12.80] - 2026-07-08
 
 ### Alterado
