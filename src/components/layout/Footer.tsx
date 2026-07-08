@@ -7,122 +7,124 @@ const Footer = () => {
 
   return (
     <footer className="bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 pb-24 md:pb-12">
-        <div className="flex flex-col md:flex-row gap-10 md:gap-16">
-          {/* Brand */}
-          <div className="space-y-4 md:w-1/3 flex flex-col items-center sm:items-start text-center sm:text-left">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 bg-gray-50/50 dark:bg-neutral-800 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 overflow-hidden p-1.5 border border-gray-100 dark:border-neutral-700/60">
-                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
+        {/* Desktop View - Full Layout */}
+        <div className="hidden md:flex flex-col gap-10 md:gap-16">
+          <div className="flex flex-row gap-10 md:gap-16">
+            {/* Brand */}
+            <div className="space-y-4 md:w-1/3 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 bg-gray-50/50 dark:bg-neutral-800 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 overflow-hidden p-1.5 border border-gray-100 dark:border-neutral-700/60">
+                  <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+                </div>
+                <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                  FinControl
+                </span>
               </div>
-              <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                FinControl
-              </span>
-            </div>
-            <p className="text-sm text-gray-600 dark:text-neutral-400 max-w-[280px]">
-              Controle financeiro inteligente para uma vida mais organizada e próspera.
-            </p>
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-neutral-400 font-medium bg-gray-100 dark:bg-neutral-800 px-3 py-1.5 rounded-full w-fit mt-2">
-              <span>Feito por</span>
-              <span className="font-bold text-gray-900 dark:text-white">FinControl</span>
-            </div>
-          </div>
-
-          {/* Links Area */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 gap-y-10 md:w-2/3">
-
-            {/* Links - Produto */}
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
-                Produto
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    to="/app/plans"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  >
-                    Planos e Preços
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/pedrokstro"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
-                  >
-                    <Github className="w-4 h-4" />
-                    GitHub
-                  </a>
-                </li>
-              </ul>
+              <p className="text-sm text-gray-600 dark:text-neutral-400 max-w-[280px]">
+                Controle financeiro inteligente para uma vida mais organizada e próspera.
+              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-neutral-400 font-medium bg-gray-100 dark:bg-neutral-800 px-3 py-1.5 rounded-full w-fit mt-2">
+                <span>Feito por</span>
+                <span className="font-bold text-gray-900 dark:text-white">FinControl</span>
+              </div>
             </div>
 
-            {/* Links - Suporte */}
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
-                Suporte
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    to="/support"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                    Central de Ajuda
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="mailto:suportfincontrol@gmail.com"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Contato
-                  </a>
-                </li>
-              </ul>
-            </div>
+            {/* Links Area */}
+            <div className="grid grid-cols-3 gap-8 md:w-2/3">
+              {/* Links - Produto */}
+              <div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
+                  Produto
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <Link
+                      to="/app/plans"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    >
+                      Planos e Preços
+                    </Link>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/pedrokstro"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                    >
+                      <Github className="w-4 h-4" />
+                      GitHub
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Links - Legal */}
-            <div className="col-span-2 sm:col-span-1">
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
-                Legal
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    to="/privacy"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
-                  >
-                    <Shield className="w-4 h-4" />
-                    Privacidade
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/terms"
-                    className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Termos de Uso
-                  </Link>
-                </li>
-              </ul>
+              {/* Links - Suporte */}
+              <div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
+                  Suporte
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <Link
+                      to="/support"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      Central de Ajuda
+                    </Link>
+                  </li>
+                  <li>
+                    <a
+                      href="mailto:suportfincontrol@gmail.com"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                    >
+                      <Mail className="w-4 h-4" />
+                      Contato
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Links - Legal */}
+              <div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-xs">
+                  Legal
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <Link
+                      to="/privacy"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Privacidade
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/terms"
+                      className="text-sm text-gray-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Termos de Uso
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="mt-10 pt-6 border-t border-gray-200 dark:border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-5">
-            <div className="text-sm text-gray-600 dark:text-neutral-400 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
+          <div className="mt-10 pt-6 border-t border-gray-200 dark:border-neutral-800 flex flex-row justify-between items-center gap-5">
+            <div className="text-sm text-gray-600 dark:text-neutral-400 flex flex-col items-start text-left">
               <p className="font-medium">© {currentYear} FinControl — Todos os direitos reservados</p>
               <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
                 Versão {packageInfo.version}
               </p>
             </div>
-            <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/50 p-2 px-4 rounded-full order-1 md:order-2">
+            <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/50 p-2 px-4 rounded-full">
               <a
                 href="https://github.com/pedrokstro"
                 target="_blank"
@@ -141,6 +143,48 @@ const Footer = () => {
                 <Mail className="w-5 h-5" />
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile View - Compact & Minimalist */}
+        <div className="flex md:hidden flex-col items-center text-center space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-800 p-0.5">
+              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">FinControl</span>
+            <span className="text-[10px] text-gray-500 dark:text-neutral-500 font-medium">• Versão {packageInfo.version}</span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-gray-600 dark:text-neutral-400 font-sans">
+            <Link to="/app/plans" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Planos</Link>
+            <Link to="/support" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Ajuda</Link>
+            <Link to="/privacy" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Privacidade</Link>
+            <Link to="/terms" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Termos</Link>
+          </div>
+
+          <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/40 p-1.5 px-4 rounded-full">
+            <a
+              href="https://github.com/pedrokstro"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 dark:text-neutral-400 hover:text-primary-600 transition-colors"
+              aria-label="GitHub"
+            >
+              <Github className="w-4 h-4" />
+            </a>
+            <div className="w-px h-3 bg-gray-300 dark:bg-neutral-700" />
+            <a
+              href="mailto:suportfincontrol@gmail.com"
+              className="text-gray-500 dark:text-neutral-400 hover:text-primary-600 transition-colors"
+              aria-label="Email"
+            >
+              <Mail className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="text-[10px] text-gray-400 dark:text-neutral-500 pt-1 font-sans">
+            © {currentYear} FinControl. Todos os direitos reservados.
           </div>
         </div>
       </div>

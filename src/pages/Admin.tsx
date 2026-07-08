@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Send, Users, Bell, TrendingUp, Shield, X, Crown, Mail, Calendar } from 'lucide-react'
+import { Send, Users, Bell, Shield, X, Crown, Mail, Calendar, Edit3, Trash2, Plus, Sparkles, Check } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import api from '@/config/api'
 import PageTransition from '@/components/common/PageTransition'
 import CustomSelect from '@/components/common/CustomSelect'
+import React from 'react'
 
 interface Stats {
   totalUsers: number
@@ -40,10 +42,152 @@ const Admin = () => {
   const [filterPremium, setFilterPremium] = useState<boolean | null>(null)
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
 
-  // Carregar estatísticas ao montar o componente
+  const [dashboardCards, setDashboardCards] = useState<any[]>([])
+  const [showCardModal, setShowCardModal] = useState(false)
+  const [editingCardId, setEditingCardId] = useState<string | null>(null)
+  const [cardForm, setCardForm] = useState({
+    title: '',
+    desc: '',
+    icon: '',
+    imageSrc: '',
+    bg: 'bg-white dark:bg-neutral-900 border border-gray-200/60 dark:border-neutral-800/85 shadow-sm',
+    textColor: 'text-gray-900 dark:text-white',
+    descColor: 'text-gray-500 dark:text-neutral-400',
+    iconColor: 'text-primary-600 dark:text-primary-400',
+    iconBg: 'bg-primary-50 dark:bg-primary-950/20',
+    actionPath: '/app/dashboard',
+    isActive: true
+  })
+
+  // Carregar estatísticas e cards ao montar o componente
   useEffect(() => {
     loadStats()
+    loadDashboardCards()
   }, [])
+
+  const loadDashboardCards = async () => {
+    try {
+      const response = await api.get('/admin/dashboard-cards')
+      setDashboardCards(response.data.data || [])
+    } catch (error) {
+      console.error('Erro ao carregar cards do dashboard:', error)
+    }
+  }
+
+  const applyPreset = (type: string) => {
+    switch (type) {
+      case 'blue':
+        setCardForm((prev) => ({
+          ...prev,
+          bg: 'bg-primary-600 dark:bg-primary-700 shadow-sm shadow-primary-500/10',
+          textColor: 'text-white',
+          descColor: 'text-white/80',
+          iconColor: 'text-white',
+          iconBg: 'bg-white/20'
+        }))
+        break
+      case 'amber':
+        setCardForm((prev) => ({
+          ...prev,
+          bg: 'bg-amber-500 dark:bg-amber-600 shadow-sm',
+          textColor: 'text-white',
+          descColor: 'text-white/95',
+          iconColor: 'text-white',
+          iconBg: 'bg-white/20'
+        }))
+        break
+      case 'red':
+        setCardForm((prev) => ({
+          ...prev,
+          bg: 'bg-red-650 dark:bg-red-750 shadow-sm',
+          textColor: 'text-white',
+          descColor: 'text-white/95',
+          iconColor: 'text-white',
+          iconBg: 'bg-white/20'
+        }))
+        break
+      default:
+        setCardForm((prev) => ({
+          ...prev,
+          bg: 'bg-white dark:bg-neutral-900 border border-gray-200/60 dark:border-neutral-800/85 shadow-sm',
+          textColor: 'text-gray-900 dark:text-white',
+          descColor: 'text-gray-500 dark:text-neutral-400',
+          iconColor: 'text-primary-600 dark:text-primary-400',
+          iconBg: 'bg-primary-50 dark:bg-primary-950/20'
+        }))
+    }
+  }
+
+  const handleOpenCardModal = (card: any = null) => {
+    if (card) {
+      setEditingCardId(card.id)
+      setCardForm({
+        title: card.title,
+        desc: card.desc,
+        icon: card.icon || '',
+        imageSrc: card.imageSrc || '',
+        bg: card.bg,
+        textColor: card.textColor,
+        descColor: card.descColor,
+        iconColor: card.iconColor || '',
+        iconBg: card.iconBg || '',
+        actionPath: card.actionPath,
+        isActive: card.isActive ?? true
+      })
+    } else {
+      setEditingCardId(null)
+      setCardForm({
+        title: '',
+        desc: '',
+        icon: 'Shield',
+        imageSrc: '',
+        bg: 'bg-white dark:bg-neutral-900 border border-gray-200/60 dark:border-neutral-800/85 shadow-sm',
+        textColor: 'text-gray-900 dark:text-white',
+        descColor: 'text-gray-500 dark:text-neutral-400',
+        iconColor: 'text-primary-600 dark:text-primary-400',
+        iconBg: 'bg-primary-50 dark:bg-primary-950/20',
+        actionPath: '/app/dashboard',
+        isActive: true
+      })
+    }
+    setShowCardModal(true)
+  }
+
+  const handleSaveCard = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      setIsLoading(true)
+      if (editingCardId) {
+        await api.put(`/admin/dashboard-cards/${editingCardId}`, cardForm)
+        toast.success('Card atualizado com sucesso')
+      } else {
+        await api.post('/admin/dashboard-cards', cardForm)
+        toast.success('Card criado com sucesso')
+      }
+      setShowCardModal(false)
+      loadDashboardCards()
+    } catch (error: any) {
+      console.error('Erro ao salvar card:', error)
+      toast.error(error.response?.data?.message || 'Erro ao salvar card')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDeleteCard = async (id: string) => {
+    if (!window.confirm('Tem certeza que deseja remover este card?')) return
+    try {
+      setIsLoading(true)
+      await api.delete(`/admin/dashboard-cards/${id}`)
+      toast.success('Card removido com sucesso')
+      loadDashboardCards()
+    } catch (error: any) {
+      console.error('Erro ao deletar card:', error)
+      toast.error('Erro ao remover card')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const loadStats = async () => {
     try {
@@ -400,6 +544,307 @@ const Admin = () => {
             </div>
           </div>
         </div>
+
+        {/* Seção: Gerenciamento de Cards do Dashboard */}
+        <div className="card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center border border-amber-100/30 dark:border-amber-900/10">
+                <Sparkles className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white font-display">
+                  Cards do Dashboard
+                </h2>
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
+                  Crie, edite ou remova os avisos e dicas do topo do Dashboard
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleOpenCardModal()}
+              className="btn-primary flex items-center gap-1.5 px-4 h-9.5 text-xs font-bold rounded-xl active:scale-[0.98] transition-transform"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Card
+            </button>
+          </div>
+
+          {/* Lista de Cards */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-gray-100 dark:border-neutral-800 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  <th className="pb-3 pl-2">Card / Conteúdo</th>
+                  <th className="pb-3">Visual / Cores</th>
+                  <th className="pb-3">Atalho / Destino</th>
+                  <th className="pb-3 text-center">Status</th>
+                  <th className="pb-3 pr-2 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/40 text-xs">
+                {dashboardCards.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500 dark:text-neutral-500 font-medium">
+                      Nenhum card cadastrado no sistema.
+                    </td>
+                  </tr>
+                ) : (
+                  dashboardCards.map((c) => {
+                    const IconComponent = c.icon ? (LucideIcons as any)[c.icon] : null
+                    return (
+                      <tr key={c.id} className="hover:bg-gray-50/20 dark:hover:bg-neutral-800/5 transition-colors">
+                        <td className="py-4 pl-2">
+                          <div className="flex gap-3 items-center">
+                            <div className={`w-8 h-8 rounded-lg ${c.bg.includes('bg-primary-600') ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-300'} flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200/20`}>
+                              {c.imageSrc ? (
+                                <img src={c.imageSrc} alt="" className="w-full h-full object-cover" />
+                              ) : IconComponent ? (
+                                <IconComponent className="w-4 h-4" />
+                              ) : (
+                                'ℹ'
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 dark:text-white line-clamp-1">{c.title}</p>
+                              <p className="text-[10px] text-gray-500 dark:text-neutral-450 mt-0.5 line-clamp-1 max-w-[250px]">{c.desc}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-[10px] font-mono px-2 py-0.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 rounded-md">
+                            {c.bg.includes('bg-primary-600') ? 'Azul' : 'Branco/Escuro'}
+                          </span>
+                        </td>
+                        <td className="py-4 text-gray-600 dark:text-neutral-400 font-mono text-[10px] max-w-[150px] truncate">
+                          {c.actionPath}
+                        </td>
+                        <td className="py-4 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${c.isActive ? 'bg-success-50 dark:bg-success-900/20 text-success-700 dark:text-success-400 border border-success-100/50 dark:border-success-900/10' : 'bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400'}`}>
+                            {c.isActive ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </td>
+                        <td className="py-4 pr-2 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleOpenCardModal(c)}
+                              className="w-7 h-7 bg-gray-50 dark:bg-neutral-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg flex items-center justify-center transition-colors"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCard(c.id)}
+                              className="w-7 h-7 bg-red-50 dark:bg-red-950/20 text-red-600 hover:text-red-700 rounded-lg flex items-center justify-center transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Modal de Criar/Editar Card do Dashboard */}
+        {showCardModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-neutral-900 rounded-[2rem] shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-gray-100 dark:border-neutral-800 animate-in zoom-in-95 duration-200 flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-neutral-800">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white font-display">
+                    {editingCardId ? 'Editar Card' : 'Novo Card de Aviso'}
+                  </h2>
+                  <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1.5 font-medium">
+                    Configure os textos, ícone e links de destino do card
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCardModal(false)}
+                  className="w-8 h-8 rounded-full bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Form Body */}
+              <form onSubmit={handleSaveCard} className="overflow-y-auto p-6 flex-1 pr-4 space-y-4">
+                {/* Estilo Presets */}
+                <div>
+                  <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block">Preset de Estilo</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { name: 'Branco/Escuro (Padrão)', value: 'default' },
+                      { name: 'Azul FinControl', value: 'blue' },
+                      { name: 'Dourado Destaque', value: 'amber' },
+                      { name: 'Vermelho Alerta', value: 'red' }
+                    ].map((preset) => (
+                      <button
+                        key={preset.value}
+                        type="button"
+                        onClick={() => applyPreset(preset.value)}
+                        className="px-3 py-2 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200/50 dark:border-neutral-700/50 hover:border-primary-500 dark:hover:border-primary-500 rounded-xl text-left text-[11px] font-semibold text-gray-700 dark:text-neutral-300 transition-all active:scale-[0.98]"
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Título</label>
+                    <input
+                      type="text"
+                      value={cardForm.title}
+                      onChange={(e) => setCardForm({ ...cardForm, title: e.target.value })}
+                      placeholder="Ex: Fatura do Cartão"
+                      className="input-field mt-1"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Link de Destino</label>
+                    <input
+                      type="text"
+                      value={cardForm.actionPath}
+                      onChange={(e) => setCardForm({ ...cardForm, actionPath: e.target.value })}
+                      placeholder="Ex: /app/cards"
+                      className="input-field mt-1"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Descrição</label>
+                  <textarea
+                    value={cardForm.desc}
+                    onChange={(e) => setCardForm({ ...cardForm, desc: e.target.value })}
+                    placeholder="Descreva a mensagem do card..."
+                    className="input-field mt-1 min-h-[70px]"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Ícone Lucide (Nome)</label>
+                    <input
+                      type="text"
+                      value={cardForm.icon}
+                      onChange={(e) => setCardForm({ ...cardForm, icon: e.target.value, imageSrc: '' })}
+                      placeholder="Ex: Shield, CreditCard, Gift"
+                      className="input-field mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="label text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Ou Caminho da Imagem</label>
+                    <input
+                      type="text"
+                      value={cardForm.imageSrc}
+                      onChange={(e) => setCardForm({ ...cardForm, imageSrc: e.target.value, icon: '' })}
+                      placeholder="Ex: /assets/minha-imagem.png"
+                      className="input-field mt-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Avançado: Personalizar Cores e Classes CSS */}
+                <div className="border-t border-gray-100 dark:border-neutral-800 pt-4 space-y-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Cores Avançadas (Tailwind)</h4>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="label text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Fundo Card (bg)</label>
+                      <input
+                        type="text"
+                        value={cardForm.bg}
+                        onChange={(e) => setCardForm({ ...cardForm, bg: e.target.value })}
+                        className="input-field mt-1 font-mono text-[10px]"
+                      />
+                    </div>
+                    <div>
+                      <label className="label text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Cor do Título (text)</label>
+                      <input
+                        type="text"
+                        value={cardForm.textColor}
+                        onChange={(e) => setCardForm({ ...cardForm, textColor: e.target.value })}
+                        className="input-field mt-1 font-mono text-[10px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="label text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Cor Descrição (text)</label>
+                      <input
+                        type="text"
+                        value={cardForm.descColor}
+                        onChange={(e) => setCardForm({ ...cardForm, descColor: e.target.value })}
+                        className="input-field mt-1 font-mono text-[10px]"
+                      />
+                    </div>
+                    <div>
+                      <label className="label text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Cor do Ícone</label>
+                      <input
+                        type="text"
+                        value={cardForm.iconColor}
+                        onChange={(e) => setCardForm({ ...cardForm, iconColor: e.target.value })}
+                        className="input-field mt-1 font-mono text-[10px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="label text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Fundo do Ícone (bg)</label>
+                    <input
+                      type="text"
+                      value={cardForm.iconBg}
+                      onChange={(e) => setCardForm({ ...cardForm, iconBg: e.target.value })}
+                      className="input-field mt-1 font-mono text-[10px]"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 py-1">
+                  <input
+                    type="checkbox"
+                    id="cardIsActive"
+                    checked={cardForm.isActive}
+                    onChange={(e) => setCardForm({ ...cardForm, isActive: e.target.checked })}
+                    className="w-4 h-4 text-primary-600 dark:text-primary-500 rounded border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-primary-500/20 focus:ring-offset-0"
+                  />
+                  <label htmlFor="cardIsActive" className="text-sm font-semibold text-gray-700 dark:text-neutral-300 cursor-pointer">
+                    Card Ativo (Visível no Dashboard)
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="btn-primary w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold shadow-md active:scale-[0.99] transition-transform mt-6"
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Salvar Alterações
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Usuários */}
         {showUsersModal && (

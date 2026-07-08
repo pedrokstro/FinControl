@@ -28,6 +28,7 @@ router.use(authenticate);
  *       200:
  *         description: Dashboard obtido com sucesso
  */
+router.get('/cards', dashboardController.getDashboardCards);
 router.get('/', dashboardController.getDashboard);
 
 export default router;

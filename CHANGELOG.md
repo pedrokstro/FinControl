@@ -1,5 +1,61 @@
 # Changelog
 
+## [2.12.97] - 2026-07-08
+
+### Adicionado
+- **Admin (Gerenciamento Dinâmico de Cards do Dashboard):**
+  - Criada a tabela `public.dashboard_cards` no Supabase com proteção RLS e popularizada com dados padrão.
+  - Implementadas rotas públicas (`GET /dashboard/cards`) e de administração (`GET`, `POST`, `PUT`, `DELETE` em `/admin/dashboard-cards`) para gerenciamento completo em tempo real.
+  - Adicionada a aba de controle de cards no [Admin.tsx](file:///f:/CURSOR/fincontrol/src/pages/Admin.tsx) com listagem interativa, exclusão física e formulário de cadastro/edição com suporte a presets de estilos (Azul, Destaque, Vermelho, Padrão) e envio de imagens.
+  - Conectada a exibição do carrossel no [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) ao banco de dados utilizando resolvedor de ícones dinâmicos do Lucide.
+
+## [2.12.96] - 2026-07-08
+
+### Alterado
+- **Dashboard (Flexibilidade de Mídia nos Cards de Aviso):**
+  - Refatorada a renderização dos cards do carrossel em [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) para suportar tanto ícones do Lucide (propriedade `icon`) quanto imagens personalizadas PNG/JPG (propriedade `imageSrc`), permitindo total flexibilidade na exibição de informativos visuais ricos.
+
+## [2.12.95] - 2026-07-08
+
+### Alterado
+- **Footer (Redesenho Compacto Mobile):**
+  - Refatorado o rodapé da aplicação em [Footer.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/Footer.tsx) para dividir a renderização entre Desktop (layout institucional completo de colunas) e Mobile (minimalista).
+  - No mobile, ocultamos toda a estrutura vertical extensa de branding e blocos de links, substituindo-a por um rodapé super compacto de linha única que acomoda o logo mini com versão, quatro links inline (`Planos`, `Ajuda`, `Privacidade`, `Termos`), ícones de contato em uma pílula central e copyright simplificado.
+
+## [2.12.94] - 2026-07-08
+
+### Adicionado
+- **Dashboard (Carrossel de Avisos & Notificações - Estilo Nubank):**
+  - Adicionado um carrossel horizontal flutuante de avisos e notificações logo abaixo do banner de limite.
+  - Implementado três cartões ricos responsivos (`w-[250px] sm:w-[270px]`):
+    - **Segurança ativa**: Dicas de prevenção de fraude por telefone (direciona para `/app/settings`).
+    - **Fatura do Cartão**: Alerta dinâmico de faturas de cartão de crédito pendentes em azul sólido (direciona para `/app/cards`).
+    - **Suporte FinControl**: Canal de relacionamento e chat de suporte oficial (direciona para `/app/support`).
+  - Utilizado o alinhamento de grade de safira do Tailwind CSS para manter rolagem lateral suave e design consistente no mobile e desktop.
+
+## [2.12.93] - 2026-07-08
+
+### Alterado
+- **Dashboard (Alinhamento de UI/UX do Modal QuickAdd):**
+  - Refatorado o modal de Nova Transação rápida (`showQuickAdd`) no [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) para adotar integralmente o padrão **FinTech UX** estabelecido na página de lançamentos.
+  - Adicionado o visor de valor gigante e focado com tipografia Outfit extra-negrito (`text-4xl`).
+  - Implementado os cards de tipo de lançamento semânticos (Receita/Despesa) táteis baseados em seletor `has-[:checked]` do Tailwind CSS.
+  - Adicionado suporte a seleção de Cartões de Crédito com renderização de bandeiras (`BrandIcon`) no formulário rápido.
+  - Atualizado o card de recorrência para utilizar o toggle switch personalizado com a animação de mola física (`framer-motion`) de expansão.
+
+## [2.12.92] - 2026-07-08
+
+### Corrigido
+- **UX (Abertura Instantânea do Modal de Nova Transação):**
+  - Alterado o evento de clique do atalho móvel "Nova Trans." no [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) para chamar diretamente a função nativa `openQuickAdd('expense')` em vez de efetuar uma transição de página para `/app/transactions?add=true`. Isso evita o flash/piscada de tela da mudança de rota e exibe o modal/bottom sheet instantaneamente na mesma tela.
+
+## [2.12.91] - 2026-07-08
+
+### Alterado
+- **Layout (Remoção Total da Faixa Branca no Mobile):**
+  - Implementado o ajuste condicional de preenchimento (`pt-0`) no contêiner `<main>` do [MainLayout.tsx](file:///f:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx) especificamente para a rota `/app/dashboard`. Isso permite que o card azul de saldo suba completamente até a borda física da tela (notch do smartphone), cobrindo totalmente a antiga faixa branca.
+  - Removido o deslocamento por margem negativa superior (`-mt`) em [Dashboard.tsx](file:///f:/CURSOR/fincontrol/src/pages/Dashboard.tsx) e ajustado o padding superior do cabeçalho móvel para `pt-[calc(2rem+env(safe-area-inset-top))]`, posicionando os controles perfeitamente abaixo da barra de status.
+
 ## [2.12.90] - 2026-07-08
 
 ### Alterado

@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useFinancialStore } from '@/store/financialStore'
+import { useAuthStore } from '@/store/authStore'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -22,7 +23,12 @@ import {
   Calendar,
   Minus,
   Bell,
-  Calculator as CalculatorIcon
+  User,
+  FolderOpen,
+  CreditCard,
+  CalendarClock,
+  Percent,
+  LogOut
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
@@ -33,7 +39,9 @@ import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
+import dashboardService, { type DashboardCard } from '@/services/dashboard.service'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
+import * as LucideIcons from 'lucide-react'
 import {
   CashFlowChart,
   TopExpensesChart,
@@ -69,8 +77,11 @@ import CustomDatePicker from '@/components/common/CustomDatePicker'
 import CustomSelect from '@/components/common/CustomSelect'
 import { type IconName } from '@/utils/iconMapping'
 import Modal from '@/components/common/Modal'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
+import { motion } from 'framer-motion'
+import BrandIcon from '@/components/common/BrandIcon'
+import { haptics } from '@/utils/haptics'
 
 const RADIAN = Math.PI / 180
 
@@ -139,6 +150,7 @@ const transactionSchema = z
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
     totalInstallments: z.string().optional(),
+    creditCardId: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isRecurring) {
@@ -173,9 +185,25 @@ const transactionSchema = z
 type TransactionFormData = z.infer<typeof transactionSchema>
 
 const Dashboard = () => {
-  const { transactions, categories, budgets, addTransaction, syncWithBackend, isCreatingTransaction } = useFinancialStore()
+  const {
+    transactions,
+    categories,
+    budgets,
+    addTransaction,
+    syncWithBackend,
+    isCreatingTransaction,
+    creditCards,
+    fetchCreditCards
+  } = useFinancialStore()
+  const { user, logout } = useAuthStore()
+  const navigate = useNavigate()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const isMobile = useIsMobile()
+  const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([])
+
+  useEffect(() => {
+    fetchCreditCards()
+  }, [fetchCreditCards])
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
   const [showDeleteGoalModal, setShowDeleteGoalModal] = useState(false)
@@ -250,6 +278,19 @@ const Dashboard = () => {
   useEffect(() => {
     loadAnalytics()
   }, [selectedDate])
+
+  // Carregar cards de aviso dinâmicos do banco de dados
+  useEffect(() => {
+    const loadCards = async () => {
+      try {
+        const cards = await dashboardService.getCards()
+        setDashboardCards(cards)
+      } catch (error) {
+        console.error('Erro ao carregar cards do dashboard:', error)
+      }
+    }
+    loadCards()
+  }, [])
 
   // Recarregar meta quando mudar o mês/ano selecionado
   useEffect(() => {
@@ -365,6 +406,7 @@ const Dashboard = () => {
       categoryId: '',
       description: '',
       date: todayString,
+      creditCardId: '',
     })
     setShowQuickAdd(true)
   }, [reset])
@@ -398,6 +440,7 @@ const Dashboard = () => {
       isRecurring: false,
       recurrenceType: undefined,
       totalInstallments: '',
+      creditCardId: '',
     })
   }
 
@@ -832,8 +875,8 @@ const Dashboard = () => {
 
       {/* Header Premium Mobile (Card com Saldo, Calendário Integrado e Ações) */}
       {isMobile && (
-        <div className="block sm:hidden mb-6">
-          <div className="relative overflow-hidden bg-primary-600 -mx-4 -mt-[calc(1rem+env(safe-area-inset-top))] rounded-none pt-[calc(1.5rem+env(safe-area-inset-top))] px-6 pb-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
+        <div className="block sm:hidden -mx-4 mb-6">
+          <div className="relative overflow-hidden bg-primary-600 rounded-none pt-[calc(2rem+env(safe-area-inset-top))] px-6 pb-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
             <div className="relative z-10 flex flex-col justify-between min-h-[160px]">
               {/* Linha Superior: Período / Navegação e Utilidades */}
               <div className="flex items-center justify-between mb-5">
@@ -861,14 +904,18 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Utilidades: Calculadora e Notificação */}
+                {/* Utilidades: Perfil e Notificação */}
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => setShowCalculator(true)} 
-                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm"
-                    title="Calculadora"
+                    onClick={() => navigate('/app/settings')} 
+                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm overflow-hidden border border-white/25"
+                    title="Perfil (Configurações)"
                   >
-                    <CalculatorIcon className="w-5 h-5 text-white" />
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Perfil" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-5 h-5 text-white" />
+                    )}
                   </button>
                   <button 
                     onClick={() => toast.success("Você está em dia! Nenhuma notificação recente.")} 
@@ -953,8 +1000,85 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Atalhos Rápidos Mobile (Estilo Nubank) */}
+      {isMobile && (
+        <div className="block sm:hidden -mx-4 px-4 overflow-x-auto flex gap-4 py-3 mb-4 scrollbar-none">
+          {[
+            { label: 'Nova Trans.', icon: Plus, onClick: () => openQuickAdd('expense'), bg: 'bg-primary-50 dark:bg-primary-950/20', iconColor: 'text-primary-600 dark:text-primary-400' },
+            { label: 'Nova Cat.', icon: FolderOpen, onClick: () => navigate('/app/categories?add=true'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            { label: 'Cartões', icon: CreditCard, onClick: () => navigate('/app/cards'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            { label: 'Assinaturas', icon: CalendarClock, onClick: () => navigate('/app/subscriptions'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            { label: 'Categorias', icon: FolderOpen, onClick: () => navigate('/app/categories'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            { label: 'Calc. Juros', icon: TrendingUp, onClick: () => navigate('/app/calculadora-juros'), bg: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400' },
+            { label: 'Calc. %', icon: Percent, onClick: () => navigate('/app/calculadora-porcentagem'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            { label: 'Sair', icon: LogOut, onClick: () => { logout() }, bg: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-500' }
+          ].map((action, idx) => {
+            const Icon = action.icon
+            return (
+              <button
+                key={idx}
+                onClick={action.onClick}
+                className="flex flex-col items-center flex-shrink-0 focus:outline-none active:scale-95 transition-transform"
+              >
+                <div className={`w-12 h-12 ${action.bg} rounded-full flex items-center justify-center shadow-sm`}>
+                  <Icon className={`w-5 h-5 ${action.iconColor}`} />
+                </div>
+                <span className="text-[10px] font-semibold text-gray-700 dark:text-neutral-300 mt-2 text-center whitespace-nowrap">
+                  {action.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
+
+      {/* Carrossel de Avisos/Notificações (Estilo Nubank) */}
+      {dashboardCards.length > 0 && (
+        <div className="w-full overflow-x-auto flex gap-4 py-2 mb-6 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+          {dashboardCards.map((card) => {
+            const IconComponent = card.icon ? (LucideIcons as any)[card.icon] : null
+            return (
+              <button
+                key={card.id}
+                onClick={() => {
+                  if (card.actionPath.startsWith('http')) {
+                    window.open(card.actionPath, '_blank')
+                  } else {
+                    navigate(card.actionPath)
+                  }
+                }}
+                className={`flex-shrink-0 w-[250px] sm:w-[270px] p-4 ${card.bg} rounded-2xl flex flex-col justify-between text-left active:scale-[0.98] hover:scale-[1.01] transition-all focus:outline-none h-[120px]`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  {card.imageSrc ? (
+                    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200/30">
+                      <img src={card.imageSrc} alt={card.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : IconComponent ? (
+                    <div className={`w-8 h-8 rounded-lg ${card.iconBg || 'bg-primary-50 dark:bg-primary-950/20'} flex items-center justify-center`}>
+                      <IconComponent className={`w-4.5 h-4.5 ${card.iconColor || 'text-primary-600 dark:text-primary-400'}`} />
+                    </div>
+                  ) : null}
+                  <span className={`text-[9px] font-bold uppercase tracking-widest opacity-40 ${card.textColor}`}>
+                    FinControl
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <p className={`text-xs font-bold ${card.textColor} line-clamp-1`}>
+                    {card.title}
+                  </p>
+                  <p className={`text-[10px] mt-0.5 ${card.descColor} line-clamp-2 leading-relaxed`}>
+                    {card.desc}
+                  </p>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
         {/* Lado Esquerdo: Cards de Resumo */}
@@ -1931,17 +2055,16 @@ const Dashboard = () => {
       <Modal
         isOpen={showQuickAdd}
         onClose={handleQuickAddSafeClose}
-        title={isMobile ? 'Adicionar transação rápida' : 'Nova Transação'}
-        description={isMobile ? 'Preencha os campos e toque em Adicionar para salvar.' : undefined}
-        size={isMobile ? 'lg' : 'sm'}
+        title="Nova Transação"
+        size="md"
         closeOnBackdrop={!isCreatingTransaction}
-        contentClassName={`space-y-4 ${isMobile ? 'px-2 sm:px-0' : ''}`}
+        contentClassName="space-y-5"
         footer={
-          <div className={`flex gap-3 ${isMobile ? 'flex-col-reverse' : 'flex-row'}`}>
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={handleQuickAddSafeClose}
-              className={`flex-1 btn-secondary ${isMobile ? 'w-full' : ''}`}
+              className="flex-1 btn-secondary rounded-full"
               disabled={isCreatingTransaction}
             >
               Cancelar
@@ -1949,9 +2072,8 @@ const Dashboard = () => {
             <button
               type="submit"
               form="quick-add-form"
+              className="flex-1 btn-primary flex items-center justify-center gap-2 rounded-full shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
               disabled={isCreatingTransaction}
-              className={`flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${isMobile ? 'w-full' : ''
-                }`}
             >
               {isCreatingTransaction ? (
                 <>
@@ -1959,10 +2081,7 @@ const Dashboard = () => {
                   Processando...
                 </>
               ) : (
-                <>
-                  <Plus className="w-5 h-5" />
-                  Adicionar
-                </>
+                'Salvar'
               )}
             </button>
           </div>
@@ -1971,109 +2090,67 @@ const Dashboard = () => {
         <div className="relative">
           {isCreatingTransaction && (
             <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10 rounded-xl">
-              <Loader2 className="w-5 h-5 text-primary-600 dark:text-primary-400 animate-spin" />
+              <Loader2 className="w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin" />
               <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
                 Criando transação e gerando parcelas...
               </p>
             </div>
           )}
 
-          <form id="quick-add-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form id="quick-add-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-left">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                Tipo de Transação
-              </label>
-              <div className={`flex gap-3 ${isMobile ? 'flex-col' : ''}`}>
-                <button
-                  type="button"
-                  onClick={() => setValue('type', 'income')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'income'
-                    ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-2 border-success-500'
-                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
-                >
-                  <TrendingUp className="w-5 h-5" />
-                  Receita
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setValue('type', 'expense')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${transactionType === 'expense'
-                    ? 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-2 border-danger-500'
-                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700'
-                    }`}
-                >
-                  <TrendingDown className="w-5 h-5" />
-                  Despesa
-                </button>
-              </div>
-              {errors.type && (
-                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                  {errors.type.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                Categoria
-              </label>
-              <Controller
-                name="categoryId"
-                control={control}
-                render={({ field }) => (
-                  <CategorySelect
-                    categories={categories.filter((cat) => cat.type === transactionType)}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.categoryId?.message}
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo de Lançamento</label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60 has-[:checked]:border-success-500 has-[:checked]:bg-success-50/20 dark:has-[:checked]:bg-success-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-success-500/5 active:scale-[0.97] select-none">
+                  <input
+                    type="radio"
+                    value="income"
+                    {...register('type')}
+                    className="sr-only"
                   />
-                )}
-              />
-              {errors.categoryId && (
-                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                  {errors.categoryId.message}
-                </p>
-              )}
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-xl bg-success-50/60 dark:bg-success-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
+                      <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Receita</span>
+                  </div>
+                </label>
+                <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60 has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50/20 dark:has-[:checked]:bg-danger-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-danger-500/5 active:scale-[0.97] select-none">
+                  <input
+                    type="radio"
+                    value="expense"
+                    {...register('type')}
+                    className="sr-only"
+                  />
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-xl bg-danger-50/60 dark:bg-danger-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
+                      <TrendingDown className="w-6 h-6 text-danger-600 dark:text-danger-400" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Despesa</span>
+                  </div>
+                </label>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                Descrição
-              </label>
-              <input
-                {...register('description')}
-                type="text"
-                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
-                placeholder="Ex: Compra no supermercado"
-              />
-              {errors.description && (
-                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                Valor (R$)
-              </label>
-              <input
-                {...register('amount')}
-                type="number"
-                step="0.01"
-                inputMode="decimal"
-                pattern="[0-9]*"
-                className="w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-neutral-500"
-                placeholder="0,00"
-              />
+            {/* Valor do Lançamento FinTech Style */}
+            <div className="flex flex-col items-center justify-center py-6 bg-gray-50/40 dark:bg-neutral-850/20 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 relative overflow-hidden">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-1.5 font-display">Valor do Lançamento</span>
+              <div className="flex items-baseline justify-center gap-1.5 w-full px-4">
+                <span className="text-xl font-bold text-gray-400 dark:text-neutral-500 font-display">R$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="0,00"
+                  {...register('amount')}
+                  className={`w-full max-w-[220px] text-center text-4xl font-extrabold font-display bg-transparent border-none outline-none focus:ring-0 p-0 text-gray-900 dark:text-white ${errors.amount ? 'text-danger-500 dark:text-danger-400' : ''}`}
+                />
+              </div>
               {errors.amount && (
-                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                  {errors.amount.message}
-                </p>
+                <p className="text-xs text-danger-500 dark:text-danger-400 font-semibold mt-2 font-sans">{errors.amount.message}</p>
               )}
               {isMobile && (
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-4 justify-center px-4">
                   {quickAmountPresets.map((preset) => (
                     <button
                       key={preset}
@@ -2089,72 +2166,155 @@ const Dashboard = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                Data
-              </label>
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Categoria</label>
               <Controller
-                name="date"
+                name="categoryId"
                 control={control}
                 render={({ field }) => (
-                  <CustomDatePicker
+                  <CategorySelect
+                    categories={categories.filter((cat) => cat.type === transactionType)}
                     value={field.value}
                     onChange={field.onChange}
-                    error={errors.date?.message}
+                    error={errors.categoryId?.message}
                   />
                 )}
               />
-              {errors.date && (
-                <p className="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                  {errors.date.message}
-                </p>
+              {errors.categoryId && (
+                <p className="error-message">{errors.categoryId.message}</p>
               )}
             </div>
 
-            <div className={`border-t border-gray-200 dark:border-neutral-800 pt-4 ${isMobile ? 'mt-2' : ''}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <input
-                  type="checkbox"
-                  id="quickAddRecurring"
-                  checked={isQuickAddRecurring}
-                  onChange={(e) => {
-                    const checked = e.target.checked
-                    setIsQuickAddRecurring(checked)
-                    if (!checked) {
-                      setValue('recurrenceType', undefined)
-                      setValue('totalInstallments', '')
-                    }
-                  }}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Descrição</label>
+              <input
+                type="text"
+                placeholder="Ex: Compra no supermercado"
+                {...register('description')}
+                className={`input-field rounded-xl ${errors.description ? 'input-error' : ''}`}
+              />
+              {errors.description && (
+                <p className="error-message">{errors.description.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Data</label>
+                <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomDatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.date?.message}
+                      align="top"
+                    />
+                  )}
                 />
-                <label
-                  htmlFor="quickAddRecurring"
-                  className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer"
-                >
-                  <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                  Transação Recorrente
-                </label>
+                {errors.date && (
+                  <p className="error-message">{errors.date.message}</p>
+                )}
               </div>
 
+              {transactionType === 'expense' ? (
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cartão de Crédito (Opcional)</label>
+                  <Controller
+                    name="creditCardId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        options={[
+                          { value: '', label: 'Nenhum cartão' },
+                          ...creditCards.map(card => ({
+                            value: card.id,
+                            label: card.name,
+                            icon: <BrandIcon brand={card.brand} className="w-5 h-5" />
+                          }))
+                        ]}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        dropdownTitle="Selecione um Cartão"
+                        className="w-full"
+                      />
+                    )}
+                  />
+                  <p className="text-[9px] text-gray-400 dark:text-neutral-500 mt-1 leading-tight">
+                    Se marcado, a despesa não será somada ao total mensal para evitar redundância com a fatura.
+                  </p>
+                </div>
+              ) : (
+                <div className="hidden sm:block opacity-0 pointer-events-none" />
+              )}
+            </div>
+
+            {/* Transação Recorrente */}
+            <div className={`p-4 rounded-2xl border transition-all duration-300 ${
+              isQuickAddRecurring
+                ? 'border-primary-500 bg-primary-50/20 dark:bg-primary-950/10 shadow-sm'
+                : 'border-gray-200 dark:border-neutral-800/85 bg-white dark:bg-neutral-900/40'
+            }`}>
+              <label className="flex items-center justify-between cursor-pointer select-none">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-xl transition-colors ${
+                    isQuickAddRecurring 
+                      ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' 
+                      : 'bg-gray-50 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 border border-gray-200/40 dark:border-neutral-700/40'
+                  }`}>
+                    <Repeat className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white block font-sans">Transação Recorrente</span>
+                    <span className="text-[10px] text-gray-400 dark:text-neutral-500">Repetir automaticamente este lançamento</span>
+                  </div>
+                </div>
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="quickAddRecurring"
+                    checked={isQuickAddRecurring}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const checked = e.target.checked
+                      setIsQuickAddRecurring(checked)
+                      if (!checked) {
+                        setValue('recurrenceType', undefined)
+                        setValue('totalInstallments', '')
+                      }
+                      haptics.light()
+                    }}
+                    className="sr-only"
+                  />
+                  <div className={`w-10 h-6 rounded-full transition-colors duration-300 relative ${isQuickAddRecurring ? 'bg-primary-500' : 'bg-gray-200 dark:bg-neutral-800'}`}>
+                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform duration-300 ${isQuickAddRecurring ? 'left-5' : 'left-1'}`} />
+                  </div>
+                </div>
+              </label>
+
               {isQuickAddRecurring && (
-                <div className="space-y-3 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+                  className="mt-4 pt-4 border-t border-primary-100/50 dark:border-primary-900/10 space-y-4"
+                >
+                  {/* Frequência */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Frequência
-                    </label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Frequência</label>
                     <Controller
                       name="recurrenceType"
                       control={control}
                       render={({ field }) => (
                         <CustomSelect
                           options={[
-                            { value: 'daily', label: 'Diária' },
-                            { value: 'weekly', label: 'Semanal' },
-                            { value: 'monthly', label: 'Mensal' },
-                            { value: 'yearly', label: 'Anual' }
+                            { value: 'daily', label: 'Diária', icon: '📅' },
+                            { value: 'weekly', label: 'Semanal', icon: '📆' },
+                            { value: 'monthly', label: 'Mensal', icon: '🗓️' },
+                            { value: 'yearly', label: 'Anual', icon: '🎯' }
                           ]}
                           value={field.value || ''}
                           onChange={field.onChange}
-                          placeholder="Selecione..."
                           dropdownTitle="Frequência de Recorrência"
                           className="w-full"
                         />
@@ -2163,9 +2323,7 @@ const Dashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-                      Número de Parcelas
-                    </label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Número de Parcelas</label>
                     <input
                       type="number"
                       min="2"
@@ -2185,7 +2343,7 @@ const Dashboard = () => {
                       <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa (tempo indeterminado).
                     </p>
                   </div>
-                </div>
+                </motion.div>
               )}
             </div>
           </form>

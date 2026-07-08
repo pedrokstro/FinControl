@@ -39,4 +39,12 @@ router.post('/broadcast-notification', adminController.broadcastNotification);
  */
 router.post('/send-notification/:userId', adminController.sendNotificationToUser);
 
+/**
+ * Rotas de Gerenciamento de Cards do Dashboard
+ */
+router.get('/dashboard-cards', adminController.getDashboardCards);
+router.post('/dashboard-cards', adminController.createDashboardCard);
+router.put('/dashboard-cards/:id', adminController.updateDashboardCard);
+router.delete('/dashboard-cards/:id', adminController.deleteDashboardCard);
+
 export default router;

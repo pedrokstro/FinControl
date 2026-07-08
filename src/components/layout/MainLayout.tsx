@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
@@ -7,6 +7,8 @@ import { useFinancialStore } from '@/store/financialStore'
 
 const MainLayout = () => {
   const syncWithBackend = useFinancialStore((state) => state.syncWithBackend)
+  const location = useLocation()
+  const isDashboard = location.pathname === '/app/dashboard'
 
   useEffect(() => {
     syncWithBackend()
@@ -22,7 +24,9 @@ const MainLayout = () => {
         <div className="hidden lg:block">
           <Header />
         </div>
-        <main className="flex-1 overflow-y-auto p-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-28 sm:p-6 sm:pb-6 lg:pt-6 bg-gray-50 dark:bg-black transition-colors duration-300">
+        <main className={`flex-1 overflow-y-auto p-4 pb-28 sm:p-6 sm:pb-6 lg:pt-6 bg-gray-50 dark:bg-black transition-colors duration-300 ${
+          isDashboard ? 'pt-0' : 'pt-[calc(1rem+env(safe-area-inset-top))]'
+        }`}>
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
