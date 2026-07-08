@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.12.99] - 2026-07-08
+
+### Alterado
+- **Transações Mobile (Redesign Nubank-inspired):**
+  - Adicionado título compacto "Transações" exclusivo no mobile (`sm:hidden`), seguindo o padrão de identificação de página do Dashboard.
+  - Lista mobile completamente redesenhada com **agrupamento por data**: cabeçalhos "Hoje", "Ontem" e "dd de MMM" com divisor horizontal sutil entre grupos de dias.
+  - Novo card estilo Nubank: **ícone circular de categoria** com fundo colorido translucente, descrição em fonte semi-negrita, subcategoria e tags em texto menor, valor em verde/vermelho sem label "VALOR" redundante.
+  - Swipe corrigido: removido fundo vermelho `bg-red-50/20` do container, adicionado `dragSnapToOrigin` para retorno automático ao largar no meio do gesto, botsões de ação menores e mais limpos (`w-9 h-9`).
+  - Scroll suave `window.scrollTo({ top: 0 })` ao navegar entre meses.
+  - Empty state redesenhado com ícone em círculo, título bold e botão CTA "Adicionar transação" que abre o modal diretamente.
+
+## [2.12.98] - 2026-07-08
+
+### Alterado
+- **Transações Mobile (UX Adaptado):**
+  - Adicionado FAB (Floating Action Button) circular azul fixo no canto inferior direito, exclusivo para mobile, substituindo o botão empilhado de "Nova Transação" no cabeçalho.
+  - Botão "Nova Transação" no header preservado apenas no desktop (`hidden sm:flex`).
+  - Navegação de mês compactada no mobile: botões `<` e `>` com tamanho fixo `w-8 h-8`, texto do mês abreviado (`MMM yyyy`) e pill "Hoje" reduzida para `text-[10px]`.
+  - Adicionado botão de filtro `SlidersHorizontal` no header mobile que ativa/desativa o painel de busca e filtros via toggle com indicador visual azul quando filtros estão ativos.
+  - Painel de filtros oculto por padrão no mobile (`hidden sm:block`), exibido apenas ao clicar no botão de filtro.
+
 ## [2.12.97] - 2026-07-08
 
 ### Adicionado

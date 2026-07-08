@@ -23,8 +23,9 @@ import {
   Wallet,
   Activity,
   CreditCard as CreditCardIcon,
+  SlidersHorizontal,
 } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO } from 'date-fns'
+import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO, isToday, isYesterday } from 'date-fns'
 import { motion } from 'framer-motion'
 import { ptBR } from 'date-fns/locale'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
@@ -152,6 +153,7 @@ const Transactions = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const { usage, checkLimit, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
 
@@ -183,14 +185,17 @@ const Transactions = () => {
 
   const handlePreviousMonth = () => {
     setSelectedMonth(prev => subMonths(prev, 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleNextMonth = () => {
     setSelectedMonth(prev => addMonths(prev, 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleCurrentMonth = () => {
     setSelectedMonth(new Date())
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const filteredTransactions = useMemo(() => {
@@ -438,11 +443,33 @@ const Transactions = () => {
 
   const isCurrentMonth = format(selectedMonth, 'yyyy-MM') === format(new Date(), 'yyyy-MM')
 
+  // Agrupa transações por data para a lista mobile (estilo Nubank)
+  const groupedTransactions = useMemo(() => {
+    const groups: Record<string, typeof filteredTransactions> = {}
+    filteredTransactions.forEach(t => {
+      const dateKey = t.date.split('T')[0]
+      if (!groups[dateKey]) groups[dateKey] = []
+      groups[dateKey].push(t)
+    })
+    return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
+  }, [filteredTransactions])
+
+  const formatGroupLabel = (dateStr: string) => {
+    const date = parseISO(dateStr)
+    if (isToday(date)) return 'Hoje'
+    if (isYesterday(date)) return 'Ontem'
+    return format(date, "dd 'de' MMM", { locale: ptBR })
+  }
+
   return (
     <PageTransition>
       <div className="responsive-page">
-        {/* Header com Navegação de Mês integrada */}
+        {/* Título mobile - estilo compacto FinControl */}
+        <h1 className="sm:hidden text-xl font-extrabold text-gray-900 dark:text-white font-display tracking-tight mb-2">Transações</h1>
+
+        {/* Header com Navegação de Mês */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          {/* Título visível apenas no desktop */}
           <div className="hidden sm:block">
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white font-display tracking-tight leading-none">Transações</h1>
             <p className="text-gray-550 dark:text-neutral-400 mt-2 text-sm">
@@ -450,28 +477,28 @@ const Transactions = () => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-            {/* Controle de mês - compacto e elegante */}
-            <div className="flex items-center gap-2 bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl px-3 py-2 shadow-md w-full sm:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            {/* Controle de mês - mobile compacto, integrado ao estilo Dashboard */}
+            <div className="flex items-center flex-1 sm:flex-none gap-1.5 bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl px-2.5 py-2 shadow-md">
               <button
                 onClick={handlePreviousMonth}
-                className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-200 active:scale-90"
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0"
                 title="Mês anterior"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
               </button>
 
-              <div className="flex items-center gap-2 flex-1 justify-center px-2">
-                <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 flex-1 justify-center px-1">
+                <Calendar className="w-3.5 h-3.5 text-primary-500 dark:text-primary-400 flex-shrink-0" />
                 <span className="text-sm font-bold text-gray-900 dark:text-white capitalize whitespace-nowrap font-display">
-                  {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
+                  {format(selectedMonth, 'MMM yyyy', { locale: ptBR })}
                 </span>
               </div>
 
               {!isCurrentMonth && (
                 <button
                   onClick={handleCurrentMonth}
-                  className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20 border border-primary-100/50 dark:border-primary-900/10 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
+                  className="px-2 py-0.5 text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20 border border-primary-100/50 dark:border-primary-900/10 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
                 >
                   Hoje
                 </button>
@@ -479,19 +506,32 @@ const Transactions = () => {
               <button
                 onClick={handleNextMonth}
                 disabled={isCurrentMonth}
-                className={`p-1.5 rounded-xl transition-all duration-200 active:scale-90 ${isCurrentMonth
-                  ? 'opacity-30 cursor-not-allowed'
-                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
-                  }`}
+                className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0 ${
+                  isCurrentMonth ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
+                }`}
                 title="Próximo mês"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
               </button>
             </div>
 
+            {/* Botão de filtros - mobile only */}
+            <button
+              onClick={() => setShowFilters(prev => !prev)}
+              className={`sm:hidden w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-2xl border shadow-md transition-all duration-200 active:scale-90 ${
+                showFilters || searchTerm || filterType !== 'all' || filterCategory !== 'all'
+                  ? 'bg-primary-600 border-primary-600 text-white'
+                  : 'bg-white dark:bg-neutral-900/95 border-gray-200/50 dark:border-neutral-800/60 text-gray-600 dark:text-neutral-300'
+              }`}
+              title="Filtros"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+
+            {/* Botão Nova Transação - desktop only */}
             <button
               onClick={() => handleOpenModal()}
-              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
+              className="hidden sm:flex btn-primary items-center justify-center gap-2 rounded-2xl shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
             >
               <Plus className="w-5 h-5" />
               Nova Transação
@@ -589,8 +629,8 @@ const Transactions = () => {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl p-4 sm:p-5 mb-6">
+        {/* Filters - oculto no mobile, toggle via botão de filtro */}
+        <div className={`${showFilters ? 'block' : 'hidden'} sm:block bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl p-4 sm:p-5 mb-6`}>
           <div className="filter-grid">
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
@@ -792,162 +832,169 @@ const Transactions = () => {
                 </table>
               </div>
 
-              <div className="md:hidden space-y-4 pb-24 overflow-x-hidden">
-                {filteredTransactions.map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="relative rounded-2xl bg-red-50/20 dark:bg-red-950/10 overflow-hidden border border-gray-200/50 dark:border-neutral-800/60"
-                  >
-                    {/* Background actions */}
-                    <div className="absolute inset-y-0 right-0 flex items-center justify-end px-3 gap-3 z-0">
-                      {(transaction.isRecurring || transaction.parentTransactionId) && (
-                        <>
-                          <button
-                            onClick={() => handleViewRecurrenceDetails(transaction)}
-                            className="p-3 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300 transition-transform active:scale-95 shadow-sm"
-                            title="Ver detalhes da recorrência"
-                          >
-                            <Info className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleCancelRecurrence(transaction)}
-                            className="p-3 rounded-full bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300 transition-transform active:scale-95 shadow-sm"
-                            title="Cancelar recorrência"
-                          >
-                            <XCircle className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-                      <button
-                        onClick={() => handleOpenModal(transaction)}
-                        className="p-3 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 transition-transform active:scale-95 shadow-sm"
-                        title="Editar"
-                      >
-                        <Pencil className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(transaction)}
-                        className="p-3 rounded-full bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300 transition-transform active:scale-95 shadow-sm"
-                        title="Deletar"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+              {/* Lista mobile agrupada por data — estilo Nubank */}
+              <div className="md:hidden pb-28">
+                {groupedTransactions.map(([dateKey, dayTransactions]) => (
+                  <div key={dateKey}>
+                    {/* Cabeçalho de data */}
+                    <div className="px-4 pt-4 pb-2 flex items-center gap-3">
+                      <span className="text-[11px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-neutral-500 whitespace-nowrap">
+                        {formatGroupLabel(dateKey)}
+                      </span>
+                      <div className="flex-1 h-px bg-gray-100 dark:bg-neutral-800/60" />
                     </div>
 
-                    {/* Foreground draggable card */}
-                    <motion.div
-                      drag="x"
-                      dragConstraints={{ left: (transaction.isRecurring || transaction.parentTransactionId) ? -240 : -130, right: 0 }}
-                      dragElastic={0.05}
-                      whileTap={{ cursor: "grabbing" }}
-                      className="relative z-10 w-full rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 bg-white dark:bg-neutral-900/95 p-4 shadow-sm space-y-4 cursor-grab touch-pan-y pl-5"
-                    >
-                      {/* Indicador de Tipo Lateral (estilo Sidebar) */}
-                      <div className={`absolute left-0 top-0 bottom-0 w-[4px] ${
-                        transaction.type === 'income'
-                          ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
-                          : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                      }`} />
+                    {/* Transações do dia */}
+                    <div className="divide-y divide-gray-50 dark:divide-neutral-800/30">
+                      {dayTransactions.map((transaction) => {
+                        const catInfo = categoryIconMap.get(transaction.categoryId)
+                        return (
+                          <div key={transaction.id} className="relative overflow-hidden">
+                            {/* Ações reveladas pelo swipe */}
+                            <div className="absolute inset-y-0 right-0 flex items-center justify-end px-4 gap-2 z-0">
+                              {(transaction.isRecurring || transaction.parentTransactionId) && (
+                                <>
+                                  <button
+                                    onClick={() => handleViewRecurrenceDetails(transaction)}
+                                    className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 flex items-center justify-center transition-transform active:scale-95"
+                                    title="Ver detalhes"
+                                  >
+                                    <Info className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleCancelRecurrence(transaction)}
+                                    className="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center transition-transform active:scale-95"
+                                    title="Cancelar recorrência"
+                                  >
+                                    <XCircle className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                onClick={() => handleOpenModal(transaction)}
+                                className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center transition-transform active:scale-95"
+                                title="Editar"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(transaction)}
+                                className="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center transition-transform active:scale-95"
+                                title="Deletar"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
 
-                      {/* Swipe Handle Hint */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20 dark:opacity-45">
-                        <div className="w-1 h-1 rounded-full bg-gray-500"></div>
-                        <div className="w-1 h-1 rounded-full bg-gray-500"></div>
-                        <div className="w-1 h-1 rounded-full bg-gray-500"></div>
-                      </div>
+                            {/* Card deslizável */}
+                            <motion.div
+                              drag="x"
+                              dragConstraints={{ left: (transaction.isRecurring || transaction.parentTransactionId) ? -232 : -112, right: 0 }}
+                              dragElastic={0.05}
+                              dragSnapToOrigin
+                              whileTap={{ cursor: 'grabbing' }}
+                              className="relative z-10 flex items-center gap-3.5 px-4 py-3.5 bg-white dark:bg-neutral-900/95 cursor-grab touch-pan-y"
+                            >
+                              {/* Barra de tipo lateral */}
+                              <div className={`absolute left-0 top-[18%] bottom-[18%] w-[3px] rounded-r-full ${
+                                transaction.type === 'income'
+                                  ? 'bg-emerald-400'
+                                  : 'bg-red-400'
+                              }`} />
 
-                      <div className="flex items-start justify-between gap-3 pr-4">
-                        <div>
-                          <p className="text-xs text-gray-400 dark:text-neutral-500 font-sans">
-                            {format(new Date(transaction.date), 'dd/MM/yyyy')}
-                          </p>
-                          <p className="text-base font-bold text-gray-900 dark:text-white mt-1 font-sans" style={{ wordBreak: 'break-word', paddingRight: '1rem' }}>
-                            {transaction.description}
-                            {transaction.totalInstallments && transaction.totalInstallments > 0 && (
-                              <span className="ml-2 text-sm text-gray-450 dark:text-gray-500 font-normal">
-                                {(!transaction.parentTransactionId && transaction.isRecurring) ? 1 : (transaction.currentInstallment || 1)}/{transaction.totalInstallments}
-                              </span>
-                            )}
-                          </p>
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {(transaction.isRecurring || transaction.parentTransactionId) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-300 border border-primary-100/50 dark:border-primary-900/10">
-                                <Repeat className="w-2.5 h-2.5" />
-                                Recorrente
-                              </span>
-                            )}
-                            {transaction.creditCardId && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300 border border-purple-100/50 dark:border-purple-900/10">
-                                <CreditCardIcon className="w-2.5 h-2.5" />
-                                {transaction.creditCard?.name || 'Cartão'}
-                              </span>
-                            )}
+                              {/* Ícone circular de categoria */}
+                              <div
+                                className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: (catInfo?.color || '#6366f1') + '22' }}
+                              >
+                                {catInfo ? (
+                                  <CategoryIcon icon={catInfo.icon} color={catInfo.color} size="md" />
+                                ) : (
+                                  <Wallet className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
+                                )}
+                              </div>
+
+                              {/* Informações */}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-gray-900 dark:text-white text-sm leading-tight truncate">
+                                  {transaction.description}
+                                  {transaction.totalInstallments && transaction.totalInstallments > 0 && (
+                                    <span className="ml-1.5 text-xs text-gray-400 dark:text-neutral-500 font-normal">
+                                      {(!transaction.parentTransactionId && transaction.isRecurring) ? 1 : (transaction.currentInstallment || 1)}/{transaction.totalInstallments}
+                                    </span>
+                                  )}
+                                </p>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  <span className="text-[11px] text-gray-500 dark:text-neutral-400 truncate">
+                                    {transaction.category}
+                                  </span>
+                                  {(transaction.isRecurring || transaction.parentTransactionId) && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-primary-600 dark:text-primary-400">
+                                      <Repeat className="w-2.5 h-2.5" />
+                                      Recorrente
+                                    </span>
+                                  )}
+                                  {transaction.creditCardId && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                                      <CreditCardIcon className="w-2.5 h-2.5" />
+                                      {transaction.creditCard?.name || 'Cartão'}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Valor */}
+                              <div className="text-right flex-shrink-0">
+                                <p className={`font-bold text-sm font-display ${
+                                  transaction.type === 'income'
+                                    ? 'text-success-600 dark:text-success-400'
+                                    : 'text-danger-600 dark:text-danger-400'
+                                }`}>
+                                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                                </p>
+                              </div>
+
+                              {/* Indicador de swipe */}
+                              <div className="flex flex-col gap-0.5 opacity-25 flex-shrink-0">
+                                <div className="w-1 h-1 rounded-full bg-gray-500" />
+                                <div className="w-1 h-1 rounded-full bg-gray-500" />
+                                <div className="w-1 h-1 rounded-full bg-gray-500" />
+                              </div>
+                            </motion.div>
                           </div>
-                        </div>
-                        <div
-                          className={`text-right font-extrabold whitespace-nowrap font-display ${transaction.type === 'income'
-                            ? 'text-success-600 dark:text-success-300'
-                            : 'text-danger-600 dark:text-danger-300'
-                            }`}
-                        >
-                          <span className="block text-[10px] uppercase tracking-wider text-gray-400 dark:text-neutral-500 font-bold font-display">
-                            Valor
-                          </span>
-                          {transaction.type === 'income' ? '+' : '-'}
-                          {formatCurrency(transaction.amount)}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-2 text-xs pr-4">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-150 dark:border-neutral-700/40">
-                          {categoryIconMap.get(transaction.categoryId) && (
-                            <CategoryIcon
-                              icon={categoryIconMap.get(transaction.categoryId)!.icon}
-                              color={categoryIconMap.get(transaction.categoryId)!.color}
-                              size="sm"
-                            />
-                          )}
-                          {transaction.category}
-                        </span>
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border ${transaction.type === 'income'
-                            ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-300 border-success-100/50 dark:border-success-900/10'
-                            : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-300 border-danger-100/50 dark:border-danger-900/10'
-                            }`}
-                        >
-                          {transaction.type === 'income' ? (
-                            <>
-                              <TrendingUp className="w-3.5 h-3.5 animate-arrow-up" />
-                              Receita
-                            </>
-                          ) : (
-                            <>
-                              <TrendingDown className="w-3.5 h-3.5 animate-arrow-down" />
-                              Despesa
-                            </>
-                          )}
-                        </span>
-                      </div>
-                    </motion.div>
+                        )
+                      })}
+                    </div>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <div className="text-center py-12 text-gray-500 dark:text-neutral-400">
-              <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-neutral-500" />
-              <p className="text-lg font-medium">Nenhuma transacao encontrada</p>
-              <p className="text-sm mt-2">
-                Nao ha transacoes para {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
+            <div className="flex flex-col items-center text-center py-14 px-6">
+              <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
+                <Calendar className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white font-display">Nenhuma transação</h3>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1.5 max-w-[260px] leading-normal">
+                Não há lançamentos em {format(selectedMonth, "MMMM 'de' yyyy", { locale: ptBR })}
               </p>
-              {!isCurrentMonth && (
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
                 <button
-                  onClick={handleCurrentMonth}
-                  className="mt-4 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-4 py-2 rounded-full font-medium transition-colors inline-block"
+                  onClick={() => handleOpenModal()}
+                  className="btn-primary flex items-center justify-center gap-2 px-5 h-10 rounded-xl text-sm font-bold shadow-sm active:scale-[0.98] transition-transform"
                 >
-                  Voltar para mes atual
+                  <Plus className="w-4 h-4" />
+                  Adicionar transação
                 </button>
-              )}
+                {!isCurrentMonth && (
+                  <button
+                    onClick={handleCurrentMonth}
+                    className="flex items-center justify-center gap-1.5 px-5 h-10 rounded-xl text-sm font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors"
+                  >
+                    Ir para mês atual
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -1285,6 +1332,14 @@ const Transactions = () => {
           onClose={() => setShowLimitModal(false)}
           usage={usage}
         />
+        {/* FAB - Nova Transação (mobile only) */}
+        <button
+          onClick={() => handleOpenModal()}
+          className="sm:hidden fixed bottom-24 right-4 z-40 w-14 h-14 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white rounded-full shadow-xl shadow-primary-500/30 flex items-center justify-center transition-all duration-200 active:scale-90"
+          title="Nova Transação"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
       </div>
     </PageTransition>
   )
