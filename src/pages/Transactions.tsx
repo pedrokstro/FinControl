@@ -103,7 +103,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 260,
       damping: 22,
     },
@@ -997,11 +997,11 @@ const Transactions = () => {
               </div>
             )}
 
-            <form id="transaction-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <form id="transaction-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-left">
               <div>
-                <label className="label">Tipo de Lançamento</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo de Lançamento</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="relative flex items-center justify-center p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 border-gray-100 dark:border-neutral-800 hover:border-success-200 dark:hover:border-success-900/30 has-[:checked]:border-success-500 has-[:checked]:bg-success-50/50 dark:has-[:checked]:bg-success-900/20 has-[:checked]:shadow-lg has-[:checked]:shadow-success-500/10 active:scale-[0.98]">
+                  <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60 has-[:checked]:border-success-500 has-[:checked]:bg-success-50/20 dark:has-[:checked]:bg-success-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-success-500/5 active:scale-[0.97] select-none">
                     <input
                       type="radio"
                       value="income"
@@ -1009,13 +1009,13 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="w-10 h-10 rounded-full bg-success-50 dark:bg-success-900/30 flex items-center justify-center mx-auto mb-2 transition-colors group-has-[:checked]:bg-success-100">
+                      <div className="w-10 h-10 rounded-xl bg-success-50/60 dark:bg-success-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
                         <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
                       </div>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">Receita</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Receita</span>
                     </div>
                   </label>
-                  <label className="relative flex items-center justify-center p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 border-gray-100 dark:border-neutral-800 hover:border-danger-200 dark:hover:border-danger-900/30 has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50/50 dark:has-[:checked]:bg-danger-900/20 has-[:checked]:shadow-lg has-[:checked]:shadow-danger-500/10 active:scale-[0.98]">
+                  <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60 has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50/20 dark:has-[:checked]:bg-danger-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-danger-500/5 active:scale-[0.97] select-none">
                     <input
                       type="radio"
                       value="expense"
@@ -1023,33 +1023,36 @@ const Transactions = () => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="w-10 h-10 rounded-full bg-danger-50 dark:bg-danger-900/30 flex items-center justify-center mx-auto mb-2 transition-colors group-has-[:checked]:bg-danger-100">
+                      <div className="w-10 h-10 rounded-xl bg-danger-50/60 dark:bg-danger-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
                         <TrendingDown className="w-6 h-6 text-danger-600 dark:text-danger-400" />
                       </div>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">Despesa</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Despesa</span>
                     </div>
                   </label>
                 </div>
               </div>
 
-              <div>
-                <label className="label">Valor (R$)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  inputMode="decimal"
-                  pattern="[0-9]*"
-                  placeholder="0,00"
-                  {...register('amount')}
-                  className={`input-field ${errors.amount ? 'input-error' : ''}`}
-                />
+              {/* Valor do Lançamento FinTech Style */}
+              <div className="flex flex-col items-center justify-center py-6 bg-gray-50/40 dark:bg-neutral-850/20 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 relative overflow-hidden">
+                <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-1.5 font-display">Valor do Lançamento</span>
+                <div className="flex items-baseline justify-center gap-1.5 w-full px-4">
+                  <span className="text-xl font-bold text-gray-400 dark:text-neutral-500 font-display">R$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    inputMode="decimal"
+                    placeholder="0,00"
+                    {...register('amount')}
+                    className={`w-full max-w-[220px] text-center text-4xl font-extrabold font-display bg-transparent border-none outline-none focus:ring-0 p-0 text-gray-900 dark:text-white ${errors.amount ? 'text-danger-500 dark:text-danger-400' : ''}`}
+                  />
+                </div>
                 {errors.amount && (
-                  <p className="error-message">{errors.amount.message}</p>
+                  <p className="text-xs text-danger-500 dark:text-danger-400 font-semibold mt-2 font-sans">{errors.amount.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="label">Categoria</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Categoria</label>
                 <Controller
                   name="categoryId"
                   control={control}
@@ -1068,94 +1071,122 @@ const Transactions = () => {
               </div>
 
               <div>
-                <label className="label">Descricao</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Descrição</label>
                 <input
                   type="text"
                   placeholder="Ex: Compra no supermercado"
                   {...register('description')}
-                  className={`input-field ${errors.description ? 'input-error' : ''}`}
+                  className={`input-field rounded-xl ${errors.description ? 'input-error' : ''}`}
                 />
                 {errors.description && (
                   <p className="error-message">{errors.description.message}</p>
                 )}
               </div>
 
-              <div>
-                <label className="label">Data</label>
-                <Controller
-                  name="date"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomDatePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={errors.date?.message}
-                    />
-                  )}
-                />
-                {errors.date && (
-                  <p className="error-message">{errors.date.message}</p>
-                )}
-              </div>
-
-              {/* Seleção de Cartão (apenas para despesas) */}
-              {transactionType === 'expense' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Cartão de Crédito (Opcional)</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Data</label>
                   <Controller
-                    name="creditCardId"
+                    name="date"
                     control={control}
                     render={({ field }) => (
-                      <CustomSelect
-                        options={[
-                          { value: '', label: 'Nenhum cartão' },
-                          ...creditCards.map(card => ({
-                            value: card.id,
-                            label: card.name,
-                            icon: <BrandIcon brand={card.brand} className="w-5 h-5" />
-                          }))
-                        ]}
-                        value={field.value || ''}
+                      <CustomDatePicker
+                        value={field.value}
                         onChange={field.onChange}
-                        dropdownTitle="Selecione um Cartão"
-                        className="w-full"
+                        error={errors.date?.message}
                       />
                     )}
                   />
-                  <p className="text-[10px] text-gray-500 mt-1">
-                    Se marcado, a despesa não será somada ao total mensal para evitar redundância com a fatura.
-                  </p>
+                  {errors.date && (
+                    <p className="error-message">{errors.date.message}</p>
+                  )}
                 </div>
-              )}
+
+                {transactionType === 'expense' ? (
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cartão de Crédito (Opcional)</label>
+                    <Controller
+                      name="creditCardId"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSelect
+                          options={[
+                            { value: '', label: 'Nenhum cartão' },
+                            ...creditCards.map(card => ({
+                              value: card.id,
+                              label: card.name,
+                              icon: <BrandIcon brand={card.brand} className="w-5 h-5" />
+                            }))
+                          ]}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          dropdownTitle="Selecione um Cartão"
+                          className="w-full"
+                        />
+                      )}
+                    />
+                    <p className="text-[9px] text-gray-400 dark:text-neutral-500 mt-1 leading-tight">
+                      Se marcado, a despesa não será somada ao total mensal para evitar redundância com a fatura.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="hidden sm:block opacity-0 pointer-events-none" />
+                )}
+              </div>
 
               {/* Transação Recorrente */}
-              <div className="border-t border-gray-200 dark:border-neutral-800 pt-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="isRecurring"
-                    checked={isRecurring}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const checked = e.target.checked
-                      setIsRecurring(checked)
-                      if (!checked) {
-                        setValue('recurrenceType', undefined)
-                        setValue('totalInstallments', '')
-                      }
-                    }}
-                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="isRecurring" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
-                    <Repeat className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                    Transação Recorrente
-                  </label>
-                </div>
+              <div className={`p-4 rounded-2xl border transition-all duration-300 ${
+                isRecurring
+                  ? 'border-primary-500 bg-primary-50/20 dark:bg-primary-950/10 shadow-sm'
+                  : 'border-gray-200 dark:border-neutral-800/85 bg-white dark:bg-neutral-900/40'
+              }`}>
+                <label className="flex items-center justify-between cursor-pointer select-none">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-xl transition-colors ${
+                      isRecurring 
+                        ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' 
+                        : 'bg-gray-50 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 border border-gray-200/40 dark:border-neutral-700/40'
+                    }`}>
+                      <Repeat className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <span className="text-sm font-bold text-gray-900 dark:text-white block font-sans">Transação Recorrente</span>
+                      <span className="text-[10px] text-gray-400 dark:text-neutral-500">Repetir automaticamente este lançamento</span>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      id="isRecurring"
+                      checked={isRecurring}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const checked = e.target.checked
+                        setIsRecurring(checked)
+                        if (!checked) {
+                          setValue('recurrenceType', undefined)
+                          setValue('totalInstallments', '')
+                        }
+                        haptics.light()
+                      }}
+                      className="sr-only"
+                    />
+                    <div className={`w-10 h-6 rounded-full transition-colors duration-300 relative ${isRecurring ? 'bg-primary-500' : 'bg-gray-200 dark:bg-neutral-800'}`}>
+                      <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform duration-300 ${isRecurring ? 'left-5' : 'left-1'}`} />
+                    </div>
+                  </div>
+                </label>
 
                 {isRecurring && (
-                  <div className="space-y-4 pl-6 border-l-2 border-primary-200 dark:border-primary-800">
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+                    className="mt-4 pt-4 border-t border-primary-100/50 dark:border-primary-900/10 space-y-4"
+                  >
                     {/* Frequência */}
                     <div>
-                      <label className="label">Frequência</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Frequência</label>
                       <Controller
                         name="recurrenceType"
                         control={control}
@@ -1185,26 +1216,26 @@ const Transactions = () => {
 
                     {/* Número de Parcelas */}
                     <div>
-                      <label className="label">Número de Parcelas</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Número de Parcelas</label>
                       <input
                         type="number"
                         min="2"
                         max="360"
                         placeholder="Ex: 12 (vazio para tempo indeterminado)"
                         {...register('totalInstallments')}
-                        className={`input-field ${errors.totalInstallments ? 'input-error' : ''}`}
+                        className={`input-field rounded-xl ${errors.totalInstallments ? 'input-error' : ''}`}
                       />
                       {errors.totalInstallments && (
                         <p className="error-message">{errors.totalInstallments.message}</p>
                       )}
                     </div>
 
-                    <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                      <p className="text-xs text-primary-700 dark:text-primary-300">
-                        <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa (tempo indeterminado).
+                    <div className="bg-primary-500/5 border border-primary-500/15 rounded-xl p-3">
+                      <p className="text-[11px] text-primary-750 dark:text-primary-300 font-sans leading-relaxed">
+                        <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente pelo sistema. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa por tempo indeterminado.
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </form>

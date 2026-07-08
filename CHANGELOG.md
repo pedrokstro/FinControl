@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.12.78] - 2026-07-08
+
+### Alterado
+- **Modal de Criação/Edição de Transações (Renovação de UX/UI):**
+  - Implementado display de valor centralizado ampliado ("FinTech style") com prefixo BRL ("R$") em tipografia Outfit extra-negrito.
+  - Redesenhados os seletores de tipo de lançamento (Receita/Despesa) com micro-interações de foco e bordas ativas translúcidas com cores semânticas corretas.
+  - Agrupados os campos secundários (Data e Cartão de Crédito) em um grid de duas colunas responsivas para reduzir a altura total do modal e a carga cognitiva.
+  - Criado card interativo contendo interruptor deslizante (Toggle Switch) estilizado para ativar transações recorrentes.
+  - Adicionada animação de expansão suave com mola do Framer Motion para as opções e frequências de recorrência.
+  - Padronizadas as etiquetas (labels) em formato de mini-cabeçalho uppercase usando a fonte Outfit.
+
 ## [2.12.77] - 2026-07-08
 
 ### Alterado
