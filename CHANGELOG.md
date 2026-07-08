@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.85] - 2026-07-08
+
+### Alterado
+- **Navegação de Configurações (Solid Brand Color & Increased Padding):**
+  - Ajustado o estilo da pill ativa das abas para usar a cor azul sólida oficial do FinControl (`bg-primary-600` em light mode e `bg-primary-500` em dark mode) com texto e ícone brancos.
+  - Aumentado significativamente o padding horizontal de cada botão para `px-5.5` e espaçamento geral, eliminando a sensação de aperto e conferindo ampla legibilidade e respiro à navegação.
+
 ## [2.12.84] - 2026-07-08
 
 ### Alterado
