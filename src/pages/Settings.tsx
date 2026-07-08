@@ -453,7 +453,7 @@ const Settings = () => {
           </div>
 
           {/* NO DESKTOP: ABAS HORIZONTAIS NO TOPO ESTILO SAAS REFINADO */}
-          <div className="hidden lg:flex items-center gap-1.5 p-1.5 bg-gray-100/70 dark:bg-neutral-900/40 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl mb-8 w-fit">
+          <div className="hidden lg:flex items-center gap-1.5 p-1.5 bg-gray-100/70 dark:bg-neutral-900/40 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl mb-8 w-full max-w-3xl">
             {tabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id || (activeTab === 'menu' && tab.id === 'profile')
@@ -462,7 +462,7 @@ const Settings = () => {
                 <button
                   key={tab.id}
                   onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                  className={`relative flex items-center gap-2 px-5.5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 whitespace-nowrap active:scale-[0.98] ${isActive
+                  className={`relative flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 whitespace-nowrap active:scale-[0.98] ${isActive
                       ? 'text-white'
                       : 'text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                     }`}
@@ -474,7 +474,7 @@ const Settings = () => {
                       className="absolute inset-0 bg-primary-600 dark:bg-primary-500 rounded-xl shadow-sm z-0"
                     />
                   )}
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 flex items-center justify-center gap-2">
                     <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-white' : 'text-gray-400 dark:text-neutral-500'}`} />
                     {tab.label}
                   </span>

@@ -34,6 +34,11 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
     const dragControls = useDragControls();
     const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 640);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const updateCoords = () => {
         if (containerRef.current) {
@@ -233,9 +238,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                 <CalendarIcon className={`w-5 h-5 flex-shrink-0 transition-colors ${isOpen ? 'text-primary-500' : 'text-gray-400'}`} />
             </button>
 
-            <AnimatePresence>
-                {isOpen && createPortal(
-                    <>
+            {mounted && createPortal(
+                <AnimatePresence>
+                    {isOpen && (
+                        <>
                             {/* Mobile Overlay */}
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -262,13 +268,15 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                                         setIsOpen(false);
                                     }
                                 }}
-                                style={isDesktop && coords ? {
+                                style={isDesktop ? {
                                     position: 'fixed',
-                                    top: `${coords.top}px`,
-                                    left: `${Math.max(16, coords.left + coords.width - 340)}px`,
+                                    top: coords ? `${coords.top}px` : '0px',
+                                    left: coords ? `${Math.max(16, coords.left + coords.width - 340)}px` : '0px',
                                     width: '340px',
                                     transform: align === 'top' ? 'translateY(-100%) translateY(-8px)' : 'translateY(48px)',
                                     zIndex: 9999,
+                                    opacity: coords ? 1 : 0,
+                                    pointerEvents: coords ? 'auto' : 'none',
                                 } : undefined}
                                 className={`fixed z-[9999] bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 flex flex-col p-4 sm:p-5 pb-8 sm:pb-5 ${
                                     !isDesktop ? 'bottom-0 left-0 right-0 w-full' : ''
@@ -307,8 +315,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                                 </div>
                             </motion.div>
                         </>
-                    , document.body)}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 };

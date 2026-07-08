@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.12.87] - 2026-07-08
+
+### Corrigido
+- **Componente de Calendário (CustomDatePicker - Portal & AnimatePresence Fix):**
+  - Resolvida a inconsistência de abertura invertendo a estrutura do React Portal e do `AnimatePresence`. O Portal agora é renderizado de forma contínua com verificação de montagem (`mounted`), enquanto o `<AnimatePresence>` reside dentro dele. Isso permite que o Framer Motion gerencie as animações de entrada e saída corretamente sem quebrar o ciclo de renderização.
+  - Aplicada máscara de opacidade reativa para ocultar o calendário no primeiro frame do desktop, prevenindo layout flash antes do cálculo das coordenadas de origem.
+
+## [2.12.86] - 2026-07-08
+
+### Alterado
+- **Navegação de Configurações (Symmetrical Stretched Tabs):**
+  - Refatoradas as abas de configurações para ocupar `flex-1` proporcionalmente de forma simétrica dentro de um contêiner de largura máxima `max-w-3xl`. Isso estica o layout horizontalmente de forma uniforme, garantindo que todas as abas tenham exatamente a mesma largura e que o indicador de seleção ("pill") mantenha uma proporção perfeita e uniforme ao deslizar elastiamente.
+
 ## [2.12.85] - 2026-07-08
 
 ### Alterado
