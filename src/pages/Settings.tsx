@@ -18,6 +18,7 @@ import DeleteAccountModal from '@/components/modals/DeleteAccountModal'
 import userService from '@/services/user.service'
 import CustomSelect from '@/components/common/CustomSelect'
 import { useSecurityStore } from '@/store/securityStore'
+import { motion } from 'framer-motion'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
@@ -461,13 +462,22 @@ const Settings = () => {
                 <button
                   key={tab.id}
                   onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                  className={`flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap active:scale-[0.98] ${isActive
-                      ? 'bg-white dark:bg-neutral-900 text-primary-600 dark:text-white shadow-sm border border-gray-100 dark:border-neutral-800/40'
-                      : 'text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-neutral-800/30 border border-transparent'
+                  className={`relative flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 whitespace-nowrap active:scale-[0.98] ${isActive
+                      ? 'text-primary-600 dark:text-white'
+                      : 'text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                     }`}
                 >
-                  <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
-                  {tab.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeSettingsTab"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      className="absolute inset-0 bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-100 dark:border-neutral-800/40 z-0"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2.5">
+                    <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
+                    {tab.label}
+                  </span>
                 </button>
               )
             })}

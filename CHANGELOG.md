@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.82] - 2026-07-08
+
+### Alterado
+- **Navegação de Configurações (Settings Tabs Layout):**
+  - Implementada animação de transição física de mola elástica (`spring`) usando o seletor `layoutId="activeSettingsTab"` do Framer Motion. O fundo branco/escuro da aba ativa viaja suavemente entre os botões ao alternar de aba, conferindo um acabamento tátil sofisticado ao painel.
+  - Otimizada a renderização e o empilhamento das camadas (`z-index`) para garantir legibilidade perfeita durante o movimento.
+
 ## [2.12.81] - 2026-07-08
 
 ### Corrigido
