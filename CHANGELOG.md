@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.12.77] - 2026-07-08
+
+### Alterado
+- **Página e Tabela de Transações (Renovação de UI/UX & Integração de Sidebar):**
+  - Implementado efeito stagger (entrada em cascata) via Framer Motion para as linhas da tabela e cartões mobile.
+  - Inserido indicador de tipo vertical no lado esquerdo de cada linha/card (Verde com brilho para Receitas, Vermelho com brilho para Despesas), herdando o design do indicador da Sidebar.
+  - Adicionadas micro-interações como animação de crescimento em hover no indicador lateral, translate-x na linha sob hover, e escala reativa nos botões de ação (`active:scale-90` / `hover:scale-115`).
+  - Redesenhados botões de ação para ícones circulares sutis que se destacam com cor contextual no hover.
+  - Alinhada a tipografia utilizando Outfit para títulos/cabeçalhos e Inter para corpo e dados.
+  - Padronizados os fundos e bordas com a identidade sólida-reta do Header e Sidebar.
+
 ## [2.12.76] - 2026-07-08
 
 ### Corrigido

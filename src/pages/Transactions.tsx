@@ -87,6 +87,29 @@ const transactionSchema = z
 
 type TransactionFormData = z.infer<typeof transactionSchema>
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+}
+
 const Transactions = () => {
   const {
     transactions,
@@ -421,18 +444,18 @@ const Transactions = () => {
         {/* Header com Navegação de Mês integrada */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="hidden sm:block">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Transações</h1>
-            <p className="text-gray-500 dark:text-neutral-400 mt-1 text-sm">
+            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white font-display tracking-tight leading-none">Transações</h1>
+            <p className="text-gray-550 dark:text-neutral-400 mt-2 text-sm">
               {format(selectedMonth, "MMMM 'de' yyyy", { locale: ptBR })}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             {/* Controle de mês - compacto e elegante */}
-            <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-3 py-2 shadow-sm w-full sm:w-auto">
+            <div className="flex items-center gap-2 bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl px-3 py-2 shadow-md w-full sm:w-auto">
               <button
                 onClick={handlePreviousMonth}
-                className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-200 active:scale-90"
                 title="Mês anterior"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
@@ -440,7 +463,7 @@ const Transactions = () => {
 
               <div className="flex items-center gap-2 flex-1 justify-center px-2">
                 <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400 flex-shrink-0" />
-                <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize whitespace-nowrap">
+                <span className="text-sm font-bold text-gray-900 dark:text-white capitalize whitespace-nowrap font-display">
                   {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
                 </span>
               </div>
@@ -448,7 +471,7 @@ const Transactions = () => {
               {!isCurrentMonth && (
                 <button
                   onClick={handleCurrentMonth}
-                  className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
+                  className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20 border border-primary-100/50 dark:border-primary-900/10 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
                 >
                   Hoje
                 </button>
@@ -456,7 +479,7 @@ const Transactions = () => {
               <button
                 onClick={handleNextMonth}
                 disabled={isCurrentMonth}
-                className={`p-1.5 rounded-xl transition-colors ${isCurrentMonth
+                className={`p-1.5 rounded-xl transition-all duration-200 active:scale-90 ${isCurrentMonth
                   ? 'opacity-30 cursor-not-allowed'
                   : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
                   }`}
@@ -468,7 +491,7 @@ const Transactions = () => {
 
             <button
               onClick={() => handleOpenModal()}
-              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl shadow-md h-[42px] px-6"
+              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
             >
               <Plus className="w-5 h-5" />
               Nova Transação
@@ -481,17 +504,17 @@ const Transactions = () => {
         <TransactionLimitBanner />
 
         {/* Month Summary */}
-        <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           {/* Saldo do Mês - DEVE SER O PRIMEIRO NO MOBILE */}
-          <div className="relative col-span-3 lg:col-span-1 order-first bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30 overflow-hidden p-4 sm:p-5">
+          <div className="relative col-span-3 lg:col-span-1 order-first bg-gradient-to-br from-primary-600 via-primary-500 to-indigo-700 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/10 dark:shadow-primary-950/20 overflow-hidden p-4 sm:p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/15">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1 min-w-0">
-                <p className="text-primary-100 text-[10px] sm:text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
-                <h3 className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 truncate">
+                <p className="text-primary-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest font-display">Saldo do Mês</p>
+                <h3 className="text-2xl sm:text-3xl font-extrabold mt-1 sm:mt-2 truncate font-display tracking-tight">
                   {formatCurrency(monthSummary.balance)}
                 </h3>
               </div>
-              <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0 ml-2">
                 <Wallet className="w-5 h-5 text-white" />
               </div>
             </div>
@@ -510,15 +533,15 @@ const Transactions = () => {
           </div>
 
           {/* Lançamentos no Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900/95 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 overflow-hidden shadow-md p-4 sm:p-5 transition-all duration-300 hover:shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
               <div className="flex flex-col">
-                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Lançamentos</p>
-                <h3 className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">
+                <p className="text-[9px] sm:text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider font-display">Lançamentos</p>
+                <h3 className="text-base sm:text-2xl font-extrabold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display tracking-tight">
                   {monthSummary.count}
                 </h3>
               </div>
-              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-gray-50 dark:bg-neutral-800 ring-4 ring-gray-100/50 dark:ring-neutral-800/10 items-center justify-center flex-shrink-0">
+              <div className="hidden sm:flex w-11 h-11 rounded-xl bg-gray-50 dark:bg-neutral-800 ring-4 ring-gray-100/50 dark:ring-neutral-800/10 items-center justify-center flex-shrink-0">
                 <Activity className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
               </div>
             </div>
@@ -528,55 +551,55 @@ const Transactions = () => {
           </div>
 
           {/* Receitas do Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900/95 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 overflow-hidden shadow-md p-4 sm:p-5 transition-all duration-300 hover:shadow-lg">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
             <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
               <div className="flex flex-col">
-                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Receitas</p>
-                <h3 className="text-base sm:text-2xl font-bold text-success-600 dark:text-success-400 mt-0.5 sm:mt-1 truncate">
+                <p className="text-[9px] sm:text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider font-display">Receitas</p>
+                <h3 className="text-base sm:text-2xl font-extrabold text-success-600 dark:text-success-400 mt-0.5 sm:mt-1 truncate font-display tracking-tight">
                   {formatCurrency(monthSummary.income).replace('R$', '').trim()}
                 </h3>
               </div>
-              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 items-center justify-center flex-shrink-0">
+              <div className="hidden sm:flex w-11 h-11 rounded-xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 items-center justify-center flex-shrink-0">
                 <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-[9px] sm:text-xs text-success-600 dark:text-success-400 font-semibold truncate">Recebido</span>
+              <span className="text-[9px] sm:text-xs text-success-600 dark:text-success-400 font-bold truncate">Recebido</span>
             </div>
           </div>
 
           {/* Despesas do Mês */}
-          <div className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm p-2 sm:p-5">
+          <div className="relative col-span-1 bg-white dark:bg-neutral-900/95 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 overflow-hidden shadow-md p-4 sm:p-5 transition-all duration-300 hover:shadow-lg">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
             <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-4">
               <div className="flex flex-col">
-                <p className="text-[9px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-tight sm:tracking-widest">Despesas</p>
-                <h3 className="text-base sm:text-2xl font-bold text-danger-600 dark:text-danger-400 mt-0.5 sm:mt-1 truncate">
+                <p className="text-[9px] sm:text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider font-display">Despesas</p>
+                <h3 className="text-base sm:text-2xl font-extrabold text-danger-600 dark:text-danger-400 mt-0.5 sm:mt-1 truncate font-display tracking-tight">
                   {formatCurrency(monthSummary.expense).replace('R$', '').trim()}
                 </h3>
               </div>
-              <div className="hidden sm:flex w-11 h-11 rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 items-center justify-center flex-shrink-0">
+              <div className="hidden sm:flex w-11 h-11 rounded-xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 items-center justify-center flex-shrink-0">
                 <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-[9px] sm:text-xs text-danger-600 dark:text-danger-400 font-semibold truncate">Gasto</span>
+              <span className="text-[9px] sm:text-xs text-danger-600 dark:text-danger-400 font-bold truncate">Gasto</span>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="card">
+        <div className="bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl p-4 sm:p-5 mb-6">
           <div className="filter-grid">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
+              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
               <input
                 type="text"
-                placeholder="Buscar transacoes..."
+                placeholder="Buscar transações..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-10 rounded-full"
+                className="input-field pl-11 rounded-xl font-sans"
               />
             </div>
 
@@ -599,7 +622,7 @@ const Transactions = () => {
                   value: cat.id,
                   label: cat.name,
                   icon: (
-                    <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-100 dark:bg-neutral-800" style={{ color: cat.color }}>
+                     <div className="w-6 h-6 rounded flex items-center justify-center bg-gray-100 dark:bg-neutral-850" style={{ color: cat.color }}>
                       <CategoryIcon icon={cat.icon} color={cat.color} size="sm" />
                     </div>
                   )
@@ -614,45 +637,57 @@ const Transactions = () => {
         </div>
 
         {/* Transactions Table */}
-        <div className="card">
+        <div className="bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl overflow-hidden mb-6">
           {filteredTransactions.length > 0 ? (
             <>
               <div className="hidden md:block table-wrapper">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-100 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-800/30 text-xs uppercase tracking-wider text-gray-500 dark:text-neutral-400">
-                      <th className="text-left py-4 px-4 font-semibold rounded-tl-lg">
+                    <tr className="border-b border-gray-200/50 dark:border-neutral-800/60 bg-gray-50/50 dark:bg-neutral-850/30 text-xs uppercase tracking-wider text-gray-500 dark:text-neutral-400 font-display font-bold">
+                      <th className="text-left py-4 px-6 font-bold font-display rounded-tl-xl">
                         Data
                       </th>
-                      <th className="text-left py-4 px-4 font-semibold">
+                      <th className="text-left py-4 px-4 font-bold font-display">
                         Descrição
                       </th>
-                      <th className="text-left py-4 px-4 font-semibold">
+                      <th className="text-left py-4 px-4 font-bold font-display">
                         Categoria
                       </th>
-                      <th className="text-left py-4 px-4 font-semibold">
+                      <th className="text-left py-4 px-4 font-bold font-display">
                         Tipo
                       </th>
-                      <th className="text-right py-4 px-4 font-semibold">
+                      <th className="text-right py-4 px-4 font-bold font-display">
                         Valor
                       </th>
-                      <th className="text-right py-4 px-4 font-semibold rounded-tr-lg">
+                      <th className="text-right py-4 px-6 font-bold rounded-tr-xl font-display">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <motion.tbody
+                    key={selectedMonth.toISOString() + searchTerm + filterType + filterCategory}
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
                     {filteredTransactions.map((transaction) => (
-                      <tr
+                      <motion.tr
                         key={transaction.id}
-                        className="border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
+                        variants={itemVariants}
+                        className="group border-b border-gray-150 dark:border-neutral-800/60 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-all duration-300 relative"
                       >
-                        <td className="py-3 px-4 text-gray-600 dark:text-neutral-400">
+                        <td className="py-3.5 px-6 relative text-gray-600 dark:text-neutral-400 font-sans">
+                          {/* Indicador de Tipo Lateral (estilo Sidebar) */}
+                          <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 group-hover:h-10 rounded-r-full transition-all duration-300 ${
+                            transaction.type === 'income'
+                              ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
+                              : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                          }`} />
                           {format(new Date(transaction.date), 'dd/MM/yyyy')}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4 font-sans">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900 dark:text-white">
+                            <p className="font-semibold text-gray-900 dark:text-white">
                               {transaction.description}
                               {transaction.totalInstallments && transaction.totalInstallments > 0 && (
                                 <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
@@ -661,21 +696,21 @@ const Transactions = () => {
                               )}
                             </p>
                             {(transaction.isRecurring || transaction.parentTransactionId) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 border border-primary-100/50 dark:border-primary-900/10">
                                 <Repeat className="w-3 h-3" />
                                 Recorrente
                               </span>
                             )}
                             {transaction.creditCardId && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/30 text-purple-750 dark:text-purple-300 border border-purple-100/50 dark:border-purple-900/10">
                                 <CreditCardIcon className="w-3 h-3" />
                                 {transaction.creditCard?.name || 'Cartão'}
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300">
+                        <td className="py-3.5 px-4 font-sans">
+                          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-neutral-350 border border-gray-150 dark:border-neutral-700/40">
                             {categoryIconMap.get(transaction.categoryId) && (
                               <CategoryIcon
                                 icon={categoryIconMap.get(transaction.categoryId)!.icon}
@@ -686,28 +721,28 @@ const Transactions = () => {
                             <span>{transaction.category}</span>
                           </span>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4 font-sans">
                           <span
-                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${transaction.type === 'income'
-                              ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                              : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
+                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${transaction.type === 'income'
+                              ? 'bg-success-50 dark:bg-success-950/20 text-success-700 dark:text-success-300 border border-success-100/50 dark:border-success-900/10'
+                              : 'bg-danger-50 dark:bg-danger-950/20 text-danger-700 dark:text-danger-300 border border-danger-100/50 dark:border-danger-900/10'
                               }`}
                           >
                             {transaction.type === 'income' ? (
                               <>
-                                <TrendingUp className="w-4 h-4 animate-arrow-up" />
+                                <TrendingUp className="w-3.5 h-3.5 animate-arrow-up" />
                                 Receita
                               </>
                             ) : (
                               <>
-                                <TrendingDown className="w-4 h-4 animate-arrow-down" />
+                                <TrendingDown className="w-3.5 h-3.5 animate-arrow-down" />
                                 Despesa
                               </>
                             )}
                           </span>
                         </td>
                         <td
-                          className={`py-3 px-4 text-right font-semibold ${transaction.type === 'income'
+                          className={`py-3.5 px-4 text-right font-bold font-sans ${transaction.type === 'income'
                             ? 'text-success-600 dark:text-success-400'
                             : 'text-danger-600 dark:text-danger-400'
                             }`}
@@ -715,20 +750,20 @@ const Transactions = () => {
                           {transaction.type === 'income' ? '+' : '-'}
                           {formatCurrency(transaction.amount)}
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="py-3.5 px-6 font-sans">
+                          <div className="flex items-center justify-end gap-1.5">
                             {(transaction.isRecurring || transaction.parentTransactionId) && (
                               <>
                                 <button
                                   onClick={() => handleViewRecurrenceDetails(transaction)}
-                                  className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                                  className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 cursor-pointer"
                                   title="Ver detalhes da recorrência"
                                 >
                                   <Info className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleCancelRecurrence(transaction)}
-                                  className="p-2 text-warning-600 dark:text-warning-400 hover:bg-warning-50 dark:hover:bg-warning-900/20 rounded-lg transition-colors"
+                                  className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 cursor-pointer"
                                   title="Cancelar recorrência"
                                 >
                                   <XCircle className="w-4 h-4" />
@@ -737,23 +772,23 @@ const Transactions = () => {
                             )}
                             <button
                               onClick={() => handleOpenModal(transaction)}
-                              className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                              className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 cursor-pointer"
                               title="Editar"
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(transaction)}
-                              className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors"
+                              className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
                               title="Deletar"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
-                  </tbody>
+                  </motion.tbody>
                 </table>
               </div>
 
@@ -761,7 +796,7 @@ const Transactions = () => {
                 {filteredTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="relative rounded-2xl bg-danger-50 dark:bg-danger-900/20 overflow-hidden border border-transparent dark:border-neutral-800"
+                    className="relative rounded-2xl bg-red-50/20 dark:bg-red-950/10 overflow-hidden border border-gray-200/50 dark:border-neutral-800/60"
                   >
                     {/* Background actions */}
                     <div className="absolute inset-y-0 right-0 flex items-center justify-end px-3 gap-3 z-0">
@@ -805,10 +840,17 @@ const Transactions = () => {
                       dragConstraints={{ left: (transaction.isRecurring || transaction.parentTransactionId) ? -240 : -130, right: 0 }}
                       dragElastic={0.05}
                       whileTap={{ cursor: "grabbing" }}
-                      className="relative z-10 w-full rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4 shadow-sm space-y-4 cursor-grab touch-pan-y"
+                      className="relative z-10 w-full rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 bg-white dark:bg-neutral-900/95 p-4 shadow-sm space-y-4 cursor-grab touch-pan-y pl-5"
                     >
+                      {/* Indicador de Tipo Lateral (estilo Sidebar) */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-[4px] ${
+                        transaction.type === 'income'
+                          ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
+                          : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                      }`} />
+
                       {/* Swipe Handle Hint */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20 dark:opacity-40">
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20 dark:opacity-45">
                         <div className="w-1 h-1 rounded-full bg-gray-500"></div>
                         <div className="w-1 h-1 rounded-full bg-gray-500"></div>
                         <div className="w-1 h-1 rounded-full bg-gray-500"></div>
@@ -816,37 +858,39 @@ const Transactions = () => {
 
                       <div className="flex items-start justify-between gap-3 pr-4">
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-neutral-400">
+                          <p className="text-xs text-gray-400 dark:text-neutral-500 font-sans">
                             {format(new Date(transaction.date), 'dd/MM/yyyy')}
                           </p>
-                          <p className="text-base font-semibold text-gray-900 dark:text-white mt-0.5" style={{ wordBreak: 'break-word', paddingRight: '1rem' }}>
+                          <p className="text-base font-bold text-gray-900 dark:text-white mt-1 font-sans" style={{ wordBreak: 'break-word', paddingRight: '1rem' }}>
                             {transaction.description}
                             {transaction.totalInstallments && transaction.totalInstallments > 0 && (
-                              <span className="ml-2 text-sm text-gray-400 dark:text-gray-500 font-normal">
+                              <span className="ml-2 text-sm text-gray-450 dark:text-gray-500 font-normal">
                                 {(!transaction.parentTransactionId && transaction.isRecurring) ? 1 : (transaction.currentInstallment || 1)}/{transaction.totalInstallments}
                               </span>
                             )}
                           </p>
-                          {(transaction.isRecurring || transaction.parentTransactionId) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 mt-1">
-                              <Repeat className="w-3 h-3" />
-                              Recorrente
-                            </span>
-                          )}
-                          {transaction.creditCardId && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 mt-1">
-                              <CreditCardIcon className="w-3 h-3" />
-                              {transaction.creditCard?.name || 'Cartão'}
-                            </span>
-                          )}
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {(transaction.isRecurring || transaction.parentTransactionId) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-300 border border-primary-100/50 dark:border-primary-900/10">
+                                <Repeat className="w-2.5 h-2.5" />
+                                Recorrente
+                              </span>
+                            )}
+                            {transaction.creditCardId && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300 border border-purple-100/50 dark:border-purple-900/10">
+                                <CreditCardIcon className="w-2.5 h-2.5" />
+                                {transaction.creditCard?.name || 'Cartão'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div
-                          className={`text-right font-semibold whitespace-nowrap ${transaction.type === 'income'
+                          className={`text-right font-extrabold whitespace-nowrap font-display ${transaction.type === 'income'
                             ? 'text-success-600 dark:text-success-300'
                             : 'text-danger-600 dark:text-danger-300'
                             }`}
                         >
-                          <span className="block text-sm uppercase tracking-wide text-gray-400 dark:text-neutral-500">
+                          <span className="block text-[10px] uppercase tracking-wider text-gray-400 dark:text-neutral-500 font-bold font-display">
                             Valor
                           </span>
                           {transaction.type === 'income' ? '+' : '-'}
@@ -854,8 +898,8 @@ const Transactions = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 text-sm pr-4">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-neutral-900 text-gray-700 dark:text-neutral-300">
+                      <div className="flex flex-wrap items-center gap-2 text-xs pr-4">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-150 dark:border-neutral-700/40">
                           {categoryIconMap.get(transaction.categoryId) && (
                             <CategoryIcon
                               icon={categoryIconMap.get(transaction.categoryId)!.icon}
@@ -866,19 +910,19 @@ const Transactions = () => {
                           {transaction.category}
                         </span>
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full ${transaction.type === 'income'
-                            ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-300'
-                            : 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-300'
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border ${transaction.type === 'income'
+                            ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-350 border-success-100/50 dark:border-success-900/10'
+                            : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-350 border-danger-100/50 dark:border-danger-900/10'
                             }`}
                         >
                           {transaction.type === 'income' ? (
                             <>
-                              <TrendingUp className="w-4 h-4 animate-arrow-up" />
+                              <TrendingUp className="w-3.5 h-3.5 animate-arrow-up" />
                               Receita
                             </>
                           ) : (
                             <>
-                              <TrendingDown className="w-4 h-4 animate-arrow-down" />
+                              <TrendingDown className="w-3.5 h-3.5 animate-arrow-down" />
                               Despesa
                             </>
                           )}
