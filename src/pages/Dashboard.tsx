@@ -21,7 +21,8 @@ import {
   ChevronRight,
   Calendar,
   Minus,
-  Bell
+  Bell,
+  Calculator as CalculatorIcon
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
@@ -832,15 +833,7 @@ const Dashboard = () => {
       {/* Header Premium Mobile (Card com Saldo, Calendário Integrado e Ações) */}
       {isMobile && (
         <div className="block sm:hidden mb-6">
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-indigo-600 rounded-[32px] p-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
-            {/* Linhas de grade/onda decorativas */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path d="M0,45 C30,35 70,55 100,45 L100,100 L0,100 Z" fill="white" />
-                <path d="M0,25 C50,55 50,15 100,35 L100,100 L0,100 Z" fill="white" opacity="0.5" />
-              </svg>
-            </div>
-
+          <div className="relative overflow-hidden bg-primary-600 -mx-4 -mt-[calc(1rem+env(safe-area-inset-top))] rounded-none pt-[calc(1.5rem+env(safe-area-inset-top))] px-6 pb-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
             <div className="relative z-10 flex flex-col justify-between min-h-[160px]">
               {/* Linha Superior: Período / Navegação e Utilidades */}
               <div className="flex items-center justify-between mb-5">
@@ -875,7 +868,7 @@ const Dashboard = () => {
                     className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm"
                     title="Calculadora"
                   >
-                    <Calculator className="w-5 h-5 text-white" />
+                    <CalculatorIcon className="w-5 h-5 text-white" />
                   </button>
                   <button 
                     onClick={() => toast.success("Você está em dia! Nenhuma notificação recente.")} 
@@ -967,7 +960,7 @@ const Dashboard = () => {
         {/* Lado Esquerdo: Cards de Resumo */}
         <div className="lg:col-span-3 grid grid-cols-2 gap-3 sm:gap-4">
           {/* Saldo do Mês - Card Principal */}
-          <div className="hidden sm:block card col-span-2 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-600 dark:via-primary-700 dark:to-primary-800 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-900/30">
+          <div className="hidden sm:block card col-span-2 bg-primary-600 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-950/20">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
@@ -1076,7 +1069,7 @@ const Dashboard = () => {
           </div>
 
           {/* Meta de Economia */}
-          <div className="card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
+          <div className="hidden sm:block card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">

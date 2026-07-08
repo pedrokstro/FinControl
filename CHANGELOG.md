@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.90] - 2026-07-08
+
+### Alterado
+- **Dashboard (Ajustes de Layout Mobile & Estilo Sólido):**
+  - O card de "Saldo do Mês" na versão mobile do dashboard agora se estende por toda a largura horizontal da tela (`-mx-4 rounded-none -mt-[...]`) e utiliza a mesma cor azul sólida oficial (`bg-primary-600`) adotada na página de transações, removendo as ondas decorativas.
+  - O card de "Meta de Economia" agora fica oculto na versão mobile (através da classe `hidden sm:block`) para otimização de espaço e foco visual.
+- **Dashboard (Ajuste do Botão de Notificações):**
+  - Corrigido o conflito de nomenclatura no import de `Calculator` da biblioteca `lucide-react` (importado agora como `CalculatorIcon`), resolvendo o bug onde o componente inteiro da calculadora era renderizado dentro do botão circular e quebrava/sobrepunha o botão de notificações vizinho.
+
 ## [2.12.89] - 2026-07-08
 
 ### Corrigido
