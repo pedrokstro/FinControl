@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.84] - 2026-07-08
+
+### Alterado
+- **Navegação de Configurações (High Contrast Pills Navigation):**
+  - Ajustado o estilo da pill ativa nas abas de configurações para utilizar o gradiente oficial `from-primary-600 via-primary-500 to-indigo-600` e cor de texto inteiramente branca (`text-white`), garantindo excelente contraste e tornando a animação de mola física (`layoutId`) extremamente nítida e visível tanto em modo claro quanto escuro.
+  - Escurecido sutilmente o plano de fundo do contêiner das abas para aumentar a profundidade visual e o relevo do indicador móvel.
+
 ## [2.12.83] - 2026-07-08
 
 ### Corrigido
