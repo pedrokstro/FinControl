@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.12.79] - 2026-07-08
+
+### Otimizado
+- **Roteamento e Performance de Navegação:**
+  - Removido `key={location.pathname}` do elemento `<Routes>` em `App.tsx` para evitar que todo o contêiner do layout global (`MainLayout` que inclui a `Sidebar`, `Header` e verificações de autenticação) seja desmontado e remontado ao alternar de rota.
+  - Eliminado o invólucro `<AnimatePresence mode="wait">` do roteador global. Isso remove a latência artificial de `350ms` de espera pelo término da animação de saída de cada página, tornando a navegação instantânea e poupando ciclos de CPU.
+  - Mantidas as animações individuais de entrada suave (`PageTransition`) em cada página para transições elegantes e sem travamentos.
+  - Limpos os imports obsoletos de `useLocation` e `AnimatePresence` em `App.tsx`.
+
 ## [2.12.78] - 2026-07-08
 
 ### Alterado

@@ -1,6 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster, toast } from 'react-hot-toast'
-import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense, useEffect } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
@@ -90,167 +89,163 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Animated Routes Component
 const AnimatedRoutes = () => {
-  const location = useLocation()
-
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-        <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
-        <Route path="/categories" element={<Navigate to="/app/categories" replace />} />
-        <Route path="/subscriptions" element={<Navigate to="/app/subscriptions" replace />} />
-        <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
-        <Route path="/plans" element={<Navigate to="/app/plans" replace />} />
-        <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
-        <Route path="/calculadora-porcentagem" element={<Navigate to="/app/calculadora-porcentagem" replace />} />
-        <Route path="/calculadora-juros" element={<Navigate to="/app/calculadora-juros" replace />} />
-        <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/goodbye" element={
-          <Suspense fallback={<PageLoader />}>
-            <Goodbye />
-          </Suspense>
-        } />
-        <Route path="/about" element={
-          <Suspense fallback={<PageLoader />}>
-            <About />
-          </Suspense>
-        } />
-        <Route path="/privacy" element={
-          <Suspense fallback={<PageLoader />}>
-            <Privacy />
-          </Suspense>
-        } />
-        <Route path="/terms" element={
-          <Suspense fallback={<PageLoader />}>
-            <Terms />
-          </Suspense>
-        } />
-        <Route path="/support" element={
-          <Suspense fallback={<PageLoader />}>
-            <Support />
-          </Suspense>
-        } />
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+      <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
+      <Route path="/categories" element={<Navigate to="/app/categories" replace />} />
+      <Route path="/subscriptions" element={<Navigate to="/app/subscriptions" replace />} />
+      <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
+      <Route path="/plans" element={<Navigate to="/app/plans" replace />} />
+      <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+      <Route path="/calculadora-porcentagem" element={<Navigate to="/app/calculadora-porcentagem" replace />} />
+      <Route path="/calculadora-juros" element={<Navigate to="/app/calculadora-juros" replace />} />
+      <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/goodbye" element={
+        <Suspense fallback={<PageLoader />}>
+          <Goodbye />
+        </Suspense>
+      } />
+      <Route path="/about" element={
+        <Suspense fallback={<PageLoader />}>
+          <About />
+        </Suspense>
+      } />
+      <Route path="/privacy" element={
+        <Suspense fallback={<PageLoader />}>
+          <Privacy />
+        </Suspense>
+      } />
+      <Route path="/terms" element={
+        <Suspense fallback={<PageLoader />}>
+          <Terms />
+        </Suspense>
+      } />
+      <Route path="/support" element={
+        <Suspense fallback={<PageLoader />}>
+          <Support />
+        </Suspense>
+      } />
 
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/app/transactions" replace />} />
-          <Route path="dashboard" element={
+      <Route
+        path="/app"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/app/transactions" replace />} />
+        <Route path="dashboard" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Dashboard />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="transactions" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Transactions />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="categories" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Categories />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="subscriptions" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Subscriptions />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="cards" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Cards />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="reports" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Reports />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="plans" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Plans />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="upgrade" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Plans />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="checkout" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Checkout />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="settings" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Settings />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="settings/subscription" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <ManageSubscription />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="profile" element={<Navigate to="/app/settings" replace />} />
+        <Route path="calculadora-porcentagem" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <PercentageCalculator />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="calculadora-juros" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <CompoundInterestCalculator />
+            </PageTransition>
+          </Suspense>
+        } />
+        <Route path="admin" element={
+          <AdminRoute>
             <Suspense fallback={<PageLoader />}>
               <PageTransition>
-                <Dashboard />
+                <Admin />
               </PageTransition>
             </Suspense>
-          } />
-          <Route path="transactions" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Transactions />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="categories" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Categories />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="subscriptions" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Subscriptions />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="cards" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Cards />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="reports" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Reports />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="plans" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Plans />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="upgrade" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Plans />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="checkout" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Checkout />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="settings" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Settings />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="settings/subscription" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <ManageSubscription />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="profile" element={<Navigate to="/app/settings" replace />} />
-          <Route path="calculadora-porcentagem" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <PercentageCalculator />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="calculadora-juros" element={
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <CompoundInterestCalculator />
-              </PageTransition>
-            </Suspense>
-          } />
-          <Route path="admin" element={
-            <AdminRoute>
-              <Suspense fallback={<PageLoader />}>
-                <PageTransition>
-                  <Admin />
-                </PageTransition>
-              </Suspense>
-            </AdminRoute>
-          } />
-        </Route>
-      </Routes>
-    </AnimatePresence>
+          </AdminRoute>
+        } />
+      </Route>
+    </Routes>
   )
 }
 
