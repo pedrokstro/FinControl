@@ -506,7 +506,7 @@ const Transactions = () => {
         {/* Month Summary */}
         <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           {/* Saldo do Mês - DEVE SER O PRIMEIRO NO MOBILE */}
-          <div className="relative col-span-3 lg:col-span-1 order-first bg-gradient-to-br from-primary-600 via-primary-500 to-indigo-700 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/10 dark:shadow-primary-950/20 overflow-hidden p-4 sm:p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/15">
+          <div className="relative col-span-3 lg:col-span-1 order-first bg-primary-600 text-white rounded-2xl border-0 shadow-lg shadow-primary-500/10 dark:shadow-primary-950/20 overflow-hidden p-4 sm:p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/15">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1 min-w-0">
                 <p className="text-primary-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest font-display">Saldo do Mês</p>

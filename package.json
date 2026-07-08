@@ -1,6 +1,6 @@
 {
   "name": "fincontrol",
-  "version": "2.12.87",
+  "version": "2.12.88",
   "description": "Sistema completo de controle financeiro pessoal com React, TypeScript e Tailwind CSS",
   "author": "Seu Nome <seu.email@exemplo.com>",
   "license": "MIT",

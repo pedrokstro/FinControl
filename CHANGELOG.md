@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.88] - 2026-07-08
+
+### Alterado
+- **Página de Transações (Solid Balance Card):**
+  - Removido o gradiente de fundo do card de "Saldo do Mês", alterando-o para a cor azul sólida oficial do FinControl (`bg-primary-600`), garantindo sobriedade visual e consistência com os demais cards de resumo da interface.
+
 ## [2.12.87] - 2026-07-08
 
 ### Corrigido
