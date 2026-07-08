@@ -710,7 +710,7 @@ const Transactions = () => {
                           </div>
                         </td>
                         <td className="py-3.5 px-4 font-sans">
-                          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-neutral-350 border border-gray-150 dark:border-neutral-700/40">
+                          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-neutral-300 border border-gray-150 dark:border-neutral-700/40">
                             {categoryIconMap.get(transaction.categoryId) && (
                               <CategoryIcon
                                 icon={categoryIconMap.get(transaction.categoryId)!.icon}
@@ -911,8 +911,8 @@ const Transactions = () => {
                         </span>
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border ${transaction.type === 'income'
-                            ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-350 border-success-100/50 dark:border-success-900/10'
-                            : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-350 border-danger-100/50 dark:border-danger-900/10'
+                            ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-300 border-success-100/50 dark:border-success-900/10'
+                            : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-300 border-danger-100/50 dark:border-danger-900/10'
                             }`}
                         >
                           {transaction.type === 'income' ? (

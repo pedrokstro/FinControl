@@ -464,10 +464,10 @@
     50% { transform: translateY(4px); }
   }
   .animate-arrow-up {
-    animation: arrowUp 1.2s ease-in-out infinite;
+    /* Animação removida a pedido do usuário */
   }
   .animate-arrow-down {
-    animation: arrowDown 1.2s ease-in-out infinite;
+    /* Animação removida a pedido do usuário */
   }
 }
 

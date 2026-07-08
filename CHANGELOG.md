@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.12.89] - 2026-07-08
+
+### Corrigido
+- **Tabela de Transações (Contraste no Modo Escuro):**
+  - Ajustadas as classes de cor de texto das categorias, receitas e despesas no modo escuro (`dark:text-neutral-300`, `dark:text-success-300` e `dark:text-danger-300`), corrigindo a aplicação de classes inexistentes que deixavam os textos quase pretos (invisíveis) sobre o fundo escuro da tabela.
+- **Estilo (Remoção de Animações de Setas):**
+  - Desativada a propriedade de animação das classes `.animate-arrow-up` e `.animate-arrow-down` em `src/index.css`, tornando os ícones de setas de Receita/Despesa estáticos de forma a simplificar o visual e reduzir distrações na interface.
+
 ## [2.12.88] - 2026-07-08
 
 ### Alterado
