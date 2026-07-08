@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.76] - 2026-07-08
+
+### Corrigido
+- **Processamento de Recorrências (Backend):**
+  - Corrigido bug em [recurrence.service.ts](file:///f:/CURSOR/fincontrol/backend/src/services/recurrence.service.ts) onde a verificação de data de fim de recorrência (`recurrenceEndDate`) comparava erroneamente a data atual de execução (`now`) ao invés da data do evento programado (`nextOccurrence`). Esta falha causava o encerramento precoce da recorrência se o job rodasse no dia final, impossibilitando a geração da última parcela (ex: parcela 7/7).
+
 ## [2.12.75] - 2026-07-07
 
 ### Adicionado

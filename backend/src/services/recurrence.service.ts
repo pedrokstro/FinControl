@@ -83,7 +83,7 @@ class RecurrenceService {
           }
 
           // MODO 2: Verificar se ainda está dentro do período de recorrência (data fim)
-          if (transaction.recurrenceEndDate && new Date(transaction.recurrenceEndDate) < now) {
+          if (transaction.recurrenceEndDate && new Date(transaction.nextOccurrence) > new Date(transaction.recurrenceEndDate)) {
             logger.info(`⏹️  Recurring transaction ${transaction.id} has ended (recurrenceEndDate)`);
             transaction.isRecurring = false;
             transaction.nextOccurrence = null;
