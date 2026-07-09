@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.13.0] - 2026-07-09
+
+### Corrigido
+- **Dashboard Mobile (Cabeçalho Full-bleed):**
+  - Adicionada a classe `!mt-0` no wrapper do cabeçalho mobile do saldo para anular o `margin-top` indesejado criado pelo container `.responsive-page` (`space-y-6`).
+  - Separado o preenchimento de `p-4` do `main` em `MainLayout.tsx` para `px-4 pb-28 pt-0`, eliminando por completo a faixa branca no topo acima do fundo azul do saldo.
+- **Transações Mobile (Scroll Limpo):**
+  - Desmembrado o card branco envolvente geral das transações: no mobile, cada grupo de dia agora renderiza em seu próprio card arredondado independente (`bg-white` e `border border-gray-200/50`), sem esticar um fundo branco fixo até o final da página.
+  - Removido o preenchimento `pb-28` interno das transações mobile que esticava o card de fundo, permitindo que a lista termine exatamente no último elemento e a área de rolagem posterior revele o fundo cinza transparente natural da página.
+
 ## [2.12.99] - 2026-07-08
 
 ### Alterado

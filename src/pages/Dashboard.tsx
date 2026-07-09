@@ -875,7 +875,7 @@ const Dashboard = () => {
 
       {/* Header Premium Mobile (Card com Saldo, Calendário Integrado e Ações) */}
       {isMobile && (
-        <div className="block sm:hidden -mx-4 mb-6">
+        <div className="block sm:hidden -mx-4 mb-6 !mt-0">
           <div className="relative overflow-hidden bg-primary-600 rounded-none pt-[calc(2rem+env(safe-area-inset-top))] px-6 pb-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
             <div className="relative z-10 flex flex-col justify-between min-h-[160px]">
               {/* Linha Superior: Período / Navegação e Utilidades */}

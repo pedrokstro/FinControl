@@ -24,9 +24,9 @@ const MainLayout = () => {
         <div className="hidden lg:block">
           <Header />
         </div>
-        <main className={`flex-1 overflow-y-auto p-4 pb-28 sm:p-6 sm:pb-6 lg:pt-6 bg-gray-50 dark:bg-black transition-colors duration-300 ${
-          isDashboard ? 'pt-0' : 'pt-[calc(1rem+env(safe-area-inset-top))]'
-        }`}>
+        <main className={`flex-1 overflow-y-auto px-4 pb-28 sm:px-6 sm:pb-6 bg-gray-50 dark:bg-black transition-colors duration-300 ${
+          isDashboard ? 'pt-0 sm:pt-6' : 'pt-[calc(1rem+env(safe-area-inset-top))] sm:pt-6'
+        } lg:pt-6`}>
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
