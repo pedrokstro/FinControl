@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.13.1] - 2026-07-09
+
+### Alterado
+- **Transações Mobile (Mecânica de Swipe Premium):**
+  - Removida a propriedade `dragSnapToOrigin` que forçava o fechamento automático instantâneo do card e impossibilitava o clique nos botões de ação.
+  - Implementada a mecânica de **snap magnético**: ao arrastar mais de 30px para a esquerda, o card "trava" aberto na distância adequada dos botões (`maxDrag` ajustado para -112px ou -232px dependendo se há recorrência).
+  - Implementado **auto-fechamento inteligente**: se o usuário clicar ou tocar (`onTap`) em cima do card que está aberto, ele se fecha suavemente.
+  - Adicionado suporte a **fechamento por exclusão de foco**: ao arrastar ou abrir qualquer outra transação da lista, a anterior se fecha de forma automática, garantindo que apenas um card fique aberto por vez.
+
 ## [2.13.0] - 2026-07-09
 
 ### Corrigido

@@ -154,6 +154,7 @@ const Transactions = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [activeSwipeId, setActiveSwipeId] = useState<string | null>(null)
   const { usage, checkLimit, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
 
@@ -848,6 +849,8 @@ const Transactions = () => {
                   <div className="bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-sm rounded-2xl overflow-hidden divide-y divide-gray-50 dark:divide-neutral-800/30">
                     {dayTransactions.map((transaction) => {
                       const catInfo = categoryIconMap.get(transaction.categoryId)
+                      const isRecurringTrans = transaction.isRecurring || transaction.parentTransactionId
+                      const maxDrag = isRecurringTrans ? -232 : -112
                       return (
                         <div key={transaction.id} className="relative overflow-hidden">
                           {/* Ações reveladas pelo swipe */}
@@ -889,9 +892,21 @@ const Transactions = () => {
                           {/* Card deslizável */}
                           <motion.div
                             drag="x"
-                            dragConstraints={{ left: (transaction.isRecurring || transaction.parentTransactionId) ? -232 : -112, right: 0 }}
+                            dragConstraints={{ left: maxDrag, right: 0 }}
                             dragElastic={0.05}
-                            dragSnapToOrigin
+                            animate={{ x: activeSwipeId === transaction.id ? maxDrag : 0 }}
+                            onDragEnd={(event, info) => {
+                              if (info.offset.x < -30) {
+                                setActiveSwipeId(transaction.id)
+                              } else if (info.offset.x > 30) {
+                                setActiveSwipeId(null)
+                              }
+                            }}
+                            onTap={() => {
+                              if (activeSwipeId === transaction.id) {
+                                setActiveSwipeId(null)
+                              }
+                            }}
                             whileTap={{ cursor: 'grabbing' }}
                             className="relative z-10 flex items-center gap-3.5 px-4 py-3.5 bg-white dark:bg-neutral-900/95 cursor-grab touch-pan-y"
                           >
