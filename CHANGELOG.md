@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.14.0] - 2026-07-09
+
+### Adicionado
+- **Especificações Mobile (Android Native):**
+  - Criado o arquivo [MOBILE_CONTEXT_PRD.md](file:///f:/CURSOR/fincontrol/MOBILE%20APPLICATION/MOBILE_CONTEXT_PRD.md) na pasta `MOBILE APPLICATION`.
+  - Documentação contendo PRD completo, mapeamento de banco de dados (SQLite/Room e PostgreSQL/Supabase), fluxos e endpoints da API REST do backend, guia visual e paleta de cores baseadas no Material Design 3, mecânicas de movimento e gestos táticos para transações e carrossel Nubank.
+  - Adicionado um **Prompt Mestre** e um **Plano de Implementação estruturado** para o Gemini / engenheiro Android construir o cliente Android offline-first utilizando Kotlin e Jetpack Compose.
+
 ## [2.13.1] - 2026-07-09
 
 ### Alterado
