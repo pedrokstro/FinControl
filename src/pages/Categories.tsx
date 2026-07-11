@@ -24,11 +24,10 @@ import CategoryIcon from '@/components/common/CategoryIcon'
 import ColorPicker from '@/components/common/ColorPicker'
 import { type IconName } from '@/utils/iconMapping'
 import PageTransition from '@/components/common/PageTransition'
-import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+import { motion, AnimatePresence, useDragControls, type Variants } from 'framer-motion'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import BudgetModal from '@/components/modals/BudgetModal'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
-import CustomSelect from '@/components/common/CustomSelect'
 import { haptics } from '@/utils/haptics'
 import { Target } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
@@ -42,7 +41,7 @@ const categorySchema = z.object({
 
 type CategoryFormData = z.infer<typeof categorySchema>
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -52,7 +51,7 @@ const containerVariants = {
   },
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
