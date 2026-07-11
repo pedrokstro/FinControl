@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.14.1] - 2026-07-11
+
+### Alterado
+- **Design de Categorias (List View):**
+  - Alinhado o estilo visual da lista de categorias ao padrão premium adotado na tabela de transações.
+  - Adicionado o **Indicador de Tipo Lateral**: uma barra fina vertical reativa à esquerda de cada categoria (Verde para Receitas, Vermelho para Despesas) que cresce e alonga ao passar o mouse.
+  - Implementada a micro-interação de translação horizontal da linha no hover (`group-hover:translate-x-1`), mantendo o indicador de tipo alinhado à borda.
+  - Substituídos os botões de ação padrão por botões circulares interativos (`w-8.5 h-8.5`) com efeitos de escala física e cores semânticas.
+  - Integradas as animações do Framer Motion (`containerVariants` e `itemVariants`) para revelar a lista em cascata (stagger) de forma suave.
+
 ## [2.14.0] - 2026-07-09
 
 ### Adicionado

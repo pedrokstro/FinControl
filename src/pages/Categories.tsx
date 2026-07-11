@@ -42,6 +42,29 @@ const categorySchema = z.object({
 
 type CategoryFormData = z.infer<typeof categorySchema>
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+}
+
 const Categories = () => {
   const { categories, budgets, currentMonthTransactions, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
   const navigate = useNavigate()
@@ -500,80 +523,95 @@ const Categories = () => {
 
         {/* List View */}
         {viewMode === 'list' && !isViewModeLoading && !isCategoriesLoading && (
-          <div className="card divide-y divide-gray-200 dark:divide-neutral-800">
-            {filteredCategories.map((category) => (
-              <div
-                key={category.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-neutral-900/50 transition-colors group gap-4"
-              >
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: `${category.color}20` }}
-                  >
-                    <CategoryIcon
-                      icon={category.icon as IconName}
-                      color={category.color}
-                      size="lg"
-                    />
-                  </div>
+          <div className="bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl overflow-hidden mb-6">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="divide-y divide-gray-150 dark:divide-neutral-800/60"
+            >
+              {filteredCategories.map((category) => (
+                <motion.div
+                  key={category.id}
+                  variants={itemVariants}
+                  className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-3.5 pl-7 pr-6 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-all duration-300 gap-4"
+                >
+                  {/* Indicador de Tipo Lateral (estilo Sidebar/Transações) */}
+                  <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 group-hover:h-10 rounded-r-full transition-all duration-300 ${
+                    category.type === 'income'
+                      ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
+                      : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                  }`} />
 
-                  <div className="flex-1 min-w-0 pr-2">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-                      {category.name}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-1">
-                      {category.type === 'income' ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300">
-                          <TrendingUp className="w-3 h-3 animate-arrow-up" />
-                          Receita
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300">
-                          <TrendingDown className="w-3 h-3 animate-arrow-down" />
-                          Despesa
-                        </span>
-                      )}
+                  <div className="flex items-center gap-4 flex-1 min-w-0 transition-transform duration-300 group-hover:translate-x-1">
+                    <div
+                      className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
+                      style={{ backgroundColor: `${category.color}20` }}
+                    >
+                      <CategoryIcon
+                        icon={category.icon as IconName}
+                        color={category.color}
+                        size="lg"
+                      />
                     </div>
 
-                    {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
-                      <div className="mt-3">
-                        <BudgetProgressBar
-                          limit={budgets.find(b => b.categoryId === category.id)!.amount}
-                          spent={getCategorySpent(category.id)}
-                        />
+                    <div className="flex-1 min-w-0 pr-2">
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                        {category.name}
+                      </h3>
+                      <div className="flex items-center gap-3 mt-1">
+                        {category.type === 'income' ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 dark:bg-success-950/20 text-success-700 dark:text-success-300 border border-success-100/50 dark:border-success-900/10">
+                            <TrendingUp className="w-3 h-3 animate-arrow-up" />
+                            Receita
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 dark:bg-danger-950/20 text-danger-700 dark:text-danger-300 border border-danger-100/50 dark:border-danger-900/10">
+                            <TrendingDown className="w-3 h-3 animate-arrow-down" />
+                            Despesa
+                          </span>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                  {category.type === 'expense' && (
+                      {category.type === 'expense' && budgets.find(b => b.categoryId === category.id) && (
+                        <div className="mt-3">
+                          <BudgetProgressBar
+                            limit={budgets.find(b => b.categoryId === category.id)!.amount}
+                            spent={getCategorySpent(category.id)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-1.5 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    {category.type === 'expense' && (
+                      <button
+                        onClick={() => handleOpenBudgetModal(category)}
+                        className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 cursor-pointer bg-gray-50 dark:bg-neutral-800 sm:bg-transparent"
+                        title={budgets.find(b => b.categoryId === category.id) ? "Ajustar Orçamento" : "Definir Orçamento"}
+                      >
+                        <Target className="w-4 h-4" />
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleOpenBudgetModal(category)}
-                      className="p-2 sm:p-2.5 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors bg-primary-50/50 sm:bg-transparent"
-                      title={budgets.find(b => b.categoryId === category.id) ? "Ajustar Orçamento" : "Definir Orçamento"}
+                      onClick={() => handleOpenModal(category)}
+                      className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 cursor-pointer bg-gray-50 dark:bg-neutral-800 sm:bg-transparent"
+                      title="Editar"
                     >
-                      <Target className="w-5 h-5 sm:w-4 sm:h-4" />
+                      <Pencil className="w-4 h-4" />
                     </button>
-                  )}
-                  <button
-                    onClick={() => handleOpenModal(category)}
-                    className="p-2 sm:p-2.5 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors bg-primary-50/50 sm:bg-transparent"
-                    title="Editar"
-                  >
-                    <Pencil className="w-5 h-5 sm:w-4 sm:h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category)}
-                    className="p-2 sm:p-2.5 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded-lg transition-colors bg-danger-50/50 sm:bg-transparent"
-                    title="Excluir"
-                  >
-                    <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+                    <button
+                      onClick={() => handleDelete(category)}
+                      className="w-8.5 h-8.5 rounded-xl transition-all duration-200 hover:scale-115 active:scale-90 flex items-center justify-center text-gray-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer bg-gray-50 dark:bg-neutral-800 sm:bg-transparent"
+                      title="Excluir"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         )}
 
