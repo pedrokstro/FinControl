@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 
 const SplashScreen: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-primary-600 select-none">
+    <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-white select-none">
       {/* Container de animação do logo */}
       <div className="relative flex flex-col items-center justify-center">
-        {/* Logo principal com brilho/inversão de cor para branco puro */}
+        {/* Logo principal */}
         <motion.div
           initial={{ scale: 0.4, opacity: 0 }}
           animate={{ 
@@ -25,7 +25,6 @@ const SplashScreen: React.FC = () => {
             src="/icons/logofincontrol.png" 
             alt="FinControl Logo" 
             className="w-full h-full object-contain pointer-events-none select-none"
-            style={{ filter: 'brightness(0) invert(1)' }}
           />
         </motion.div>
 
@@ -34,7 +33,7 @@ const SplashScreen: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 0.9, y: 0 }}
           transition={{ delay: 0.35, duration: 0.5 }}
-          className="text-white text-xl font-bold tracking-widest uppercase font-display mt-4 opacity-90"
+          className="text-primary-600 text-xl font-bold tracking-widest uppercase font-display mt-4 opacity-90"
         >
           FinControl
         </motion.h1>
@@ -47,9 +46,9 @@ const SplashScreen: React.FC = () => {
         transition={{ delay: 0.6, duration: 0.4 }}
         className="absolute bottom-12 flex items-center gap-1.5"
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce" style={{ animationDelay: '0ms' }} />
-        <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce" style={{ animationDelay: '150ms' }} />
-        <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce" style={{ animationDelay: '300ms' }} />
+        <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-bounce" style={{ animationDelay: '0ms' }} />
+        <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-bounce" style={{ animationDelay: '150ms' }} />
+        <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-bounce" style={{ animationDelay: '300ms' }} />
       </motion.div>
     </div>
   )

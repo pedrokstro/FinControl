@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.15.1] - 2026-07-13
+
+### Alterado
+- **Manifesto PWA & Splash Screen de Inicialização (Fundo Branco & Logo Azul):**
+  - Ajustadas as propriedades `background_color` e `theme_color` do PWA de `#000000` para `#ffffff` em [vite.config.ts](file:///f:/CURSOR/fincontrol/vite.config.ts), corrigindo a tela preta com quadrado branco ao abrir o app instalado.
+  - Atualizadas as meta-tags de `theme-color` para `#ffffff` (light e dark mode) em [index.html](file:///f:/CURSOR/fincontrol/index.html) para evitar flashes pretos ou barras escuras no topo do sistema móvel durante o PWA startup.
+  - Refatorado o componente [SplashScreen.tsx](file:///f:/CURSOR/fincontrol/src/components/common/SplashScreen.tsx) para usar fundo branco sólido (`bg-white`) e a logo azul original do FinControl centralizada, combinando e mesclando com o carregamento do PWA sem costuras ou divisórias visíveis.
+
 ## [2.15.0] - 2026-07-13
 
 ### Adicionado
