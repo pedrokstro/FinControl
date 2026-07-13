@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.15.0] - 2026-07-13
+
+### Adicionado
+- **Splash Screen Mobile (Nubank Style):**
+  - Desenvolvido o componente [SplashScreen.tsx](file:///f:/CURSOR/fincontrol/src/components/common/SplashScreen.tsx) com fundo azul sólido da marca (`bg-primary-600`) e o logo do FinControl centralizado em branco puro, utilizando o filtro CSS `brightness(0) invert(1)` para espelhar o estilo minimalista do Nubank.
+  - Integrada a animação de escala de mola física (`spring`) do Framer Motion ao logo, além de um indicador pulsante discreto no rodapé.
+  - **Splash de Inicialização**: Injetada na montagem do [App.tsx](file:///f:/CURSOR/fincontrol/src/App.tsx) de forma reativa (`useIsMobile`), garantindo exibição de pelo menos 1.5 segundos no mobile antes de montar as rotas do app.
+  - **Splash de Transição de Login**: Adicionada uma animação de transição no [Login.tsx](file:///f:/CURSOR/fincontrol/src/pages/Login.tsx), ativando a Splash Screen por 1.5 segundos logo após as credenciais serem validadas e antes do redirecionamento do usuário.
+
 ## [2.14.1] - 2026-07-11
 
 ### Alterado

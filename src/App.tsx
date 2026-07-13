@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster, toast } from 'react-hot-toast'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useAuthStore } from './store/authStore'
@@ -11,6 +11,8 @@ import OfflineIndicator from './components/common/OfflineIndicator'
 import PageTransition from './components/common/PageTransition'
 import BiometricLock from './components/common/BiometricLock'
 import { useSecurityStore } from './store/securityStore'
+import SplashScreen from './components/common/SplashScreen'
+import { useIsMobile } from './hooks'
 
 // Auth Pages (não lazy - carregam rápido)
 import Login from './pages/Login'
@@ -253,6 +255,8 @@ function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
   const isInitialized = useAuthStore((state) => state.isInitialized)
   const { isBiometricEnabled, setLocked } = useSecurityStore()
+  const [showSplash, setShowSplash] = useState(true)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     initializeAuth()
@@ -261,6 +265,13 @@ function App() {
     if (isBiometricEnabled) {
       setLocked(true)
     }
+
+    // Timer mínimo para garantir exibição premium da Splash Screen no mobile
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
   }, [initializeAuth, isBiometricEnabled, setLocked])
 
   // Lógica para bloquear quando o app volta do background
@@ -274,6 +285,12 @@ function App() {
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [isBiometricEnabled, setLocked])
+
+  const showMobileSplash = isMobile && (showSplash || !isInitialized)
+
+  if (showMobileSplash) {
+    return <SplashScreen />
+  }
 
   if (!isInitialized) {
     return (

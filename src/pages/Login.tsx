@@ -3,7 +3,9 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import SplashScreen from '@/components/common/SplashScreen'
+import { useIsMobile } from '@/hooks'
 
 const Login = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -20,6 +22,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [showLoginSplash, setShowLoginSplash] = useState(false)
+  const isMobile = useIsMobile()
   const navigate = useNavigate()
   const { login, refreshUserData, loginWithGoogle, isAuthenticated } = useAuthStore()
 
@@ -43,6 +47,13 @@ const Login = () => {
       const success = await login(email, password)
       if (success) {
         await refreshUserData()
+        
+        // Se for mobile, exibe a Splash Screen de transição de login por 1.5s
+        if (isMobile) {
+          setShowLoginSplash(true)
+          await new Promise((resolve) => setTimeout(resolve, 1500))
+        }
+
         toast.success('Login realizado com sucesso!')
         navigate('/app/transactions')
       } else {
@@ -88,7 +99,8 @@ const Login = () => {
   }
 
   return (
-    <motion.div
+    <>
+      <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -234,7 +246,12 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+
+      <AnimatePresence>
+        {showLoginSplash && <SplashScreen />}
+      </AnimatePresence>
+    </>
   )
 }
 
