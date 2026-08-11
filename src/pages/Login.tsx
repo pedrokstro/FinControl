@@ -1,28 +1,22 @@
-import { useState, useEffect, useRef, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Lock, Mail, Eye, EyeOff } from 'lucide-react'
+import { Mail, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import SplashScreen from '@/components/common/SplashScreen'
 import { useIsMobile } from '@/hooks'
+import PasswordStrengthInput from '@/components/ui/PasswordStrengthInput'
+import AuthVisualSide from '@/components/auth/AuthVisualSide'
 
 const Login = () => {
-  const videoRef = useRef<HTMLVideoElement>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(error => {
-        console.error("Erro ao iniciar vídeo automaticamente:", error)
-      })
-    }
-  }, [])
-  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [showLoginSplash, setShowLoginSplash] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
+
   const isMobile = useIsMobile()
   const navigate = useNavigate()
   const { login, refreshUserData, loginWithGoogle, isAuthenticated } = useAuthStore()
@@ -48,7 +42,6 @@ const Login = () => {
       if (success) {
         await refreshUserData()
         
-        // Se for mobile, exibe a Splash Screen de transição de login por 1.5s
         if (isMobile) {
           setShowLoginSplash(true)
           await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -78,7 +71,7 @@ const Login = () => {
       } else if (error.response?.status === 404) {
         toast.error('Usuário não encontrado')
       } else {
-        toast.error('Erro ao fazer login. Tente novamente.')
+        toast.error(error.response?.data?.message || 'Erro ao fazer login. Tente novamente.')
       }
     } finally {
       setIsLoading(false)
@@ -100,153 +93,161 @@ const Login = () => {
 
   return (
     <>
-      <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950 sm:p-4 relative overflow-hidden"
-    >
-      {/* Subtle Background Pattern */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:20px_20px] opacity-60" />
-      
-      {/* Soft Glows for Premium Vibe */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors duration-300">
+        {/* Coluna Esquerda: Formulário de Autenticação */}
+        <div className="col-span-1 lg:col-span-6 xl:col-span-5 flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16 max-w-xl mx-auto w-full min-h-screen">
+          {/* Topo: Logo FinControl */}
+          <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-1 flex items-center justify-center transition-transform group-hover:scale-105">
+                <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
+              </div>
+              <span className="font-display font-black text-2xl tracking-tight text-neutral-900 dark:text-white">
+                FinControl
+              </span>
+            </Link>
+          </div>
 
-      <div className="w-full sm:max-w-md relative z-10">
-        {/* Main Content Area */}
-        <div className="bg-white dark:bg-neutral-900 sm:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border-x-0 sm:border border-gray-100 dark:border-neutral-800 p-6 sm:p-10 min-h-screen sm:min-h-0 flex flex-col justify-center">
-          {/* Logo Section */}
-          <div className="text-center mb-6 sm:mb-8 flex flex-col items-center">
-            <motion.div 
-              className="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-neutral-900 rounded-2xl mb-4 relative group cursor-pointer overflow-hidden flex items-center justify-center"
-              whileHover={{ 
-                scale: 1.05,
-                transition: { type: "spring", stiffness: 400, damping: 15 }
-              }}
+          {/* Centro: Formulário de Login */}
+          <div className="my-8">
+            <div className="mb-8">
+              <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-neutral-900 dark:text-white mb-2">
+                Login
+              </h1>
+              <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400">
+                Acesse sua conta para continuar no controle das suas finanças.
+              </p>
+            </div>
+
+            {/* Botão Google em Destaque */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={isGoogleLoading || isLoading}
+              className="w-full flex items-center justify-center gap-3 py-3.5 px-6 border border-neutral-200 dark:border-neutral-800 rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all font-semibold text-sm text-neutral-800 dark:text-neutral-200 shadow-sm disabled:opacity-50"
             >
-              <video 
-                ref={videoRef}
-                poster="/icons/logofincontrol.png"
-                autoPlay
-                muted 
-                loop 
-                playsInline
-                preload="auto"
-                src="https://raw.githubusercontent.com/pedrokstro/FinControl/main/public/icons/walletanimation.mp4"
-                className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen brightness-[1.15] contrast-[1.1]"
-              />
-            </motion.div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">FinControl</h1>
-            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 mt-2 font-medium">Controle financeiro inteligente</p>
-          </div>
+              <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5 object-contain" />
+              <span>{isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}</span>
+            </button>
 
-          <div className="mb-6 sm:mb-8 text-center">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Bem-vindo de volta</h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400">Acesse sua conta para continuar</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-xs font-bold text-gray-700 dark:text-neutral-300 uppercase tracking-wider mb-2">
-                E-mail
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
-                  placeholder="seu@email.com"
-                  disabled={isLoading}
-                  required
-                />
+            {/* Divisor Elegante */}
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-neutral-200 dark:border-neutral-800" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-neutral-950 px-4 text-neutral-400 font-mono tracking-wider">
+                  ou entre com e-mail
+                </span>
               </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-xs font-bold text-gray-700 dark:text-neutral-300 uppercase tracking-wider mb-2">
-                Senha
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
+            {/* Formulário */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Campo E-mail */}
+              <div className="relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400 transition-colors">
+                <label
+                  htmlFor="email"
+                  className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none"
+                >
+                  E-mail
+                </label>
+                <div className="relative flex items-center">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none"
+                    disabled={isLoading}
+                    required
+                  />
+                  <Mail className="absolute right-4 w-5 h-5 text-neutral-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Campo Senha */}
+              <div className="pt-1">
+                <PasswordStrengthInput
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  label="Senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                   placeholder="••••••••"
                   disabled={isLoading}
+                  showStrengthMeter={false}
+                  bgClass="bg-white dark:bg-neutral-950"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-primary-600 border-gray-300 dark:border-neutral-600 rounded focus:ring-primary-500/20 transition-all"
-                />
-                <span className="ml-2 text-sm text-gray-500 dark:text-neutral-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                  Lembrar de mim
-                </span>
-              </label>
-              <Link to="/forgot-password" className="text-sm text-primary-600 hover:text-primary-800 font-bold transition-colors">
-                Esqueceu a senha?
-              </Link>
-            </div>
+              {/* Lembrar de mim & Esqueci senha */}
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-neutral-300 dark:border-neutral-700 bg-transparent"
+                  />
+                  <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                    Lembrar de mim
+                  </span>
+                </label>
 
-            <button
-              type="submit"
-              disabled={isLoading || isGoogleLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-full transition-all shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.23)] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'CARREGANDO...' : 'ENTRAR'}
-            </button>
-          </form>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  Esqueceu a senha?
+                </Link>
+              </div>
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-100 dark:border-neutral-800"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white dark:bg-neutral-900 px-4 text-gray-400 font-bold tracking-widest">Ou continuar com</span>
+              {/* Botão Entrar */}
+              <button
+                type="submit"
+                disabled={isLoading || isGoogleLoading}
+                className="w-full h-14 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 font-bold text-base transition-all duration-200 shadow-lg shadow-neutral-900/10 dark:shadow-none flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  'Entrando...'
+                ) : (
+                  <>
+                    <span>Entrar</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Link para Cadastro */}
+            <div className="mt-8 text-center">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Não tem uma conta?{' '}
+                <Link
+                  to="/register"
+                  className="font-bold text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  Criar conta gratuita
+                </Link>
+              </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={isGoogleLoading || isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-100 dark:border-neutral-800 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all text-gray-700 dark:text-neutral-200 font-bold disabled:opacity-50"
-          >
-            <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5" />
-            {isGoogleLoading ? 'CONECTANDO...' : 'GOOGLE'}
-          </button>
-
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500 dark:text-neutral-400">
-              Não tem uma conta?{' '}
-              <Link to="/register" className="text-primary-600 hover:text-primary-800 font-bold">
-                Criar agora
-              </Link>
-            </p>
+          {/* Rodapé da Coluna */}
+          <div className="text-xs font-mono text-neutral-400 dark:text-neutral-600 text-center sm:text-left pt-6">
+            © {new Date().getFullYear()} FinControl. Todos os direitos reservados.
           </div>
         </div>
+
+        {/* Coluna Direita: Painel Visual Desktop */}
+        <AuthVisualSide
+          title="Transforme suas finanças em realidade."
+          subtitle="Controle, precisão e tranquilidade em todas as suas plataformas."
+          badgeText="FinControl Inteligência"
+        />
       </div>
-      </motion.div>
 
       <AnimatePresence>
         {showLoginSplash && <SplashScreen />}

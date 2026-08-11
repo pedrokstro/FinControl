@@ -17,11 +17,13 @@ import {
   ArrowRight,
   Grid3x3,
   List,
+  LayoutGrid,
 } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import IconPicker from '@/components/common/IconPicker'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import ColorPicker from '@/components/common/ColorPicker'
+import BentoGridCategories from '@/components/categories/BentoGridCategories'
 import { type IconName } from '@/utils/iconMapping'
 import PageTransition from '@/components/common/PageTransition'
 import { motion, AnimatePresence, useDragControls, type Variants } from 'framer-motion'
@@ -88,7 +90,7 @@ const Categories = () => {
   const [categoryForBudget, setCategoryForBudget] = useState<any>(null)
 
   // View mode state
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | null>(null)
+  const [viewMode, setViewMode] = useState<'bento' | 'grid' | 'list' | null>(null)
   const [isViewModeLoading, setIsViewModeLoading] = useState(true)
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false)
 
@@ -108,14 +110,14 @@ const Categories = () => {
       try {
         const { default: userPreferenceService } = await import('@/services/userPreference.service')
         const mode = await userPreferenceService.get('categoriesViewMode')
-        if (mode && (mode === 'grid' || mode === 'list')) {
-          setViewMode(mode as 'grid' | 'list')
+        if (mode && (mode === 'bento' || mode === 'grid' || mode === 'list')) {
+          setViewMode(mode as 'bento' | 'grid' | 'list')
         } else {
-          setViewMode('grid')
+          setViewMode('bento')
         }
       } catch (error) {
         console.error('Erro ao carregar modo de visualização:', error)
-        setViewMode('grid')
+        setViewMode('bento')
       } finally {
         setIsViewModeLoading(false)
       }
@@ -157,7 +159,7 @@ const Categories = () => {
   }, [searchParams, setSearchParams])
 
   // Salvar preferência de visualização no backend
-  const handleViewModeChange = async (mode: 'grid' | 'list') => {
+  const handleViewModeChange = async (mode: 'bento' | 'grid' | 'list') => {
     setViewMode(mode)
 
     try {
@@ -299,11 +301,22 @@ const Categories = () => {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             {/* Toggle View Mode */}
-            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
+            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl">
+              <button
+                onClick={() => handleViewModeChange('bento')}
+                disabled={isViewModeLoading}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'bento'
+                  ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                  : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                title="Visualização Bento Grid (com arraste)"
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </button>
               <button
                 onClick={() => handleViewModeChange('grid')}
                 disabled={isViewModeLoading}
-                className={`p-2 rounded-md transition-all ${viewMode === 'grid'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
@@ -314,7 +327,7 @@ const Categories = () => {
               <button
                 onClick={() => handleViewModeChange('list')}
                 disabled={isViewModeLoading}
-                className={`p-2 rounded-md transition-all ${viewMode === 'list'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
@@ -428,6 +441,18 @@ const Categories = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {viewMode === 'bento' && !isViewModeLoading && !isCategoriesLoading && (
+          <BentoGridCategories
+            categories={filteredCategories}
+            budgets={budgets}
+            currentMonthTransactions={currentMonthTransactions}
+            onOpenModal={handleOpenModal}
+            onDelete={handleDelete}
+            onOpenBudgetModal={handleOpenBudgetModal}
+            getCategorySpent={getCategorySpent}
+          />
         )}
 
         {viewMode === 'grid' && !isViewModeLoading && !isCategoriesLoading && (
@@ -647,11 +672,11 @@ const Categories = () => {
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex"
                 onClick={handleCloseModal}
               />
-              <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
+              <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4 sm:p-6'}`}>
                 <motion.div
-                  initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+                  initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.96, y: 16 }}
                   animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
-                  exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+                  exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.96, y: 16 }}
                   transition={{ type: 'spring', damping: 28, stiffness: 320 }}
                   drag={isMobile ? 'y' : false}
                   dragControls={dragControls}
@@ -659,183 +684,348 @@ const Categories = () => {
                   dragConstraints={isMobile ? { top: 0, bottom: 0 } : undefined}
                   dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
                   onDragEnd={isMobile ? ((_, { offset, velocity }) => {
-                    if (offset.y > 100 || velocity.y > 400) {
+                    if (offset.y > 60 || velocity.y > 200) {
                       handleCloseModal()
                     }
                   }) : undefined}
-                  className={`bg-white dark:bg-neutral-950 z-[200] shadow-2xl w-full max-w-lg flex flex-col overflow-hidden pointer-events-auto ${
+                  className={`bg-white dark:bg-neutral-950 z-[200] shadow-2xl flex flex-col overflow-hidden pointer-events-auto transition-all ${
                     isMobile
-                      ? 'border-t border-gray-100 dark:border-neutral-800 rounded-t-[2rem] max-h-[92vh]'
-                      : 'border border-gray-100 dark:border-neutral-800 rounded-2xl max-h-[88vh]'
+                      ? 'w-full max-w-lg border-t border-gray-100 dark:border-neutral-800 rounded-t-[2rem] max-h-[92vh]'
+                      : 'w-full max-w-4xl lg:max-w-5xl border border-gray-100 dark:border-neutral-800 rounded-[28px] max-h-[88vh] h-[640px]'
                   }`}
                 >
-                  <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 sticky top-0 z-10 flex-shrink-0 bg-white dark:bg-neutral-950">
-                    {/* Drag indicator no mobile */}
-                    {isMobile && (
-                      <div
-                        className="py-3 -mt-4 mb-1 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none"
-                        onPointerDown={(e) => dragControls.start(e)}
-                      >
-                        <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {/* Top Header / Mobile Drag Handle */}
+                  {isMobile ? (
+                    <div
+                      className="pt-3 pb-3 px-6 border-b border-gray-100 dark:border-neutral-800 flex-shrink-0 bg-white dark:bg-neutral-950 touch-none select-none cursor-grab active:cursor-grabbing flex flex-col items-center justify-center"
+                      onPointerDown={(e) => dragControls.start(e)}
+                    >
+                      <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full mb-2.5" />
+                      <h2 className="text-base font-bold text-gray-900 dark:text-white font-display text-center">
                         {editingId ? 'Editar Categoria' : 'Nova Categoria'}
                       </h2>
-                      {!isMobile && (
-                        <button
-                          type="button"
-                          onClick={handleCloseModal}
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-600 dark:text-neutral-400"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      )}
                     </div>
-                  </div>
-
-                  <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar text-left">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Nome da Categoria</label>
-                      <input
-                        type="text"
-                        placeholder="Ex: Alimentacao, Transporte, Salario..."
-                        {...register('name')}
-                        className={`input-field rounded-xl ${errors.name ? 'input-error' : ''}`}
-                      />
-                      {errors.name && (
-                        <p className="error-message">{errors.name.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo</label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <label className={`relative flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
-                          selectedType === 'income'
-                            ? 'border-success-500 bg-success-50/20 dark:bg-success-950/15 shadow-md shadow-success-500/5'
-                            : 'border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60'
-                        }`}>
-                          <input
-                            type="radio"
-                            name="category-type"
-                            value="income"
-                            checked={selectedType === 'income'}
-                            onChange={() => { haptics.light(); setValue('type', 'income') }}
-                            className="sr-only"
-                          />
-                          <div className="text-center">
-                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-1.5 transition-colors ${
-                              selectedType === 'income' ? 'bg-success-100/60 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
-                            }`}>
-                              <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
-                            </div>
-                            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Receita</span>
-                          </div>
-                        </label>
-                        <label className={`relative flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
-                          selectedType === 'expense'
-                            ? 'border-danger-500 bg-danger-50/20 dark:bg-danger-950/15 shadow-md shadow-danger-500/5'
-                            : 'border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60'
-                        }`}>
-                          <input
-                            type="radio"
-                            name="category-type"
-                            value="expense"
-                            checked={selectedType === 'expense'}
-                            onChange={() => { haptics.light(); setValue('type', 'expense') }}
-                            className="sr-only"
-                          />
-                          <div className="text-center">
-                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-1.5 transition-colors ${
-                              selectedType === 'expense' ? 'bg-danger-100/60 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
-                            }`}>
-                              <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
-                            </div>
-                            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Despesa</span>
-                          </div>
-                        </label>
+                  ) : (
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 flex-shrink-0 bg-white dark:bg-neutral-950 flex items-center justify-between">
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white font-display">
+                          {editingId ? 'Editar Categoria' : 'Nova Categoria'}
+                        </h2>
+                        <p className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                          Personalize as informações da categoria e escolha um ícone na biblioteca ao lado.
+                        </p>
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Ícone</label>
-                      <IconPicker
-                        selectedIcon={selectedIcon}
-                        onSelectIcon={(icon) => setValue('icon', icon as string)}
-                        type={selectedType}
-                        isPremium={isPremium}
-                        onUpgradeClick={() => setShowUpgradeModal(true)}
-                      />
-                      {errors.icon && (
-                        <p className="error-message">{errors.icon.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cor</label>
-                      <ColorPicker
-                        selectedColor={selectedColor}
-                        onSelectColor={(color) => setValue('color', color)}
-                        usedColors={usedColors}
-                        showCustomPicker={true}
-                      />
-                      {errors.color && (
-                        <p className="error-message mt-2">{errors.color.message}</p>
-                      )}
-                    </div>
-
-                    {/* Preview */}
-                    <div className="bg-gray-50/40 dark:bg-neutral-900/40 border border-gray-250/50 dark:border-neutral-800/60 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                      <div 
-                        className="absolute right-0 top-0 bottom-0 w-[4px] transition-all duration-300" 
-                        style={{ 
-                          backgroundColor: selectedColor,
-                          boxShadow: `0 0 10px ${selectedColor}`
-                        }} 
-                      />
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300"
-                          style={{ backgroundColor: `${selectedColor}18` }}
-                        >
-                          <CategoryIcon
-                            icon={selectedIcon as IconName}
-                            color={selectedColor}
-                            size="md"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-bold text-base text-gray-900 dark:text-white font-display leading-tight">
-                            {watch('name') || 'Nome da Categoria'}
-                          </p>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${selectedType === 'income'
-                              ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-350 border-success-100/50 dark:border-success-900/10'
-                              : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-350 border-danger-100/50 dark:border-danger-900/10'
-                              }`}>
-                              {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                              {selectedType === 'income' ? 'Receita' : 'Despesa'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3 pt-4 pb-1 border-t border-gray-100 dark:border-neutral-800/50">
                       <button
                         type="button"
                         onClick={handleCloseModal}
-                        className="flex-1 btn-secondary rounded-full"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
                       >
-                        Cancelar
-                      </button>
-                      <button type="submit" className="flex-1 btn-primary rounded-full shadow-md">
-                        {editingId ? 'Salvar' : 'Criar'}
+                        <X className="w-5 h-5" />
                       </button>
                     </div>
-                  </form>
+                  )}
+
+                  {/* Body: 2 Columns on Desktop, 1 Column on Mobile */}
+                  {isMobile ? (
+                    /* Mobile Form Layout */
+                    <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar text-left">
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Nome da Categoria</label>
+                        <input
+                          type="text"
+                          placeholder="Ex: Alimentação, Transporte, Salário..."
+                          {...register('name')}
+                          className={`input-field rounded-xl ${errors.name ? 'input-error' : ''}`}
+                        />
+                        {errors.name && (
+                          <p className="error-message">{errors.name.message}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo</label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <label className={`relative flex items-center justify-center p-3.5 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                            selectedType === 'income'
+                              ? 'border-success-500 bg-success-50/20 dark:bg-success-950/15 shadow-md shadow-success-500/5'
+                              : 'border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60'
+                          }`}>
+                            <input
+                              type="radio"
+                              name="category-type"
+                              value="income"
+                              checked={selectedType === 'income'}
+                              onChange={() => { haptics.light(); setValue('type', 'income') }}
+                              className="sr-only"
+                            />
+                            <div className="text-center">
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-1 transition-colors ${
+                                selectedType === 'income' ? 'bg-success-100/60 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                              }`}>
+                                <TrendingUp className="w-4 h-4 text-success-600 dark:text-success-400" />
+                              </div>
+                              <span className="text-xs font-bold text-gray-900 dark:text-white font-display">Receita</span>
+                            </div>
+                          </label>
+                          <label className={`relative flex items-center justify-center p-3.5 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                            selectedType === 'expense'
+                              ? 'border-danger-500 bg-danger-50/20 dark:bg-danger-950/15 shadow-md shadow-danger-500/5'
+                              : 'border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60'
+                          }`}>
+                            <input
+                              type="radio"
+                              name="category-type"
+                              value="expense"
+                              checked={selectedType === 'expense'}
+                              onChange={() => { haptics.light(); setValue('type', 'expense') }}
+                              className="sr-only"
+                            />
+                            <div className="text-center">
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-1 transition-colors ${
+                                selectedType === 'expense' ? 'bg-danger-100/60 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                              }`}>
+                                <TrendingDown className="w-4 h-4 text-danger-600 dark:text-danger-400" />
+                              </div>
+                              <span className="text-xs font-bold text-gray-900 dark:text-white font-display">Despesa</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Ícone</label>
+                        <IconPicker
+                          selectedIcon={selectedIcon}
+                          onSelectIcon={(icon) => setValue('icon', icon as string)}
+                          type={selectedType}
+                          isPremium={isPremium}
+                          onUpgradeClick={() => setShowUpgradeModal(true)}
+                          inline={false}
+                        />
+                        {errors.icon && (
+                          <p className="error-message">{errors.icon.message}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cor</label>
+                        <ColorPicker
+                          selectedColor={selectedColor}
+                          onSelectColor={(color) => setValue('color', color)}
+                          usedColors={usedColors}
+                          showCustomPicker={true}
+                        />
+                        {errors.color && (
+                          <p className="error-message mt-2">{errors.color.message}</p>
+                        )}
+                      </div>
+
+                      {/* Preview */}
+                      <div className="bg-gray-50/50 dark:bg-neutral-900/40 border border-gray-150 dark:border-neutral-800 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                        <div 
+                          className="absolute right-0 top-0 bottom-0 w-[4px] transition-all duration-300" 
+                          style={{ 
+                            backgroundColor: selectedColor,
+                            boxShadow: `0 0 10px ${selectedColor}`
+                          }} 
+                        />
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                            style={{ backgroundColor: `${selectedColor}18` }}
+                          >
+                            <CategoryIcon
+                              icon={selectedIcon as IconName}
+                              color={selectedColor}
+                              size="md"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-bold text-base text-gray-900 dark:text-white font-display leading-tight">
+                              {watch('name') || 'Nome da Categoria'}
+                            </p>
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${selectedType === 'income'
+                                ? 'bg-success-50 text-success-700 dark:bg-success-950/20 dark:text-success-350 border-success-100/50 dark:border-success-900/10'
+                                : 'bg-danger-50 text-danger-700 dark:bg-danger-950/20 dark:text-danger-350 border-danger-100/50 dark:border-danger-900/10'
+                                }`}>
+                                {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                                {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 pt-3 pb-1 border-t border-gray-100 dark:border-neutral-800/50">
+                        <button
+                          type="button"
+                          onClick={handleCloseModal}
+                          className="flex-1 btn-secondary rounded-full text-xs"
+                        >
+                          Cancelar
+                        </button>
+                        <button type="submit" className="flex-1 btn-primary rounded-full shadow-md text-xs">
+                          {editingId ? 'Salvar' : 'Criar Categoria'}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Desktop 2-Column Split Layout */
+                    <div className="grid grid-cols-12 flex-1 overflow-hidden text-left">
+                      {/* Left Column: Form Details & Color & Preview */}
+                      <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="col-span-5 p-6 border-r border-gray-100 dark:border-neutral-800 flex flex-col justify-between overflow-y-auto custom-scrollbar space-y-5"
+                      >
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Nome da Categoria</label>
+                            <input
+                              type="text"
+                              placeholder="Ex: Alimentação, Transporte, Salário..."
+                              {...register('name')}
+                              className={`input-field rounded-xl ${errors.name ? 'input-error' : ''}`}
+                            />
+                            {errors.name && (
+                              <p className="error-message">{errors.name.message}</p>
+                            )}
+                          </div>
+
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo</label>
+                            <div className="grid grid-cols-2 gap-3">
+                              <label className={`relative flex items-center justify-center p-3 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                                selectedType === 'income'
+                                  ? 'border-success-500 bg-success-50/30 dark:bg-success-950/20 shadow-md shadow-success-500/5'
+                                  : 'border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60'
+                              }`}>
+                                <input
+                                  type="radio"
+                                  name="category-type"
+                                  value="income"
+                                  checked={selectedType === 'income'}
+                                  onChange={() => { haptics.light(); setValue('type', 'income') }}
+                                  className="sr-only"
+                                />
+                                <div className="text-center">
+                                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-1 transition-colors ${
+                                    selectedType === 'income' ? 'bg-success-100/60 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                                  }`}>
+                                    <TrendingUp className="w-4 h-4 text-success-600 dark:text-success-400" />
+                                  </div>
+                                  <span className="text-xs font-bold text-gray-900 dark:text-white font-display">Receita</span>
+                                </div>
+                              </label>
+                              <label className={`relative flex items-center justify-center p-3 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.97] select-none ${
+                                selectedType === 'expense'
+                                  ? 'border-danger-500 bg-danger-50/30 dark:bg-danger-950/20 shadow-md shadow-danger-500/5'
+                                  : 'border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60'
+                              }`}>
+                                <input
+                                  type="radio"
+                                  name="category-type"
+                                  value="expense"
+                                  checked={selectedType === 'expense'}
+                                  onChange={() => { haptics.light(); setValue('type', 'expense') }}
+                                  className="sr-only"
+                                />
+                                <div className="text-center">
+                                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-1 transition-colors ${
+                                    selectedType === 'expense' ? 'bg-danger-100/60 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-neutral-850/40'
+                                  }`}>
+                                    <TrendingDown className="w-4 h-4 text-danger-600 dark:text-danger-400" />
+                                  </div>
+                                  <span className="text-xs font-bold text-gray-900 dark:text-white font-display">Despesa</span>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cor da Categoria</label>
+                            <ColorPicker
+                              selectedColor={selectedColor}
+                              onSelectColor={(color) => setValue('color', color)}
+                              usedColors={usedColors}
+                              showCustomPicker={true}
+                            />
+                            {errors.color && (
+                              <p className="error-message mt-2">{errors.color.message}</p>
+                            )}
+                          </div>
+
+                          {/* Live Preview Card */}
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Pré-visualização</label>
+                            <div className="bg-gray-50/60 dark:bg-neutral-900/50 border border-gray-200/70 dark:border-neutral-800/70 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                              <div 
+                                className="absolute right-0 top-0 bottom-0 w-[4px] transition-all duration-300" 
+                                style={{ 
+                                  backgroundColor: selectedColor,
+                                  boxShadow: `0 0 10px ${selectedColor}`
+                                }} 
+                              />
+                              <div className="flex items-center gap-3.5">
+                                <div
+                                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 border border-black/5 dark:border-white/5 shadow-sm"
+                                  style={{ backgroundColor: `${selectedColor}20` }}
+                                >
+                                  <CategoryIcon
+                                    icon={selectedIcon as IconName}
+                                    color={selectedColor}
+                                    size="md"
+                                  />
+                                </div>
+                                <div className="truncate">
+                                  <p className="font-bold text-base text-gray-900 dark:text-white font-display truncate leading-tight">
+                                    {watch('name') || 'Nome da Categoria'}
+                                  </p>
+                                  <div className="flex items-center gap-1.5 mt-1">
+                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                                      selectedType === 'income'
+                                        ? 'bg-success-50 text-success-700 dark:bg-success-950/30 dark:text-success-350 border-success-200/60 dark:border-success-900/30'
+                                        : 'bg-danger-50 text-danger-700 dark:bg-danger-950/30 dark:text-danger-350 border-danger-200/60 dark:border-danger-900/30'
+                                    }`}>
+                                      {selectedType === 'income' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                                      {selectedType === 'income' ? 'Receita' : 'Despesa'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                          <button
+                            type="button"
+                            onClick={handleCloseModal}
+                            className="flex-1 btn-secondary rounded-xl py-2.5 text-xs font-bold"
+                          >
+                            Cancelar
+                          </button>
+                          <button type="submit" className="flex-1 btn-primary rounded-xl py-2.5 text-xs font-bold shadow-md shadow-primary-500/20">
+                            {editingId ? 'Salvar Alterações' : 'Criar Categoria'}
+                          </button>
+                        </div>
+                      </form>
+
+                      {/* Right Column: Embedded Icon & Emoji Library */}
+                      <div className="col-span-7 flex flex-col h-full overflow-hidden bg-gray-50/30 dark:bg-neutral-900/20">
+                        <IconPicker
+                          selectedIcon={selectedIcon}
+                          onSelectIcon={(icon) => setValue('icon', icon as string)}
+                          type={selectedType}
+                          isPremium={isPremium}
+                          onUpgradeClick={() => setShowUpgradeModal(true)}
+                          inline={true}
+                          className="h-full border-0 rounded-none shadow-none"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </div>
             </>

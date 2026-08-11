@@ -1,5 +1,4 @@
-﻿import { AlertTriangle, Shield, Lock, Cloud, X } from 'lucide-react'
-import { createPortal } from 'react-dom'
+import { AlertTriangle, Shield, Lock, Cloud, X } from 'lucide-react'
 
 interface ExportDataModalProps {
   isOpen: boolean

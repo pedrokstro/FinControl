@@ -1,5 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
+import { useState, useEffect, useRef } from 'react'
 import { X, Lock, Shield } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import userService from '@/services/user.service'

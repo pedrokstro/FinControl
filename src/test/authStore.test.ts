@@ -6,7 +6,8 @@ describe('Auth Store', () => {
     // Reset store before each test
     useAuthStore.setState({
       user: null,
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       isAuthenticated: false,
     })
   })
@@ -15,7 +16,7 @@ describe('Auth Store', () => {
     const state = useAuthStore.getState()
     
     expect(state.user).toBeNull()
-    expect(state.token).toBeNull()
+    expect(state.accessToken).toBeNull()
     expect(state.isAuthenticated).toBe(false)
   })
 
@@ -28,7 +29,7 @@ describe('Auth Store', () => {
     expect(state.isAuthenticated).toBe(true)
     expect(state.user).toBeDefined()
     expect(state.user?.email).toBe('demo@financeiro.com')
-    expect(state.token).toBeDefined()
+    expect(state.accessToken).toBeDefined()
   })
 
   it('should fail login with incorrect credentials', async () => {
@@ -54,7 +55,7 @@ describe('Auth Store', () => {
     const state = useAuthStore.getState()
     expect(state.isAuthenticated).toBe(false)
     expect(state.user).toBeNull()
-    expect(state.token).toBeNull()
+    expect(state.accessToken).toBeNull()
   })
 
   it('should update user profile', async () => {

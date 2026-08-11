@@ -5,7 +5,7 @@ import { useFinancialStore } from '@/store/financialStore'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Bell, Palette, Database, Shield, Camera, Upload, X, Eye, EyeOff, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard, Smartphone, Fingerprint, Lock } from 'lucide-react'
+import { User, Bell, Palette, Database, Shield, Camera, Upload, X, History, Target, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, LayoutDashboard, Zap, ArrowRight, CreditCard, Smartphone, Fingerprint, Lock } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import toast from 'react-hot-toast'
 import { imageStorage } from '@/utils/imageStorage'
@@ -19,6 +19,8 @@ import userService from '@/services/user.service'
 import CustomSelect from '@/components/common/CustomSelect'
 import { useSecurityStore } from '@/store/securityStore'
 import { motion } from 'framer-motion'
+import PasswordStrengthInput from '@/components/ui/PasswordStrengthInput'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
@@ -53,9 +55,6 @@ const Settings = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isSavingAvatar, setIsSavingAvatar] = useState(false)
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Estados para alteração de email
@@ -154,6 +153,7 @@ const Settings = () => {
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
   })
+  const watchedNewPassword = passwordForm.watch('newPassword', '')
 
   const onSubmitPassword = async (data: PasswordFormData) => {
     try {
@@ -770,208 +770,173 @@ const Settings = () => {
 
                   {/* Tab: Segurança */}
                   {activeTab === 'security' && (
-                  <div className="space-y-6">
-                    {/* Card: Alterar Senha */}
-                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
-                      {/* Acento superior de cor */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-green-600" />
+                    <Accordion
+                      type="multiple"
+                      defaultValue={['password', 'biometrics']}
+                      variant="card"
+                      className="space-y-4"
+                    >
+                      {/* Accordion Item: Alterar Senha */}
+                      <AccordionItem value="password">
+                        <AccordionTrigger
+                          icon={<Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
+                          subtitle="Atualize suas credenciais de acesso com requisitos fortes"
+                        >
+                          Alterar Senha
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-2">
+                          <form
+                            onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
+                            className="space-y-5 max-w-xl"
+                          >
+                            <div className="pt-2">
+                              <PasswordStrengthInput
+                                id="currentPassword"
+                                label="Senha atual"
+                                {...passwordForm.register('currentPassword')}
+                                error={passwordForm.formState.errors.currentPassword?.message}
+                                showStrengthMeter={false}
+                                bgClass="bg-white dark:bg-neutral-800"
+                              />
+                            </div>
 
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 font-display">
-                        Alterar Senha
-                      </h2>
+                            <div className="pt-2">
+                              <PasswordStrengthInput
+                                id="newPassword"
+                                label="Nova senha"
+                                value={watchedNewPassword}
+                                {...passwordForm.register('newPassword')}
+                                error={passwordForm.formState.errors.newPassword?.message}
+                                showStrengthMeter={true}
+                                bgClass="bg-white dark:bg-neutral-800"
+                              />
+                            </div>
 
-                      <form
-                        onSubmit={passwordForm.handleSubmit(onSubmitPassword)}
-                        className="space-y-4"
-                      >
-                        <div>
-                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Senha atual</label>
-                          <div className="relative mt-1">
-                            <input
-                              type={showCurrentPassword ? 'text' : 'password'}
-                              {...passwordForm.register('currentPassword')}
-                              className={`input-field pr-12 ${passwordForm.formState.errors.currentPassword
-                                ? 'input-error'
-                                : ''
-                                }`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                            >
-                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
+                            <div className="pt-2">
+                              <PasswordStrengthInput
+                                id="confirmPassword"
+                                label="Confirmar nova senha"
+                                {...passwordForm.register('confirmPassword')}
+                                error={passwordForm.formState.errors.confirmPassword?.message}
+                                showStrengthMeter={false}
+                                bgClass="bg-white dark:bg-neutral-800"
+                              />
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                              <button type="submit" className="btn-primary w-full sm:w-auto h-11 px-6 rounded-xl text-xs font-bold shadow-md shadow-primary-500/10 active:scale-[0.98] transition-transform cursor-pointer">
+                                Alterar senha
+                              </button>
+                            </div>
+                          </form>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      {/* Accordion Item: Biometria */}
+                      <AccordionItem value="biometrics">
+                        <AccordionTrigger
+                          icon={<Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
+                          subtitle="Digital ou reconhecimento facial para acesso rápido"
+                        >
+                          Acesso por Biometria
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-2">
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                                Ativar login biométrico neste dispositivo
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
+                                Impede acesso não autorizado ao alternar janelas
+                              </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={isBiometricEnabled}
+                                onChange={handleToggleBiometric}
+                                disabled={!biometricSupported}
+                              />
+                              <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500"></div>
+                            </label>
                           </div>
-                          {passwordForm.formState.errors.currentPassword && (
-                            <p className="error-message">
-                              {passwordForm.formState.errors.currentPassword.message}
-                            </p>
-                          )}
-                        </div>
 
-                        <div>
-                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Nova senha</label>
-                          <div className="relative mt-1">
-                            <input
-                              type={showNewPassword ? 'text' : 'password'}
-                              {...passwordForm.register('newPassword')}
-                              className={`input-field pr-12 ${passwordForm.formState.errors.newPassword
-                                ? 'input-error'
-                                : ''
-                                }`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                            >
-                              {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                          {passwordForm.formState.errors.newPassword && (
-                            <p className="error-message">
-                              {passwordForm.formState.errors.newPassword.message}
-                            </p>
+                          {!biometricSupported ? (
+                            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl flex gap-3 border border-amber-100/50 dark:border-amber-900/10">
+                              <Smartphone className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                              <p className="text-xs text-amber-700 dark:text-amber-300 font-medium leading-relaxed">
+                                Seu dispositivo ou navegador atual não possui suporte nativo para autenticação biométrica (WebAuthn).
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <p className="text-xs text-gray-500 dark:text-neutral-400 leading-relaxed font-medium">
+                                Ao ativar, o aplicativo solicitará sua biometria sempre que for aberto ou retornar do segundo plano, garantindo máxima segurança para suas informações.
+                              </p>
+                              {isBiometricEnabled && (
+                                <button 
+                                  type="button"
+                                  onClick={() => setLocked(true)}
+                                  className="w-full sm:w-auto h-10 px-4 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold border-dashed border-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                >
+                                  <Lock className="w-3.5 h-3.5 text-gray-500" />
+                                  Testar bloqueio biométrico agora
+                                </button>
+                              )}
+                            </div>
                           )}
-                        </div>
+                        </AccordionContent>
+                      </AccordionItem>
 
-                        <div>
-                          <label className="label text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Confirmar nova senha</label>
-                          <div className="relative mt-1">
-                            <input
-                              type={showConfirmPassword ? 'text' : 'password'}
-                              {...passwordForm.register('confirmPassword')}
-                              className={`input-field pr-12 ${passwordForm.formState.errors.confirmPassword
-                                ? 'input-error'
-                                : ''
-                                }`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                            >
-                              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                          {passwordForm.formState.errors.confirmPassword && (
-                            <p className="error-message">
-                              {passwordForm.formState.errors.confirmPassword.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex justify-end pt-2">
-                          <button type="submit" className="btn-primary w-full sm:w-auto h-11 px-6 rounded-xl text-xs font-bold shadow-md shadow-primary-500/10 active:scale-[0.98] transition-transform cursor-pointer">
-                            Alterar senha
+                      {/* Accordion Item: 2FA */}
+                      <AccordionItem value="2fa">
+                        <AccordionTrigger
+                          icon={<ShieldCheck className="w-5 h-5 text-orange-500" />}
+                          subtitle="Código temporário de 6 dígitos gerado por app autenticador"
+                        >
+                          Autenticação de Dois Fatores (2FA)
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-2">
+                          <p className="text-xs text-gray-500 dark:text-neutral-400 mb-5 font-medium leading-relaxed max-w-xl">
+                            Adicione uma camada extra de proteção blindando seu login com o Google Authenticator, Authy ou 1Password.
+                          </p>
+                          <button className="btn-secondary h-10 px-4 rounded-xl text-xs font-bold cursor-pointer">
+                            Configurar autenticação em duas etapas
                           </button>
-                        </div>
-                      </form>
-                    </div>
+                        </AccordionContent>
+                      </AccordionItem>
 
-                    {/* Card: Biometria */}
-                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
-                      {/* Acento superior de cor */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600" />
-
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center border border-emerald-100/30 dark:border-emerald-900/10">
-                            <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                          </div>
-                          <div>
-                            <h2 className="text-base font-bold text-gray-900 dark:text-white font-display">
-                              Acesso por Biometria
-                            </h2>
-                            <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
-                              Digital ou reconhecimento facial
-                            </p>
-                          </div>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={isBiometricEnabled}
-                            onChange={handleToggleBiometric}
-                            disabled={!biometricSupported}
-                          />
-                          <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-800 peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500"></div>
-                        </label>
-                      </div>
-
-                      {!biometricSupported ? (
-                        <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl flex gap-3 border border-amber-100/50 dark:border-amber-900/10">
-                          <Smartphone className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                          <p className="text-xs text-amber-700 dark:text-amber-300 font-medium leading-relaxed">
-                            Seu dispositivo ou navegador atual não possui suporte nativo para autenticação biométrica (WebAuthn).
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <p className="text-xs text-gray-500 dark:text-neutral-400 leading-relaxed font-medium">
-                            Ao ativar, o aplicativo solicitará sua biometria sempre que for aberto ou retornar do segundo plano, garantindo máxima segurança para suas informações.
-                          </p>
-                          {isBiometricEnabled && (
-                            <button 
-                              type="button"
-                              onClick={() => setLocked(true)}
-                              className="w-full h-10 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold border-dashed border-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                      {/* Accordion Item: Dados e Privacidade */}
+                      <AccordionItem value="data">
+                        <AccordionTrigger
+                          icon={<Database className="w-5 h-5 text-rose-500" />}
+                          subtitle="Backup estruturado e exclusão permanente de conta"
+                        >
+                          Dados e Privacidade
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-2">
+                          <div className="space-y-3 max-w-md">
+                            <button
+                              onClick={handleExportData}
+                              className="w-full h-11 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
                             >
-                              <Lock className="w-3.5 h-3.5 text-gray-500" />
-                              Testar bloqueio biométrico
+                              <Database className="w-4 h-4 text-gray-500" />
+                              Exportar todos os meus dados (JSON)
                             </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Card: Autenticação de 2 Fatores */}
-                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
-                      {/* Acento superior de cor */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-orange-655" />
-
-                      <h2 className="text-base font-bold text-gray-900 dark:text-white font-display mb-2">
-                        Autenticação de Dois Fatores (2FA)
-                      </h2>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mb-6 font-medium leading-relaxed">
-                        Adicione uma camada extra de proteção blindando seu login com um aplicativo autenticador.
-                      </p>
-                      <button className="btn-secondary h-10 px-4 rounded-xl text-xs font-bold cursor-pointer">
-                        Configurar autenticação em duas etapas
-                      </button>
-                    </div>
-
-                    {/* Card de Dados e Privacidade */}
-                    <div className="relative card p-5 sm:p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
-                      {/* Acento superior de cor */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-400 to-rose-600" />
-
-                      <h2 className="text-base font-bold text-gray-900 dark:text-white font-display mb-6">
-                        Dados e Privacidade
-                      </h2>
-
-                      <div className="space-y-3">
-                        <button
-                          onClick={handleExportData}
-                          className="w-full h-11 btn-secondary flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
-                        >
-                          <Database className="w-4 h-4 text-gray-550" />
-                          Exportar todos os meus dados (JSON)
-                        </button>
-
-                        <button
-                          onClick={handleDeleteAccount}
-                          className="w-full h-11 btn-danger flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
-                        >
-                          <Shield className="w-4 h-4 text-white" />
-                          Excluir minha conta permanentemente
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                            <button
+                              onClick={handleDeleteAccount}
+                              className="w-full h-11 btn-danger flex items-center justify-center gap-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer"
+                            >
+                              <Shield className="w-4 h-4 text-white" />
+                              Excluir minha conta permanentemente
+                            </button>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
 
                 {/* Tab: Notificações */}
                 {activeTab === 'notifications' && (

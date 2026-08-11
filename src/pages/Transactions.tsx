@@ -895,7 +895,7 @@ const Transactions = () => {
                             dragConstraints={{ left: maxDrag, right: 0 }}
                             dragElastic={0.05}
                             animate={{ x: activeSwipeId === transaction.id ? maxDrag : 0 }}
-                            onDragEnd={(event, info) => {
+                            onDragEnd={(_event, info) => {
                               if (info.offset.x < -30) {
                                 setActiveSwipeId(transaction.id)
                               } else if (info.offset.x > 30) {

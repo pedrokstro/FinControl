@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Search, X, Package, Smile, Globe } from 'lucide-react'
+import { Search, Package, Smile, Globe } from 'lucide-react'
 import { iconCategories, type IconName, type IconCategoryItem } from '@/utils/iconMapping'
 import EmojiPickerTab from './EmojiPickerTab'
 import BrandPickerTab from './BrandPickerTab'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import CategoryIcon from './CategoryIcon'
-import { useIsMobile } from '@/hooks'
 
 interface IconPickerProps {
   selectedIcon: IconName | string
@@ -14,16 +13,25 @@ interface IconPickerProps {
   type?: 'income' | 'expense' | 'other'
   isPremium?: boolean
   onUpgradeClick?: () => void
+  inline?: boolean
+  className?: string
 }
 
 type IconItem = { name: string; label: string }
 
-const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpgradeClick }: IconPickerProps) => {
+const IconPicker = ({
+  selectedIcon,
+  onSelectIcon,
+  type,
+  isPremium = false,
+  onUpgradeClick,
+  inline = false,
+  className = ''
+}: IconPickerProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<'icons' | 'emojis' | 'brands'>('icons')
   const dragControls = useDragControls()
-  const isMobile = useIsMobile()
 
   // Verificar se é emoji
   const isEmoji = (icon: string) => {
@@ -40,19 +48,19 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
     return type === 'income'
       ? {
         'Financeiro': iconCategories.income.financial,
-        'Trabalho & Negocios': iconCategories.income.workAndBusiness,
+        'Trabalho & Negócios': iconCategories.income.workAndBusiness,
         'Investimentos': iconCategories.income.investments,
         'Renda Extra': iconCategories.income.sideIncome,
         'Renda Passiva': iconCategories.income.passiveIncome,
         'Exclusivos': iconCategories.exclusive,
       }
       : {
-        'Alimentacao': iconCategories.foodAndDining,
+        'Alimentação': iconCategories.foodAndDining,
         'Transporte': iconCategories.transportation,
         'Moradia': iconCategories.housing,
         'Lazer': iconCategories.entertainment,
-        'Saude': iconCategories.health,
-        'Educacao': iconCategories.education,
+        'Saúde': iconCategories.health,
+        'Educação': iconCategories.education,
         'Contas': iconCategories.bills,
         'Assinaturas': iconCategories.subscriptions,
         'Pessoal': iconCategories.personal,
@@ -86,15 +94,19 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
 
   const handleSelectIcon = (iconName: IconName | string) => {
     onSelectIcon(iconName, false)
-    setIsOpen(false)
-    setSearchTerm('')
-    setActiveTab('icons')
+    if (!inline) {
+      setIsOpen(false)
+      setSearchTerm('')
+      setActiveTab('icons')
+    }
   }
 
   const handleSelectEmoji = (emoji: string) => {
     onSelectIcon(emoji, true)
-    setIsOpen(false)
-    setActiveTab('icons')
+    if (!inline) {
+      setIsOpen(false)
+      setActiveTab('icons')
+    }
   }
 
   // Contar total de ícones
@@ -103,13 +115,198 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
     0
   )
 
+  // Conteúdo do Picker (Abas, Busca, Grade de Ícones)
+  const renderPickerBody = () => (
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Header with Tabs */}
+      <div className="p-4 border-b border-gray-100 dark:border-neutral-800 bg-gray-50/80 dark:bg-neutral-900/80 backdrop-blur-sm flex-shrink-0 z-20">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab('icons')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'icons'
+                ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/20'
+                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+            }`}
+          >
+            <Package className="w-3.5 h-3.5" />
+            <span>Ícones</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('emojis')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'emojis'
+                ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/20'
+                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+            }`}
+          >
+            <Smile className="w-3.5 h-3.5" />
+            <span>Emojis</span>
+            {!isPremium && (
+              <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-[9px] rounded-full font-bold">PRO</span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('brands')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'brands'
+                ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/20'
+                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span>Marcas</span>
+            {!isPremium && (
+              <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-[9px] rounded-full font-bold">PRO</span>
+            )}
+          </button>
+        </div>
+
+        {/* Search Input - Shared for Icons and Brands */}
+        {activeTab !== 'emojis' && (
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={activeTab === 'icons' ? "Buscar ícone..." : "Buscar marca..."}
+              className="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 rounded-xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-colors"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className={`flex-1 flex flex-col ${activeTab === 'icons' ? 'overflow-y-auto custom-scrollbar' : 'overflow-hidden'}`}>
+        {activeTab === 'emojis' ? (
+          <EmojiPickerTab
+            onSelectEmoji={handleSelectEmoji}
+            selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
+            isPremium={isPremium}
+            onUpgradeClick={onUpgradeClick}
+          />
+        ) : activeTab === 'brands' ? (
+          <BrandPickerTab
+            onSelectBrand={(icon) => {
+              onSelectIcon(icon, false)
+              if (!inline) setIsOpen(false)
+            }}
+            selectedIcon={selectedIcon}
+            isPremium={isPremium}
+            onUpgradeClick={onUpgradeClick}
+            externalSearchTerm={searchTerm}
+          />
+        ) : (
+          <div className="p-4 space-y-5">
+            {Object.keys(filteredCategories).length === 0 ? (
+              <div className="text-center py-12 text-gray-500 dark:text-neutral-400 text-xs">
+                <Search className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                <p>Nenhum ícone encontrado</p>
+                <p className="text-[10px] mt-0.5 text-neutral-400">Tente buscar por outro termo</p>
+              </div>
+            ) : (
+              Object.entries(filteredCategories).map(([categoryName, icons]) => (
+                <div key={categoryName} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-[11px] font-bold text-gray-600 dark:text-neutral-400 uppercase tracking-wider">
+                      {categoryName}
+                    </h4>
+                    <div className="flex-1 h-px bg-gray-100 dark:bg-neutral-800" />
+                    <span className="text-[10px] text-gray-400 dark:text-neutral-500 font-mono">
+                      {icons.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-6 sm:grid-cols-7 md:grid-cols-8 gap-2">
+                    {icons.map((iconData: IconCategoryItem) => {
+                      const isSelected = selectedIcon === iconData.name
+                      const isExclusiveIcon = categoryName === 'Exclusivos'
+                      const isLocked = isExclusiveIcon && !isPremium
+
+                      return (
+                        <button
+                          key={iconData.name}
+                          type="button"
+                          onClick={() => {
+                            if (isLocked && onUpgradeClick) {
+                              onUpgradeClick()
+                            } else {
+                              handleSelectIcon(iconData.name as IconName)
+                            }
+                          }}
+                          className={`
+                            group relative aspect-square flex items-center justify-center
+                            rounded-xl border-2 transition-all duration-200 cursor-pointer
+                            ${
+                              isLocked
+                                ? 'border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/10 cursor-not-allowed opacity-60'
+                                : isSelected
+                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/40 shadow-sm scale-105 ring-2 ring-primary-500/20'
+                                : 'border-gray-100 dark:border-neutral-800 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-white dark:hover:bg-neutral-800'
+                            }
+                          `}
+                          title={isLocked ? `${iconData.label} - Premium` : iconData.label}
+                        >
+                          <CategoryIcon
+                            icon={iconData.name}
+                            size="md"
+                            className={`transition-transform ${isLocked ? 'opacity-40' : 'group-hover:scale-110'}`}
+                            color={isSelected ? '#0284c7' : '#6b7280'}
+                          />
+                          {isLocked && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-black/20 rounded-lg">
+                              <span className="text-[10px]">🔒</span>
+                            </div>
+                          )}
+                          {isSelected && !isLocked && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary-500 rounded-full flex items-center justify-center shadow-md">
+                              <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Rodapé informativo */}
+      {activeTab === 'icons' && (
+        <div className="px-4 py-2.5 border-t border-gray-100 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 flex items-center justify-between text-[11px] text-gray-500 dark:text-neutral-400">
+          <span>{totalIcons} ícones categorizados</span>
+          <span className="font-mono text-[10px] text-primary-600 dark:text-primary-400">Clique para aplicar</span>
+        </div>
+      )}
+    </div>
+  )
+
+  // Se inline = true, renderiza diretamente no layout do modal sem popups extras
+  if (inline) {
+    return (
+      <div className={`w-full h-full flex flex-col rounded-2xl bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 shadow-sm overflow-hidden ${className}`}>
+        {renderPickerBody()}
+      </div>
+    )
+  }
+
+  // Se inline = false (mobile), renderiza o botão de acionamento + modal/drawer
   return (
     <div className="relative">
       {/* Selected Icon Display */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
       >
         <div className="w-10 h-10 bg-white dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-gray-200 dark:border-neutral-700">
           {isEmoji(selectedIcon as string) ? (
@@ -119,11 +316,11 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
           )}
         </div>
         <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
-          {isEmoji(selectedIcon as string) ? 'Selecionar emoji ou icone' : isBrand(selectedIcon as string) ? 'Marca selecionada' : 'Selecionar icone'}
+          {isEmoji(selectedIcon as string) ? 'Selecionar emoji ou ícone' : isBrand(selectedIcon as string) ? 'Marca selecionada' : 'Selecionar ícone'}
         </span>
       </button>
 
-      {/* Icon Picker Modal */}
+      {/* Icon Picker Modal no Mobile */}
       {createPortal(
         <AnimatePresence>
           {isOpen && (
@@ -150,230 +347,37 @@ const IconPicker = ({ selectedIcon, onSelectIcon, type, isPremium = false, onUpg
                   dragConstraints={{ top: 0, bottom: 0 }}
                   dragElastic={{ top: 0, bottom: 0.4 }}
                   onDragEnd={(_, { offset, velocity }) => {
-                    if (offset.y > 100 || velocity.y > 400) {
+                    if (offset.y > 60 || velocity.y > 200) {
                       setIsOpen(false)
                     }
                   }}
                   className="w-full sm:max-w-[500px] h-[85vh] sm:h-auto sm:max-h-[85vh] bg-white dark:bg-neutral-950 border-t sm:border border-gray-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-2xl shadow-2xl dark:shadow-dark-lg flex flex-col overflow-hidden pointer-events-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
-                {/* Header with Tabs */}
-                <div className="p-4 pt-4 border-b border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 flex-shrink-0 z-20 rounded-t-3xl sm:rounded-t-2xl">
-                  {/* Drag Indicator (Mobile Only) */}
+                  {/* Drag Indicator Header (Mobile) */}
                   <div
-                    className="w-full flex justify-center pb-4 -mt-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                    className="w-full flex flex-col items-center justify-center pt-3 pb-2.5 px-4 cursor-grab active:cursor-grabbing touch-none select-none bg-gray-50/90 dark:bg-neutral-900/90 border-b border-gray-200 dark:border-neutral-800"
                     onPointerDown={(e) => {
                       e.stopPropagation()
                       dragControls.start(e)
                     }}
                   >
-                    <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full" />
+                    <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-600 rounded-full mb-2" />
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white text-center">
+                      Escolher ícone ou emoji
+                    </h3>
                   </div>
 
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                        Escolher ícone ou emoji
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
-                        {activeTab === 'icons' ? `${totalIcons} ícones disponíveis` : 'Milhares de emojis'}
-                      </p>
-                    </div>
-                    {!isMobile && (
-                      <button
-                        type="button"
-                        onClick={() => setIsOpen(false)}
-                        className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    )}
+                  <div className="flex-1 overflow-hidden">
+                    {renderPickerBody()}
                   </div>
-
-                  {/* Tabs */}
-                  <div className="flex gap-2 mb-3">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('icons')}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium transition-all ${activeTab === 'icons'
-                        ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm'
-                        : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
-                        }`}
-                    >
-                      <Package className="w-4 h-4" />
-                      <span className="text-sm">Ícones</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('emojis')}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium transition-all ${activeTab === 'emojis'
-                        ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm'
-                        : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
-                        }`}
-                    >
-                      <Smile className="w-4 h-4" />
-                      <span className="text-sm">Emojis</span>
-                      {!isPremium && (
-                        <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-xs rounded-full font-bold">PRO</span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('brands')}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium transition-all ${activeTab === 'brands'
-                        ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm'
-                        : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
-                        }`}
-                    >
-                      <Globe className="w-4 h-4" />
-                      <span className="text-sm">Marcas</span>
-                      {!isPremium && (
-                        <span className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-xs rounded-full font-bold">PRO</span>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Search Input - Shared for Icons and Brands */}
-                  {activeTab !== 'emojis' && (
-                    <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500" />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder={activeTab === 'icons' ? "Buscar ícone..." : "Buscar marca ou palavra-chave..."}
-                        className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 rounded-full focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-colors"
-                      />
-                    </div>
-                  )}
-                </div>
- 
-                 {/* Content */}
-                 <div className={`flex-1 flex flex-col ${activeTab === 'icons' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-                   {activeTab === 'emojis' ? (
-                     <EmojiPickerTab
-                       onSelectEmoji={handleSelectEmoji}
-                       selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
-                       isPremium={isPremium}
-                       onUpgradeClick={onUpgradeClick}
-                     />
-                   ) : activeTab === 'brands' ? (
-                     <BrandPickerTab
-                       onSelectBrand={(icon) => {
-                         onSelectIcon(icon, false)
-                         setIsOpen(false)
-                         setSearchTerm('')
-                       }}
-                       selectedIcon={selectedIcon}
-                       isPremium={isPremium}
-                       onUpgradeClick={onUpgradeClick}
-                       externalSearchTerm={searchTerm}
-                     />
-                   ) : (
-                    <div className="p-4">
-                      {Object.keys(filteredCategories).length === 0 ? (
-                        <div className="text-center py-12 text-gray-500 dark:text-neutral-400 text-sm">
-                          <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                          <p>Nenhum icone encontrado</p>
-                          <p className="text-xs mt-1">Tente buscar por outro termo</p>
-                        </div>
-                      ) : (
-                        Object.entries(filteredCategories).map(([categoryName, icons]) => (
-                          <div key={categoryName} className="mb-6 last:mb-0">
-                            <div className="flex items-center gap-2 mb-3">
-                              <h4 className="text-xs font-semibold text-gray-600 dark:text-neutral-400 uppercase tracking-wide">
-                                {categoryName}
-                              </h4>
-                              <div className="flex-1 h-px bg-gray-200 dark:bg-neutral-800"></div>
-                              <span className="text-xs text-gray-400 dark:text-neutral-500 font-medium">
-                                {icons.length}
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-7 gap-2">
-                              {icons.map((iconData: IconCategoryItem) => {
-                                const isSelected = selectedIcon === iconData.name
-                                const isExclusiveIcon = categoryName === 'Exclusivos'
-                                const isLocked = isExclusiveIcon && !isPremium
-
-                                return (
-                                  <button
-                                    key={iconData.name}
-                                    type="button"
-                                    onClick={() => {
-                                      if (isLocked && onUpgradeClick) {
-                                        onUpgradeClick()
-                                      } else {
-                                        handleSelectIcon(iconData.name as IconName)
-                                      }
-                                    }}
-                                    className={`
-                              group relative w-full aspect-square flex items-center justify-center
-                              rounded-xl border-2 transition-all
-                              ${isLocked
-                                        ? 'border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/10 cursor-not-allowed opacity-60'
-                                        : isSelected
-                                          ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                                          : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:shadow-sm'
-                                      }
-                            `}
-                                    title={isLocked ? `${iconData.label} - Premium` : iconData.label}
-                                  >
-                                    <CategoryIcon
-                                      icon={iconData.name}
-                                      size="md"
-                                      className={`transition-transform ${isLocked ? 'opacity-40' : 'group-hover:scale-105'}`}
-                                      color={isSelected ? '#2563eb' : '#4b5563'}
-                                    />
-                                    {isLocked && (
-                                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-black/20 rounded-lg">
-                                        <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                                        </svg>
-                                      </div>
-                                    )}
-                                    {isSelected && !isLocked && (
-                                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 dark:bg-primary-400 rounded-full flex items-center justify-center shadow-lg">
-                                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                        </svg>
-                                      </div>
-                                    )}
-                                    {/* Tooltip on hover */}
-                                    <div className="absolute bottom-full mb-2 hidden group-hover:block pointer-events-none z-10">
-                                      <div className="bg-gray-900 dark:bg-neutral-800 text-white text-xs py-1.5 px-2.5 rounded shadow-lg whitespace-nowrap border border-gray-700 dark:border-neutral-700">
-                                        {iconData.label}
-                                        {isLocked && <span className="ml-1 text-amber-400">🔒 Premium</span>}
-                                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-                                          <div className="border-4 border-transparent border-t-gray-900 dark:border-t-neutral-800"></div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer with hint */}
-                {activeTab === 'icons' && (
-                  <div className="p-3 border-t border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900">
-                    <p className="text-xs text-gray-500 dark:text-neutral-400 text-center">
-                      Clique em um ícone para selecionar
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            </div>
-          </>
-        )}
-      </AnimatePresence>,
-      document.body
-    )}
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }

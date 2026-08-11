@@ -41,6 +41,8 @@ const Calculator = ({ isOpen, onClose }: CalculatorProps) => {
         clearAll();
       } else if (e.key === 'Backspace') {
         backspace();
+      } else if (e.key === '%') {
+        percentage();
       }
     };
 

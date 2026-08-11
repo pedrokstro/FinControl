@@ -28,7 +28,7 @@ export const formatDate = (date: string | Date): string => {
  */
 export const formatDateLong = (date: string | Date): string => {
   const d = new Date(date)
-  return new Intl.DateFormat('pt-BR', {
+  return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'long',
   }).format(d)
 }

@@ -8,8 +8,6 @@ import {
   Calendar, 
   DollarSign, 
   TrendingUp,
-  ChevronDown,
-  ChevronUp,
   Zap
 } from 'lucide-react'
 import { useFinancialStore } from '@/store/financialStore'
@@ -19,6 +17,7 @@ import { CreditCard as CreditCardType, Transaction } from '@/types'
 import CreditCardModal from '@/components/modals/CreditCardModal'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import BrandIcon from '@/components/common/BrandIcon'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 
 const Cards = () => {
   const { creditCards, fetchCreditCards, transactions, currentMonthTransactions, deleteCreditCard, isLoading } = useFinancialStore()
@@ -26,7 +25,6 @@ const Cards = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null)
   const [cardToDelete, setCardToDelete] = useState<CreditCardType | null>(null)
-  const [expandedCardId, setExpandedCardId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCreditCards()
@@ -56,11 +54,6 @@ const Cards = () => {
       setIsDeleteModalOpen(false)
       setCardToDelete(null)
     }
-  }
-
-  const toggleExpand = (cardId: string) => {
-    haptics.light()
-    setExpandedCardId(expandedCardId === cardId ? null : cardId)
   }
 
   // Calculate current invoice breakdown per card
@@ -204,7 +197,6 @@ const Cards = () => {
                 const progressColor = progress > 90 ? 'bg-red-500' : progress > 75 ? 'bg-yellow-500' : 'bg-primary-500'
                 const dueStatus = getDueDateStatus(card.dueDay)
                 const cardGradient = getCardGradient(card.brand)
-                const isExpanded = expandedCardId === card.id
 
                 return (
                   <motion.div
@@ -318,36 +310,18 @@ const Cards = () => {
                       )}
                     </div>
 
-                    {/* Expandable Details Button */}
-                    <button
-                      onClick={() => toggleExpand(card.id)}
-                      className="flex items-center justify-center gap-2 w-full py-2 mb-4 rounded-xl border border-dashed border-gray-200 dark:border-neutral-800 text-gray-400 hover:text-primary-600 hover:border-primary-200 dark:hover:border-primary-900/50 transition-all text-xs font-bold"
-                    >
-                      {isExpanded ? (
-                        <>
-                          Ocultar Detalhes <ChevronUp className="w-4 h-4" />
-                        </>
-                      ) : (
-                        <>
-                          Ver Assinaturas e Detalhes <ChevronDown className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="overflow-hidden"
+                    {/* Expandable Details Accordion */}
+                    <Accordion type="single" variant="ghost" className="mb-4">
+                      <AccordionItem value={`card-${card.id}`}>
+                        <AccordionTrigger
+                          icon={<Zap className="w-4 h-4 text-yellow-500" />}
+                          subtitle={`${cardSubs.length} assinaturas vinculadas`}
+                          className="py-2 px-3 rounded-xl bg-gray-50/70 dark:bg-neutral-800/40 border border-gray-100 dark:border-neutral-800/60 hover:bg-gray-100/80 dark:hover:bg-neutral-800/80 transition-all text-xs font-bold"
                         >
-                          <div className="space-y-3 mb-6 pt-2">
-                            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                              <Zap className="w-3 h-3 text-yellow-500" />
-                              Assinaturas Vinculadas
-                            </h4>
+                          Assinaturas & Detalhes
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 pt-2">
                             {cardSubs.length > 0 ? (
                               <div className="space-y-2">
                                 {cardSubs.map((sub) => (
@@ -365,12 +339,12 @@ const Cards = () => {
                                 ))}
                               </div>
                             ) : (
-                              <p className="text-xs text-gray-400 italic py-2">Nenhuma assinatura recorrente.</p>
+                              <p className="text-xs text-gray-400 italic py-2 text-center">Nenhuma assinatura recorrente neste cartão.</p>
                             )}
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
 
                     {/* Dates section */}
                     <div className="flex flex-col gap-3 border-t border-gray-100 dark:border-neutral-800 pt-5 mt-auto">

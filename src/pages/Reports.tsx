@@ -47,6 +47,8 @@ import {
   Filter,
   Loader2,
   BarChart3,
+  LayoutGrid,
+  Rows,
 } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
 import { exportService } from '@/services/exportService'
@@ -55,6 +57,8 @@ import CustomDatePicker from '@/components/common/CustomDatePicker'
 import CustomMonthPicker from '@/components/common/CustomMonthPicker'
 import CategorySelect from '@/components/common/CategorySelect'
 import CustomSelect from '@/components/common/CustomSelect'
+import BentoGridReports from '@/components/reports/BentoGridReports'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 import { X } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 
@@ -90,7 +94,7 @@ const Reports = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedType, setSelectedType] = useState<string>('all')
-
+  const [reportsViewMode, setReportsViewMode] = useState<'bento' | 'classic'>('bento')
   const [isExporting, setIsExporting] = useState(false)
 
   // ── Intervalo de datas ativo ───────────────────────────────────────────────
@@ -234,6 +238,7 @@ const Reports = () => {
     const expCats = categories
       .filter(c => c.type === 'expense')
       .map(cat => ({
+        id: cat.id,
         name: cat.name,
         despesas: filtered.filter(t => t.categoryId === cat.id && t.type === 'expense').reduce((s, t) => s + t.amount, 0),
         receitas: 0,
@@ -245,6 +250,7 @@ const Reports = () => {
     const incCats = categories
       .filter(c => c.type === 'income')
       .map(cat => ({
+        id: cat.id,
         name: cat.name,
         receitas: filtered.filter(t => t.categoryId === cat.id && t.type === 'income').reduce((s, t) => s + t.amount, 0),
         despesas: 0,
@@ -409,6 +415,40 @@ const Reports = () => {
             <p className="text-gray-600 dark:text-neutral-400 mt-1">Análise detalhada das suas finanças</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Seletor de Modo de Visualização */}
+            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl mr-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setReportsViewMode('bento')
+                  haptics.light()
+                }}
+                className={`p-2 rounded-lg transition-all ${
+                  reportsViewMode === 'bento'
+                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+                title="Visualização Bento Grid (com arraste)"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setReportsViewMode('classic')
+                  haptics.light()
+                }}
+                className={`p-2 rounded-lg transition-all ${
+                  reportsViewMode === 'classic'
+                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+                title="Visualização Clássica"
+              >
+                <Rows className="w-4 h-4" />
+              </button>
+            </div>
+
             <button
               onClick={() => handleExport('pdf')}
               disabled={isExporting}
@@ -577,9 +617,33 @@ const Reports = () => {
           </div>
         </div>
 
-        {/* ── GRÁFICO DE SALDO ACUMULADO (NOVO) ────────────────────────────── */}
-        <div className="card mb-6 p-0 overflow-hidden relative border border-primary-100/50 dark:border-primary-900/30 shadow-sm">
-          <div className="p-5 md:p-6 pb-2 md:pb-0">
+        {/* ── VISUALIZAÇÃO BENTO GRID OU CLÁSSICA ────────────────────────── */}
+        {reportsViewMode === 'bento' ? (
+          <BentoGridReports
+            summary={summary}
+            comparison={comparison}
+            savingsRate={savingsRate}
+            avgDailySpend={avgDailySpend}
+            daysInPeriod={daysInPeriod}
+            topExpense={topExpense}
+            accumulatedBalanceData={accumulatedBalanceData}
+            monthlyEvolution={monthlyEvolution}
+            expenseByCategory={categoryData.expenses.map((e) => ({
+              name: e.name,
+              value: e.despesas,
+              color: e.color,
+            }))}
+            fixedVsVariable={fixedVsVariable}
+            spendByDayOfWeek={spendByDayOfWeek}
+            periodLabel={periodLabel}
+            fmtCurrency={fmtCurrency}
+            fmtPct={fmtPct}
+          />
+        ) : (
+          <>
+            {/* ── GRÁFICO DE SALDO ACUMULADO (NOVO) ────────────────────────────── */}
+            <div className="card mb-6 p-0 overflow-hidden relative border border-primary-100/50 dark:border-primary-900/30 shadow-sm">
+              <div className="p-5 md:p-6 pb-2 md:pb-0">
             <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-4">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Evolução do Saldo</h3>
@@ -903,6 +967,8 @@ const Reports = () => {
             )}
           </div>
         </div>
+        </>
+      )}
 
         {/* ── DETALHAMENTO POR CATEGORIA ────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -916,28 +982,72 @@ const Reports = () => {
               <span className="text-xs text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-3 py-1 rounded-full font-medium">{periodLabel}</span>
             </div>
             {categoryData.income.length > 0 ? (
-              <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
-                {categoryData.income.map(item => {
-                  const total = categoryData.income.reduce((s, c) => s + c.receitas, 0)
-                  const pct = total > 0 ? (item.receitas / total) * 100 : 0
-                  return (
-                    <div key={item.name}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: item.color }} />
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-semibold text-success-600 dark:text-success-400">{fmtCurrency(item.receitas)}</p>
-                          <p className="text-xs text-gray-400">{pct.toFixed(1)}%</p>
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5">
-                        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: item.color }} />
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                <Accordion type="single" variant="ghost" className="space-y-2">
+                  {categoryData.income.map(item => {
+                    const total = categoryData.income.reduce((s, c) => s + c.receitas, 0)
+                    const pct = total > 0 ? (item.receitas / total) * 100 : 0
+                    const categoryTxs = filtered.filter(
+                      t => (t.categoryId === item.id || t.category === item.name) && t.type === 'income'
+                    )
+
+                    return (
+                      <AccordionItem
+                        key={item.name}
+                        value={`inc-${item.name}`}
+                        className="rounded-2xl bg-gray-50/60 dark:bg-neutral-800/40 p-2.5 border border-gray-100 dark:border-neutral-800/60"
+                      >
+                        <AccordionTrigger
+                          icon={
+                            <div
+                              className="w-3.5 h-3.5 rounded-full shrink-0"
+                              style={{ backgroundColor: item.color }}
+                            />
+                          }
+                          subtitle={`${categoryTxs.length} transação${categoryTxs.length !== 1 ? 'ões' : ''} (${pct.toFixed(1)}%)`}
+                          className="py-1"
+                        >
+                          <div className="flex items-center justify-between w-full pr-2">
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {item.name}
+                            </span>
+                            <span className="text-sm font-bold text-success-600 dark:text-success-400 font-mono">
+                              {fmtCurrency(item.receitas)}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2">
+                          <div className="w-full bg-gray-200/80 dark:bg-neutral-700/80 rounded-full h-1.5 mb-3">
+                            <div
+                              className="h-1.5 rounded-full"
+                              style={{ width: `${pct}%`, backgroundColor: item.color }}
+                            />
+                          </div>
+                          <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                            {categoryTxs.map(tx => (
+                              <div
+                                key={tx.id}
+                                className="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-white dark:bg-neutral-900/70 text-xs border border-gray-100/60 dark:border-neutral-800/40"
+                              >
+                                <div className="truncate pr-2">
+                                  <p className="font-medium text-neutral-800 dark:text-neutral-200 truncate">
+                                    {tx.description}
+                                  </p>
+                                  <p className="text-[10px] text-neutral-400 font-mono">
+                                    {format(parseISO(tx.date), 'dd/MM/yyyy')}
+                                  </p>
+                                </div>
+                                <span className="font-bold text-success-600 dark:text-success-400 font-mono shrink-0">
+                                  {fmtCurrency(tx.amount)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )
+                  })}
+                </Accordion>
                 <div className="pt-3 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
                   <span className="font-bold text-sm text-gray-900 dark:text-white">Total</span>
                   <span className="font-bold text-success-600 dark:text-success-400">{fmtCurrency(summary.income)}</span>
@@ -958,28 +1068,72 @@ const Reports = () => {
               <span className="text-xs text-danger-600 dark:text-danger-400 bg-danger-50 dark:bg-danger-900/20 px-3 py-1 rounded-full font-medium">{periodLabel}</span>
             </div>
             {categoryData.expenses.length > 0 ? (
-              <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
-                {categoryData.expenses.map(item => {
-                  const total = categoryData.expenses.reduce((s, c) => s + c.despesas, 0)
-                  const pct = total > 0 ? (item.despesas / total) * 100 : 0
-                  return (
-                    <div key={item.name}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: item.color }} />
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-semibold text-danger-600 dark:text-danger-400">{fmtCurrency(item.despesas)}</p>
-                          <p className="text-xs text-gray-400">{pct.toFixed(1)}%</p>
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5">
-                        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: item.color }} />
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                <Accordion type="single" variant="ghost" className="space-y-2">
+                  {categoryData.expenses.map(item => {
+                    const total = categoryData.expenses.reduce((s, c) => s + c.despesas, 0)
+                    const pct = total > 0 ? (item.despesas / total) * 100 : 0
+                    const categoryTxs = filtered.filter(
+                      t => (t.categoryId === item.id || t.category === item.name) && t.type === 'expense'
+                    )
+
+                    return (
+                      <AccordionItem
+                        key={item.name}
+                        value={`exp-${item.name}`}
+                        className="rounded-2xl bg-gray-50/60 dark:bg-neutral-800/40 p-2.5 border border-gray-100 dark:border-neutral-800/60"
+                      >
+                        <AccordionTrigger
+                          icon={
+                            <div
+                              className="w-3.5 h-3.5 rounded-full shrink-0"
+                              style={{ backgroundColor: item.color }}
+                            />
+                          }
+                          subtitle={`${categoryTxs.length} transação${categoryTxs.length !== 1 ? 'ões' : ''} (${pct.toFixed(1)}%)`}
+                          className="py-1"
+                        >
+                          <div className="flex items-center justify-between w-full pr-2">
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {item.name}
+                            </span>
+                            <span className="text-sm font-bold text-danger-600 dark:text-danger-400 font-mono">
+                              {fmtCurrency(item.despesas)}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2">
+                          <div className="w-full bg-gray-200/80 dark:bg-neutral-700/80 rounded-full h-1.5 mb-3">
+                            <div
+                              className="h-1.5 rounded-full"
+                              style={{ width: `${pct}%`, backgroundColor: item.color }}
+                            />
+                          </div>
+                          <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                            {categoryTxs.map(tx => (
+                              <div
+                                key={tx.id}
+                                className="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-white dark:bg-neutral-900/70 text-xs border border-gray-100/60 dark:border-neutral-800/40"
+                              >
+                                <div className="truncate pr-2">
+                                  <p className="font-medium text-neutral-800 dark:text-neutral-200 truncate">
+                                    {tx.description}
+                                  </p>
+                                  <p className="text-[10px] text-neutral-400 font-mono">
+                                    {format(parseISO(tx.date), 'dd/MM/yyyy')}
+                                  </p>
+                                </div>
+                                <span className="font-bold text-danger-600 dark:text-danger-400 font-mono shrink-0">
+                                  {fmtCurrency(tx.amount)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )
+                  })}
+                </Accordion>
                 <div className="pt-3 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
                   <span className="font-bold text-sm text-gray-900 dark:text-white">Total</span>
                   <span className="font-bold text-danger-600 dark:text-danger-400">{fmtCurrency(summary.expense)}</span>

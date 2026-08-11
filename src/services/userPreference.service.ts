@@ -2,7 +2,7 @@ import api from '@/config/api';
 
 export interface UserPreferences {
   theme?: 'light' | 'dark' | 'system';
-  categoriesViewMode?: 'grid' | 'list';
+  categoriesViewMode?: 'bento' | 'grid' | 'list';
   [key: string]: string | undefined;
 }
 
