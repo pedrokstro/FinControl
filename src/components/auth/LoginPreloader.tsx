@@ -63,11 +63,11 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
           className="fixed inset-0 w-screen h-[100dvh] min-h-[100dvh] z-[99999] flex flex-col items-center justify-center bg-white dark:bg-white select-none px-4 py-6 sm:p-6 overflow-hidden shadow-[40px_0_80px_rgba(0,0,0,0.25)] border-r-2 border-primary-500/30"
         >
           {/* Borda direita luminosa para dar efeito premium no wipe lateral */}
-          <div className="absolute top-0 bottom-0 right-0 w-[3px] bg-gradient-to-b from-primary-400 via-emerald-400 to-primary-600 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-[3px] bg-gradient-to-b from-primary-400 via-primary-500 to-primary-600 pointer-events-none" />
 
           {/* Luz Ambiente Sutil de Fundo */}
           <div className="absolute w-[320px] sm:w-[600px] h-[320px] sm:h-[600px] rounded-full bg-primary-500/10 blur-[90px] sm:blur-[130px] pointer-events-none -top-10" />
-          <div className="absolute w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] rounded-full bg-emerald-500/10 blur-[80px] sm:blur-[120px] pointer-events-none -bottom-10" />
+          <div className="absolute w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] rounded-full bg-primary-400/10 blur-[80px] sm:blur-[120px] pointer-events-none -bottom-10" />
 
           {/* Container Principal em Fundo Branco com Efeito Parallax de Saída */}
           <motion.div
@@ -103,7 +103,7 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
               className="text-center mb-4 sm:mb-6"
             >
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display text-slate-900">
-                Fin<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-500 to-emerald-500">Control</span>
+                Fin<span className="text-primary-500">Control</span>
               </h1>
               <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-1 sm:mt-2 font-medium">
                 Suas finanças, sob controle.
@@ -117,27 +117,26 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 1.15, type: 'spring', stiffness: 350, damping: 15 }}
-                className="absolute top-0 right-1 sm:right-3 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white border border-emerald-200/80 text-emerald-600 text-[11px] sm:text-xs font-bold font-mono flex items-center gap-1 shadow-md shadow-emerald-500/10 z-20"
+                className="absolute top-0 right-1 sm:right-3 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white border border-primary-200/80 text-primary-600 text-[11px] sm:text-xs font-bold font-mono flex items-center gap-1 shadow-md shadow-primary-500/10 z-20"
               >
-                <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
+                <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-600" />
                 <span>+12,5%</span>
               </motion.div>
 
               <svg viewBox="0 0 420 130" className="w-full h-full overflow-visible">
                 <defs>
-                  {/* Gradiente da Linha no Tema Claro */}
+                  {/* Gradiente da Linha no Tema Azul */}
                   <linearGradient id="lightLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#0284c7" />
-                    <stop offset="30%" stopColor="#0ea5e9" />
-                    <stop offset="70%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#059669" />
+                    <stop offset="50%" stopColor="#0ea5e9" />
+                    <stop offset="100%" stopColor="#38bdf8" />
                   </linearGradient>
 
-                  {/* Gradiente sob a Curva */}
+                  {/* Gradiente sob a Curva Azul */}
                   <linearGradient id="lightAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.2" />
-                    <stop offset="60%" stopColor="#10b981" stopOpacity="0.06" />
-                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="#0284c7" stopOpacity="0.22" />
+                    <stop offset="60%" stopColor="#0ea5e9" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
                   </linearGradient>
 
                   {/* Sombra Suave da Linha */}
@@ -195,7 +194,7 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
                         cx={p.cx}
                         cy={p.cy}
                         r={isLast ? 6 : 4}
-                        fill={isLast ? '#10b981' : '#0284c7'}
+                        fill={isLast ? '#0284c7' : '#0ea5e9'}
                         stroke="#ffffff"
                         strokeWidth="2.5"
                         initial={{ scale: 0, opacity: 0 }}
@@ -209,7 +208,7 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
                           cy={p.cy}
                           r="12"
                           fill="none"
-                          stroke="#10b981"
+                          stroke="#0ea5e9"
                           strokeWidth="2"
                           initial={{ opacity: 0, scale: 0.5 }}
                           animate={{ opacity: [0.7, 0], scale: [0.8, 1.8] }}
@@ -241,7 +240,7 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
             {/* 5. BARRA DE PROGRESSO EM PÍLULA FINA */}
             <div className="w-full max-w-[220px] sm:max-w-xs h-1.5 bg-slate-100 rounded-full overflow-hidden mb-4 sm:mb-5">
               <motion.div
-                className="h-full bg-gradient-to-r from-primary-600 via-primary-500 to-emerald-500 rounded-full shadow-[0_0_8px_rgba(2,132,199,0.3)]"
+                className="h-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 rounded-full shadow-[0_0_8px_rgba(2,132,199,0.3)]"
                 initial={{ width: '15%' }}
                 animate={{
                   width: isSuccess ? '100%' : `${Math.min((stepIndex + 1) * 45, 90)}%`,
