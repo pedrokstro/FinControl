@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.16.0] - 2026-09-08
+
+### Adicionado
+- **GSAP ScrollTrigger na Landing Page**:
+  - Barra de progresso de leitura em tempo real no topo sincronizada com o scroll.
+  - Efeito parallax geométrico suave no grid e iluminação da Hero Section.
+  - Revelação escalonada em lote (*batch animations*) para capacidades, planos e seção CTA.
+  - Seção interativa de 3 passos reformulada com interface real do produto (contas centralizadas, orçamentos inteligentes e evolução patrimonial).
+- **Página 404 (Not Found) & Roteamento Inteligente**:
+  - Criação da página 404 minimalista com suporte a Dark/Light Mode e retorno ao painel ou página inicial.
+- **SEO & Inteligência Artificial (GEO)**:
+  - Criação do [robots.txt](file:///c:/CURSOR/fincontrol/public/robots.txt) protegendo rotas privadas e liberando páginas públicas.
+  - Criação do [sitemap.xml](file:///c:/CURSOR/fincontrol/public/sitemap.xml) no padrão W3C com todas as páginas institucionais catalogadas.
+  - Criação do [llms.txt](file:///c:/CURSOR/fincontrol/public/llms.txt) para indexação contextual em motores de IA (ChatGPT, Perplexity, Claude, Gemini).
+  - Injeção de dados estruturados Schema.org (**JSON-LD**) com tipagens para `SoftwareApplication`, `Organization`, `WebSite` e `FAQPage`.
+- **Botão Flutuante Voltar ao Topo (GSAP ScrollTo / Easing)**:
+  - Componente flutuante [ScrollToTop.tsx](file:///c:/CURSOR/fincontrol/src/components/common/ScrollToTop.tsx) com desaceleração orgânica gradual (`power3.out`) integrado globalmente no [MainLayout.tsx](file:///c:/CURSOR/fincontrol/src/components/layout/MainLayout.tsx) e na [Landing.tsx](file:///c:/CURSOR/fincontrol/src/pages/Landing.tsx).
+- **Skeletons Shimmer & Otimização PageSpeed**:
+  - Atualização do [LoadingSkeleton.tsx](file:///c:/CURSOR/fincontrol/src/components/common/LoadingSkeleton.tsx) com animação contínua de onda de luz (*Shimmer*) e largura total, eliminando distorções de carregamento.
+  - *Code-Splitting* granular e *Lazy Loading* de rotas com carregamento assíncrono de fontes no [index.html](file:///c:/CURSOR/fincontrol/index.html).
+
+### Alterado
+- **Design de Categorias**:
+  - Remoção dos indicadores verticais coloridos na borda esquerda de cada categoria para visual minimalista e alinhado.
+- **Ergonomia Mobile**:
+  - Ajuste de altura mínima e áreas de toque nos botões da Landing Page.
+
 ## [2.15.1] - 2026-07-13
 
 ### Alterado

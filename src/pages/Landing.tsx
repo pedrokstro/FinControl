@@ -672,7 +672,7 @@ const Landing = () => {
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display font-bold text-xl sm:text-2xl tracking-tight">FinControl</span>
-                <span className="text-[9px] sm:text-[10px] font-mono text-neutral-400 dark:text-neutral-500">v2.15</span>
+                <span className="text-[9px] sm:text-[10px] font-mono text-neutral-400 dark:text-neutral-500">v2.16</span>
               </div>
             </div>
 
