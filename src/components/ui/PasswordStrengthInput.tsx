@@ -117,6 +117,8 @@ export const PasswordStrengthInput = forwardRef<
       { id: 'special', label: '@#$', met: hasSpecialChar }
     ]
 
+    const isStrengthActive = showStrengthMeter && !error && currentValue.length > 0
+
     return (
       <div className="w-full space-y-3">
         {/* Input Container com Borda Arredondada e Label Entalhada */}
@@ -124,28 +126,28 @@ export const PasswordStrengthInput = forwardRef<
           className={`relative rounded-2xl border-2 transition-all duration-300 ${
             error
               ? 'border-red-500'
-              : color === 'green'
+              : isStrengthActive && color === 'green'
               ? 'border-emerald-500 dark:border-emerald-500 shadow-sm shadow-emerald-500/10'
-              : color === 'amber'
+              : isStrengthActive && color === 'amber'
               ? 'border-amber-500 dark:border-amber-500 shadow-sm shadow-amber-500/10'
-              : color === 'red'
+              : isStrengthActive && color === 'red'
               ? 'border-red-500 dark:border-red-500 shadow-sm shadow-red-500/10'
-              : 'border-gray-200 dark:border-neutral-700 focus-within:border-primary-500 dark:focus-within:border-primary-400'
+              : 'border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400'
           }`}
         >
           {/* Label Flutuante Entalhada na Borda Superior */}
           <label
             htmlFor={id}
-            className={`absolute -top-3 left-4 px-2 ${bgClass} text-xs font-bold tracking-wide transition-colors duration-200 select-none ${
+            className={`absolute -top-3 left-4 px-2 ${bgClass} text-xs font-bold tracking-wide transition-colors duration-200 select-none z-10 ${
               error
                 ? 'text-red-500'
-                : color === 'green'
+                : isStrengthActive && color === 'green'
                 ? 'text-emerald-600 dark:text-emerald-400'
-                : color === 'amber'
+                : isStrengthActive && color === 'amber'
                 ? 'text-amber-600 dark:text-amber-400'
-                : color === 'red'
+                : isStrengthActive && color === 'red'
                 ? 'text-red-500 dark:text-red-400'
-                : 'text-gray-500 dark:text-neutral-400'
+                : 'text-neutral-500 dark:text-neutral-400'
             }`}
           >
             {label}
@@ -161,7 +163,7 @@ export const PasswordStrengthInput = forwardRef<
               defaultValue={defaultValue}
               onChange={handleChange}
               placeholder="••••••••"
-              className={`w-full bg-transparent px-5 py-3.5 pr-12 text-sm font-medium text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 outline-none ${className || ''}`}
+              className={`w-full bg-transparent px-5 py-3.5 pr-12 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none rounded-2xl ${className || ''}`}
               {...props}
             />
             <button

@@ -3,29 +3,28 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Mail, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { AnimatePresence } from 'framer-motion'
-import SplashScreen from '@/components/common/SplashScreen'
-import { useIsMobile } from '@/hooks'
+import { motion } from 'framer-motion'
 import PasswordStrengthInput from '@/components/ui/PasswordStrengthInput'
 import AuthVisualSide from '@/components/auth/AuthVisualSide'
+import { usePreloaderStore } from '@/store/preloaderStore'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const [showLoginSplash, setShowLoginSplash] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
 
-  const isMobile = useIsMobile()
   const navigate = useNavigate()
   const { login, refreshUserData, loginWithGoogle, isAuthenticated } = useAuthStore()
+  const { openPreloader, setSuccess: setPreloaderSuccess, closePreloader, isOpen: isPreloaderOpen } = usePreloaderStore()
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Apenas redireciona se o usuário já chegou autenticado, sem interceptar o pré-loader ativo
+    if (isAuthenticated && !isPreloaderOpen && !isLoading) {
       navigate('/app/transactions', { replace: true })
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, isPreloaderOpen, isLoading, navigate])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -36,23 +35,30 @@ const Login = () => {
     }
 
     setIsLoading(true)
+    openPreloader()
 
     try {
       const success = await login(email, password)
       if (success) {
+        setPreloaderSuccess()
         await refreshUserData()
         
-        if (isMobile) {
-          setShowLoginSplash(true)
-          await new Promise((resolve) => setTimeout(resolve, 1500))
-        }
+        // 1. Navega para a página de destino por baixo da cortina opaca
+        navigate('/app/transactions', { replace: true })
+
+        // 2. Tempo para o Dashboard renderizar por baixo da cortina e o usuário ver "Painel pronto!"
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        // 3. Desliza a cortina lateral revelando a página real do site
+        closePreloader()
 
         toast.success('Login realizado com sucesso!')
-        navigate('/app/transactions')
       } else {
+        closePreloader()
         toast.error('Email ou senha incorretos')
       }
     } catch (error: any) {
+      closePreloader()
       console.error('Erro ao fazer login:', error)
 
       if (error.message === 'EMAIL_NOT_VERIFIED') {
@@ -93,6 +99,7 @@ const Login = () => {
 
   return (
     <>
+
       <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors duration-300">
         {/* Coluna Esquerda: Formulário de Autenticação */}
         <div className="col-span-1 lg:col-span-6 xl:col-span-5 flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16 max-w-xl mx-auto w-full min-h-screen">
@@ -120,15 +127,17 @@ const Login = () => {
             </div>
 
             {/* Botão Google em Destaque */}
-            <button
+            <motion.button
               type="button"
               onClick={handleGoogleLogin}
               disabled={isGoogleLoading || isLoading}
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.985 }}
               className="w-full flex items-center justify-center gap-3 py-3.5 px-6 border border-neutral-200 dark:border-neutral-800 rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all font-semibold text-sm text-neutral-800 dark:text-neutral-200 shadow-sm disabled:opacity-50"
             >
               <img src="/icons/icons8-google-logo-240.png" alt="Google" className="w-5 h-5 object-contain" />
               <span>{isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}</span>
-            </button>
+            </motion.button>
 
             {/* Divisor Elegante */}
             <div className="relative my-8">
@@ -148,7 +157,7 @@ const Login = () => {
               <div className="relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400 transition-colors">
                 <label
                   htmlFor="email"
-                  className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none"
+                  className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none z-10"
                 >
                   E-mail
                 </label>
@@ -159,7 +168,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
-                    className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none"
+                    className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none rounded-2xl"
                     disabled={isLoading}
                     required
                   />
@@ -189,7 +198,7 @@ const Login = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-neutral-300 dark:border-neutral-700 bg-transparent"
+                    className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-neutral-300 dark:border-neutral-700 bg-transparent cursor-pointer"
                   />
                   <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
                     Lembrar de mim
@@ -205,9 +214,11 @@ const Login = () => {
               </div>
 
               {/* Botão Entrar */}
-              <button
+              <motion.button
                 type="submit"
                 disabled={isLoading || isGoogleLoading}
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.985 }}
                 className="w-full h-14 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 font-bold text-base transition-all duration-200 shadow-lg shadow-neutral-900/10 dark:shadow-none flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isLoading ? (
@@ -218,7 +229,7 @@ const Login = () => {
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </button>
+              </motion.button>
             </form>
 
             {/* Link para Cadastro */}
@@ -248,12 +259,9 @@ const Login = () => {
           badgeText="FinControl Inteligência"
         />
       </div>
-
-      <AnimatePresence>
-        {showLoginSplash && <SplashScreen />}
-      </AnimatePresence>
     </>
   )
 }
 
 export default Login
+

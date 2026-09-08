@@ -22,6 +22,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Landing from './pages/Landing'
 import AuthCallback from './pages/AuthCallback'
+import LoginPreloader from './components/auth/LoginPreloader'
+import { usePreloaderStore } from './store/preloaderStore'
 
 // Main Pages (lazy loading para melhor performance)
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -42,6 +44,7 @@ const Support = lazy(() => import('./pages/Support'))
 const PercentageCalculator = lazy(() => import('./pages/PercentageCalculator'))
 const CompoundInterestCalculator = lazy(() => import('./pages/CompoundInterestCalculator'))
 const Goodbye = lazy(() => import('./pages/Goodbye'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Layout
 import MainLayout from './components/layout/MainLayout'
@@ -246,7 +249,19 @@ const AnimatedRoutes = () => {
             </Suspense>
           </AdminRoute>
         } />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Route>
+
+      <Route path="/404" element={
+        <Suspense fallback={<PageLoader />}>
+          <NotFound />
+        </Suspense>
+      } />
+      <Route path="*" element={
+        <Suspense fallback={<PageLoader />}>
+          <NotFound />
+        </Suspense>
+      } />
     </Routes>
   )
 }
@@ -255,6 +270,7 @@ function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
   const isInitialized = useAuthStore((state) => state.isInitialized)
   const { isBiometricEnabled, setLocked } = useSecurityStore()
+  const { isOpen: isPreloaderOpen, isSuccess: isPreloadSuccess } = usePreloaderStore()
   const [showSplash, setShowSplash] = useState(true)
   const isMobile = useIsMobile()
 
@@ -303,6 +319,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
+        <LoginPreloader isOpen={isPreloaderOpen} isSuccess={isPreloadSuccess} />
         <BiometricLock />
         <AnimatedRoutes />
         <Toaster

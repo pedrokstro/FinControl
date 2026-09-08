@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TrendingUp, ShieldCheck, Zap, Sparkles, Activity, CheckCircle2 } from 'lucide-react'
+import { Zap, Sparkles } from 'lucide-react'
+import { Player } from '@remotion/player'
+import { AuthHeroComposition } from '@/remotion/AuthHeroComposition'
 
 interface AuthVisualSideProps {
   title?: string
@@ -44,7 +46,7 @@ export const AuthVisualSide = ({
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
         
-        {/* Padrão de escadaria / grid geométrico */}
+        {/* Padrão geométrico decorativo */}
         <div className="absolute top-12 right-12 w-48 h-48 border border-white/20 rounded-3xl transform rotate-12" />
         <div className="absolute bottom-20 right-16 w-64 h-64 border border-white/15 rounded-3xl transform -rotate-6" />
         <div className="absolute top-1/3 left-10 w-32 h-32 border border-white/10 rounded-2xl transform rotate-45" />
@@ -63,129 +65,31 @@ export const AuthVisualSide = ({
         </div>
       </div>
 
-      {/* Área Central: Cartões de Dashboard Flutuantes */}
-      <div className="relative z-10 my-auto py-8 w-full max-w-xl mx-auto">
-        {/* Cartão 1: Total Financeiro com Gráfico de Curva */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative bg-white/95 dark:bg-neutral-900/95 text-neutral-900 dark:text-white rounded-3xl p-6 sm:p-7 shadow-2xl shadow-black/30 border border-white/30 dark:border-neutral-800 backdrop-blur-xl w-full sm:w-[380px] z-10"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider block">
-                Patrimônio Gerido
-              </span>
-              <span className="text-3xl font-extrabold font-display tracking-tight text-neutral-900 dark:text-white">
-                R$ 162.750
-              </span>
-            </div>
-            <div className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center gap-1 border border-emerald-200 dark:border-emerald-800/40">
-              <TrendingUp className="w-3.5 h-3.5" />
-              +28.4%
-            </div>
-          </div>
-
-          {/* Gráfico Curva SVG */}
-          <div className="h-28 w-full pt-2">
-            <svg viewBox="0 0 300 100" className="w-full h-full overflow-visible">
-              <defs>
-                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0284c7" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#0284c7" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 10 75 Q 70 85, 110 40 T 210 50 T 290 15 L 290 95 L 10 95 Z"
-                fill="url(#chartGrad)"
-              />
-              <path
-                d="M 10 75 Q 70 85, 110 40 T 210 50 T 290 15"
-                fill="none"
-                stroke="#0284c7"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-              />
-              {/* Pontos Marcadores */}
-              <circle cx="110" cy="40" r="4.5" fill="#0284c7" className="animate-pulse" />
-              <circle cx="290" cy="15" r="5.5" fill="#0284c7" />
-              <circle cx="290" cy="15" r="9" fill="none" stroke="#0284c7" strokeWidth="2" opacity="0.5" />
-            </svg>
-          </div>
-
-          <div className="flex justify-between text-[11px] font-mono text-neutral-400 dark:text-neutral-500 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-            <span>JAN</span>
-            <span>MAR</span>
-            <span>MAI</span>
-            <span className="font-bold text-primary-600 dark:text-primary-400">AGO (ATUAL)</span>
-          </div>
-        </motion.div>
-
-        {/* Cartão 2: Meta / Rewards Flutuante Sobreposto */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="absolute -top-12 -right-4 sm:-right-8 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-3xl p-5 shadow-2xl shadow-black/30 border border-white/40 dark:border-neutral-700 w-52 z-20"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <ShieldCheck className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-            <span className="text-xs font-bold font-display uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-              Meta Reserva
-            </span>
-          </div>
-
-          {/* Anel de Progresso Central */}
-          <div className="relative w-20 h-20 mx-auto my-2 flex items-center justify-center">
-            <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-              <path
-                className="text-neutral-100 dark:text-neutral-700"
-                strokeWidth="3.5"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                className="text-primary-600 dark:text-primary-400"
-                strokeDasharray="94, 100"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center">
-              <span className="text-sm font-black font-display text-neutral-900 dark:text-white">94%</span>
-            </div>
-          </div>
-
-          <div className="text-center pt-2">
-            <span className="text-xs font-mono font-bold text-neutral-900 dark:text-white">
-              R$ 47.000 / 50k
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Badge Flutuante Satélite 1 (Ícone Redondo) */}
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -bottom-6 -left-6 w-14 h-14 rounded-full bg-white dark:bg-neutral-800 shadow-xl border border-white/50 dark:border-neutral-700 flex items-center justify-center z-20 text-primary-600 dark:text-primary-400"
-        >
-          <Activity className="w-6 h-6" />
-        </motion.div>
-
-        {/* Badge Flutuante Satélite 2 (Status) */}
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/2 -right-8 bg-white/95 dark:bg-neutral-900/95 text-neutral-800 dark:text-white rounded-2xl px-4 py-2 shadow-xl border border-white/40 dark:border-neutral-800 text-xs font-bold flex items-center gap-2 z-20"
-        >
-          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          <span>Sincronizado</span>
-        </motion.div>
+      {/* Área Central: Player do Remotion com Animação Fluida a 60fps */}
+      <div className="relative z-10 my-auto py-4 w-full max-w-xl mx-auto flex items-center justify-center">
+        <div className="w-full aspect-[4/3] max-h-[460px] rounded-3xl overflow-visible flex items-center justify-center">
+          <Player
+            component={AuthHeroComposition}
+            durationInFrames={450}
+            compositionWidth={800}
+            compositionHeight={600}
+            fps={30}
+            autoPlay
+            loop
+            controls={false}
+            clickToPlay={false}
+            doubleClickToFullscreen={false}
+            spaceKeyToPlayOrPause={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'transparent',
+            }}
+            inputProps={{
+              isDark: true,
+            }}
+          />
+        </div>
       </div>
 
       {/* Rodapé da Lateral Visual com Frase de Impacto e Dots */}
@@ -226,3 +130,4 @@ export const AuthVisualSide = ({
 }
 
 export default AuthVisualSide
+

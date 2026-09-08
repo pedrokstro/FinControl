@@ -58,6 +58,15 @@
     @apply text-gray-900 dark:text-yellow-200;
     @apply px-1 rounded;
   }
+
+  /* Autofill reset para manter harmonia visual dos inputs */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: inherit !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @layer components {

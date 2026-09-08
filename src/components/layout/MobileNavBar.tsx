@@ -25,18 +25,35 @@ const MobileNavBar = () => {
               key={item.path}
               to={item.path}
               onClick={() => haptics.light()}
-              className="flex flex-col items-center gap-0.5 py-2.5 flex-1"
+              className="flex flex-col items-center gap-0.5 py-2.5 flex-1 relative select-none"
             >
               {({ isActive }) => (
                 <>
-                  <motion.div
-                    animate={isActive ? { scale: 1.05 } : { scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                    className={`flex items-center justify-center w-14 h-7 rounded-full transition-colors duration-200 ${isActive ? 'bg-primary-100 dark:bg-primary-500/20' : ''}`}
+                  <div className="relative flex items-center justify-center w-14 h-7">
+                    {isActive && (
+                      <motion.div
+                        layoutId="mobileActivePill"
+                        className="absolute inset-0 rounded-full bg-primary-100 dark:bg-primary-500/20 shadow-sm"
+                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                      />
+                    )}
+                    <Icon
+                      className={`w-5 h-5 relative z-10 transition-colors duration-200 ${
+                        isActive
+                          ? 'text-primary-600 dark:text-primary-400'
+                          : 'text-gray-400 dark:text-neutral-500'
+                      }`}
+                    />
+                  </div>
+                  <span
+                    className={`text-[10px] font-semibold transition-colors duration-200 ${
+                      isActive
+                        ? 'text-primary-600 dark:text-primary-400 font-bold'
+                        : 'text-gray-400 dark:text-neutral-500'
+                    }`}
                   >
-                    <Icon className={`w-5 h-5 transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`} />
-                  </motion.div>
-                  <span className={`text-[10px] font-semibold transition-colors duration-200 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-neutral-500'}`}>{item.label}</span>
+                    {item.label}
+                  </span>
                 </>
               )}
             </NavLink>

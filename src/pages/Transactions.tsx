@@ -714,16 +714,12 @@ const Transactions = () => {
                   {filteredTransactions.map((transaction) => (
                     <motion.tr
                       key={transaction.id}
+                      layout="position"
                       variants={itemVariants}
-                      className="group border-b border-gray-150 dark:border-neutral-800/60 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-all duration-300 relative"
+                      transition={{ layout: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
+                      className="group border-b border-gray-150 dark:border-neutral-800/60 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-colors duration-200 relative"
                     >
-                      <td className="py-3.5 px-6 relative text-gray-600 dark:text-neutral-400 font-sans">
-                        {/* Indicador de Tipo Lateral (estilo Sidebar) */}
-                        <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 group-hover:h-10 rounded-r-full transition-all duration-300 ${
-                          transaction.type === 'income'
-                            ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
-                            : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                        }`} />
+                      <td className="py-3.5 px-6 text-gray-600 dark:text-neutral-400 font-sans">
                         {format(new Date(transaction.date), 'dd/MM/yyyy')}
                       </td>
                       <td className="py-3.5 px-4 font-sans">
@@ -910,13 +906,6 @@ const Transactions = () => {
                             whileTap={{ cursor: 'grabbing' }}
                             className="relative z-10 flex items-center gap-3.5 px-4 py-3.5 bg-white dark:bg-neutral-900/95 cursor-grab touch-pan-y"
                           >
-                            {/* Barra de tipo lateral */}
-                            <div className={`absolute left-0 top-[18%] bottom-[18%] w-[3px] rounded-r-full ${
-                              transaction.type === 'income'
-                                ? 'bg-emerald-400'
-                                : 'bg-red-400'
-                            }`} />
-
                             {/* Ícone circular de categoria */}
                             <div
                               className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"

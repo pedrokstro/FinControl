@@ -82,6 +82,7 @@ import BudgetProgressBar from '@/components/common/BudgetProgressBar'
 import { motion } from 'framer-motion'
 import BrandIcon from '@/components/common/BrandIcon'
 import { haptics } from '@/utils/haptics'
+import AnimatedCounter from '@/components/ui/AnimatedCounter'
 
 const RADIAN = Math.PI / 180
 
@@ -784,18 +785,6 @@ const Dashboard = () => {
     }
   }
 
-  const splitBalance = (value: number) => {
-    const formatted = formatCurrency(value)
-    const separatorIndex = formatted.lastIndexOf(',') !== -1 ? formatted.lastIndexOf(',') : formatted.lastIndexOf('.')
-    if (separatorIndex === -1) {
-      return { integer: formatted, decimal: '' }
-    }
-    return {
-      integer: formatted.substring(0, separatorIndex),
-      decimal: formatted.substring(separatorIndex)
-    }
-  }
-
   const lastMonthSummary = useMemo(() => {
     let prevMonth = selectedDate.month - 1
     let prevYear = selectedDate.year
@@ -931,13 +920,12 @@ const Dashboard = () => {
               <div className="flex items-end justify-between mt-auto">
                 <div>
                   <span className="text-xs text-white/80 font-medium tracking-wide">Saldo do Mês</span>
-                  <div className="flex items-baseline gap-0.5 mt-0.5">
-                    <span className="text-3xl font-extrabold tracking-tight font-display">
-                      {splitBalance(financialSummary.monthBalance).integer}
-                    </span>
-                    <span className="text-lg font-bold opacity-90 align-super">
-                      {splitBalance(financialSummary.monthBalance).decimal}
-                    </span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <AnimatedCounter
+                      value={financialSummary.monthBalance}
+                      prefix="R$ "
+                      className="text-3xl font-extrabold tracking-tight font-display text-white"
+                    />
                     <span className="text-[10px] font-semibold bg-white/15 px-1.5 py-0.5 rounded ml-1.5 select-none uppercase">
                       BRL
                     </span>
@@ -1089,7 +1077,7 @@ const Dashboard = () => {
               <div className="flex-1 min-w-0">
                 <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
                 <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate font-display">
-                  {formatCurrency(financialSummary.monthBalance)}
+                  <AnimatedCounter value={financialSummary.monthBalance} prefix="R$ " />
                 </h3>
                 <p className="text-primary-200 text-xs mt-2">
                   {financialSummary.monthBalance >= 0 ? '✓ Saldo positivo' : '⚠ Saldo negativo'}
@@ -1133,7 +1121,7 @@ const Dashboard = () => {
               <div className="flex flex-col">
                 <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
-                  {formatCurrency(financialSummary.monthIncome)}
+                  <AnimatedCounter value={financialSummary.monthIncome} prefix="R$ " />
                 </h3>
               </div>
               <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
@@ -1171,7 +1159,7 @@ const Dashboard = () => {
               <div className="flex flex-col">
                 <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
-                  {formatCurrency(financialSummary.monthExpense)}
+                  <AnimatedCounter value={financialSummary.monthExpense} prefix="R$ " />
                 </h3>
               </div>
               <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">

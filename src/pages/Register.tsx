@@ -144,7 +144,7 @@ const Register = () => {
             <div className="relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400 transition-colors">
               <label
                 htmlFor="name"
-                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none"
+                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none z-10"
               >
                 Nome Completo
               </label>
@@ -154,7 +154,7 @@ const Register = () => {
                   type="text"
                   {...register('name')}
                   placeholder="Seu nome completo"
-                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none"
+                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none rounded-2xl"
                   disabled={isLoading}
                 />
                 <User className="absolute right-4 w-5 h-5 text-neutral-400 pointer-events-none" />
@@ -171,7 +171,7 @@ const Register = () => {
             <div className="relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400 transition-colors">
               <label
                 htmlFor="email"
-                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none"
+                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none z-10"
               >
                 E-mail
               </label>
@@ -181,7 +181,7 @@ const Register = () => {
                   type="email"
                   {...register('email')}
                   placeholder="seu@email.com"
-                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none"
+                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none rounded-2xl"
                   disabled={isLoading}
                 />
                 <Mail className="absolute right-4 w-5 h-5 text-neutral-400 pointer-events-none" />
@@ -198,7 +198,7 @@ const Register = () => {
             <div className="relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 focus-within:border-primary-500 dark:focus-within:border-primary-400 transition-colors">
               <label
                 htmlFor="cpf"
-                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none"
+                className="absolute -top-3 left-4 px-2 bg-white dark:bg-neutral-950 text-xs font-bold text-neutral-500 dark:text-neutral-400 tracking-wide select-none z-10"
               >
                 CPF
               </label>
@@ -208,7 +208,7 @@ const Register = () => {
                   type="text"
                   {...register('cpf')}
                   placeholder="000.000.000-00"
-                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none"
+                  className="w-full bg-transparent px-5 py-3.5 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none rounded-2xl"
                   disabled={isLoading}
                 />
                 <CreditCard className="absolute right-4 w-5 h-5 text-neutral-400 pointer-events-none" />

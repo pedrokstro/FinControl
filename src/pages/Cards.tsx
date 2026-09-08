@@ -16,8 +16,8 @@ import { haptics } from '@/utils/haptics'
 import { CreditCard as CreditCardType, Transaction } from '@/types'
 import CreditCardModal from '@/components/modals/CreditCardModal'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
-import BrandIcon from '@/components/common/BrandIcon'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
+import InteractiveCreditCard3D from '@/components/cards/InteractiveCreditCard3D'
 
 const Cards = () => {
   const { creditCards, fetchCreditCards, transactions, currentMonthTransactions, deleteCreditCard, isLoading } = useFinancialStore()
@@ -226,21 +226,14 @@ const Cards = () => {
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-4 mb-8">
-                      <div className="w-16 h-10 bg-gray-50 dark:bg-neutral-800 rounded-xl flex items-center justify-center overflow-hidden p-2 shadow-inner border border-gray-100 dark:border-neutral-700">
-                        <BrandIcon brand={card.brand} className="h-full w-auto object-contain" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-xl text-gray-900 dark:text-white truncate pr-16">{card.name}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">{card.brand}</span>
-                          {dueStatus && (
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${dueStatus.color} animate-pulse-slow`}>
-                              {dueStatus.label}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                    {/* Cartão Físico 3D Interativo com Tilt e Flip */}
+                    <div className="mb-4">
+                      <InteractiveCreditCard3D
+                        card={card}
+                        spent={spent}
+                        limit={Number(card.limit) || 0}
+                        dueStatus={dueStatus}
+                      />
                     </div>
 
                     {/* Fatura / Limite section */}

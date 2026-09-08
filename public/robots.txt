@@ -1,0 +1,23 @@
+# robots.txt para FinControl
+User-agent: *
+Allow: /
+Allow: /plans
+Allow: /about
+Allow: /support
+Allow: /terms
+Allow: /privacy
+Allow: /login
+Allow: /register
+
+# Bloquear rotas autenticadas e privadas de usuários
+Disallow: /app/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /checkout
+Disallow: /goodbye
+
+# Sitemap
+Sitemap: https://fincontrol.vercel.app/sitemap.xml
