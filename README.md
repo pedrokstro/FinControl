@@ -41,14 +41,19 @@ Sistema completo de controle financeiro pessoal desenvolvido com React, TypeScri
 
 ### 🎯 Funcionalidades Principais
 
-- 🔐 **Autenticação Segura** - Sistema de login com JWT e persistência local
-- 📊 **Dashboard Intuitivo** - Visão geral completa das finanças com gráficos interativos
-- 💸 **Gestão de Transações** - CRUD completo com filtros avançados
-- 🏷️ **Categorias Personalizadas** - Organize receitas e despesas
-- 📈 **Relatórios Detalhados** - Análises e visualizações financeiras
-- ⚙️ **Configurações** - Personalização e preferências do usuário
+- 🔐 **Autenticação Segura** - Sistema de login com JWT e persistência local ([[docs/Arquitetura-e-Seguranca|Saiba Mais]])
+- 📊 **Dashboard Intuitivo** - Visão geral completa com gráficos interativos ([[docs/Modulo-Dashboard|Saiba Mais]])
+- 💸 **Gestão de Transações** - CRUD completo com filtros avançados ([[docs/Modulo-Transacoes|Saiba Mais]])
+- 💳 **Gestão de Cartões** - Cartões 3D interativos e limites ([[docs/Modulo-Cartoes|Saiba Mais]])
+- 🏷️ **Categorias e Orçamentos** - Organize receitas e despesas ([[docs/Modulo-Categorias-e-Orcamentos|Saiba Mais]])
+- 📈 **Metas e Juros Compostos** - Planejamento e simulações financeiras ([[docs/Modulo-Metas-e-Juros|Saiba Mais]])
+- 🚀 **Landing Page & SEO** - Interface animada com GSAP e GEO para IA ([[docs/Modulo-Landing-e-SEO|Saiba Mais]])
 
-### 🎨 Interface
+### 🗺️ Mapa de Conteúdo (Obsidian MOC)
+- Central Geral: [[docs/Visao-Geral-FinControl|Visão Geral do FinControl]]
+- Design System: [[DESIGN|Diretrizes de Design]] & [[BRANDING|Identidade Visual]]
+- Produto & Histórico: [[PRODUCT|Visão de Produto]] & [[CHANGELOG|Changelog de Versões]]
+
 
 - ✅ Design moderno e responsivo
 - ✅ Componentes reutilizáveis
