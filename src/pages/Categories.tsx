@@ -558,16 +558,9 @@ const Categories = () => {
                 <motion.div
                   key={category.id}
                   variants={itemVariants}
-                  className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-3.5 pl-7 pr-6 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-all duration-300 gap-4"
+                  className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-3.5 px-5 sm:px-6 hover:bg-gray-50/40 dark:hover:bg-neutral-850/20 transition-all duration-300 gap-4"
                 >
-                  {/* Indicador de Tipo Lateral (estilo Sidebar/Transações) */}
-                  <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 group-hover:h-10 rounded-r-full transition-all duration-300 ${
-                    category.type === 'income'
-                      ? 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
-                      : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                  }`} />
-
-                  <div className="flex items-center gap-4 flex-1 min-w-0 transition-transform duration-300 group-hover:translate-x-1">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
                     <div
                       className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
                       style={{ backgroundColor: `${category.color}20` }}
