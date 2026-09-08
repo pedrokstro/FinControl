@@ -26,8 +26,9 @@ tags:
 
 ## 📚 Documentos Institucionais e Técnicos
 
-- [[../README]] — Guia de instalação, scripts e início rápido do projeto.
-- [[../CHANGELOG]] — Histórico cronológico de releases e versões do FinControl.
-- [[../DESIGN]] — Diretrizes de design tokens, paleta de cores e tipografia.
-- [[../BRANDING]] — Identidade visual e diretrizes da marca.
-- [[../PRODUCT]] — Visão de produto, proposta de valor e personas.
+- [[README]] — Guia de instalação, scripts e início rápido do projeto.
+- [[CHANGELOG]] — Histórico cronológico de releases e versões do FinControl.
+- [[DESIGN]] — Diretrizes de design tokens, paleta de cores e tipografia.
+- [[BRANDING]] — Identidade visual e diretrizes da marca.
+- [[PRODUCT]] — Visão de produto, proposta de valor e personas.
+
