@@ -8,6 +8,7 @@ Allow: /terms
 Allow: /privacy
 Allow: /login
 Allow: /register
+Allow: /llms.txt
 
 # Bloquear rotas autenticadas e privadas de usuários
 Disallow: /app/

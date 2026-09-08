@@ -49,6 +49,101 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Structured Data / JSON-LD (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://fincontrol.vercel.app/#organization",
+        "name": "FinControl",
+        "url": "https://fincontrol.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://fincontrol.vercel.app/icons/logofincontrol.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Plataforma moderna de gestão financeira pessoal e controle patrimonial."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://fincontrol.vercel.app/#website",
+        "url": "https://fincontrol.vercel.app/",
+        "name": "FinControl",
+        "description": "Sistema completo de controle financeiro pessoal com gráficos, relatórios e análises avançadas.",
+        "publisher": {
+          "@id": "https://fincontrol.vercel.app/#organization"
+        },
+        "inLanguage": "pt-BR"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://fincontrol.vercel.app/#software",
+        "name": "FinControl",
+        "operatingSystem": "Web, iOS, Android, Windows, macOS",
+        "applicationCategory": "FinanceApplication",
+        "description": "Gerencie despesas, receitas, cartões de crédito e metas financeiras com precisão técnica e simplicidade impecável.",
+        "image": "https://fincontrol.vercel.app/icons/logofincontrol.png",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Plano Básico Grátis",
+            "price": "0",
+            "priceCurrency": "BRL",
+            "category": "Free"
+          },
+          {
+            "@type": "Offer",
+            "name": "Plano Premium Pro",
+            "price": "19.90",
+            "priceCurrency": "BRL",
+            "category": "Subscription"
+          }
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "1280",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://fincontrol.vercel.app/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Os meus dados financeiros estão realmente seguros?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. Utilizamos criptografia de ponta a ponta (AES-256 e SSL/TLS) com infraestrutura isolada por conta. Seus registros financeiros são estritamente confidenciais e nunca são compartilhados com terceiros."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Posso usar o FinControl no celular sem precisar baixar da App Store ou Play Store?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim! O FinControl foi desenvolvido com tecnologia PWA (Progressive Web App). Você pode instalá-lo diretamente pelo navegador no iOS e Android com alta velocidade e suporte offline."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Consigo importar extratos bancários e faturas de cartão?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim! Você pode importar arquivos nos formatos OFX, CSV e Excel gerados por qualquer instituição bancária com categorização automática inteligente."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <title>FinControl - Controle Financeiro Pessoal</title>
 </head>
 

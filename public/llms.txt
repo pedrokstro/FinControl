@@ -1,0 +1,30 @@
+# FinControl
+
+> Plataforma moderna de gestão financeira pessoal e controle patrimonial com inteligência, alta performance e suporte a Progressive Web App (PWA).
+
+O **FinControl** é um ecossistema completo desenvolvido para substituir planilhas manuais e simplificar a vida financeira de pessoas e famílias. Ele centraliza receitas, despesas, faturas de cartões de crédito, contas bancárias, orçamentos mensais e projeções de metas em uma interface intuitiva, segura e com suporte a temas Dark e Light.
+
+## Recursos Principais
+
+- **Lançamentos & Conciliação em Tempo Real**: Registro ágil de receitas, despesas e transferências com cálculo instantâneo de saldo consolidado.
+- **Orçamentos Inteligentes por Categoria**: Definição de limites mensais de gastos com alertas preditivos ao atingir porcentagens do orçamento.
+- **Gestão de Cartões de Crédito**: Controle de limites, datas de fechamento e vencimento de faturas com visualização interativa 3D.
+- **Metas & Evolução Patrimonial**: Simulador de projeção patrimonial com cálculo integrado de juros compostos e estimativa de tempo para conclusão.
+- **Importação de Extratos Bancários**: Suporte nativo à importação e conciliação automática de arquivos OFX, CSV e Excel.
+- **Relatórios Analíticos & Gráficos**: Gráficos dinâmicos de fluxo de caixa, evolução de despesas e distribuição percentual por categoria.
+- **Suporte a PWA (Progressive Web App)**: Instalação nativa em dispositivos móveis (iOS Safari e Android Chrome) com funcionamento ágil e suporte offline.
+- **Segurança & Privacidade**: Criptografia de ponta a ponta (AES-256 / SSL), autenticação em dois fatores (2FA) e total conformidade com a LGPD.
+
+## Planos & Acesso
+
+- **Plano Básico (Gratuito)**: Ideal para controle financeiro diário, registro de despesas e receitas, relatórios básicos e suporte PWA.
+- **Plano Premium Pro**: Acesso ilimitado a todas as contas e cartões, orçamentos avançados, relatórios analíticos completos, projeções de metas e suporte prioritário.
+
+## Links e Referências
+
+- [Página Inicial (Landing Page)](https://fincontrol.vercel.app/): Apresentação institucional, recursos e demonstração interativa.
+- [Planos e Preços](https://fincontrol.vercel.app/plans): Comparativo detalhado de recursos entre planos.
+- [Sobre o FinControl](https://fincontrol.vercel.app/about): Missão, visão e tecnologia por trás da plataforma.
+- [Central de Ajuda e Suporte](https://fincontrol.vercel.app/support): Dúvidas frequentes e canais de atendimento.
+- [Política de Privacidade](https://fincontrol.vercel.app/privacy): Diretrizes de proteção de dados e privacidade LGPD.
+- [Termos de Uso](https://fincontrol.vercel.app/terms): Termos de serviço e condições de uso.
