@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ArrowLeftRight, BarChart3 } from 'lucide-react'
+import { Home, ArrowLeftRight, CreditCard, BarChart3, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useIsMobile } from '@/hooks'
 import { haptics } from '@/utils/haptics'
 
 const mainItems = [
-  { path: '/app/dashboard',    label: 'Início',     icon: LayoutDashboard },
+  { path: '/app/dashboard',    label: 'Início',     icon: Home },
   { path: '/app/transactions', label: 'Transações', icon: ArrowLeftRight },
+  { path: '/app/cards',        label: 'Cartões',    icon: CreditCard },
   { path: '/app/reports',      label: 'Relatórios', icon: BarChart3 },
+  { path: '/app/settings',     label: 'Ajustes',    icon: Settings },
 ]
 
 const MobileNavBar = () => {
@@ -16,8 +18,11 @@ const MobileNavBar = () => {
   if (!isMobile) return null
 
   return (
-    <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-lg border-t border-gray-200/50 dark:border-neutral-800/40 shadow-2xl rounded-t-[2rem] pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center px-4 justify-around py-1">
+    <nav
+      aria-label="Navegação móvel"
+      className="lg:hidden fixed bottom-4 inset-x-0 z-50 flex justify-center pointer-events-none px-3 pb-[env(safe-area-inset-bottom)]"
+    >
+      <div className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-neutral-200/90 dark:border-neutral-800/90 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.6)]">
         {mainItems.map((item) => {
           const Icon = item.icon
           return (
@@ -25,42 +30,44 @@ const MobileNavBar = () => {
               key={item.path}
               to={item.path}
               onClick={() => haptics.light()}
-              className="flex flex-col items-center gap-0.5 py-2.5 flex-1 relative select-none"
+              className="relative flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
             >
               {({ isActive }) => (
-                <>
-                  <div className="relative flex items-center justify-center w-14 h-7">
-                    {isActive && (
-                      <motion.div
-                        layoutId="mobileActivePill"
-                        className="absolute inset-0 rounded-full bg-primary-100 dark:bg-primary-500/20 shadow-sm"
-                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-                      />
-                    )}
-                    <Icon
-                      className={`w-5 h-5 relative z-10 transition-colors duration-200 ${
-                        isActive
-                          ? 'text-primary-600 dark:text-primary-400'
-                          : 'text-gray-400 dark:text-neutral-500'
-                      }`}
+                <div
+                  className={`relative flex items-center justify-center rounded-full transition-all duration-300 ${
+                    isActive
+                      ? 'px-3.5 py-2 text-white'
+                      : 'p-2.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 active:scale-90 transition-transform'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="mobileActivePill"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-600 to-primary-500 shadow-md shadow-primary-500/30"
+                      transition={{ type: 'spring', stiffness: 430, damping: 32 }}
                     />
-                  </div>
-                  <span
-                    className={`text-[10px] font-semibold transition-colors duration-200 ${
-                      isActive
-                        ? 'text-primary-600 dark:text-primary-400 font-bold'
-                        : 'text-gray-400 dark:text-neutral-500'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </>
+                  )}
+
+                  <Icon className="w-5 h-5 relative z-10 shrink-0" />
+
+                  {isActive && (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
+                      className="relative z-10 text-xs font-bold ml-1.5 whitespace-nowrap"
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </div>
               )}
             </NavLink>
           )
         })}
       </div>
-    </div>
+    </nav>
   )
 }
 
