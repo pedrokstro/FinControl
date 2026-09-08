@@ -22,6 +22,7 @@ import {
   Landmark,
 } from 'lucide-react'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
+import ScrollToTop from '@/components/common/ScrollToTop'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -1275,6 +1276,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+      <ScrollToTop />
     </PageTransition>
     </div>
   )

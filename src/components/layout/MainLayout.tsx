@@ -4,6 +4,7 @@ import Sidebar from './Sidebar'
 import Header from './Header'
 import MobileNavBar from './MobileNavBar'
 import { useFinancialStore } from '@/store/financialStore'
+import ScrollToTop from '@/components/common/ScrollToTop'
 
 const MainLayout = () => {
   const syncWithBackend = useFinancialStore((state) => state.syncWithBackend)
@@ -33,6 +34,7 @@ const MainLayout = () => {
         </main>
       </div>
 
+      <ScrollToTop />
       <MobileNavBar />
     </div>
   )
