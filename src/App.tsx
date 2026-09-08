@@ -49,16 +49,38 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 // Layout
 import MainLayout from './components/layout/MainLayout'
 
-// Loading fallback component
+// Loading fallback component com estrutura completa de Dashboard Skeleton
 const PageLoader = () => (
-  <div className="p-6 space-y-6">
-    <LoadingSkeleton variant="card" className="h-20" />
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <LoadingSkeleton variant="card" />
-      <LoadingSkeleton variant="card" />
-      <LoadingSkeleton variant="card" />
+  <div className="w-full max-w-7xl mx-auto space-y-6">
+    {/* Header Skeleton */}
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="space-y-2">
+        <LoadingSkeleton variant="text" className="w-44 sm:w-56 h-7 sm:h-8 rounded-lg" />
+        <LoadingSkeleton variant="text" className="w-64 sm:w-80 h-3.5 sm:h-4 rounded-md opacity-60" />
+      </div>
+      <div className="flex items-center gap-3">
+        <LoadingSkeleton variant="button" className="w-28 sm:w-32" />
+        <LoadingSkeleton variant="button" className="w-32 sm:w-36" />
+      </div>
     </div>
-    <LoadingSkeleton variant="chart" />
+
+    {/* 4 Cards de Métricas / KPI Skeleton */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <LoadingSkeleton variant="kpi" />
+      <LoadingSkeleton variant="kpi" />
+      <LoadingSkeleton variant="kpi" />
+      <LoadingSkeleton variant="kpi" />
+    </div>
+
+    {/* Grid de Gráficos e Lançamentos Recentes */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2">
+        <LoadingSkeleton variant="chart" />
+      </div>
+      <div className="space-y-4">
+        <LoadingSkeleton variant="card" className="h-72" />
+      </div>
+    </div>
   </div>
 )
 
@@ -310,7 +332,7 @@ function App() {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-900">
+      <div className="min-h-screen w-full bg-gray-50 dark:bg-black p-4 sm:p-6 lg:p-8 flex flex-col justify-start">
         <PageLoader />
       </div>
     )
