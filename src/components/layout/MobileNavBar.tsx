@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Home, ArrowLeftRight, CreditCard, BarChart3, Settings } from 'lucide-react'
+import { Home, ArrowLeftRight, BarChart3 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useIsMobile } from '@/hooks'
 import { haptics } from '@/utils/haptics'
@@ -7,9 +7,7 @@ import { haptics } from '@/utils/haptics'
 const mainItems = [
   { path: '/app/dashboard',    label: 'Início',     icon: Home },
   { path: '/app/transactions', label: 'Transações', icon: ArrowLeftRight },
-  { path: '/app/cards',        label: 'Cartões',    icon: CreditCard },
   { path: '/app/reports',      label: 'Relatórios', icon: BarChart3 },
-  { path: '/app/settings',     label: 'Ajustes',    icon: Settings },
 ]
 
 const MobileNavBar = () => {
