@@ -39,9 +39,12 @@ export const MobileWelcome = () => {
             className="w-full h-full object-contain"
           />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-neutral-900">
+        <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-neutral-900 mb-1">
           FinControl
         </h1>
+        <p className="text-sm font-medium text-neutral-500 tracking-wide">
+          Controle Financeiro Inteligente
+        </p>
       </motion.main>
 
       {/* Rodapé: Apenas o Botão Entrar */}
