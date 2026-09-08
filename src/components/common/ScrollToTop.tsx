@@ -5,9 +5,14 @@ import { ArrowUp } from 'lucide-react'
 interface ScrollToTopProps {
   threshold?: number
   className?: string
+  hideOnMobile?: boolean
 }
 
-export const ScrollToTop = ({ threshold = 220, className = '' }: ScrollToTopProps) => {
+export const ScrollToTop = ({
+  threshold = 220,
+  className = '',
+  hideOnMobile = true
+}: ScrollToTopProps) => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -78,6 +83,8 @@ export const ScrollToTop = ({ threshold = 220, className = '' }: ScrollToTopProp
     }
   }
 
+  const mobileVisibilityClass = hideOnMobile ? 'hidden sm:flex' : 'flex'
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -90,7 +97,7 @@ export const ScrollToTop = ({ threshold = 220, className = '' }: ScrollToTopProp
           type="button"
           aria-label="Voltar ao início da página"
           title="Voltar ao início"
-          className={`fixed bottom-44 sm:bottom-8 right-4 sm:right-8 z-40 p-3 sm:p-3.5 rounded-full bg-neutral-900/90 text-white dark:bg-white/95 dark:text-neutral-950 shadow-2xl backdrop-blur-md border border-white/20 dark:border-neutral-800/80 hover:scale-110 active:scale-95 transition-all duration-200 group flex items-center justify-center cursor-pointer ${className}`}
+          className={`${mobileVisibilityClass} fixed bottom-24 sm:bottom-8 right-4 sm:right-8 z-50 p-3 sm:p-3.5 rounded-full bg-neutral-900/90 text-white dark:bg-white/95 dark:text-neutral-950 shadow-2xl backdrop-blur-md border border-white/20 dark:border-neutral-800/80 hover:scale-110 active:scale-95 transition-all duration-200 group items-center justify-center cursor-pointer ${className}`}
         >
           <ArrowUp className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1" />
           <span className="sr-only">Voltar ao início</span>
