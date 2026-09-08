@@ -14,14 +14,14 @@ import { useSecurityStore } from './store/securityStore'
 import SplashScreen from './components/common/SplashScreen'
 import { useIsMobile } from './hooks'
 
-// Auth Pages (não lazy - carregam rápido)
-import Login from './pages/Login'
-import Register from './pages/Register'
-import VerifyEmail from './pages/VerifyEmail'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import Landing from './pages/Landing'
-import AuthCallback from './pages/AuthCallback'
+// Auth & Landing Pages (lazy loading para aceleração extrema do carregamento inicial)
+const Landing = lazy(() => import('./pages/Landing'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 import LoginPreloader from './components/auth/LoginPreloader'
 import { usePreloaderStore } from './store/preloaderStore'
 
@@ -118,7 +118,11 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 const AnimatedRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={
+        <Suspense fallback={<PageLoader />}>
+          <Landing />
+        </Suspense>
+      } />
       <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
       <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
       <Route path="/categories" element={<Navigate to="/app/categories" replace />} />
@@ -129,12 +133,36 @@ const AnimatedRoutes = () => {
       <Route path="/calculadora-porcentagem" element={<Navigate to="/app/calculadora-porcentagem" replace />} />
       <Route path="/calculadora-juros" element={<Navigate to="/app/calculadora-juros" replace />} />
       <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/login" element={
+        <Suspense fallback={<PageLoader />}>
+          <Login />
+        </Suspense>
+      } />
+      <Route path="/register" element={
+        <Suspense fallback={<PageLoader />}>
+          <Register />
+        </Suspense>
+      } />
+      <Route path="/verify-email" element={
+        <Suspense fallback={<PageLoader />}>
+          <VerifyEmail />
+        </Suspense>
+      } />
+      <Route path="/forgot-password" element={
+        <Suspense fallback={<PageLoader />}>
+          <ForgotPassword />
+        </Suspense>
+      } />
+      <Route path="/reset-password" element={
+        <Suspense fallback={<PageLoader />}>
+          <ResetPassword />
+        </Suspense>
+      } />
+      <Route path="/auth/callback" element={
+        <Suspense fallback={<PageLoader />}>
+          <AuthCallback />
+        </Suspense>
+      } />
       <Route path="/goodbye" element={
         <Suspense fallback={<PageLoader />}>
           <Goodbye />

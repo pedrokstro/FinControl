@@ -148,14 +148,44 @@ export default defineConfig({
     open: true,
   },
   build: {
-    // Aumentar limite de warning de chunk size (Dashboard com gráficos)
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 600,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'charts': ['recharts'],
-        },
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) {
+              return 'vendor-react'
+            }
+            if (/[\\/]node_modules[\\/](recharts|d3-)/.test(id)) {
+              return 'vendor-charts'
+            }
+            if (/[\\/]node_modules[\\/](framer-motion)[\\/]/.test(id)) {
+              return 'vendor-motion'
+            }
+            if (/[\\/]node_modules[\\/](gsap|@gsap)[\\/]/.test(id)) {
+              return 'vendor-gsap'
+            }
+            if (/[\\/]node_modules[\\/](lucide-react|@iconify)[\\/]/.test(id)) {
+              return 'vendor-icons'
+            }
+            if (/[\\/]node_modules[\\/](@remotion|remotion)[\\/]/.test(id)) {
+              return 'vendor-remotion'
+            }
+            if (/[\\/]node_modules[\\/](@supabase|axios)[\\/]/.test(id)) {
+              return 'vendor-backend'
+            }
+            if (/[\\/]node_modules[\\/](three|@react-three)[\\/]/.test(id)) {
+              return 'vendor-3d'
+            }
+            if (/[\\/]node_modules[\\/](jspdf|xlsx|html2canvas)[\\/]/.test(id)) {
+              return 'vendor-export'
+            }
+            if (/[\\/]node_modules[\\/](date-fns|clsx|tailwind-merge|zod|zustand|react-hot-toast)[\\/]/.test(id)) {
+              return 'vendor-core-utils'
+            }
+          }
+        }
       },
     },
   },
