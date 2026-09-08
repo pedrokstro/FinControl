@@ -16,6 +16,7 @@ import { useIsMobile } from './hooks'
 
 // Auth & Landing Pages (lazy loading para aceleração extrema do carregamento inicial)
 const Landing = lazy(() => import('./pages/Landing'))
+const MobileWelcome = lazy(() => import('./pages/MobileWelcome'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const VerifyEmail = lazy(() => import('./pages/VerifyEmail'))
@@ -114,11 +115,41 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>
 }
 
+// Componente raiz inteligente que renderiza Welcome no mobile/PWA e Landing no desktop
+const RootRoute = () => {
+  const isMobile = useIsMobile()
+  const isStandalone = typeof window !== 'undefined' && (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone ||
+    document.referrer.includes('android-app://')
+  )
+
+  if (isMobile || isStandalone) {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <MobileWelcome />
+      </Suspense>
+    )
+  }
+
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Landing />
+    </Suspense>
+  )
+}
+
 // Animated Routes Component
 const AnimatedRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={
+      <Route path="/" element={<RootRoute />} />
+      <Route path="/welcome" element={
+        <Suspense fallback={<PageLoader />}>
+          <MobileWelcome />
+        </Suspense>
+      } />
+      <Route path="/landing" element={
         <Suspense fallback={<PageLoader />}>
           <Landing />
         </Suspense>
