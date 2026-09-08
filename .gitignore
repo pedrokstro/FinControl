@@ -56,3 +56,6 @@ stripe.exe
 .agent/skills/
 .agent/plan/
 .agent/
+
+# Obsidian
+.obsidian/
