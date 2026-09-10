@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   ArrowUpRight,
-  ArrowDownRight,
   TrendingUp,
   TrendingDown,
   Wallet,
@@ -83,6 +82,15 @@ import { motion } from 'framer-motion'
 import BrandIcon from '@/components/common/BrandIcon'
 import { haptics } from '@/utils/haptics'
 import AnimatedCounter from '@/components/ui/AnimatedCounter'
+import InteractiveDataCard from '@/components/dashboard/InteractiveDataCard'
+import {
+  MobileCategoryBreakdown,
+  MobileBudgetsCarousel,
+  MobileMonthlyHistoryCard,
+  MobileYearlyAccumulatedCard,
+  MobileSavingsGoalCard,
+  MobileAnalyticsAccordion,
+} from '@/components/dashboard/mobile'
 
 const RADIAN = Math.PI / 180
 
@@ -811,6 +819,46 @@ const Dashboard = () => {
     return { income, expense, balance }
   }, [transactions, selectedDate])
 
+  // Sparklines diárias para os Interactive Data Cards
+  const dailySparklineMetrics = useMemo(() => {
+    const daysInMonth = new Date(selectedDate.year, selectedDate.month, 0).getDate()
+    const pointsCount = 7
+    const step = Math.max(Math.floor(daysInMonth / pointsCount), 1)
+
+    const incomePoints: number[] = []
+    const expensePoints: number[] = []
+    const balancePoints: number[] = []
+
+    for (let day = 1; day <= daysInMonth; day += step) {
+      const txUpToDay = selectedMonthTransactions.filter((t) => {
+        if (!t.date) return false
+        const tDay = parseISO(t.date).getDate()
+        return tDay <= day
+      })
+
+      const inc = txUpToDay.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const exp = txUpToDay.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+
+      incomePoints.push(inc)
+      expensePoints.push(exp)
+      balancePoints.push(inc - exp)
+    }
+
+    return { incomePoints, expensePoints, balancePoints }
+  }, [selectedMonthTransactions, selectedDate])
+
+  const incomeTrendPercent = useMemo(() => {
+    if (!lastMonthSummary.income) return financialSummary.monthIncome > 0 ? 100 : 0
+    const diff = financialSummary.monthIncome - lastMonthSummary.income
+    return Math.round((diff / lastMonthSummary.income) * 100)
+  }, [financialSummary.monthIncome, lastMonthSummary.income])
+
+  const expenseTrendPercent = useMemo(() => {
+    if (!lastMonthSummary.expense) return financialSummary.monthExpense > 0 ? 100 : 0
+    const diff = financialSummary.monthExpense - lastMonthSummary.expense
+    return Math.round((diff / lastMonthSummary.expense) * 100)
+  }, [financialSummary.monthExpense, lastMonthSummary.expense])
+
   return (
     <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
 
@@ -1068,120 +1116,265 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
-        {/* Lado Esquerdo: Cards de Resumo */}
-        <div className="lg:col-span-3 grid grid-cols-2 gap-3 sm:gap-4">
-          {/* Saldo do Mês - Card Principal */}
-          <div className="hidden sm:block card col-span-2 bg-primary-600 text-white border-0 shadow-lg shadow-primary-500/20 dark:shadow-primary-950/20">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-primary-100 text-xs font-semibold uppercase tracking-widest">Saldo do Mês</p>
-                <h3 className="text-2xl sm:text-3xl font-bold mt-2 truncate font-display">
-                  <AnimatedCounter value={financialSummary.monthBalance} prefix="R$ " />
-                </h3>
-                <p className="text-primary-200 text-xs mt-2">
-                  {financialSummary.monthBalance >= 0 ? '✓ Saldo positivo' : '⚠ Saldo negativo'}
-                </p>
-              </div>
-              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ml-2">
-                <Wallet className="w-5 h-5" />
-              </div>
+      {/* ========================================================================= */}
+      {/* VISÃO MOBILE DEDICADA (Cards e Widgets Próprios para Smartphones)     */}
+      {/* ========================================================================= */}
+      <div className="block sm:hidden space-y-4 mb-8">
+        {/* 1. Meus Limites / Orçamentos em Carrossel Horizontal */}
+        <MobileBudgetsCarousel
+          budgets={budgets}
+          categories={categories}
+          transactions={transactions}
+          selectedDate={selectedDate}
+          formatCurrency={formatCurrency}
+          onManageBudgets={() => navigate('/app/categories?manageBudgets=true')}
+        />
+
+        {/* 2. Finanças por Categoria com Barra Multi-Segmentada e Feed */}
+        <MobileCategoryBreakdown
+          data={categoryData}
+          formatCurrency={formatCurrency}
+          onManageCategories={() => navigate('/app/categories')}
+        />
+
+        {/* 3. Histórico Mensal Touch com Alternador Saldo / Fluxo */}
+        <MobileMonthlyHistoryCard
+          data={monthlyData}
+          formatCurrency={formatCurrency}
+        />
+
+        {/* 4. Meta de Economia com Progresso Visual */}
+        <MobileSavingsGoalCard
+          goal={currentGoal}
+          formatCurrency={formatCurrency}
+          onEditGoal={() => setShowGoalModal(true)}
+          onDeleteGoal={currentGoal ? handleDeleteGoal : undefined}
+          isLoading={isLoadingGoal}
+        />
+
+        {/* 5. Resumo Anual e Curva Patrimonial Acumulada */}
+        <MobileYearlyAccumulatedCard
+          yearlyData={yearlyMonthlyData}
+          accumulatedData={accumulatedBalanceData}
+          formatCurrency={formatCurrency}
+        />
+
+        {/* 6. Transações Recentes Mobile */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                Transações Recentes
+              </h3>
+              <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                Últimas movimentações
+              </p>
             </div>
-            {/* Barra de progresso receita vs despesa */}
-            {(financialSummary.monthIncome > 0 || financialSummary.monthExpense > 0) && (
-              <div className="mt-4">
-                <div className="flex justify-between text-xs text-primary-200 mb-1">
-                  <span>Gasto</span>
-                  <span>{financialSummary.monthIncome > 0 ? Math.round((financialSummary.monthExpense / financialSummary.monthIncome) * 100) : 0}%</span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-1.5">
+            <Link
+              to="/app/transactions"
+              className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+            >
+              <span>Ver todas</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {recentTransactions.length > 0 ? (
+            <div className="space-y-2">
+              {recentTransactions.slice(0, 5).map((transaction) => {
+                const category = categories.find((c) => c.id === transaction.categoryId)
+                return (
                   <div
-                    className="bg-white rounded-full h-1.5 transition-all duration-500"
-                    style={{ width: `${Math.min(financialSummary.monthIncome > 0 ? (financialSummary.monthExpense / financialSummary.monthIncome) * 100 : 0, 100)}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+                    key={transaction.id}
+                    className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                          transaction.type === 'income'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                        }`}
+                      >
+                        {category ? (
+                          <CategoryIcon
+                            icon={category.icon as IconName}
+                            color={category.color}
+                            size="sm"
+                          />
+                        ) : transaction.type === 'income' ? (
+                          <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-xs text-neutral-900 dark:text-white truncate">
+                          {transaction.description}
+                        </p>
+                        <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                          {transaction.category} • {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className={`font-bold font-mono text-xs shrink-0 ml-2 ${
+                        transaction.type === 'income'
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-rose-600 dark:text-rose-400'
+                      }`}
+                    >
+                      {transaction.type === 'income' ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-xs text-neutral-400">
+              Nenhuma transação registrada
+            </div>
+          )}
+        </div>
 
-          {/* Receitas do Mês */}
-          <div
-            className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
-            onClick={() => incomeTransactions.length && setShowIncomeModal(true)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && incomeTransactions.length) setShowIncomeModal(true)
+        {/* 7. Análises Avançadas Expansíveis (Accordion) */}
+        <MobileAnalyticsAccordion
+          analytics={analytics}
+          isLoading={isLoadingAnalytics}
+          isEmpty={analyticsEmpty}
+          formatCurrency={formatCurrency}
+        />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* VISÃO DESKTOP COMPLETA (Telas Grandes sm: e acima)                    */}
+      {/* ========================================================================= */}
+      <div className="hidden sm:block space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+        {/* Lado Esquerdo: Cards de Resumo */}
+        <div className="hidden sm:grid lg:col-span-3 grid-cols-2 gap-3 sm:gap-4">
+          {/* Saldo do Mês - Interactive Data Card */}
+          <InteractiveDataCard
+            title="Saldo do Mês"
+            value={financialSummary.monthBalance}
+            prefix="R$ "
+            icon={Wallet}
+            variant="primary"
+            colSpan="col-span-2"
+            badge={financialSummary.monthBalance >= 0 ? '✓ Saldo positivo no período' : '⚠ Saldo negativo'}
+            sparklineData={dailySparklineMetrics.balancePoints}
+            progress={
+              financialSummary.monthIncome > 0
+                ? {
+                    current: Math.min(financialSummary.monthExpense, financialSummary.monthIncome),
+                    total: financialSummary.monthIncome,
+                    label: 'Comprometimento de Renda',
+                  }
+                : undefined
+            }
+            backside={{
+              headline: 'Análise de Saldo',
+              insights: [
+                {
+                  label: 'Taxa de Poupança',
+                  value: financialSummary.monthIncome > 0
+                    ? `${Math.round(((financialSummary.monthIncome - financialSummary.monthExpense) / financialSummary.monthIncome) * 100)}%`
+                    : '0%',
+                  highlight: true,
+                },
+                {
+                  label: 'Média Diária',
+                  value: formatCurrency(financialSummary.monthBalance / (new Date().getDate() || 1)),
+                },
+                {
+                  label: 'vs. Mês Anterior',
+                  value: `${lastMonthSummary.balance >= 0 ? '+' : ''}${formatCurrency(financialSummary.monthBalance - lastMonthSummary.balance)}`,
+                },
+              ],
             }}
-          >
-            {/* Top accent bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success-400 to-success-600" />
+          />
 
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Receitas</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
-                  <AnimatedCounter value={financialSummary.monthIncome} prefix="R$ " />
-                </h3>
-              </div>
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-success-50 dark:bg-success-900/20 ring-4 ring-success-100/50 dark:ring-success-900/10 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success-600 dark:text-success-400" />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400 dark:text-neutral-500">
-                {incomeTransactions.length > 0 ? `${incomeTransactions.length} lançamento${incomeTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
-              </span>
-              {incomeTransactions.length > 0 && (
-                <div className="flex items-center gap-1">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-success-500" />
-                  <span className="text-xs text-success-600 dark:text-success-400 font-semibold">Ver</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Despesas do Mês */}
-          <div
-            className="relative col-span-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-3 sm:p-5"
-            onClick={() => expenseTransactions.length && setShowExpenseModal(true)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && expenseTransactions.length) setShowExpenseModal(true)
+          {/* Receitas do Mês - Interactive Data Card */}
+          <InteractiveDataCard
+            title="Receitas"
+            value={financialSummary.monthIncome}
+            prefix="R$ "
+            icon={TrendingUp}
+            variant="success"
+            colSpan="col-span-1"
+            sparklineData={dailySparklineMetrics.incomePoints}
+            trend={{
+              value: incomeTrendPercent,
+              isPositive: incomeTrendPercent >= 0,
+              label: 'vs. mês anterior',
             }}
-          >
-            {/* Top accent bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-danger-400 to-danger-600" />
+            onCardClick={() => incomeTransactions.length && setShowIncomeModal(true)}
+            backside={{
+              headline: 'Detalhamento de Receitas',
+              insights: [
+                {
+                  label: 'Total de Entradas',
+                  value: `${incomeTransactions.length} lançamentos`,
+                },
+                {
+                  label: 'Maior Entrada Única',
+                  value: incomeTransactions[0] ? formatCurrency(incomeTransactions[0].amount) : 'R$ 0,00',
+                  highlight: true,
+                },
+                {
+                  label: 'Média por Lançamento',
+                  value: incomeTransactions.length ? formatCurrency(financialSummary.monthIncome / incomeTransactions.length) : 'R$ 0,00',
+                },
+              ],
+              actionButton: {
+                label: 'Ver todas as receitas',
+                onClick: () => setShowIncomeModal(true),
+              },
+            }}
+          />
 
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">Despesas</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate font-display">
-                  <AnimatedCounter value={financialSummary.monthExpense} prefix="R$ " />
-                </h3>
-              </div>
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-danger-50 dark:bg-danger-900/20 ring-4 ring-danger-100/50 dark:ring-danger-900/10 flex items-center justify-center flex-shrink-0">
-                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-danger-600 dark:text-danger-400" />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400 dark:text-neutral-500">
-                {expenseTransactions.length > 0 ? `${expenseTransactions.length} lançamento${expenseTransactions.length !== 1 ? 's' : ''}` : 'Nenhum lançamento'}
-              </span>
-              {expenseTransactions.length > 0 && (
-                <div className="flex items-center gap-1">
-                  <ArrowDownRight className="w-3.5 h-3.5 text-danger-500" />
-                  <span className="text-xs text-danger-600 dark:text-danger-400 font-semibold">Ver</span>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Despesas do Mês - Interactive Data Card */}
+          <InteractiveDataCard
+            title="Despesas"
+            value={financialSummary.monthExpense}
+            prefix="R$ "
+            icon={TrendingDown}
+            variant="danger"
+            colSpan="col-span-1"
+            sparklineData={dailySparklineMetrics.expensePoints}
+            trend={{
+              value: expenseTrendPercent,
+              isPositive: expenseTrendPercent <= 0,
+              label: 'vs. mês anterior',
+            }}
+            onCardClick={() => expenseTransactions.length && setShowExpenseModal(true)}
+            backside={{
+              headline: 'Detalhamento de Despesas',
+              insights: [
+                {
+                  label: 'Total de Saídas',
+                  value: `${expenseTransactions.length} despesas`,
+                },
+                {
+                  label: 'Maior Despesa Única',
+                  value: expenseTransactions[0] ? formatCurrency(expenseTransactions[0].amount) : 'R$ 0,00',
+                  highlight: true,
+                },
+                {
+                  label: 'Maior Centro de Custo',
+                  value: topExpensesCurrentMonth[0] ? topExpensesCurrentMonth[0].name : 'Nenhuma',
+                },
+              ],
+              actionButton: {
+                label: 'Ver todas as despesas',
+                onClick: () => setShowExpenseModal(true),
+              },
+            }}
+          />
 
           {/* Meta de Economia */}
-          <div className="hidden sm:block card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
+          <div className="card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
@@ -2039,6 +2232,7 @@ const Dashboard = () => {
           </div>
         )
       }
+      </div>
 
       <Modal
         isOpen={showQuickAdd}

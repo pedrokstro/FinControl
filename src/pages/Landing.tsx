@@ -1276,7 +1276,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-      <ScrollToTop className="!bottom-8" />
+      <ScrollToTop />
     </PageTransition>
     </div>
   )
