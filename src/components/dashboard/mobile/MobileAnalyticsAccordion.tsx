@@ -2,13 +2,11 @@ import React, { useState } from 'react'
 import { ChevronDown, Sparkles, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { haptics } from '@/utils/haptics'
-import {
-  CashFlowChart,
-  SavingsRateChart,
-  TopExpensesChart,
-  ExpensesByWeekdayChart,
-  BudgetVsActualChart,
-} from '@/components/charts/AdvancedCharts'
+import { MobileCashFlowCard } from './MobileCashFlowCard'
+import { MobileSavingsRateCard } from './MobileSavingsRateCard'
+import { MobileTopExpensesCard } from './MobileTopExpensesCard'
+import { MobileWeekdayExpensesCard } from './MobileWeekdayExpensesCard'
+import { MobileBudgetVsActualCard } from './MobileBudgetVsActualCard'
 import { type AnalyticsData } from '@/services/analytics.service'
 
 interface MobileAnalyticsAccordionProps {
@@ -57,7 +55,7 @@ export const MobileAnalyticsAccordion: React.FC<MobileAnalyticsAccordionProps> =
 
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-            {isOpen ? 'Ocultar' : 'Explorar'}
+            {isOpen ? 'Ocultar' : 'Explorar (5)'}
           </span>
           <ChevronDown
             className={`w-4 h-4 text-neutral-400 transition-transform duration-300 ${
@@ -67,7 +65,7 @@ export const MobileAnalyticsAccordion: React.FC<MobileAnalyticsAccordionProps> =
         </div>
       </button>
 
-      {/* Conteúdo Expansível */}
+      {/* Conteúdo Expansível com Cards Nativos Mobile */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
@@ -75,7 +73,7 @@ export const MobileAnalyticsAccordion: React.FC<MobileAnalyticsAccordionProps> =
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="border-t border-neutral-100 dark:border-neutral-800 p-4 space-y-5 bg-neutral-50/50 dark:bg-neutral-950/20"
+            className="border-t border-neutral-100 dark:border-neutral-800 p-3 space-y-3.5 bg-neutral-50/50 dark:bg-neutral-950/20"
           >
             {isLoading ? (
               <div className="flex items-center justify-center py-8 text-neutral-400 text-xs">
@@ -88,45 +86,35 @@ export const MobileAnalyticsAccordion: React.FC<MobileAnalyticsAccordionProps> =
               </div>
             ) : (
               <>
-                {/* 1. Fluxo de Caixa Diário */}
-                <div className="space-y-1">
-                  <CashFlowChart
-                    data={analytics.dailyCashFlow}
-                    formatCurrency={formatCurrency}
-                  />
-                </div>
+                {/* 1. Fluxo de Caixa Diário Mobile */}
+                <MobileCashFlowCard
+                  data={analytics.dailyCashFlow}
+                  formatCurrency={formatCurrency}
+                />
 
-                {/* 2. Taxa de Poupança */}
-                <div className="space-y-1">
-                  <SavingsRateChart
-                    data={analytics.savingsRate}
-                    formatCurrency={formatCurrency}
-                  />
-                </div>
+                {/* 2. Taxa de Poupança Mobile */}
+                <MobileSavingsRateCard
+                  data={analytics.savingsRate}
+                  formatCurrency={formatCurrency}
+                />
 
-                {/* 3. Top 10 Maiores Despesas */}
-                <div className="space-y-1">
-                  <TopExpensesChart
-                    data={analytics.topExpenses}
-                    formatCurrency={formatCurrency}
-                  />
-                </div>
+                {/* 3. Top 10 Maiores Despesas Mobile */}
+                <MobileTopExpensesCard
+                  data={analytics.topExpenses}
+                  formatCurrency={formatCurrency}
+                />
 
-                {/* 4. Despesas por Dia da Semana */}
-                <div className="space-y-1">
-                  <ExpensesByWeekdayChart
-                    data={analytics.expensesByWeekday}
-                    formatCurrency={formatCurrency}
-                  />
-                </div>
+                {/* 4. Despesas por Dia da Semana Mobile */}
+                <MobileWeekdayExpensesCard
+                  data={analytics.expensesByWeekday}
+                  formatCurrency={formatCurrency}
+                />
 
-                {/* 5. Orçamento vs Real */}
-                <div className="space-y-1">
-                  <BudgetVsActualChart
-                    data={analytics.budgetVsActual}
-                    formatCurrency={formatCurrency}
-                  />
-                </div>
+                {/* 5. Orçamento vs Real Mobile */}
+                <MobileBudgetVsActualCard
+                  data={analytics.budgetVsActual}
+                  formatCurrency={formatCurrency}
+                />
               </>
             )}
           </motion.div>

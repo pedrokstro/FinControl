@@ -1309,7 +1309,6 @@ const Dashboard = () => {
               isPositive: incomeTrendPercent >= 0,
               label: 'vs. mês anterior',
             }}
-            onCardClick={() => incomeTransactions.length && setShowIncomeModal(true)}
             backside={{
               headline: 'Detalhamento de Receitas',
               insights: [
@@ -1348,7 +1347,6 @@ const Dashboard = () => {
               isPositive: expenseTrendPercent <= 0,
               label: 'vs. mês anterior',
             }}
-            onCardClick={() => expenseTransactions.length && setShowExpenseModal(true)}
             backside={{
               headline: 'Detalhamento de Despesas',
               insights: [
