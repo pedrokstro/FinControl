@@ -16,6 +16,7 @@ export interface NativeBottomSheetProps {
   contentClassName?: string
   maxHeight?: string
   size?: 'sm' | 'md' | 'lg'
+  zIndex?: number
 }
 
 const sizeClasses = {
@@ -43,6 +44,7 @@ export const NativeBottomSheet = ({
   contentClassName = '',
   maxHeight = 'max-h-[92vh] max-h-[92dvh]',
   size = 'md',
+  zIndex = 200,
 }: NativeBottomSheetProps) => {
   const [mounted, setMounted] = useState(() => typeof window !== 'undefined')
 
@@ -97,13 +99,17 @@ export const NativeBottomSheet = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
-            className="fixed inset-0 z-[200] bg-black/60"
+            style={{ zIndex }}
+            className="fixed inset-0 bg-black/60"
             onClick={handleBackdropClick}
             aria-hidden="true"
           />
 
           {/* Wrapper de Posicionamento Fixo */}
-          <div className="fixed inset-0 z-[201] flex items-end sm:items-center justify-center pointer-events-none sm:p-4">
+          <div
+            style={{ zIndex: zIndex + 1 }}
+            className="fixed inset-0 flex items-end sm:items-center justify-center pointer-events-none sm:p-4"
+          >
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}

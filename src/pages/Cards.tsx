@@ -18,6 +18,7 @@ import CreditCardModal from '@/components/modals/CreditCardModal'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 import InteractiveCreditCard3D from '@/components/cards/InteractiveCreditCard3D'
+import MobileCardsView from '@/components/cards/mobile/MobileCardsView'
 
 const Cards = () => {
   const { creditCards, fetchCreditCards, transactions, currentMonthTransactions, deleteCreditCard, isLoading } = useFinancialStore()
@@ -141,53 +142,65 @@ const Cards = () => {
 
   return (
     <PageTransition>
-      <div className="container mx-auto px-4 py-8 pb-32 md:pb-8">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <CardIcon className="w-8 h-8 text-primary-500" />
-              Meus Cartões
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Cadastre suas faturas para acompanhar os gastos e registrar na despesa de fatura.
-            </p>
-          </div>
-          
-          <button
-            onClick={handleAddCard}
-            className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg active:scale-95 whitespace-nowrap"
-          >
-            <Plus className="w-5 h-5" />
-            Novo Cartão
-          </button>
-        </header>
+      <div className="container mx-auto px-4 py-6 md:py-8 pb-32 md:pb-8">
+        {/* Visualização Nativa Mobile */}
+        <div className="lg:hidden">
+          <MobileCardsView
+            creditCards={creditCards}
+            transactions={transactions}
+            currentMonthTransactions={currentMonthTransactions}
+            onOpenDesktopModal={handleAddCard}
+          />
+        </div>
 
-        {isLoading && creditCards.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4" />
-            <p className="text-gray-500">Carregando seus cartões...</p>
-          </div>
-        ) : creditCards.length === 0 ? (
-          <div className="bg-white dark:bg-neutral-900 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-neutral-800">
-            <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CardIcon className="w-10 h-10 text-gray-400" />
+        {/* Visualização Desktop */}
+        <div className="hidden lg:block">
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                <CardIcon className="w-8 h-8 text-primary-500" />
+                Meus Cartões
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                Cadastre suas faturas para acompanhar os gastos e registrar na despesa de fatura.
+              </p>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sem cartões cadastrados</h3>
-            <p className="text-gray-500 mb-8 max-w-sm mx-auto">
-              Adicione seu primeiro cartão para organizar gastos futuros e assinaturas recorrentes sem somar duas vezes.
-            </p>
+            
             <button
               onClick={handleAddCard}
-              className="bg-primary-50 text-primary-600 px-6 py-2 rounded-xl font-bold hover:bg-primary-100 transition-colors"
+              className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg active:scale-95 whitespace-nowrap cursor-pointer"
             >
-              Adicionar Agora
+              <Plus className="w-5 h-5" />
+              Novo Cartão
             </button>
-          </div>
-        ) : (
-          <motion.div 
-            layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
+          </header>
+
+          {isLoading && creditCards.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4" />
+              <p className="text-gray-500">Carregando seus cartões...</p>
+            </div>
+          ) : creditCards.length === 0 ? (
+            <div className="bg-white dark:bg-neutral-900 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-neutral-800">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CardIcon className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sem cartões cadastrados</h3>
+              <p className="text-gray-500 mb-8 max-w-sm mx-auto">
+                Adicione seu primeiro cartão para organizar gastos futuros e assinaturas recorrentes sem somar duas vezes.
+              </p>
+              <button
+                onClick={handleAddCard}
+                className="bg-primary-50 text-primary-600 px-6 py-2.5 rounded-full font-bold hover:bg-primary-100 transition-colors cursor-pointer"
+              >
+                Adicionar Agora
+              </button>
+            </div>
+          ) : (
+            <motion.div 
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
             <AnimatePresence mode="popLayout">
               {creditCards.map((card, index) => {
                 const { total: spent, subscriptions, casual } = getCardBreakdown(card.id)
@@ -214,13 +227,15 @@ const Cards = () => {
                     <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 z-10 translate-y-0 md:translate-y-[-10px] md:group-hover:translate-y-0">
                       <button
                         onClick={() => handleEditCard(card)}
-                        className="p-2.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md shadow-sm border border-gray-100 dark:border-neutral-700 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 transition-colors"
+                        className="p-2.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md shadow-sm border border-gray-100 dark:border-neutral-700 rounded-full text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 transition-all active:scale-95 cursor-pointer"
+                        title="Editar Cartão"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(card)}
-                        className="p-2.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md shadow-sm border border-gray-100 dark:border-neutral-700 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 transition-colors"
+                        className="p-2.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md shadow-sm border border-gray-100 dark:border-neutral-700 rounded-full text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 transition-all active:scale-95 cursor-pointer"
+                        title="Excluir Cartão"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -387,6 +402,7 @@ const Cards = () => {
             </AnimatePresence>
           </motion.div>
         )}
+        </div>
 
         <CreditCardModal
           isOpen={isModalOpen}
