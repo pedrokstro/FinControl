@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion, PanInfo } from 'framer-motion'
-import { X } from 'lucide-react'
+import { AnimatePresence, motion, PanInfo, type Transition } from 'framer-motion'
 import { haptics } from '@/utils/haptics'
 
 export interface NativeBottomSheetProps {
@@ -25,7 +24,7 @@ const sizeClasses = {
   lg: 'sm:max-w-3xl',
 }
 
-const sheetSpringTransition = {
+const sheetSpringTransition: Transition = {
   type: 'spring',
   damping: 28,
   stiffness: 300,
@@ -39,7 +38,6 @@ export const NativeBottomSheet = ({
   description,
   children,
   footer,
-  hideCloseButton = false,
   closeOnBackdrop = true,
   contentClassName = '',
   maxHeight = 'max-h-[92vh] max-h-[92dvh]',
@@ -131,7 +129,7 @@ export const NativeBottomSheet = ({
               </div>
 
               {/* Cabeçalho */}
-              {(title || !hideCloseButton) && (
+              {(title || description) && (
                 <div className="px-6 py-3.5 border-b border-gray-100 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 sticky top-0 z-10 flex-shrink-0 flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     {title && (
@@ -145,19 +143,6 @@ export const NativeBottomSheet = ({
                       </p>
                     )}
                   </div>
-                  {!hideCloseButton && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        haptics.light()
-                        onClose()
-                      }}
-                      className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
-                      aria-label="Fechar"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  )}
                 </div>
               )}
 
