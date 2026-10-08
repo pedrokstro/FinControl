@@ -48,9 +48,22 @@ const startServer = async (): Promise<void> => {
 
     // Iniciar job de transações recorrentes
     try {
-      const { scheduleRecurringTransactionsJob } = await import('./jobs/recurring-transactions.job');
+      const { scheduleRecurringTransactionsJob, processRecurringTransactionsNow } = await import('./jobs/recurring-transactions.job');
       scheduleRecurringTransactionsJob();
       logger.info('⏰ Recurring transactions job scheduled');
+
+      // Processar imediatamente pendências retroativas (caso o servidor estivesse inativo no horário programado)
+      processRecurringTransactionsNow()
+        .then((count) => {
+          if (count > 0) {
+            logger.info(`✅ Startup catch-up: ${count} transações recorrentes pendentes foram processadas.`);
+          } else {
+            logger.info('ℹ️ Startup catch-up: Nenhuma transação recorrente pendente.');
+          }
+        })
+        .catch((error) => {
+          logger.error('❌ Falha ao processar pendências retroativas de recorrência na inicialização:', error);
+        });
     } catch (error) {
       logger.error('❌ Failed to load recurring transactions job:', error);
     }

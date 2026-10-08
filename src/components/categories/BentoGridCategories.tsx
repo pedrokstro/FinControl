@@ -168,8 +168,8 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
     <div className="space-y-4">
       {/* Barra de Ações do Bento Grid */}
       <div className="flex items-center justify-between px-1 text-xs text-neutral-500 dark:text-neutral-400">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary-500" />
+        <div className="hidden sm:flex items-center gap-2">
+          <GripVertical className="w-4 h-4 text-neutral-400" />
           <span className="font-medium">
             Arraste os cartões para personalizar a disposição
           </span>
@@ -178,7 +178,7 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
         {hasCustomOrder && (
           <button
             onClick={handleResetOrder}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-bold transition-all text-[11px]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-bold transition-all text-[11px] ml-auto"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Restaurar Ordem</span>
@@ -187,7 +187,7 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
       </div>
 
       {/* Grid Bento Responsivo com Suporte a Drag and Drop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 auto-rows-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 auto-rows-auto">
         <AnimatePresence>
           {sortedCategories.map((category, index) => {
             const spent = getCategorySpent(category.id)
@@ -217,7 +217,7 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
                 onDragOver={(e) => handleDragOver(e as any, category.id)}
                 onDragEnd={handleDragEnd}
                 onDrop={(e) => handleDrop(e as any, category.id)}
-                className={`group relative rounded-3xl p-6 transition-all duration-300 select-none cursor-grab active:cursor-grabbing border ${
+                className={`group relative rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 select-none cursor-grab active:cursor-grabbing border ${
                   isFeatured ? 'sm:col-span-2' : 'col-span-1'
                 } ${
                   isDropTarget
@@ -230,16 +230,16 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
               >
                 {/* Linha de Destaque Superior de Cor */}
                 <div
-                  className="absolute top-0 left-8 right-8 h-1 rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-0 left-6 sm:left-8 right-6 sm:right-8 h-1 rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity"
                   style={{ backgroundColor: category.color }}
                 />
 
                 {/* Cabeçalho do Card */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3.5">
+                <div className="flex items-start justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-3 sm:gap-3.5">
                     {/* Ícone da Categoria */}
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner"
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner flex-shrink-0"
                       style={{ backgroundColor: `${category.color}18` }}
                     >
                       <CategoryIcon
@@ -278,28 +278,34 @@ export const BentoGridCategories: React.FC<BentoGridCategoriesProps> = ({
 
                   {/* Ações Rápidas & Alça de Drag */}
                   <div className="flex items-center gap-1">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
+                    <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
                       <button
                         type="button"
-                        onClick={() => onOpenModal(category)}
-                        className="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors"
+                        onClick={() => {
+                          haptics.light()
+                          onOpenModal(category)
+                        }}
+                        className="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors active:scale-95"
                         title="Editar Categoria"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
-                        onClick={() => onDelete(category)}
-                        className="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors"
+                        onClick={() => {
+                          haptics.medium()
+                          onDelete(category)
+                        }}
+                        className="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors active:scale-95"
                         title="Excluir Categoria"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    {/* Alça de Arrastar */}
+                    {/* Alça de Arrastar (Desktop apenas) */}
                     <div
-                      className="p-1.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-grab active:cursor-grabbing rounded-lg"
+                      className="hidden sm:block p-1.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-grab active:cursor-grabbing rounded-lg"
                       title="Arraste para reorganizar"
                     >
                       <GripVertical className="w-4 h-4" />

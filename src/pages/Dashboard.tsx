@@ -910,127 +910,171 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Header Premium Mobile (Card com Saldo, Calendário Integrado e Ações) */}
+      {/* Header Premium Mobile (Inspirado no estilo nativo de referência) */}
       {isMobile && (
-        <div className="block sm:hidden -mx-4 mb-6 !mt-0">
-          <div className="relative overflow-hidden bg-primary-600 rounded-none pt-[calc(2rem+env(safe-area-inset-top))] px-6 pb-6 text-white shadow-xl shadow-primary-500/10 dark:shadow-primary-950/20">
-            <div className="relative z-10 flex flex-col justify-between min-h-[160px]">
-              {/* Linha Superior: Período / Navegação e Utilidades */}
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex flex-col">
-                  <span className="text-[10px] text-white/70 uppercase tracking-widest font-semibold">Período</span>
-                  <div className="flex items-center gap-1.5 mt-1 -ml-1">
-                    <button 
-                      onClick={goToPreviousMonth} 
-                      className="p-1 hover:bg-white/10 active:bg-white/20 rounded-lg text-white transition-colors"
-                      title="Mês anterior"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <span className="text-sm font-bold capitalize text-white whitespace-nowrap">
-                      {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMM yyyy', { locale: ptBR })}
-                    </span>
-                    <button 
-                      onClick={goToNextMonth} 
-                      disabled={isCurrentMonth()} 
-                      className={`p-1 rounded-lg text-white transition-colors ${isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 active:bg-white/20'}`}
-                      title="Próximo mês"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Utilidades: Perfil e Notificação */}
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => navigate('/app/settings')} 
-                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm overflow-hidden border border-white/25"
-                    title="Perfil (Configurações)"
-                  >
-                    {user?.avatar ? (
-                      <img src={user.avatar} alt="Perfil" className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-5 h-5 text-white" />
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => toast.success("Você está em dia! Nenhuma notificação recente.")} 
-                    className="w-10 h-10 bg-white/15 hover:bg-white/25 active:scale-95 rounded-full flex items-center justify-center transition-all shadow-sm"
-                    title="Notificações"
-                  >
-                    <Bell className="w-5 h-5 text-white" />
-                  </button>
+        <div className="block sm:hidden -mx-4 mb-6 !mt-0 select-none">
+          <div className="relative overflow-hidden bg-primary-600 rounded-b-[36px] pt-[calc(1.25rem+env(safe-area-inset-top))] px-4 pb-6 text-white shadow-xl shadow-primary-950/20">
+            {/* 1. Barra Superior: Usuário / Saudação e Notificações */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    navigate('/app/settings')
+                  }}
+                  className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/40 bg-white/20 flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm"
+                  title="Perfil e Configurações"
+                >
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="Perfil" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-white" />
+                  )}
+                </button>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-xs text-white/80 font-normal truncate">
+                    {(() => {
+                      const hour = new Date().getHours()
+                      if (hour < 12) return 'Bom dia'
+                      if (hour < 18) return 'Boa tarde'
+                      return 'Boa noite'
+                    })()}
+                  </span>
+                  <span className="text-base font-bold text-white leading-tight font-display tracking-tight truncate">
+                    {user?.name || 'Usuário'}
+                  </span>
                 </div>
               </div>
 
-              {/* Linha Central: Rótulo do Saldo, Montante e Botões de Atalho */}
-              <div className="flex items-end justify-between mt-auto">
-                <div>
-                  <span className="text-xs text-white/80 font-medium tracking-wide">Saldo do Mês</span>
-                  <div className="flex items-baseline gap-1 mt-0.5">
-                    <AnimatedCounter
-                      value={financialSummary.monthBalance}
-                      prefix="R$ "
-                      className="text-3xl font-extrabold tracking-tight font-display text-white"
-                    />
-                    <span className="text-[10px] font-semibold bg-white/15 px-1.5 py-0.5 rounded ml-1.5 select-none uppercase">
-                      BRL
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    toast.success('Você está em dia! Nenhuma notificação recente.')
+                  }}
+                  className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all backdrop-blur-md border border-white/20 shadow-sm"
+                  title="Notificações"
+                >
+                  <Bell className="w-4.5 h-4.5 text-white" />
+                </button>
+              </div>
+            </div>
 
-                {/* Botões de Ação Rápida no Mobile (+ Receita, - Despesa) */}
-                <div className="flex flex-col gap-2 ml-4">
+            {/* 2. Centro: Saldo do Mês e Cápsula de Período */}
+            <div className="text-center my-4">
+              <span className="text-xs text-white/80 font-medium tracking-wide">
+                Saldo do Mês
+              </span>
+              <div className="my-1.5 flex items-center justify-center">
+                <AnimatedCounter
+                  value={financialSummary.monthBalance}
+                  prefix="R$ "
+                  className="text-4xl sm:text-5xl font-black tracking-tight font-display text-white leading-none drop-shadow-sm"
+                />
+              </div>
+
+              {/* Cápsula de Navegação de Período (Posicionada exatamente abaixo do saldo como no design de referência) */}
+              <div className="flex items-center justify-center mt-2.5">
+                <div className="bg-white/15 backdrop-blur-md rounded-full px-3 py-1 border border-white/20 flex items-center gap-1.5 shadow-sm text-white">
                   <button
-                    onClick={() => openQuickAdd('income')}
-                    className="w-11 h-11 bg-white hover:bg-gray-50 active:scale-95 text-primary-600 rounded-full flex items-center justify-center shadow-lg transition-all"
-                    title="Adicionar Receita"
+                    type="button"
+                    onClick={() => {
+                      haptics.light()
+                      goToPreviousMonth()
+                    }}
+                    className="p-1 hover:bg-white/20 active:scale-90 rounded-full text-white transition-all focus:outline-none"
+                    title="Mês anterior"
                   >
-                    <Plus className="w-5 h-5" />
+                    <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
+
+                  <div className="flex items-center gap-1.5 px-1.5">
+                    <Calendar className="w-3 h-3 text-white/80" />
+                    <span className="text-xs font-semibold capitalize tracking-wide text-white font-display">
+                      {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
+                    </span>
+                  </div>
+
+                  {!isInitialLoad && !isCurrentMonth() && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptics.light()
+                        goToCurrentMonth()
+                      }}
+                      className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white text-primary-700 shadow-sm active:scale-95 transition-transform"
+                    >
+                      Hoje
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => openQuickAdd('expense')}
-                    className="w-11 h-11 bg-white hover:bg-gray-50 active:scale-95 text-danger-600 rounded-full flex items-center justify-center shadow-lg transition-all"
-                    title="Adicionar Despesa"
+                    type="button"
+                    onClick={() => {
+                      haptics.light()
+                      goToNextMonth()
+                    }}
+                    disabled={isCurrentMonth()}
+                    className={`p-1 hover:bg-white/20 rounded-full text-white transition-all focus:outline-none ${
+                      isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'active:scale-90'
+                    }`}
+                    title="Próximo mês"
                   >
-                    <Minus className="w-5 h-5" />
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
+            </div>
 
-              {/* Linha Inferior: Indicador de Tendência baseada no mês anterior */}
-              <div className="mt-4 flex items-center">
-                {(() => {
-                  const lastMonth = lastMonthSummary.balance
-                  const currentMonth = financialSummary.monthBalance
-                  const diff = currentMonth - lastMonth
-                  const percentChange = lastMonth !== 0 ? Math.round((diff / Math.abs(lastMonth)) * 100) : (currentMonth > 0 ? 100 : (currentMonth < 0 ? -100 : 0))
+            {/* 3. Base: Cards de Receitas e Despesas em Fundo Branco */}
+            <div className="grid grid-cols-2 gap-3 mt-5">
+              {/* Card 1: Receitas */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  openQuickAdd('income')
+                }}
+                className="bg-white hover:bg-gray-50 active:scale-95 rounded-2xl p-3 shadow-md shadow-black/5 transition-all text-left flex items-center gap-2.5 focus:outline-none min-w-0"
+                title="Adicionar Receita"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <TrendingUp className="w-4.5 h-4.5 text-emerald-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[11px] text-gray-500 font-semibold block leading-none truncate">
+                    Receitas
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 font-mono truncate block mt-1 leading-tight">
+                    {formatCurrency(financialSummary.monthIncome)}
+                  </span>
+                </div>
+              </button>
 
-                  if (diff > 0) {
-                    return (
-                      <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full text-xs font-bold text-success-600 shadow-sm">
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        <span>+{formatCurrency(diff)} (+{percentChange}%)</span>
-                      </div>
-                    )
-                  } else if (diff < 0) {
-                    return (
-                      <div className="inline-flex items-center gap-1 bg-white px-3 py-1 rounded-full text-xs font-bold text-danger-600 shadow-sm">
-                        <TrendingDown className="w-3.5 h-3.5" />
-                        <span>-{formatCurrency(Math.abs(diff))} ({percentChange}%)</span>
-                      </div>
-                    )
-                  } else {
-                    return (
-                      <div className="inline-flex items-center gap-1 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-gray-500 shadow-sm">
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        <span>R$ 0,00 (0%)</span>
-                      </div>
-                    )
-                  }
-                })()}
-              </div>
+              {/* Card 2: Despesas */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  openQuickAdd('expense')
+                }}
+                className="bg-white hover:bg-gray-50 active:scale-95 rounded-2xl p-3 shadow-md shadow-black/5 transition-all text-left flex items-center gap-2.5 focus:outline-none min-w-0"
+                title="Adicionar Despesa"
+              >
+                <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                  <TrendingDown className="w-4.5 h-4.5 text-rose-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[11px] text-gray-500 font-semibold block leading-none truncate">
+                    Despesas
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 font-mono truncate block mt-1 leading-tight">
+                    {formatCurrency(financialSummary.monthExpense)}
+                  </span>
+                </div>
+              </button>
             </div>
           </div>
         </div>

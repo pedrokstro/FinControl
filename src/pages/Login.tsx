@@ -256,7 +256,6 @@ const Login = () => {
         <AuthVisualSide
           title="Transforme suas finanças em realidade."
           subtitle="Controle, precisão e tranquilidade em todas as suas plataformas."
-          badgeText="FinControl Inteligência"
         />
       </div>
     </>

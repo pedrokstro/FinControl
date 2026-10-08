@@ -317,7 +317,6 @@ const Register = () => {
       <AuthVisualSide
         title="Comece sua jornada financeira hoje."
         subtitle="Controle suas contas, automatize despesas e conquiste metas com facilidade."
-        badgeText="FinControl Onboarding"
       />
     </div>
   )

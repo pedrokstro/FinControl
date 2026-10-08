@@ -1,26 +1,23 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Sparkles } from 'lucide-react'
 import { Player } from '@remotion/player'
 import { AuthHeroComposition } from '@/remotion/AuthHeroComposition'
 
 interface AuthVisualSideProps {
   title?: string
   subtitle?: string
-  badgeText?: string
 }
 
 export const AuthVisualSide = ({
   title,
   subtitle,
-  badgeText = 'FinControl Analytics'
 }: AuthVisualSideProps) => {
   const [activeSlide, setActiveSlide] = useState(0)
 
   const slides = useMemo(() => [
     {
       title: title || 'Transforme suas finanças em realidade.',
-      subtitle: subtitle || 'Controle, precisão e inteligência em todas as suas plataformas.'
+      subtitle: subtitle || 'Controle, precisão e tranquilidade em todas as suas plataformas.'
     },
     {
       title: 'Decisões guiadas por dados reais.',
@@ -52,18 +49,6 @@ export const AuthVisualSide = ({
         <div className="absolute top-1/3 left-10 w-32 h-32 border border-white/10 rounded-2xl transform rotate-45" />
       </div>
 
-      {/* Header Superior da Lateral Visual */}
-      <div className="relative z-10 flex items-center justify-between">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-mono tracking-wider text-white/90">
-          <Sparkles className="w-3.5 h-3.5 text-primary-300" />
-          <span>{badgeText}</span>
-        </div>
-
-        {/* Mini Badge Flutuante */}
-        <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
-          <Zap className="w-5 h-5 text-yellow-300" />
-        </div>
-      </div>
 
       {/* Área Central: Player do Remotion com Animação Fluida a 60fps */}
       <div className="relative z-10 my-auto py-4 w-full max-w-xl mx-auto flex items-center justify-center">

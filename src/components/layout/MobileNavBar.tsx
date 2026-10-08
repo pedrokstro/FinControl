@@ -41,7 +41,7 @@ const MobileNavBar = () => {
                   {isActive && (
                     <motion.div
                       layoutId="mobileActivePill"
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-600 to-primary-500 shadow-md shadow-primary-500/30"
+                      className="absolute inset-0 rounded-full bg-primary-600 shadow-sm"
                       transition={{ type: 'spring', stiffness: 430, damping: 32 }}
                     />
                   )}

@@ -290,58 +290,62 @@ const Categories = () => {
 
   return (
     <PageTransition>
-      <div className="responsive-page">
-        {/* Header */}
-        <div className="responsive-header gap-4">
-          <div className="hidden sm:block">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorias</h1>
-            <p className="text-gray-600 dark:text-neutral-400 mt-1">
+      <div className="responsive-page pb-28 sm:pb-8">
+        {/* Header Responsivo */}
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-3xl font-extrabold text-gray-900 dark:text-white font-display tracking-tight">
+              Categorias
+            </h1>
+            <p className="hidden sm:block text-gray-600 dark:text-neutral-400 mt-1 text-sm">
               Organize suas transações em categorias personalizadas
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+          <div className="flex items-center gap-2">
             {/* Toggle View Mode */}
-            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl">
+            <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl">
               <button
                 onClick={() => handleViewModeChange('bento')}
                 disabled={isViewModeLoading}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'bento'
+                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'bento'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-                title="Visualização Bento Grid (com arraste)"
+                title="Visualização Bento Grid"
               >
-                <LayoutGrid className="w-5 h-5" />
+                <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => handleViewModeChange('grid')}
                 disabled={isViewModeLoading}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
+                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'grid'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
                 title="Visualização em Grade"
               >
-                <Grid3x3 className="w-5 h-5" />
+                <Grid3x3 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => handleViewModeChange('list')}
                 disabled={isViewModeLoading}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'list'
+                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'list'
                   ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
                 title="Visualização em Lista"
               >
-                <List className="w-5 h-5" />
+                <List className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
+            {/* Botão Nova Categoria (Desktop apenas) */}
             <button
               onClick={() => handleOpenModal()}
-              className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto rounded-full shadow-sm"
+              className="hidden sm:inline-flex btn-primary items-center justify-center gap-2 rounded-full shadow-sm text-sm"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Nova Categoria
             </button>
           </div>
@@ -389,37 +393,44 @@ const Categories = () => {
           </div>
         )}
 
-        {/* Filtros */}
-        <div className="card">
-          <div className="mobile-scroll-buttons">
-            <button
-              onClick={() => setFilterType('all')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'all'
-                ? 'bg-primary-600 dark:bg-primary-500 text-white ring-2 ring-primary-600/20 dark:ring-primary-400/20'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                }`}
-            >
-              Todas ({categories.length})
-            </button>
-            <button
-              onClick={() => setFilterType('income')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'income'
-                ? 'bg-success-600 dark:bg-success-500 text-white ring-2 ring-success-600/20 dark:ring-success-400/20'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                }`}
-            >
-              Receitas ({categories.filter(c => c.type === 'income').length})
-            </button>
-            <button
-              onClick={() => setFilterType('expense')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${filterType === 'expense'
-                ? 'bg-danger-600 dark:bg-danger-500 text-white ring-2 ring-danger-600/20 dark:ring-danger-400/20'
-                : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700'
-                }`}
-            >
-              Despesas ({categories.filter(c => c.type === 'expense').length})
-            </button>
-          </div>
+        {/* Filtros em Chips Nativos Mobile */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+          <button
+            onClick={() => {
+              haptics.light()
+              setFilterType('all')
+            }}
+            className={`px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap active:scale-95 ${filterType === 'all'
+              ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm ring-2 ring-primary-600/20 dark:ring-primary-400/20'
+              : 'bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              }`}
+          >
+            Todas ({categories.length})
+          </button>
+          <button
+            onClick={() => {
+              haptics.light()
+              setFilterType('income')
+            }}
+            className={`px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap active:scale-95 ${filterType === 'income'
+              ? 'bg-success-600 dark:bg-success-500 text-white shadow-sm ring-2 ring-success-600/20 dark:ring-success-400/20'
+              : 'bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              }`}
+          >
+            Receitas ({categories.filter(c => c.type === 'income').length})
+          </button>
+          <button
+            onClick={() => {
+              haptics.light()
+              setFilterType('expense')
+            }}
+            className={`px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap active:scale-95 ${filterType === 'expense'
+              ? 'bg-danger-600 dark:bg-danger-500 text-white shadow-sm ring-2 ring-danger-600/20 dark:ring-danger-400/20'
+              : 'bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              }`}
+          >
+            Despesas ({categories.filter(c => c.type === 'expense').length})
+          </button>
         </div>
 
         {(isViewModeLoading || isCategoriesLoading) && (
@@ -473,7 +484,7 @@ const Categories = () => {
                       size="lg"
                     />
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleOpenModal(category)}
                       className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
@@ -1085,6 +1096,21 @@ const Categories = () => {
               : undefined
           }
         />
+
+        {/* FAB - Nova Categoria (Mobile Only) */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={() => {
+            haptics.medium()
+            handleOpenModal()
+          }}
+          className="sm:hidden fixed bottom-24 right-4 z-40 w-14 h-14 bg-gradient-to-tr from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 active:scale-90 text-white rounded-full shadow-2xl shadow-primary-500/40 border border-white/20 flex items-center justify-center transition-all cursor-pointer"
+          title="Nova Categoria"
+          aria-label="Nova Categoria"
+        >
+          <Plus className="w-6 h-6 stroke-[2.5]" />
+        </motion.button>
       </div>
     </PageTransition>
   )

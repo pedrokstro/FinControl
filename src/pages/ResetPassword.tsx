@@ -297,7 +297,6 @@ const ResetPassword = () => {
       <AuthVisualSide
         title="Recupere o acesso à sua conta."
         subtitle="Mantenha o controle da sua saúde financeira com segurança e tranquilidade."
-        badgeText="FinControl Recuperação"
       />
     </div>
   )

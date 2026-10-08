@@ -125,7 +125,6 @@ const ForgotPassword = () => {
       <AuthVisualSide
         title="Sua segurança em primeiro lugar."
         subtitle="Protocolos rigorosos de verificação para proteger sua conta e suas informações financeiras."
-        badgeText="FinControl Proteção"
       />
     </div>
   )
