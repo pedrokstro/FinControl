@@ -920,8 +920,65 @@ const Dashboard = () => {
       {/* Header Premium Mobile (Inspirado no estilo nativo de referência) */}
       {isMobile && (
         <div className="block sm:hidden -mx-4 mb-6 !mt-0 select-none">
-          <div className="relative overflow-hidden bg-primary-600 rounded-b-[36px] pt-[calc(1.25rem+env(safe-area-inset-top))] px-4 pb-6 text-white shadow-xl shadow-primary-950/20">
-            {/* 1. Barra Superior: Usuário / Saudação e Notificações */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#090d16] dark:via-[#0e1726] dark:to-[#050811] rounded-b-[36px] pt-[calc(1.25rem+env(safe-area-inset-top))] px-4 pb-6 text-white shadow-xl shadow-primary-950/25 dark:shadow-2xl dark:shadow-black/70 border-b border-white/10 dark:border-white/5 transition-colors duration-300">
+            {/* Elementos de Fundo com Mesh Aurora Glow e Micro-animações Orgânicas */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+              {/* Orb 1: Luz Ciano / Celeste no topo direito */}
+              <motion.div
+                animate={{
+                  x: [0, 20, 0],
+                  y: [0, -12, 0],
+                  scale: [1, 1.15, 1],
+                  opacity: [0.35, 0.55, 0.35],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-cyan-300 dark:bg-cyan-500/20 blur-3xl"
+              />
+
+              {/* Orb 2: Luz Índigo profundo no canto inferior esquerdo */}
+              <motion.div
+                animate={{
+                  x: [0, -15, 0],
+                  y: [0, 15, 0],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.45, 0.3],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-indigo-700 dark:bg-indigo-600/25 blur-3xl"
+              />
+
+              {/* Orb 3: Luz central suave para respiro do saldo */}
+              <motion.div
+                animate={{
+                  scale: [0.95, 1.1, 0.95],
+                  opacity: [0.15, 0.3, 0.15],
+                }}
+                transition={{
+                  duration: 7,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-sky-200 dark:bg-sky-400/10 blur-2xl"
+              />
+
+              {/* Camada de Gradiente Angular de Vidro / Shimmer Sutil */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/10 dark:from-white/[0.04] dark:to-black/30 mix-blend-overlay" />
+
+              {/* Linha de reflexo especular na base do cartão */}
+              <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent" />
+            </div>
+
+            {/* Conteúdo em primeiro plano */}
+            <div className="relative z-10">
+              {/* 1. Barra Superior: Usuário / Saudação e Notificações */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3 min-w-0">
                 <button
@@ -930,7 +987,7 @@ const Dashboard = () => {
                     haptics.light()
                     navigate('/app/settings')
                   }}
-                  className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/40 bg-white/20 flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm"
+                  className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/40 dark:border-white/20 bg-white/20 dark:bg-white/10 flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm"
                   title="Perfil e Configurações"
                 >
                   {user?.avatar ? (
@@ -940,7 +997,7 @@ const Dashboard = () => {
                   )}
                 </button>
                 <div className="flex flex-col text-left min-w-0">
-                  <span className="text-xs text-white/80 font-normal truncate">
+                  <span className="text-xs text-white/80 dark:text-neutral-400 font-normal truncate">
                     {(() => {
                       const hour = new Date().getHours()
                       if (hour < 12) return 'Bom dia'
@@ -957,7 +1014,7 @@ const Dashboard = () => {
 
             {/* 2. Centro: Saldo do Mês e Cápsula de Período */}
             <div className="text-center my-4">
-              <span className="text-xs text-white/80 font-medium tracking-wide">
+              <span className="text-xs text-white/80 dark:text-neutral-400 font-medium tracking-wide">
                 Saldo do Mês
               </span>
               <div className="my-1.5 flex items-center justify-center">
@@ -970,21 +1027,21 @@ const Dashboard = () => {
 
               {/* Cápsula de Navegação de Período (Posicionada exatamente abaixo do saldo como no design de referência) */}
               <div className="flex items-center justify-center mt-2.5">
-                <div className="bg-white/15 backdrop-blur-md rounded-full px-3 py-1 border border-white/20 flex items-center gap-1.5 shadow-sm text-white">
+                <div className="bg-white/15 dark:bg-white/[0.08] backdrop-blur-md rounded-full px-3 py-1 border border-white/20 dark:border-white/10 flex items-center gap-1.5 shadow-sm text-white">
                   <button
                     type="button"
                     onClick={() => {
                       haptics.light()
                       goToPreviousMonth()
                     }}
-                    className="p-1 hover:bg-white/20 active:scale-90 rounded-full text-white transition-all focus:outline-none"
+                    className="p-1 hover:bg-white/20 dark:hover:bg-white/10 active:scale-90 rounded-full text-white transition-all focus:outline-none"
                     title="Mês anterior"
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
 
                   <div className="flex items-center gap-1.5 px-1.5">
-                    <Calendar className="w-3 h-3 text-white/80" />
+                    <Calendar className="w-3 h-3 text-white/80 dark:text-neutral-300" />
                     <span className="text-xs font-semibold capitalize tracking-wide text-white font-display">
                       {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
                     </span>
@@ -997,7 +1054,7 @@ const Dashboard = () => {
                         haptics.light()
                         goToCurrentMonth()
                       }}
-                      className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white text-primary-700 shadow-sm active:scale-95 transition-transform"
+                      className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white dark:bg-neutral-800 text-primary-700 dark:text-neutral-200 border border-transparent dark:border-white/10 shadow-sm active:scale-95 transition-transform"
                     >
                       Hoje
                     </button>
@@ -1010,7 +1067,7 @@ const Dashboard = () => {
                       goToNextMonth()
                     }}
                     disabled={isCurrentMonth()}
-                    className={`p-1 hover:bg-white/20 rounded-full text-white transition-all focus:outline-none ${
+                    className={`p-1 hover:bg-white/20 dark:hover:bg-white/10 rounded-full text-white transition-all focus:outline-none ${
                       isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'active:scale-90'
                     }`}
                     title="Próximo mês"
@@ -1030,7 +1087,7 @@ const Dashboard = () => {
                   haptics.light()
                   openQuickAdd('income')
                 }}
-                className="bg-white/15 hover:bg-white/20 active:scale-95 border border-white/15 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
+                className="bg-white/15 dark:bg-white/[0.08] hover:bg-white/20 dark:hover:bg-white/[0.12] active:scale-95 border border-white/15 dark:border-white/10 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
                 title="Adicionar Receita"
                 aria-label="Adicionar Receita"
               >
@@ -1049,7 +1106,7 @@ const Dashboard = () => {
                   haptics.light()
                   openQuickAdd('expense')
                 }}
-                className="bg-white/15 hover:bg-white/20 active:scale-95 border border-white/15 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
+                className="bg-white/15 dark:bg-white/[0.08] hover:bg-white/20 dark:hover:bg-white/[0.12] active:scale-95 border border-white/15 dark:border-white/10 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
                 title="Adicionar Despesa"
                 aria-label="Adicionar Despesa"
               >
@@ -1060,6 +1117,7 @@ const Dashboard = () => {
                   Despesa
                 </span>
               </button>
+            </div>
             </div>
           </div>
         </div>

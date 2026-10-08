@@ -23,7 +23,6 @@ import {
   Wallet,
   Activity,
   CreditCard as CreditCardIcon,
-  SlidersHorizontal,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO, isToday, isYesterday } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -480,17 +479,17 @@ const Transactions = () => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            {/* Controle de mês - mobile compacto, integrado ao estilo Dashboard */}
-            <div className="flex items-center flex-1 sm:flex-none gap-1.5 bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 rounded-2xl px-2.5 py-2 shadow-md">
+            {/* Controle de mês - estilo Pill nativo */}
+            <div className="flex items-center flex-1 sm:flex-none justify-between sm:justify-start gap-1.5 bg-white dark:bg-neutral-900/95 border border-gray-200/60 dark:border-neutral-800/80 rounded-full px-2.5 py-1.5 shadow-sm">
               <button
                 onClick={handlePreviousMonth}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0"
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-all duration-200 active:scale-90 flex-shrink-0 cursor-pointer"
                 title="Mês anterior"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
               </button>
 
-              <div className="flex items-center gap-1.5 flex-1 justify-center px-1">
+              <div className="flex items-center gap-1.5 flex-1 justify-center px-2">
                 <Calendar className="w-3.5 h-3.5 text-primary-500 dark:text-primary-400 flex-shrink-0" />
                 <span className="text-sm font-bold text-gray-900 dark:text-white capitalize whitespace-nowrap font-display">
                   {format(selectedMonth, 'MMM yyyy', { locale: ptBR })}
@@ -500,7 +499,7 @@ const Transactions = () => {
               {!isCurrentMonth && (
                 <button
                   onClick={handleCurrentMonth}
-                  className="px-2 py-0.5 text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20 border border-primary-100/50 dark:border-primary-900/10 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
+                  className="px-2.5 py-1 text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/40 border border-primary-100/60 dark:border-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-full transition-colors whitespace-nowrap cursor-pointer active:scale-95"
                 >
                   Hoje
                 </button>
@@ -508,7 +507,7 @@ const Transactions = () => {
               <button
                 onClick={handleNextMonth}
                 disabled={isCurrentMonth}
-                className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0 ${
+                className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 active:scale-90 flex-shrink-0 cursor-pointer ${
                   isCurrentMonth ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
                 }`}
                 title="Próximo mês"
@@ -517,23 +516,10 @@ const Transactions = () => {
               </button>
             </div>
 
-            {/* Botão de filtros - mobile only */}
-            <button
-              onClick={() => setShowFilters(prev => !prev)}
-              className={`sm:hidden w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-2xl border shadow-md transition-all duration-200 active:scale-90 ${
-                showFilters || searchTerm || filterType !== 'all' || filterCategory !== 'all'
-                  ? 'bg-primary-600 border-primary-600 text-white'
-                  : 'bg-white dark:bg-neutral-900/95 border-gray-200/50 dark:border-neutral-800/60 text-gray-600 dark:text-neutral-300'
-              }`}
-              title="Filtros"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-            </button>
-
             {/* Botão Nova Transação - desktop only */}
             <button
               onClick={() => handleOpenModal()}
-              className="hidden sm:flex btn-primary items-center justify-center gap-2 rounded-2xl shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
+              className="hidden sm:flex btn-primary items-center justify-center gap-2 rounded-full shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
             >
               <Plus className="w-5 h-5" />
               Nova Transação
@@ -641,8 +627,8 @@ const Transactions = () => {
           </div>
         </div>
 
-        {/* Filters - oculto no mobile, toggle via botão de filtro */}
-        <div className={`${showFilters ? 'block' : 'hidden'} sm:block bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl p-4 sm:p-5 mb-6`}>
+        {/* Filters - desktop only */}
+        <div className="hidden sm:block bg-white dark:bg-neutral-900/95 border border-gray-200/50 dark:border-neutral-800/60 shadow-md rounded-2xl p-4 sm:p-5 mb-6">
           <div className="filter-grid">
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
