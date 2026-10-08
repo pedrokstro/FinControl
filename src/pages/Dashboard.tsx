@@ -11,7 +11,6 @@ import {
   Wallet,
   Target,
   Plus,
-  X,
   Loader2,
   Repeat,
   Edit3,
@@ -20,7 +19,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Minus,
   User,
   FolderOpen,
   CreditCard,
@@ -224,7 +222,6 @@ const Dashboard = () => {
   const [isLoadingGoal, setIsLoadingGoal] = useState(true)
   const [isDeletingGoal, setIsDeletingGoal] = useState(false)
   const [isQuickAddRecurring, setIsQuickAddRecurring] = useState(false)
-  const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [showIncomeModal, setShowIncomeModal] = useState(false)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
@@ -281,8 +278,6 @@ const Dashboard = () => {
   useEffect(() => {
     const loadData = async () => {
       await Promise.all([syncWithBackend(), loadCurrentGoal()])
-      // Pequeno delay para garantir renderização suave
-      setTimeout(() => setIsInitialLoad(false), 100)
     }
     loadData()
   }, [syncWithBackend])
@@ -867,7 +862,7 @@ const Dashboard = () => {
   const QuickAddSheet = isMobile ? NativeBottomSheet : Modal
 
   return (
-    <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
+    <div className="responsive-page">
 
       {/* Header com Navegação de Mês integrada - Desktop */}
       <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -895,7 +890,7 @@ const Dashboard = () => {
             </span>
           </div>
 
-          {!isInitialLoad && !isCurrentMonth() && (
+          {!isCurrentMonth() && (
             <button
               onClick={goToCurrentMonth}
               className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
@@ -920,31 +915,33 @@ const Dashboard = () => {
       {/* Header Premium Mobile (Inspirado no estilo nativo de referência) */}
       {isMobile && (
         <div className="block sm:hidden -mx-4 mb-6 !mt-0 select-none">
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#090d16] dark:via-[#0e1726] dark:to-[#050811] rounded-b-[36px] pt-[calc(1.25rem+env(safe-area-inset-top))] px-4 pb-6 text-white shadow-xl shadow-primary-950/25 dark:shadow-2xl dark:shadow-black/70 border-b border-white/10 dark:border-white/5 transition-colors duration-300">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#090d16] dark:via-[#0e1726] dark:to-[#050811] rounded-b-[36px] pt-[calc(1.25rem+env(safe-area-inset-top))] px-4 pb-6 text-white shadow-xl shadow-primary-950/25 dark:shadow-2xl dark:shadow-black/70 border-b border-white/10 dark:border-white/5">
             {/* Elementos de Fundo com Mesh Aurora Glow e Micro-animações Orgânicas */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
               {/* Orb 1: Luz Ciano / Celeste no topo direito */}
               <motion.div
+                initial={false}
                 animate={{
-                  x: [0, 20, 0],
-                  y: [0, -12, 0],
-                  scale: [1, 1.15, 1],
-                  opacity: [0.35, 0.55, 0.35],
+                  x: [0, 16, 0],
+                  y: [0, -10, 0],
+                  scale: [1, 1.12, 1],
+                  opacity: [0.35, 0.5, 0.35],
                 }}
                 transition={{
                   duration: 8,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
-                className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-cyan-300 dark:bg-cyan-500/20 blur-3xl"
+                className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-cyan-300/80 dark:bg-cyan-500/20 blur-3xl transform-gpu pointer-events-none"
               />
 
               {/* Orb 2: Luz Índigo profundo no canto inferior esquerdo */}
               <motion.div
+                initial={false}
                 animate={{
-                  x: [0, -15, 0],
-                  y: [0, 15, 0],
-                  scale: [1, 1.2, 1],
+                  x: [0, -12, 0],
+                  y: [0, 12, 0],
+                  scale: [1, 1.15, 1],
                   opacity: [0.3, 0.45, 0.3],
                 }}
                 transition={{
@@ -952,28 +949,29 @@ const Dashboard = () => {
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
-                className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-indigo-700 dark:bg-indigo-600/25 blur-3xl"
+                className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-indigo-700/80 dark:bg-indigo-600/25 blur-3xl transform-gpu pointer-events-none"
               />
 
               {/* Orb 3: Luz central suave para respiro do saldo */}
               <motion.div
+                initial={false}
                 animate={{
-                  scale: [0.95, 1.1, 0.95],
-                  opacity: [0.15, 0.3, 0.15],
+                  scale: [0.95, 1.08, 0.95],
+                  opacity: [0.15, 0.28, 0.15],
                 }}
                 transition={{
                   duration: 7,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-sky-200 dark:bg-sky-400/10 blur-2xl"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-sky-200/60 dark:bg-sky-400/10 blur-2xl transform-gpu pointer-events-none"
               />
 
-              {/* Camada de Gradiente Angular de Vidro / Shimmer Sutil */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/10 dark:from-white/[0.04] dark:to-black/30 mix-blend-overlay" />
+              {/* Camada de Gradiente Angular de Vidro / Shimmer Sutil (opacidade direta sem blend mode pesado) */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 dark:from-white/[0.04] via-transparent to-black/10 dark:to-black/30 pointer-events-none" />
 
               {/* Linha de reflexo especular na base do cartão */}
-              <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent" />
+              <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent pointer-events-none" />
             </div>
 
             {/* Conteúdo em primeiro plano */}
@@ -1047,7 +1045,7 @@ const Dashboard = () => {
                     </span>
                   </div>
 
-                  {!isInitialLoad && !isCurrentMonth() && (
+                  {!isCurrentMonth() && (
                     <button
                       type="button"
                       onClick={() => {
@@ -1077,51 +1075,10 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* 3. Base: Ações Rápidas no Estilo Pill (Receita e Despesa) */}
-            <div className="flex items-center justify-center gap-6 mt-3.5">
-              {/* Pill: Receita */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptics.light()
-                  openQuickAdd('income')
-                }}
-                className="bg-white/15 dark:bg-white/[0.08] hover:bg-white/20 dark:hover:bg-white/[0.12] active:scale-95 border border-white/15 dark:border-white/10 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
-                title="Adicionar Receita"
-                aria-label="Adicionar Receita"
-              >
-                <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0">
-                  <TrendingUp className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
-                </div>
-                <span className="text-xs font-semibold tracking-wide text-white">
-                  Receita
-                </span>
-              </button>
-
-              {/* Pill: Despesa */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptics.light()
-                  openQuickAdd('expense')
-                }}
-                className="bg-white/15 dark:bg-white/[0.08] hover:bg-white/20 dark:hover:bg-white/[0.12] active:scale-95 border border-white/15 dark:border-white/10 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
-                title="Adicionar Despesa"
-                aria-label="Adicionar Despesa"
-              >
-                <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm shrink-0">
-                  <TrendingDown className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
-                </div>
-                <span className="text-xs font-semibold tracking-wide text-white">
-                  Despesa
-                </span>
-              </button>
-            </div>
-            </div>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Atalhos Rápidos Mobile (Estilo Nubank) */}
       {isMobile && (

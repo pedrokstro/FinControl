@@ -153,7 +153,6 @@ const Transactions = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [isRecurring, setIsRecurring] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
   const [activeSwipeId, setActiveSwipeId] = useState<string | null>(null)
   const { usage, checkLimit, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)

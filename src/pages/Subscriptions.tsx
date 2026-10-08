@@ -11,6 +11,16 @@ import Modal from '@/components/common/Modal'
 import api from '@/config/api'
 import { toast } from 'react-hot-toast'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
+import MobileSubscriptionsView from '@/components/subscriptions/mobile/MobileSubscriptionsView'
+import CategorySelect from '@/components/common/CategorySelect'
+import CustomSelect, { type SelectOption } from '@/components/common/CustomSelect'
+
+const EDIT_FREQUENCY_OPTIONS: SelectOption[] = [
+  { value: 'mensal', label: 'Mensal' },
+  { value: 'anual', label: 'Anual' },
+  { value: 'semanal', label: 'Semanal' },
+  { value: 'trimestral', label: 'Trimestral' },
+]
 
 const getBrandIcon = (name: string, defaultIcon?: string) => {
   const lower = name.toLowerCase()
@@ -212,7 +222,20 @@ const Subscriptions = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6 pb-20 md:pb-6">
+      {/* Visualização Nativa Mobile */}
+      <div className="block lg:hidden">
+        <MobileSubscriptionsView
+          subscriptions={subscriptions}
+          categories={categories}
+          monthlyTotal={monthlyTotal}
+          yearlyTotal={yearlyTotal}
+          currentMonthIncome={currentMonthIncome}
+          onRefresh={syncWithBackend}
+        />
+      </div>
+
+      {/* Visualização Desktop */}
+      <div className="hidden lg:block space-y-6 pb-20 md:pb-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
@@ -462,29 +485,21 @@ const Subscriptions = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Categoria</label>
-                    <select
-                      className="w-full mt-1 px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition-all text-gray-900 dark:text-white"
+                    <label className="text-sm font-medium text-gray-700 dark:text-neutral-300 block mb-1">Categoria</label>
+                    <CategorySelect
+                      categories={categories}
                       value={editForm.categoryId}
-                      onChange={e => setEditForm({ ...editForm, categoryId: e.target.value })}
-                    >
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setEditForm({ ...editForm, categoryId: val })}
+                    />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Frequência</label>
-                    <select
-                      className="w-full mt-1 px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition-all text-gray-900 dark:text-white"
+                    <label className="text-sm font-medium text-gray-700 dark:text-neutral-300 block mb-1">Frequência</label>
+                    <CustomSelect
+                      options={EDIT_FREQUENCY_OPTIONS}
                       value={editForm.frequency}
-                      onChange={e => setEditForm({ ...editForm, frequency: e.target.value })}
-                    >
-                      <option value="semanal">Semanal</option>
-                      <option value="mensal">Mensal</option>
-                      <option value="trimestral">Trimestral</option>
-                      <option value="anual">Anual</option>
-                    </select>
+                      onChange={(val) => setEditForm({ ...editForm, frequency: val })}
+                      dropdownTitle="Frequência"
+                    />
                   </div>
                 </div>
               ) : (

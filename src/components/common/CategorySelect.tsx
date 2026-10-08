@@ -96,7 +96,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="fixed inset-0 z-[300] bg-black/40 backdrop-blur-sm"
+                                        className="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-sm"
                                         onClick={() => setIsOpen(false)}
                                     />
 
@@ -116,7 +116,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
                                                 setIsOpen(false);
                                             }
                                         }}
-                                        className="fixed z-[301] bottom-0 left-0 right-0 w-full bg-white dark:bg-neutral-800 rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[85vh]"
+                                        className="fixed z-[9991] bottom-0 left-0 right-0 w-full bg-white dark:bg-neutral-800 rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[85vh]"
                                         onClick={(e) => e.stopPropagation()}
                                         ref={dropdownRef}
                                     >
