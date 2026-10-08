@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Crown,
@@ -13,16 +13,26 @@ import {
   Gift,
   Target
 } from 'lucide-react';
-import { subscriptionService } from '@/services/subscription.service';
+import { subscriptionService, type SubscriptionStatus } from '@/services/subscription.service';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
 import PageTransition from '@/components/common/PageTransition';
+import { MobilePlansView } from '@/components/plans/mobile/MobilePlansView';
 
 const Plans = () => {
   const navigate = useNavigate();
   const { user, refreshPremiumStatus } = useAuthStore();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isStartingTrial, setIsStartingTrial] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  useEffect(() => {
+    if (user?.isPremium) {
+      subscriptionService.getStatus().then(setSubscriptionStatus).catch(() => {});
+    }
+  }, [user?.isPremium]);
 
   // Stripe Official Links (Mantendo os links de teste validados)
   const STRIPE_LINKS = {
@@ -89,20 +99,73 @@ const Plans = () => {
     window.location.href = checkoutUrl;
   };
 
+  const handleManageBilling = async () => {
+    try {
+      setLoadingPortal(true);
+      const returnUrl = window.location.href;
+      const { url } = await subscriptionService.createPortalSession(returnUrl);
+      window.location.href = url;
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erro ao abrir configurações de faturamento');
+    } finally {
+      setLoadingPortal(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      setCancelling(true);
+      await subscriptionService.cancel();
+      await refreshPremiumStatus();
+      if (user?.isPremium) {
+        const status = await subscriptionService.getStatus();
+        setSubscriptionStatus(status);
+      }
+      toast.success('Assinatura cancelada com sucesso');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erro ao cancelar assinatura');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
-        <div className="container-custom py-12">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-sm font-semibold mb-6">
-              <Sparkles className="w-4 h-4" />
-              Oferta Especial: 7 dias grátis!
-            </div>
+      {/* 1. Versão Mobile Nativa */}
+      <div className="lg:hidden px-4">
+        <MobilePlansView
+          user={user}
+          billingCycle={billingCycle}
+          setBillingCycle={setBillingCycle}
+          onStartTrial={handleStartTrial}
+          onUpgrade={handleUpgrade}
+          isStartingTrial={isStartingTrial}
+          monthlyPrice={monthlyPrice}
+          yearlyPrice={yearlyPrice}
+          yearlyMonthlyEquivalent={yearlyMonthlyEquivalent}
+          savings={savings}
+          subscriptionStatus={subscriptionStatus}
+          onManageBilling={handleManageBilling}
+          onCancelSubscription={handleCancelSubscription}
+          loadingPortal={loadingPortal}
+          cancelling={cancelling}
+        />
+      </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Leve Suas Finanças ao
-              <span className="block mt-2 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+      {/* 2. Versão Desktop */}
+      <div className="hidden lg:block">
+        <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800">
+          <div className="container-custom py-12">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-sm font-semibold mb-6">
+                <Sparkles className="w-4 h-4" />
+                Oferta Especial: 7 dias grátis!
+              </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                Leve Suas Finanças ao
+                <span className="block mt-2 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                 Próximo Nível!
               </span>
             </h1>
@@ -353,6 +416,7 @@ const Plans = () => {
           </div>
         </div>
       </div>
+    </div>
     </PageTransition>
   );
 };

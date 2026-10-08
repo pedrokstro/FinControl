@@ -21,14 +21,16 @@ import {
   ChevronRight,
   Calendar,
   Minus,
-  Bell,
   User,
   FolderOpen,
   CreditCard,
   CalendarClock,
   Percent,
-  LogOut
+  LogOut,
+  Sun,
+  Moon
 } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 import { useIsMobile } from '@/hooks'
 import Calculator from '@/components/Calculator'
 import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
@@ -76,6 +78,7 @@ import CustomDatePicker from '@/components/common/CustomDatePicker'
 import CustomSelect from '@/components/common/CustomSelect'
 import { type IconName } from '@/utils/iconMapping'
 import Modal from '@/components/common/Modal'
+import NativeBottomSheet from '@/components/common/NativeBottomSheet'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
 import { motion } from 'framer-motion'
@@ -205,6 +208,7 @@ const Dashboard = () => {
     fetchCreditCards
   } = useFinancialStore()
   const { user, logout } = useAuthStore()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const isMobile = useIsMobile()
@@ -859,6 +863,9 @@ const Dashboard = () => {
     return Math.round((diff / lastMonthSummary.expense) * 100)
   }, [financialSummary.monthExpense, lastMonthSummary.expense])
 
+  // Permite alternar perfeitamente entre o Bottom Sheet nativo mobile e o Modal desktop
+  const QuickAddSheet = isMobile ? NativeBottomSheet : Modal
+
   return (
     <div className={`responsive-page transition-opacity duration-300 ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}>
 
@@ -946,20 +953,6 @@ const Dashboard = () => {
                   </span>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptics.light()
-                    toast.success('Você está em dia! Nenhuma notificação recente.')
-                  }}
-                  className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all backdrop-blur-md border border-white/20 shadow-sm"
-                  title="Notificações"
-                >
-                  <Bell className="w-4.5 h-4.5 text-white" />
-                </button>
-              </div>
             </div>
 
             {/* 2. Centro: Saldo do Mês e Cápsula de Período */}
@@ -1028,52 +1021,44 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* 3. Base: Cards de Receitas e Despesas em Fundo Branco */}
-            <div className="grid grid-cols-2 gap-3 mt-5">
-              {/* Card 1: Receitas */}
+            {/* 3. Base: Ações Rápidas no Estilo Pill (Receita e Despesa) */}
+            <div className="flex items-center justify-center gap-6 mt-3.5">
+              {/* Pill: Receita */}
               <button
                 type="button"
                 onClick={() => {
                   haptics.light()
                   openQuickAdd('income')
                 }}
-                className="bg-white hover:bg-gray-50 active:scale-95 rounded-2xl p-3 shadow-md shadow-black/5 transition-all text-left flex items-center gap-2.5 focus:outline-none min-w-0"
+                className="bg-white/15 hover:bg-white/20 active:scale-95 border border-white/15 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
                 title="Adicionar Receita"
+                aria-label="Adicionar Receita"
               >
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <TrendingUp className="w-4.5 h-4.5 text-emerald-600" />
+                <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                  <TrendingUp className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[11px] text-gray-500 font-semibold block leading-none truncate">
-                    Receitas
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900 font-mono truncate block mt-1 leading-tight">
-                    {formatCurrency(financialSummary.monthIncome)}
-                  </span>
-                </div>
+                <span className="text-xs font-semibold tracking-wide text-white">
+                  Receita
+                </span>
               </button>
 
-              {/* Card 2: Despesas */}
+              {/* Pill: Despesa */}
               <button
                 type="button"
                 onClick={() => {
                   haptics.light()
                   openQuickAdd('expense')
                 }}
-                className="bg-white hover:bg-gray-50 active:scale-95 rounded-2xl p-3 shadow-md shadow-black/5 transition-all text-left flex items-center gap-2.5 focus:outline-none min-w-0"
+                className="bg-white/15 hover:bg-white/20 active:scale-95 border border-white/15 backdrop-blur-md rounded-full py-1.5 px-4 flex items-center justify-center gap-2 text-white shadow-sm transition-all focus:outline-none"
                 title="Adicionar Despesa"
+                aria-label="Adicionar Despesa"
               >
-                <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                  <TrendingDown className="w-4.5 h-4.5 text-rose-600" />
+                <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                  <TrendingDown className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[11px] text-gray-500 font-semibold block leading-none truncate">
-                    Despesas
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900 font-mono truncate block mt-1 leading-tight">
-                    {formatCurrency(financialSummary.monthExpense)}
-                  </span>
-                </div>
+                <span className="text-xs font-semibold tracking-wide text-white">
+                  Despesa
+                </span>
               </button>
             </div>
           </div>
@@ -1091,6 +1076,16 @@ const Dashboard = () => {
             { label: 'Categorias', icon: FolderOpen, onClick: () => navigate('/app/categories'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
             { label: 'Calc. Juros', icon: TrendingUp, onClick: () => navigate('/app/calculadora-juros'), bg: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400' },
             { label: 'Calc. %', icon: Percent, onClick: () => navigate('/app/calculadora-porcentagem'), bg: 'bg-gray-100 dark:bg-neutral-800', iconColor: 'text-gray-700 dark:text-neutral-300' },
+            {
+              label: 'Tema',
+              icon: theme === 'dark' ? Sun : Moon,
+              onClick: () => {
+                haptics.light()
+                toggleTheme()
+              },
+              bg: theme === 'dark' ? 'bg-amber-50 dark:bg-amber-950/30' : 'bg-indigo-50 dark:bg-indigo-950/30',
+              iconColor: theme === 'dark' ? 'text-amber-500 dark:text-amber-400' : 'text-indigo-600 dark:text-indigo-400'
+            },
             { label: 'Sair', icon: LogOut, onClick: () => { logout() }, bg: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-500' }
           ].map((action, idx) => {
             const Icon = action.icon
@@ -2276,7 +2271,7 @@ const Dashboard = () => {
       }
       </div>
 
-      <Modal
+      <QuickAddSheet
         isOpen={showQuickAdd}
         onClose={handleQuickAddSafeClose}
         title="Nova Transação"
@@ -2572,7 +2567,7 @@ const Dashboard = () => {
             </div>
           </form>
         </div>
-      </Modal>
+      </QuickAddSheet>
 
       {/* Calculator Modal */}
       <Calculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
@@ -2595,158 +2590,116 @@ const Dashboard = () => {
       />
 
       {/* Income Transactions Modal */}
-      {
-        showIncomeModal && (
-          <div className="fixed -inset-1 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowIncomeModal(false)}>
-            <div
-              className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+      <Modal
+        isOpen={showIncomeModal}
+        onClose={() => setShowIncomeModal(false)}
+        title="Receitas do Mês"
+        description={`${incomeTransactions.length} ${incomeTransactions.length === 1 ? 'receita' : 'receitas'} • ${formatCurrency(financialSummary.monthIncome)}`}
+        size="lg"
+        footer={
+          <div className="flex justify-end w-full">
+            <button
+              type="button"
+              onClick={() => setShowIncomeModal(false)}
+              className="px-5 py-2.5 rounded-xl text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors font-medium text-sm"
             >
-              <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-success-600 dark:text-success-400 font-medium">Receitas do Mês</p>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                    {formatCurrency(financialSummary.monthIncome)}
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                    {incomeTransactions.length} {incomeTransactions.length === 1 ? 'receita' : 'receitas'} registradas
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowIncomeModal(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="overflow-y-auto max-h-[60vh]">
-                {incomeTransactions.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-                    Nenhuma receita registrada neste mês.
-                  </div>
-                ) : (
-                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-                    {incomeTransactions.map((transaction) => {
-                      const category = categories.find((cat) => cat.id === transaction.categoryId)
-                      return (
-                        <div key={transaction.id} className="p-4 flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
-                            <CategoryIcon
-                              icon={(category?.icon as IconName) || 'Wallet'}
-                              color={category?.color || '#22c55e'}
-                              size="md"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
-                            <p className="text-sm text-gray-500 dark:text-neutral-400">
-                              {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-success-600 dark:text-success-400">
-                              {formatCurrency(transaction.amount)}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowIncomeModal(false)}
-                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-                >
-                  Fechar
-                </button>
-              </div>
-            </div>
+              Fechar
+            </button>
           </div>
-        )
-      }
+        }
+      >
+        <div>
+          {incomeTransactions.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+              Nenhuma receita registrada neste mês.
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+              {incomeTransactions.map((transaction) => {
+                const category = categories.find((cat) => cat.id === transaction.categoryId)
+                return (
+                  <div key={transaction.id} className="py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
+                      <CategoryIcon
+                        icon={(category?.icon as IconName) || 'Wallet'}
+                        color={category?.color || '#22c55e'}
+                        size="md"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{transaction.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-neutral-400">
+                        {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-success-600 dark:text-success-400">
+                        {formatCurrency(transaction.amount)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </Modal>
 
       {/* Expense Transactions Modal */}
-      {
-        showExpenseModal && (
-          <div className="fixed -inset-1 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowExpenseModal(false)}>
-            <div
-              className="bg-white dark:bg-neutral-950 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+      <Modal
+        isOpen={showExpenseModal}
+        onClose={() => setShowExpenseModal(false)}
+        title="Despesas do Mês"
+        description={`${expenseTransactions.length} ${expenseTransactions.length === 1 ? 'despesa' : 'despesas'} • ${formatCurrency(financialSummary.monthExpense)}`}
+        size="lg"
+        footer={
+          <div className="flex justify-end w-full">
+            <button
+              type="button"
+              onClick={() => setShowExpenseModal(false)}
+              className="px-5 py-2.5 rounded-xl text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors font-medium text-sm"
             >
-              <div className="p-6 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-danger-600 dark:text-danger-400 font-medium">Despesas do Mês</p>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                    {formatCurrency(financialSummary.monthExpense)}
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-                    {expenseTransactions.length} {expenseTransactions.length === 1 ? 'despesa' : 'despesas'} registradas
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowExpenseModal(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="overflow-y-auto max-h-[60vh]">
-                {expenseTransactions.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-                    Nenhuma despesa registrada neste mês.
-                  </div>
-                ) : (
-                  <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-                    {expenseTransactions.map((transaction) => {
-                      const category = categories.find((cat) => cat.id === transaction.categoryId)
-                      return (
-                        <div key={transaction.id} className="p-4 flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
-                            <CategoryIcon
-                              icon={(category?.icon as IconName) || 'Wallet'}
-                              color={category?.color || '#ef4444'}
-                              size="md"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900 dark:text-white">{transaction.description}</p>
-                            <p className="text-sm text-gray-500 dark:text-neutral-400">
-                              {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-danger-600 dark:text-danger-400">
-                              {formatCurrency(transaction.amount)}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowExpenseModal(false)}
-                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-                >
-                  Fechar
-                </button>
-              </div>
-            </div>
+              Fechar
+            </button>
           </div>
-        )
-      }
+        }
+      >
+        <div>
+          {expenseTransactions.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
+              Nenhuma despesa registrada neste mês.
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+              {expenseTransactions.map((transaction) => {
+                const category = categories.find((cat) => cat.id === transaction.categoryId)
+                return (
+                  <div key={transaction.id} className="py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
+                      <CategoryIcon
+                        icon={(category?.icon as IconName) || 'Wallet'}
+                        color={category?.color || '#ef4444'}
+                        size="md"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{transaction.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-neutral-400">
+                        {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-danger-600 dark:text-danger-400">
+                        {formatCurrency(transaction.amount)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </Modal>
 
       {/* Transaction Limit Modal */}
       <TransactionLimitModal
@@ -2755,8 +2708,8 @@ const Dashboard = () => {
         usage={usage}
       />
 
-      {/* Footer */}
-      <div className="mt-12">
+      {/* Footer (Apenas Desktop) */}
+      <div className="mt-12 hidden md:block">
         <Footer />
       </div>
     </div >

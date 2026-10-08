@@ -1,8 +1,10 @@
 import { Mail, FileQuestion, Sparkles, ChevronDown, ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { MobileSupportView } from '@/components/support/mobile/MobileSupportView'
 
 const Support = () => {
+  const navigate = useNavigate()
   const faqs = [
     {
       question: 'Como criar uma nova transação?',
@@ -31,22 +33,34 @@ const Support = () => {
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.02 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-white dark:bg-neutral-900 sm:bg-gray-50 sm:dark:bg-neutral-900 sm:py-12 px-0 sm:px-6 lg:px-8"
-    >
-      <div className="max-w-4xl mx-auto bg-white dark:bg-neutral-800 sm:bg-transparent min-h-screen sm:min-h-0 p-6 sm:p-0">
-        {/* Header */}
-        <div className="flex flex-col items-center mb-10 sm:mb-16">
-          <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Voltar para Login
-          </Link>
-          
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full">
+    <>
+      {/* 1. Versão Mobile Nativa */}
+      <div className="lg:hidden px-4">
+        <MobileSupportView />
+      </div>
+
+      {/* 2. Versão Desktop */}
+      <div className="hidden lg:block">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 0.3 }}
+          className="min-h-screen bg-white dark:bg-neutral-900 sm:bg-gray-50 sm:dark:bg-neutral-900 sm:py-12 px-0 sm:px-6 lg:px-8"
+        >
+          <div className="max-w-4xl mx-auto bg-white dark:bg-neutral-800 sm:bg-transparent min-h-screen sm:min-h-0 p-6 sm:p-0">
+            {/* Header */}
+            <div className="flex flex-col items-center mb-10 sm:mb-16">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 mb-6 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar
+              </button>
+              
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full">
             <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-400">Suporte ao Cliente</span>
           </div>
@@ -111,6 +125,8 @@ const Support = () => {
         </div>
       </div>
     </motion.div>
+  </div>
+</>
   )
 }
 

@@ -16,6 +16,7 @@ import {
 import { useAuthStore } from '@/store/authStore'
 import { subscriptionService, type SubscriptionStatus } from '@/services/subscription.service'
 import { toast } from 'react-hot-toast'
+import { MobilePlansView } from '@/components/plans/mobile/MobilePlansView'
 
 const ManageSubscription = () => {
   const navigate = useNavigate()
@@ -25,8 +26,44 @@ const ManageSubscription = () => {
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelling, setCancelling] = useState(false)
   const [loadingPortal, setLoadingPortal] = useState(false)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
+  const [isStartingTrial, setIsStartingTrial] = useState(false)
 
   const isPremium = user?.isPremium || false
+
+  const monthlyPrice = 14.99
+  const yearlyPrice = 149.99
+  const yearlyMonthlyEquivalent = (yearlyPrice / 12).toFixed(2)
+  const savings = (((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100).toFixed(0)
+
+  const STRIPE_LINKS = {
+    monthly: 'https://buy.stripe.com/test_5kQaEQgnNd685Y2fdUcZa00',
+    yearly: 'https://buy.stripe.com/3cIaEQ6Nd7LO7264zgcZa03'
+  }
+
+  const handleStartTrial = async () => {
+    try {
+      setIsStartingTrial(true)
+      await subscriptionService.startTrial()
+      await refreshPremiumStatus()
+      await loadSubscriptionStatus()
+      toast.success('🎉 Teste grátis de 7 dias ativado com sucesso!')
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erro ao iniciar teste grátis')
+    } finally {
+      setIsStartingTrial(false)
+    }
+  }
+
+  const handleUpgrade = () => {
+    if (!user?.id) {
+      toast.error('Usuário não identificado. Por favor, faça login novamente.')
+      return
+    }
+    const separator = STRIPE_LINKS[billingCycle].includes('?') ? '&' : '?'
+    const checkoutUrl = `${STRIPE_LINKS[billingCycle]}${separator}client_reference_id=${user.id}`
+    window.location.href = checkoutUrl
+  }
 
   useEffect(() => {
     loadSubscriptionStatus()
@@ -110,11 +147,35 @@ const ManageSubscription = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <>
+      {/* 1. Versão Mobile Nativa */}
+      <div className="lg:hidden px-4">
+        <MobilePlansView
+          user={user}
+          billingCycle={billingCycle}
+          setBillingCycle={setBillingCycle}
+          onStartTrial={handleStartTrial}
+          onUpgrade={handleUpgrade}
+          isStartingTrial={isStartingTrial}
+          monthlyPrice={monthlyPrice}
+          yearlyPrice={yearlyPrice}
+          yearlyMonthlyEquivalent={yearlyMonthlyEquivalent}
+          savings={savings}
+          subscriptionStatus={subscriptionStatus}
+          onManageBilling={handleManageBilling}
+          onCancelSubscription={handleCancelSubscription}
+          loadingPortal={loadingPortal}
+          cancelling={cancelling}
+        />
+      </div>
+
+      {/* 2. Versão Desktop */}
+      <div className="hidden lg:block">
+        <div className="max-w-5xl mx-auto p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Gerenciar Assinatura
           </h1>
           <p className="text-gray-600 dark:text-neutral-400 mt-1">
@@ -381,6 +442,8 @@ const ManageSubscription = () => {
         </div>
       )}
     </div>
+  </div>
+</>
   )
 }
 

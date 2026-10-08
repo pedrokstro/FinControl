@@ -1,7 +1,5 @@
-import { X, AlertTriangle } from 'lucide-react'
-import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { createPortal } from 'react-dom'
-import { useIsMobile } from '@/hooks'
+import { AlertTriangle } from 'lucide-react'
+import Modal from '@/components/common/Modal'
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean
@@ -22,136 +20,69 @@ const ConfirmDeleteModal = ({
   itemName,
   isLoading = false,
 }: ConfirmDeleteModalProps) => {
-  const isMobile = useIsMobile()
-  const dragControls = useDragControls()
-
   const handleConfirm = () => {
     onConfirm()
     onClose()
   }
 
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="sm"
+      footer={
+        <div className="flex gap-3 w-full">
+          <button
+            type="button"
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
-          />
+            disabled={isLoading}
+            className="flex-1 px-4 py-2.5 bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-300 dark:border-neutral-700 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirm}
+            disabled={isLoading}
+            className="flex-1 px-4 py-2.5 bg-danger-600 hover:bg-danger-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Excluindo...
+              </>
+            ) : (
+              'Excluir'
+            )}
+          </button>
+        </div>
+      }
+    >
+      <div className="space-y-4 text-left">
+        <p className="text-sm text-gray-600 dark:text-neutral-400">
+          {description}
+        </p>
 
-          {/* Modal Container */}
-          <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4'}`}>
-            <motion.div
-              initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
-              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
-              exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-              drag={isMobile ? 'y' : false}
-              dragControls={dragControls}
-              dragListener={false}
-              dragConstraints={isMobile ? { top: 0, bottom: 0 } : undefined}
-              dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
-              onDragEnd={isMobile ? ((_, { offset, velocity }) => {
-                if (offset.y > 100 || velocity.y > 400) {
-                  onClose()
-                }
-              }) : undefined}
-              className={`bg-white dark:bg-neutral-900 z-[200] shadow-2xl w-full max-w-md flex flex-col overflow-hidden pointer-events-auto ${
-                isMobile ? 'rounded-t-[2rem] border-t border-gray-100 dark:border-neutral-800' : 'rounded-2xl'
-              }`}
-            >
-              {/* Drag indicator no mobile */}
-              {isMobile && (
-                <div
-                  className="py-3 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
-                  onPointerDown={(e) => dragControls.start(e)}
-                >
-                  <div className="w-10 h-1.5 bg-gray-200 dark:bg-neutral-700 rounded-full" />
-                </div>
-              )}
-
-              {/* Header */}
-              <div className={`p-6 border-b border-gray-200 dark:border-neutral-800 ${isMobile ? 'pt-0' : ''}`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-danger-100 dark:bg-danger-900/30 rounded-lg">
-                      <AlertTriangle className="w-6 h-6 text-danger-600 dark:text-danger-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {title}
-                      </h2>
-                    </div>
-                  </div>
-                  <button
-                    onClick={onClose}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
-                    disabled={isLoading}
-                  >
-                    <X className="w-5 h-5 text-gray-500 dark:text-neutral-400" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 space-y-4">
-                <p className="text-gray-600 dark:text-neutral-400">
-                  {description}
-                </p>
-                
-                {itemName && (
-                  <div className="p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">
-                      Você está prestes a excluir:
-                    </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {itemName}
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-amber-800 dark:text-amber-300">
-                    <strong>Atenção:</strong> Esta ação é permanente e não pode ser desfeita.
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="p-6 bg-gray-50 dark:bg-neutral-800/50 border-t border-gray-200 dark:border-neutral-800 flex gap-3">
-                <button
-                  onClick={onClose}
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-300 dark:border-neutral-700 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleConfirm}
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 bg-danger-600 hover:bg-danger-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Excluindo...
-                    </>
-                  ) : (
-                    'Excluir'
-                  )}
-                </button>
-              </div>
-            </motion.div>
+        {itemName && (
+          <div className="p-3.5 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-xl">
+            <p className="text-xs text-gray-600 dark:text-neutral-400 mb-1">
+              Você está prestes a excluir:
+            </p>
+            <p className="font-bold text-gray-900 dark:text-white text-sm">
+              {itemName}
+            </p>
           </div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body
+        )}
+
+        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 dark:text-amber-300">
+            <strong>Atenção:</strong> Esta ação é permanente e não pode ser desfeita.
+          </p>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

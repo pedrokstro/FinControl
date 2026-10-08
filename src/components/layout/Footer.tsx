@@ -6,10 +6,10 @@ const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
+    <footer className="hidden md:block bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-12">
         {/* Desktop View - Full Layout */}
-        <div className="hidden md:flex flex-col gap-10 md:gap-16">
+        <div className="flex flex-col gap-10 md:gap-16">
           <div className="flex flex-row gap-10 md:gap-16">
             {/* Brand */}
             <div className="space-y-4 md:w-1/3 flex flex-col items-start text-left">
@@ -143,48 +143,6 @@ const Footer = () => {
                 <Mail className="w-5 h-5" />
               </a>
             </div>
-          </div>
-        </div>
-
-        {/* Mobile View - Compact & Minimalist */}
-        <div className="flex md:hidden flex-col items-center text-center space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-800 p-0.5">
-              <img src="/icons/logofincontrol.png" alt="FinControl" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-sm font-bold text-gray-900 dark:text-white font-display">FinControl</span>
-            <span className="text-[10px] text-gray-500 dark:text-neutral-500 font-medium">• Versão {packageInfo.version}</span>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-gray-600 dark:text-neutral-400 font-sans">
-            <Link to="/app/plans" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Planos</Link>
-            <Link to="/support" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Ajuda</Link>
-            <Link to="/privacy" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Privacidade</Link>
-            <Link to="/terms" className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Termos</Link>
-          </div>
-
-          <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/40 p-1.5 px-4 rounded-full">
-            <a
-              href="https://github.com/pedrokstro"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 dark:text-neutral-400 hover:text-primary-600 transition-colors"
-              aria-label="GitHub"
-            >
-              <Github className="w-4 h-4" />
-            </a>
-            <div className="w-px h-3 bg-gray-300 dark:bg-neutral-700" />
-            <a
-              href="mailto:suportfincontrol@gmail.com"
-              className="text-gray-500 dark:text-neutral-400 hover:text-primary-600 transition-colors"
-              aria-label="Email"
-            >
-              <Mail className="w-4 h-4" />
-            </a>
-          </div>
-
-          <div className="text-[10px] text-gray-400 dark:text-neutral-500 pt-1 font-sans">
-            © {currentYear} FinControl. Todos os direitos reservados.
           </div>
         </div>
       </div>

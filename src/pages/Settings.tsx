@@ -21,6 +21,13 @@ import { useSecurityStore } from '@/store/securityStore'
 import { motion } from 'framer-motion'
 import PasswordStrengthInput from '@/components/ui/PasswordStrengthInput'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
+import packageInfo from '../../package.json'
+import { MobileSettingsMenu } from '@/components/settings/mobile/MobileSettingsMenu'
+import { MobileProfileView } from '@/components/settings/mobile/MobileProfileView'
+import { MobileSecurityView } from '@/components/settings/mobile/MobileSecurityView'
+import { MobileNotificationsView } from '@/components/settings/mobile/MobileNotificationsView'
+import { MobilePreferencesView } from '@/components/settings/mobile/MobilePreferencesView'
+import { MobileChangelogView } from '@/components/settings/mobile/MobileChangelogView'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
@@ -484,86 +491,86 @@ const Settings = () => {
           </div>
 
           <div className="max-w-4xl mx-auto lg:mx-0">
-            {/* NO MOBILE: MOSTRAR MENU SE activeTab EVENTUALMENTE ESTIVER EM MENU */}
-            {activeTab === 'menu' && (
-              <div className="lg:hidden">
-                <div className="flex flex-col items-center py-8 mb-6">
-                  <div className="relative group mb-4">
-                    <img
-                      src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
-                      alt={user?.name}
-                      className="w-28 h-28 md:w-32 md:h-32 rounded-[2rem] border-4 border-white dark:border-neutral-800 shadow-xl object-cover"
-                    />
-                    <button
-                      onClick={handleAvatarClick}
-                      className="absolute bottom-0 right-0 w-9 h-9 bg-primary-600 hover:bg-primary-700 rounded-xl flex items-center justify-center border-4 border-gray-50 dark:border-neutral-900 hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
-                    >
-                      <Camera className="w-4 h-4 text-white" />
-                    </button>
-                  </div>
-                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white text-center pb-0.5 font-display tracking-tight">{user?.name}</h1>
-                  <p className="text-gray-500 dark:text-neutral-500 text-xs md:text-sm text-center">{user?.email}</p>
-                </div>
+            {/* VERSÃO MOBILE NATIVA DEDICADA */}
+            <div className="lg:hidden">
+              {activeTab === 'menu' && (
+                <MobileSettingsMenu
+                  user={user}
+                  onSelectTab={(tab) => setActiveTab(tab)}
+                  onAvatarClick={handleAvatarClick}
+                  onLogout={logout}
+                  version={packageInfo.version}
+                  theme={theme}
+                  onToggleTheme={() => handleThemeChange(theme === 'dark' ? 'light' : 'dark')}
+                />
+              )}
 
-                <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-[2rem] shadow-sm overflow-hidden mb-6">
-                  <div className="divide-y divide-gray-100 dark:divide-neutral-800/60">
-                    {tabs.map((tab) => {
-                      const Icon = tab.icon
-                      const descriptions = {
-                        profile: 'Nome, Email, Foto de Perfil',
-                        security: 'Senha, Exclusão de Conta, Exportação',
-                        notifications: 'Emails, Alertas de Orçamentos',
-                        preferences: 'Aparência, Idioma, Moeda',
-                        changelog: 'O que há de novo no sistema'
-                      }[tab.id] as string
+              {activeTab === 'profile' && (
+                <MobileProfileView
+                  user={user}
+                  onBack={() => setActiveTab('menu')}
+                  avatarPreview={avatarPreview}
+                  isUploadingAvatar={isUploadingAvatar}
+                  isSavingAvatar={isSavingAvatar}
+                  onAvatarClick={handleAvatarClick}
+                  onSaveAvatar={handleSaveAvatar}
+                  onCancelAvatar={handleCancelAvatar}
+                  fileInputRef={fileInputRef}
+                  onAvatarChange={handleAvatarChange}
+                  newEmail={newEmail}
+                  setNewEmail={setNewEmail}
+                  isEditingEmail={isEditingEmail}
+                  setIsEditingEmail={setIsEditingEmail}
+                  isSendingCode={isSendingCode}
+                  onRequestEmailChange={handleRequestEmailChange}
+                  onCancelEmailEdit={handleCancelEmailEdit}
+                />
+              )}
 
-                      const themeColors = {
-                        profile: 'bg-blue-50/60 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-900/10',
-                        security: 'bg-green-50/60 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100/50 dark:border-green-900/10',
-                        notifications: 'bg-red-50/60 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100/50 dark:border-red-900/10',
-                        preferences: 'bg-orange-50/60 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100/50 dark:border-orange-900/10',
-                        changelog: 'bg-purple-50/60 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border border-purple-100/50 dark:border-purple-900/10'
-                      }[tab.id] as string
+              {activeTab === 'security' && (
+                <MobileSecurityView
+                  onBack={() => setActiveTab('menu')}
+                  passwordForm={passwordForm}
+                  onSubmitPassword={onSubmitPassword}
+                  watchedNewPassword={watchedNewPassword}
+                  isBiometricEnabled={isBiometricEnabled}
+                  handleToggleBiometric={handleToggleBiometric}
+                  biometricSupported={biometricSupported}
+                  setLocked={setLocked}
+                  onExportData={handleExportData}
+                  onDeleteAccount={handleDeleteAccount}
+                />
+              )}
 
-                      return (
-                        <button
-                          key={tab.id}
-                          onClick={() => { haptics.light(); setActiveTab(tab.id as any) }}
-                          className="w-full flex items-center gap-4 p-4 md:p-6.5 transition-colors text-left group hover:bg-gray-50/50 dark:hover:bg-neutral-800/30"
-                        >
-                          <div className={`w-10 h-10 md:w-12 md:h-12 ${themeColors} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105`}>
-                            <Icon className="w-5 h-5 md:w-5.5 md:h-5.5" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-base font-bold text-gray-800 dark:text-white">{tab.label}</h3>
-                            <p className="text-xs text-gray-500 dark:text-neutral-500 truncate mt-0.5 font-medium">{descriptions}</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
+              {activeTab === 'notifications' && (
+                <MobileNotificationsView
+                  onBack={() => setActiveTab('menu')}
+                  notifications={notifications}
+                  toggleNotification={toggleNotification}
+                />
+              )}
 
-            {/* CONTEÚDO PRINCIPAL (FORMULÁRIOS) */}
-            <div className={activeTab === 'menu' ? 'hidden lg:block' : 'block'}>
+              {activeTab === 'preferences' && (
+                <MobilePreferencesView
+                  onBack={() => setActiveTab('menu')}
+                  theme={theme}
+                  onThemeChange={handleThemeChange}
+                  preferences={preferences}
+                  onLanguageChange={handleLanguageChange}
+                  onCurrencyChange={handleCurrencyChange}
+                />
+              )}
 
-              {/* Header de Voltar (Apenas Mobile/Tablet) */}
-              <div className="lg:hidden flex items-center gap-4 py-6 mb-2">
-                <button
-                  onClick={() => { haptics.light(); setActiveTab('menu') }}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
-                  aria-label="Voltar para o menu"
-                >
-                  <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
-                </button>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white capitalize">
-                  {tabs.find(t => t.id === activeTab)?.label}
-                </h1>
-              </div>
+              {activeTab === 'changelog' && (
+                <MobileChangelogView
+                  onBack={() => setActiveTab('menu')}
+                  version={packageInfo.version}
+                />
+              )}
+            </div>
 
+            {/* CONTEÚDO PRINCIPAL DESKTOP (FORMULÁRIOS) */}
+            <div className="hidden lg:block">
               {/* Formulários e Sub-páginas */}
               <div className="w-full">
                 {/* Tab: Perfil */}
