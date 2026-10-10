@@ -5,6 +5,8 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
+  Sparkles,
+  ChevronDown,
   ArrowUpRight,
   TrendingUp,
   TrendingDown,
@@ -79,7 +81,7 @@ import Modal from '@/components/common/Modal'
 import NativeBottomSheet from '@/components/common/NativeBottomSheet'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import BudgetProgressBar from '@/components/common/BudgetProgressBar'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import BrandIcon from '@/components/common/BrandIcon'
 import { haptics } from '@/utils/haptics'
 import AnimatedCounter from '@/components/ui/AnimatedCounter'
@@ -91,6 +93,11 @@ import {
   MobileYearlyAccumulatedCard,
   MobileSavingsGoalCard,
   MobileAnalyticsAccordion,
+  MobileCashFlowCard,
+  MobileSavingsRateCard,
+  MobileTopExpensesCard,
+  MobileWeekdayExpensesCard,
+  MobileBudgetVsActualCard,
 } from '@/components/dashboard/mobile'
 
 const RADIAN = Math.PI / 180
@@ -230,6 +237,7 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { usage, checkLimit, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
+  const [desktopAnalyticsOpen, setDesktopAnalyticsOpen] = useState(false)
 
   // Estado para controlar mês/ano selecionado
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -1707,6 +1715,32 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
+
+            {/* Cards de Análises & Insights Avançados distribuídos na Coluna 1 quando expandido */}
+            <AnimatePresence>
+              {desktopAnalyticsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 15 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  {!isLoadingAnalytics && !analyticsEmpty && analytics && (
+                    <>
+                      <MobileTopExpensesCard
+                        data={analytics.topExpenses}
+                        formatCurrency={formatCurrency}
+                      />
+                      <MobileBudgetVsActualCard
+                        data={analytics.budgetVsActual}
+                        formatCurrency={formatCurrency}
+                      />
+                    </>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Coluna 2: Histórico Mensal, Resumo Anual e Análises Avançadas */}
@@ -1724,13 +1758,81 @@ const Dashboard = () => {
               formatCurrency={formatCurrency}
             />
 
-            {/* Análises & Insights Avançados (Accordion Expansível com Análises Completas) */}
-            <MobileAnalyticsAccordion
-              analytics={analytics}
-              isLoading={isLoadingAnalytics}
-              isEmpty={analyticsEmpty}
-              formatCurrency={formatCurrency}
-            />
+            {/* Card de Controle de Análises & Insights Avançados Desktop */}
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  setDesktopAnalyticsOpen(!desktopAnalyticsOpen)
+                }}
+                className="w-full p-4 flex items-center justify-between text-left hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-sm">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                      Análises & Insights Avançados
+                    </h3>
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                      Fluxo diário, taxa de poupança e projeções
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    {desktopAnalyticsOpen ? 'Ocultar' : 'Explorar (5)'}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-neutral-400 transition-transform duration-300 ${
+                      desktopAnalyticsOpen ? 'transform rotate-180 text-primary-500' : ''
+                    }`}
+                  />
+                </div>
+              </button>
+            </div>
+
+            {/* Cards de Análises & Insights Avançados distribuídos na Coluna 2 quando expandido */}
+            <AnimatePresence>
+              {desktopAnalyticsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 15 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  {isLoadingAnalytics ? (
+                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-8 flex items-center justify-center text-neutral-400 text-xs shadow-sm">
+                      <Loader2 className="w-5 h-5 animate-spin mr-2 text-primary-500" />
+                      <span>Carregando análises detalhadas...</span>
+                    </div>
+                  ) : analyticsEmpty || !analytics ? (
+                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-8 text-center text-xs text-neutral-400 shadow-sm">
+                      Nenhum dado analítico disponível para este mês.
+                    </div>
+                  ) : (
+                    <>
+                      <MobileCashFlowCard
+                        data={analytics.dailyCashFlow}
+                        formatCurrency={formatCurrency}
+                      />
+                      <MobileSavingsRateCard
+                        data={analytics.savingsRate}
+                        formatCurrency={formatCurrency}
+                      />
+                      <MobileWeekdayExpensesCard
+                        data={analytics.expensesByWeekday}
+                        formatCurrency={formatCurrency}
+                      />
+                    </>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
