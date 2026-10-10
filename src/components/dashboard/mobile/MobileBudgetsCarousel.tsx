@@ -119,8 +119,8 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
         )}
       </div>
 
-      {/* Carrossel Horizontal Deslizável (Snap Scroll) */}
-      <div className="flex gap-3 overflow-x-auto pb-1 pt-1 -mx-4 px-4 scrollbar-none snap-x snap-mandatory">
+      {/* Carrossel no Mobile / Grid Responsivo no Desktop */}
+      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-x-auto sm:overflow-visible pb-1 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none snap-x snap-mandatory">
         {computedBudgets.map(({ budget, category, spent, percentage, rawPercentage, remaining, isExceeded }) => {
           let statusColor = 'bg-emerald-500'
           let statusBg = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
@@ -135,7 +135,7 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
           return (
             <div
               key={budget.id}
-              className="snap-start flex-shrink-0 w-[230px] p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 flex flex-col justify-between"
+              className="snap-start flex-shrink-0 w-[230px] sm:w-auto p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 flex flex-col justify-between hover:border-primary-500/40 transition-all"
             >
               {/* Header do Card */}
               <div className="flex items-center justify-between mb-2">

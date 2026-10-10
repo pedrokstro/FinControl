@@ -864,51 +864,162 @@ const Dashboard = () => {
   return (
     <div className="responsive-page">
 
-      {/* Header com Navegação de Mês integrada - Desktop */}
-      <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="hidden sm:block">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-500 dark:text-neutral-400 mt-1 text-sm">
-            {format(new Date(selectedDate.year, selectedDate.month - 1), "MMMM 'de' yyyy", { locale: ptBR })}
-          </p>
-        </div>
+      {/* Header Premium Desktop (Aurora Glow, Saudação & Cápsula de Período) */}
+      <div className="hidden sm:block mb-6 select-none">
+        <h1 className="sr-only">Dashboard</h1>
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#090d16] dark:via-[#0e1726] dark:to-[#050811] rounded-3xl p-6 lg:p-7 text-white shadow-xl shadow-primary-950/20 dark:shadow-2xl dark:shadow-black/70 border border-white/10 dark:border-white/5">
+          {/* Elementos de Fundo com Mesh Aurora Glow e Micro-animações Orgânicas */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            {/* Orb 1: Luz Ciano / Celeste no topo direito */}
+            <motion.div
+              initial={false}
+              animate={{
+                x: [0, 20, 0],
+                y: [0, -15, 0],
+                scale: [1, 1.15, 1],
+                opacity: [0.35, 0.5, 0.35],
+              }}
+              transition={{
+                duration: 9,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-cyan-300/80 dark:bg-cyan-500/20 blur-3xl transform-gpu pointer-events-none"
+            />
 
-        {/* Controle de mês - compacto e elegante */}
-        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-3 py-2 shadow-sm w-full sm:w-auto">
-          <button
-            onClick={goToPreviousMonth}
-            className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
-            title="Mês anterior"
-          >
-            <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
-          </button>
+            {/* Orb 2: Luz Índigo profundo no canto inferior esquerdo */}
+            <motion.div
+              initial={false}
+              animate={{
+                x: [0, -15, 0],
+                y: [0, 15, 0],
+                scale: [1, 1.18, 1],
+                opacity: [0.3, 0.45, 0.3],
+              }}
+              transition={{
+                duration: 11,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-indigo-500/80 dark:bg-indigo-600/20 blur-3xl transform-gpu pointer-events-none"
+            />
 
-          <div className="flex items-center gap-2 flex-1 justify-center px-2">
-            <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400 flex-shrink-0" />
-            <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize whitespace-nowrap">
-              {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
-            </span>
+            {/* Orb 3: Pulso de Realce Central */}
+            <motion.div
+              initial={false}
+              animate={{
+                scale: [0.95, 1.1, 0.95],
+                opacity: [0.15, 0.28, 0.15],
+              }}
+              transition={{
+                duration: 7,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-sky-200/60 dark:bg-sky-400/10 blur-2xl transform-gpu pointer-events-none"
+            />
+
+            {/* Camada de Gradiente Angular de Vidro */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/10 dark:from-white/[0.04] via-transparent to-black/10 dark:to-black/30 pointer-events-none" />
+
+            {/* Linha de reflexo especular na base do cartão */}
+            <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent pointer-events-none" />
           </div>
 
-          {!isCurrentMonth() && (
-            <button
-              onClick={goToCurrentMonth}
-              className="px-2.5 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors whitespace-nowrap"
-            >
-              Hoje
-            </button>
-          )}
-          <button
-            onClick={goToNextMonth}
-            disabled={isCurrentMonth()}
-            className={`p-1.5 rounded-xl transition-colors ${isCurrentMonth()
-              ? 'opacity-30 cursor-not-allowed'
-              : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
-              }`}
-            title="Próximo mês"
-          >
-            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-neutral-300" />
-          </button>
+          {/* Conteúdo em primeiro plano */}
+          <div className="relative z-10">
+            {/* Linha Superior: Usuário e Cápsula de Controle de Mês */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex flex-col text-left min-w-0">
+                  <span className="text-xs text-white/80 dark:text-neutral-400 font-medium">
+                    {(() => {
+                      const hour = new Date().getHours()
+                      if (hour < 12) return 'Bom dia'
+                      if (hour < 18) return 'Boa tarde'
+                      return 'Boa noite'
+                    })()}
+                  </span>
+                  <span className="text-lg font-bold text-white leading-tight font-display tracking-tight truncate">
+                    {user?.name || 'Usuário'}
+                  </span>
+                </div>
+
+              {/* Cápsula de Navegação de Período Integrada */}
+              <div className="bg-white/15 dark:bg-white/[0.08] backdrop-blur-md rounded-full px-3.5 py-1.5 border border-white/20 dark:border-white/10 flex items-center gap-2 shadow-sm text-white">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    goToPreviousMonth()
+                  }}
+                  className="p-1 hover:bg-white/20 dark:hover:bg-white/10 active:scale-90 rounded-full text-white transition-all focus:outline-none"
+                  title="Mês anterior"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <div className="flex items-center gap-2 px-2">
+                  <Calendar className="w-3.5 h-3.5 text-white/80 dark:text-neutral-300" />
+                  <span className="text-xs font-semibold capitalize tracking-wide text-white font-display">
+                    {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
+                  </span>
+                </div>
+
+                {!isCurrentMonth() && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptics.light()
+                      goToCurrentMonth()
+                    }}
+                    className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-white dark:bg-neutral-800 text-primary-700 dark:text-neutral-200 border border-transparent dark:border-white/10 shadow-sm hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Hoje
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    goToNextMonth()
+                  }}
+                  disabled={isCurrentMonth()}
+                  className={`p-1 hover:bg-white/20 dark:hover:bg-white/10 rounded-full text-white transition-all focus:outline-none ${
+                    isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'active:scale-90'
+                  }`}
+                  title="Próximo mês"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Linha Principal: Saldo do Mês com Badges de Destaque */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
+              <div>
+                <span className="text-xs text-white/80 dark:text-neutral-400 font-medium tracking-wider uppercase">
+                  Saldo do Mês
+                </span>
+                <div className="mt-1 flex items-baseline gap-3">
+                  <AnimatedCounter
+                    value={financialSummary.monthBalance}
+                    prefix="R$ "
+                    className="text-4xl lg:text-5xl font-black tracking-tight font-display text-white leading-none drop-shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Badges de Destaque no Hero */}
+              {financialSummary.monthIncome > 0 && (
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/15 dark:bg-white/[0.08] text-white border border-white/20 dark:border-white/10 backdrop-blur-md">
+                    Poupança: {Math.max(Math.round(((financialSummary.monthIncome - financialSummary.monthExpense) / financialSummary.monthIncome) * 100), 0)}%
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1304,986 +1415,324 @@ const Dashboard = () => {
       {/* ========================================================================= */}
       {/* VISÃO DESKTOP COMPLETA (Telas Grandes sm: e acima)                    */}
       {/* ========================================================================= */}
-      <div className="hidden sm:block space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
-        {/* Lado Esquerdo: Cards de Resumo */}
-        <div className="hidden sm:grid lg:col-span-3 grid-cols-2 gap-3 sm:gap-4">
-          {/* Saldo do Mês - Interactive Data Card */}
-          <InteractiveDataCard
-            title="Saldo do Mês"
-            value={financialSummary.monthBalance}
-            prefix="R$ "
-            icon={Wallet}
-            variant="primary"
-            colSpan="col-span-2"
-            badge={financialSummary.monthBalance >= 0 ? '✓ Saldo positivo no período' : '⚠ Saldo negativo'}
-            sparklineData={dailySparklineMetrics.balancePoints}
-            progress={
-              financialSummary.monthIncome > 0
-                ? {
-                    current: Math.min(financialSummary.monthExpense, financialSummary.monthIncome),
-                    total: financialSummary.monthIncome,
-                    label: 'Comprometimento de Renda',
-                  }
-                : undefined
-            }
-            backside={{
-              headline: 'Análise de Saldo',
-              insights: [
-                {
-                  label: 'Taxa de Poupança',
-                  value: financialSummary.monthIncome > 0
-                    ? `${Math.round(((financialSummary.monthIncome - financialSummary.monthExpense) / financialSummary.monthIncome) * 100)}%`
-                    : '0%',
-                  highlight: true,
-                },
-                {
-                  label: 'Média Diária',
-                  value: formatCurrency(financialSummary.monthBalance / (new Date().getDate() || 1)),
-                },
-                {
-                  label: 'vs. Mês Anterior',
-                  value: `${lastMonthSummary.balance >= 0 ? '+' : ''}${formatCurrency(financialSummary.monthBalance - lastMonthSummary.balance)}`,
-                },
-              ],
-            }}
-          />
-
-          {/* Receitas do Mês - Interactive Data Card */}
-          <InteractiveDataCard
-            title="Receitas"
-            value={financialSummary.monthIncome}
-            prefix="R$ "
-            icon={TrendingUp}
-            variant="success"
-            colSpan="col-span-1"
-            sparklineData={dailySparklineMetrics.incomePoints}
-            trend={{
-              value: incomeTrendPercent,
-              isPositive: incomeTrendPercent >= 0,
-              label: 'vs. mês anterior',
-            }}
-            backside={{
-              headline: 'Detalhamento de Receitas',
-              insights: [
-                {
-                  label: 'Total de Entradas',
-                  value: `${incomeTransactions.length} lançamentos`,
-                },
-                {
-                  label: 'Maior Entrada Única',
-                  value: incomeTransactions[0] ? formatCurrency(incomeTransactions[0].amount) : 'R$ 0,00',
-                  highlight: true,
-                },
-                {
-                  label: 'Média por Lançamento',
-                  value: incomeTransactions.length ? formatCurrency(financialSummary.monthIncome / incomeTransactions.length) : 'R$ 0,00',
-                },
-              ],
-              actionButton: {
-                label: 'Ver todas as receitas',
-                onClick: () => setShowIncomeModal(true),
-              },
-            }}
-          />
-
-          {/* Despesas do Mês - Interactive Data Card */}
-          <InteractiveDataCard
-            title="Despesas"
-            value={financialSummary.monthExpense}
-            prefix="R$ "
-            icon={TrendingDown}
-            variant="danger"
-            colSpan="col-span-1"
-            sparklineData={dailySparklineMetrics.expensePoints}
-            trend={{
-              value: expenseTrendPercent,
-              isPositive: expenseTrendPercent <= 0,
-              label: 'vs. mês anterior',
-            }}
-            backside={{
-              headline: 'Detalhamento de Despesas',
-              insights: [
-                {
-                  label: 'Total de Saídas',
-                  value: `${expenseTransactions.length} despesas`,
-                },
-                {
-                  label: 'Maior Despesa Única',
-                  value: expenseTransactions[0] ? formatCurrency(expenseTransactions[0].amount) : 'R$ 0,00',
-                  highlight: true,
-                },
-                {
-                  label: 'Maior Centro de Custo',
-                  value: topExpensesCurrentMonth[0] ? topExpensesCurrentMonth[0].name : 'Nenhuma',
-                },
-              ],
-              actionButton: {
-                label: 'Ver todas as despesas',
-                onClick: () => setShowExpenseModal(true),
-              },
-            }}
-          />
-
-          {/* Meta de Economia */}
-          <div className="card col-span-2 cursor-pointer hover:shadow-lg transition-shadow bg-white dark:bg-neutral-900 relative overflow-hidden group" onClick={() => setShowGoalModal(true)}>
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <p className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Meta de Economia</p>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setShowGoalModal(true)
-                      }}
-                      className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded transition-colors"
-                      title={currentGoal ? 'Editar meta' : 'Definir meta'}
-                    >
-                      {currentGoal ? (
-                        <Edit3 className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
-                      ) : (
-                        <Plus className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
-                      )}
-                    </button>
-                    {currentGoal && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDeleteGoal()
-                        }}
-                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
-                        title="Excluir meta"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
-                      </button>
-                    )}
-                  </div>
+      <div className="hidden sm:block space-y-6 mb-8">
+        {/* 1. Grid de Cards de Topo no Estilo Mobile Clean: Receitas, Despesas, Meta de Economia */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Card Receitas */}
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5" />
                 </div>
-
-                {isLoadingGoal ? (
-                  <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 dark:bg-neutral-700 rounded w-32 mb-2"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-24"></div>
-                  </div>
-                ) : currentGoal ? (
-                  <>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white font-display">
-                      {formatCurrency(currentGoal.targetAmount)}
-                    </h3>
-                    <div className="mt-2 space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500 dark:text-neutral-400">Progresso</span>
-                        <span className="font-medium text-gray-700 dark:text-neutral-300">
-                          {formatCurrency(currentGoal.currentAmount)} / {formatCurrency(currentGoal.targetAmount)}
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${currentGoal.currentAmount >= currentGoal.targetAmount
-                            ? 'bg-success-500'
-                            : 'bg-primary-500'
-                            }`}
-                          style={{
-                            width: `${Math.min(100, (currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%`,
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Target className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                        <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
-                          {currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida! 🎉' :
-                            `${Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}% concluído`}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-2xl font-bold text-gray-400 dark:text-neutral-500 font-display">
-                      Sem meta
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-                      Clique para definir sua meta
-                    </p>
-                  </>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowIncomeModal(true)}
+                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                >
+                  <span>Ver todas</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110">
-                <Target className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+              <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-display">
+                Receitas do Mês
+              </span>
+              <div className="mt-1">
+                <AnimatedCounter
+                  value={financialSummary.monthIncome}
+                  prefix="R$ "
+                  className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Lado Direito: Maiores Gastos do Mês */}
-        <div className="lg:col-span-1">
-          <div className="card h-full flex flex-col justify-between p-5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">
+                {incomeTransactions.length} {incomeTransactions.length === 1 ? 'lançamento' : 'lançamentos'}
+              </span>
+              <span className={`font-semibold px-2 py-0.5 rounded-full ${
+                incomeTrendPercent >= 0
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
+              }`}>
+                {incomeTrendPercent >= 0 ? '+' : ''}{incomeTrendPercent}% vs mês anterior
+              </span>
+            </div>
+          </div>
+
+          {/* Card Despesas */}
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2.5 mb-5">
-                <div className="w-9 h-9 bg-danger-50 dark:bg-danger-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center">
+                  <TrendingDown className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-gray-800 dark:text-white font-display tracking-tight">
-                    Maiores Gastos
-                  </h3>
-                  <p className="text-[10px] text-gray-500 dark:text-neutral-400 leading-none mt-0.5">
-                    Categorias que mais consumiram saldo
-                  </p>
+                <button
+                  type="button"
+                  onClick={() => setShowExpenseModal(true)}
+                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                >
+                  <span>Ver todas</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-display">
+                Despesas do Mês
+              </span>
+              <div className="mt-1">
+                <AnimatedCounter
+                  value={financialSummary.monthExpense}
+                  prefix="R$ "
+                  className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">
+                {expenseTransactions.length} {expenseTransactions.length === 1 ? 'saída' : 'saídas'}
+              </span>
+              <span className={`font-semibold px-2 py-0.5 rounded-full ${
+                expenseTrendPercent <= 0
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+              }`}>
+                {expenseTrendPercent >= 0 ? '+' : ''}{expenseTrendPercent}% vs mês anterior
+              </span>
+            </div>
+          </div>
+
+          {/* Card Meta de Economia */}
+          <div
+            onClick={() => {
+              haptics.light()
+              setShowGoalModal(true)
+            }}
+            className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 border border-primary-500/20 flex items-center justify-center">
+                  <Target className="w-5 h-5" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      haptics.light()
+                      setShowGoalModal(true)
+                    }}
+                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-500 dark:text-neutral-400 transition-colors"
+                    title={currentGoal ? 'Editar meta' : 'Definir meta'}
+                  >
+                    {currentGoal ? <Edit3 className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                  </button>
+                  {currentGoal && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        haptics.light()
+                        handleDeleteGoal()
+                      }}
+                      className="p-1 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg text-rose-500 dark:text-rose-400 transition-colors"
+                      title="Excluir meta"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {topExpensesCurrentMonth.length > 0 ? (
-                <div className="space-y-4">
-                  {topExpensesCurrentMonth.map((item) => (
-                    <div key={item.categoryId} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div
-                            className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: `${item.color}15` }}
-                          >
-                            <CategoryIcon
-                              icon={item.icon as IconName}
-                              color={item.color}
-                              size="sm"
-                            />
-                          </div>
-                          <span className="text-gray-700 dark:text-neutral-300 truncate">
-                            {item.name}
-                          </span>
-                        </div>
-                        <span className="text-gray-900 dark:text-white font-mono flex-shrink-0">
-                          {formatCurrency(item.amount)}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <div className="w-full bg-gray-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className="h-1.5 rounded-full transition-all duration-500"
-                            style={{
-                              backgroundColor: item.color,
-                              width: `${item.percentage}%`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 w-7 text-right flex-shrink-0">
-                          {Math.round(item.percentage)}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800/60 rounded-full flex items-center justify-center mb-3">
-                    <TrendingDown className="w-5 h-5 text-gray-400 dark:text-neutral-500 opacity-60" />
+              <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-display">
+                Meta de Economia
+              </span>
+
+              {currentGoal ? (
+                <>
+                  <div className="mt-1">
+                    <AnimatedCounter
+                      value={currentGoal.targetAmount}
+                      prefix="R$ "
+                      className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                    />
                   </div>
-                  <p className="text-xs text-gray-400 dark:text-neutral-500 font-medium px-2">
-                    Nenhum gasto registrado neste mês
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-neutral-500 dark:text-neutral-400 font-medium">Progresso</span>
+                      <span className="font-bold text-neutral-800 dark:text-neutral-200 font-mono">
+                        {formatCurrency(currentGoal.currentAmount)}
+                      </span>
+                    </div>
+                    <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-700 ${
+                          currentGoal.currentAmount >= currentGoal.targetAmount
+                            ? 'bg-emerald-500'
+                            : 'bg-primary-500'
+                        }`}
+                        style={{
+                          width: `${Math.min(Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100), 100)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-2 py-2">
+                  <p className="text-base font-bold text-neutral-400 dark:text-neutral-500 font-display">
+                    Sem meta definida
+                  </p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                    Clique aqui para planejar sua economia do mês
                   </p>
                 </div>
               )}
             </div>
 
-            {topExpensesCurrentMonth.length > 0 && (
-              <div className="border-t border-gray-100 dark:border-neutral-800 pt-3.5 mt-4 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
-                <span>Total em categorias:</span>
-                <span className="font-bold text-gray-700 dark:text-neutral-300 font-mono">
-                  {formatCurrency(topExpensesCurrentMonth.reduce((sum, item) => sum + item.amount, 0))}
+            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">
+                {currentGoal ? (currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida!' : 'Em andamento') : 'Planejamento'}
+              </span>
+              {currentGoal && (
+                <span className={`font-semibold px-2 py-0.5 rounded-full ${
+                  currentGoal.currentAmount >= currentGoal.targetAmount
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                }`}>
+                  {Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100)}%
                 </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* NOVO WIDGET: Orçamentos Inteligentes */}
-      {budgets.length > 0 && (
-        <div className="card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Meus Limites
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Acompanhamento dos orçamentos mensais
-              </p>
+              )}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {budgets.map((budget) => {
-              const category = categories.find((c) => c.id === budget.categoryId)
-              if (!category) return null
-
-              const spent = transactions
-                .filter(t => {
-                  if (t.categoryId !== budget.categoryId || t.type !== 'expense') return false
-                  const date = parseISO(t.date)
-                  return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
-                })
-                .reduce((sum, t) => sum + t.amount, 0)
-
-              return (
-                <div
-                  key={budget.id}
-                  className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-xl border border-gray-100 dark:border-neutral-800"
-                >
-                  <div className="flex items-center gap-3 w-full mb-2">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${category.color}20` }}
-                    >
-                      <CategoryIcon
-                        icon={category.icon as IconName}
-                        color={category.color}
-                        size="sm"
-                      />
-                    </div>
-                    <span className="font-semibold text-gray-900 dark:text-white truncate">
-                      {category.name}
-                    </span>
-                  </div>
-                  <BudgetProgressBar limit={budget.amount} spent={spent} />
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Novo: Card Resumo Anual */}
-      <div className="card">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Resumo Anual
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-neutral-400">
-              Comparação de receitas e despesas por mês
-            </p>
-          </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart
-            data={yearlyMonthlyData}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-            <XAxis
-              dataKey="month"
-              stroke="#6b7280"
-              className="dark:text-neutral-400"
-              tick={{ fontSize: 12 }}
+        {/* 2. Seções Centrais em Grid Balanceado Desktop (2 Colunas com os Mesmos Widgets Refinados) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Coluna 1: Categorias, Orçamentos e Transações Recentes */}
+          <div className="space-y-6">
+            {/* Gastos por Categoria (Estilo MobileCategoryBreakdown com barra multi-segmentada) */}
+            <MobileCategoryBreakdown
+              data={categoryData}
+              formatCurrency={formatCurrency}
+              onManageCategories={() => navigate('/app/categories')}
             />
-            <YAxis
-              stroke="#6b7280"
-              className="dark:text-neutral-400"
-              tick={{ fontSize: 12 }}
-              tickFormatter={(value) => {
-                if (value >= 1000) {
-                  return `R$ ${(value / 1000).toFixed(0)}k`
-                }
-                return `R$ ${value}`
-              }}
+
+            {/* Meus Limites / Orçamentos em Grid Responsivo */}
+            <MobileBudgetsCarousel
+              budgets={budgets}
+              categories={categories}
+              transactions={transactions}
+              selectedDate={selectedDate}
+              formatCurrency={formatCurrency}
+              onManageBudgets={() => navigate('/app/categories?manageBudgets=true')}
             />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-              }}
-              labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-              animationDuration={300}
-            />
-            <Legend
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="rect"
-            />
-            <Bar
-              dataKey="receitas"
-              fill="#22c55e"
-              name="Receitas"
-              radius={[4, 4, 0, 0]}
-              isAnimationActive={false}
-            />
-            <Bar
-              dataKey="despesas"
-              fill="#ef4444"
-              name="Despesas"
-              radius={[4, 4, 0, 0]}
-              isAnimationActive={false}
-            />
-          </BarChart>
-        </ResponsiveContainer>
 
-        {/* Resumo estatistico */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-neutral-800">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Meses com transações</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {yearlyMonthlyData.filter(m => m.receitas > 0 || m.despesas > 0).length}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Melhor Mês</p>
-            <p className="text-2xl font-bold text-success-600 dark:text-success-400">
-              {yearlyMonthlyData.reduce((max, m) => m.saldo > max.saldo ? m : max, yearlyMonthlyData[0]).month}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Mês Mais Ativo</p>
-            <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-              {yearlyMonthlyData.reduce((max, m) => (m.receitas + m.despesas) > (max.receitas + max.despesas) ? m : max, yearlyMonthlyData[0]).month}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Novos Gráficos: Radial Bar e Line Chart */}
-      <div className={`grid grid-cols-1 gap-6 ${currentGoal && savingsGoalData.length > 0 ? 'lg:grid-cols-2' : ''}`}>
-        {/* Radial Bar Chart - Meta de Economia */}
-        {currentGoal && savingsGoalData.length > 0 && (
-          <div className="card">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-success-50 dark:bg-success-900/20 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-success-600 dark:text-success-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Progresso da Meta
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-neutral-400">
-                  Visualização do progresso de economia
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <RadialBarChart
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="60%"
-                  outerRadius="90%"
-                  barSize={20}
-                  data={savingsGoalData}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <RadialBar
-                    background
-                    dataKey="value"
-                    cornerRadius={10}
-                  />
-                  <text
-                    x="50%"
-                    y="50%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="text-4xl font-bold fill-gray-900 dark:fill-white"
-                  >
-                    {savingsGoalData[0]?.value.toFixed(0)}%
-                  </text>
-                </RadialBarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Atual</p>
-                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(currentGoal.currentAmount)}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Meta</p>
-                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(currentGoal.targetAmount)}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Line Chart - Saldo Acumulado */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Saldo Acumulado
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Evolução patrimonial ao longo do ano
-              </p>
-            </div>
-          </div>
-
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart
-              data={accumulatedBalanceData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-              <XAxis
-                dataKey="month"
-                stroke="#6b7280"
-                className="dark:text-neutral-400"
-                tick={{ fontSize: 11 }}
-              />
-              <YAxis
-                stroke="#6b7280"
-                className="dark:text-neutral-400"
-                tick={{ fontSize: 11 }}
-                tickFormatter={(value) => {
-                  if (value >= 1000) {
-                    return `${(value / 1000).toFixed(0)}k`
-                  }
-                  return `${value}`
-                }}
-              />
-              <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
-                contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                }}
-                animationDuration={300}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="saldoAcumulado"
-                stroke="#3b82f6"
-                strokeWidth={3}
-                dot={{ fill: '#3b82f6', r: 4 }}
-                activeDot={{ r: 6 }}
-                name="Saldo Acumulado"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-
-          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Saldo Final</p>
-              <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
-                ? 'text-success-600 dark:text-success-400'
-                : 'text-danger-600 dark:text-danger-400'
-                }`}>
-                {formatCurrency(accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado || 0)}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Tendência</p>
-              <p className={`text-lg font-bold ${accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0
-                ? 'text-success-600 dark:text-success-400'
-                : 'text-danger-600 dark:text-danger-400'
-                }`}>
-                {accumulatedBalanceData[accumulatedBalanceData.length - 1]?.saldoAcumulado >= 0 ? '↑' : '↓'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Finanças por Categoria - Largura Total */}
-      <div className="card min-h-[450px] lg:h-[450px]">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Finanças por Categoria
-        </h3>
-        {categoryData.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px] lg:h-[calc(100%-3rem)]">
-            {/* Gráfico de Pizza */}
-            <div className="flex items-center justify-center h-[300px] lg:h-auto">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCategoryLabel}
-                    outerRadius={120}
-                    innerRadius={0}
-                    fill="#8884d8"
-                    dataKey="value"
-                    isAnimationActive={true}
-                    animationDuration={1200}
-                    animationBegin={0}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number, _name: string, props: any) => [
-                      formatCurrency(value),
-                      props.payload.type === 'income' ? 'Receita' : 'Despesa'
-                    ]}
-                    animationDuration={300}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Legenda personalizada */}
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-neutral-300 border-b dark:border-neutral-800 pb-2 mb-2">
-                <span>Categoria</span>
-                <span>Tipo</span>
-                <span>Valor</span>
-              </div>
-              <div className="overflow-y-auto flex-1 space-y-2 pr-2">
-                {categoryData.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-gray-900 dark:text-white truncate">{item.name}</span>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ml-2 ${item.type === 'income'
-                        ? 'bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300'
-                        : 'bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
-                        }`}
-                    >
-                      {item.type === 'income' ? 'Receita' : 'Despesa'}
-                    </span>
-                    <span className={`font-semibold ml-2 flex-shrink-0 ${item.type === 'income' ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
-                      }`}>
-                      {formatCurrency(item.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="h-[calc(100%-3rem)] flex items-center justify-center text-gray-500 dark:text-neutral-400">
-            Nenhuma transação registrada
-          </div>
-        )}
-      </div>
-
-      {/* Histórico Mensal e Comparativo Mensal - Lado a Lado */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card flex flex-col h-[450px]">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Histórico Mensal
-          </h3>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={monthlyData}
-                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis dataKey="month" stroke="#6b7280" className="dark:text-neutral-400" />
-                <YAxis stroke="#6b7280" className="dark:text-neutral-400" />
-                <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
-                  }}
-                  animationDuration={300}
-                />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="receitas"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorReceitas)"
-                  name="Receitas"
-                  animationDuration={1000}
-                  animationBegin={0}
-                  animationEasing="ease-in-out"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="despesas"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorDespesas)"
-                  name="Despesas"
-                  animationDuration={1000}
-                  animationBegin={200}
-                  animationEasing="ease-in-out"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Comparativo Mensal */}
-        <div className="card flex flex-col h-[450px]">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Comparativo Mensal
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Últimos 6 meses
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={monthlyData}
-                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:opacity-20" />
-                <XAxis
-                  dataKey="month"
-                  stroke="#6b7280"
-                  className="dark:text-neutral-400"
-                  tick={{ fontSize: 11 }}
-                />
-                <YAxis
-                  stroke="#6b7280"
-                  className="dark:text-neutral-400"
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(value) => {
-                    if (value >= 1000) {
-                      return `${(value / 1000).toFixed(0)}k`
-                    }
-                    return `${value}`
-                  }}
-                />
-                <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                  }}
-                  animationDuration={300}
-                />
-                <Legend />
-                <Bar
-                  dataKey="receitas"
-                  fill="#22c55e"
-                  name="Receitas"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="despesas"
-                  fill="#ef4444"
-                  name="Despesas"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-neutral-800">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Média Receitas</p>
-              <p className="text-lg font-bold text-success-600 dark:text-success-400">
-                {formatCurrency(monthlyData.reduce((sum, m) => sum + m.receitas, 0) / monthlyData.length)}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Média Despesas</p>
-              <p className="text-lg font-bold text-danger-600 dark:text-danger-400">
-                {formatCurrency(monthlyData.reduce((sum, m) => sum + m.despesas, 0) / monthlyData.length)}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Transações Recentes
-          </h3>
-          <Link to="/app/transactions" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
-            Ver todas
-          </Link>
-        </div>
-
-        {recentTransactions.length > 0 ? (
-          <div className="space-y-3">
-            {recentTransactions.map((transaction) => {
-              const category = categories.find(c => c.id === transaction.categoryId)
-
-              return (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-neutral-900 rounded-2xl md:rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center flex-shrink-0 ${transaction.type === 'income'
-                        ? 'bg-success-100 dark:bg-success-900/30'
-                        : 'bg-danger-100 dark:bg-danger-900/30'
-                        }`}
-                    >
-                      {category ? (
-                        <CategoryIcon
-                          icon={category.icon as IconName}
-                          color={category.color}
-                          size="md"
-                        />
-                      ) : (
-                        transaction.type === 'income' ? (
-                          <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
-                        ) : (
-                          <TrendingDown className="w-5 h-5 text-danger-600 dark:text-danger-400" />
-                        )
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {transaction.description}
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-neutral-400">
-                        {transaction.category} • {format(new Date(transaction.date), 'dd/MM/yyyy')}
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className={`font-semibold ${transaction.type === 'income'
-                      ? 'text-success-600 dark:text-success-400'
-                      : 'text-danger-600 dark:text-danger-400'
-                      }`}
-                  >
-                    {transaction.type === 'income' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
-            Nenhuma transacao registrada
-          </div>
-        )}
-      </div>
-
-      {/* Gráficos Avançados de Analytics */}
-      {
-        !isLoadingAnalytics && analytics && (
-          <>
-            {/* Seção de Analytics */}
-            <div className="mt-8 mb-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
-                </div>
+            {/* Transações Recentes Desktop no Estilo Mobile */}
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Análises Avançadas
-                  </h2>
-                  <p className="text-sm text-gray-600 dark:text-neutral-400">
-                    Insights detalhados sobre suas finanças
+                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                    Transações Recentes
+                  </h3>
+                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                    Últimas movimentações no período
                   </p>
                 </div>
+                <Link
+                  to="/app/transactions"
+                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                >
+                  <span>Ver todas</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-            </div>
 
-            {/* 1. Fluxo de Caixa Diário */}
-            <CashFlowChart
-              data={analytics.dailyCashFlow}
-              formatCurrency={formatCurrency}
-            />
-
-            {/* 2. Taxa de Poupança */}
-            <SavingsRateChart
-              data={analytics.savingsRate}
-              formatCurrency={formatCurrency}
-            />
-
-            {/* 3. Top 10 Maiores Despesas + Despesas por Dia da Semana */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TopExpensesChart
-                data={analytics.topExpenses}
-                formatCurrency={formatCurrency}
-              />
-              <ExpensesByWeekdayChart
-                data={analytics.expensesByWeekday}
-                formatCurrency={formatCurrency}
-              />
-            </div>
-
-            {/* 4. Orçamento vs Real */}
-            <BudgetVsActualChart
-              data={analytics.budgetVsActual}
-              formatCurrency={formatCurrency}
-            />
-          </>
-        )
-      }
-
-      {
-        !isLoadingAnalytics && analyticsEmpty && (
-          <div className="card">
-            <div className="py-12 text-center">
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                Nenhum dado neste mês
-              </p>
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
-                Adicione transações no mês atual para visualizar estes gráficos.
-              </p>
+              {recentTransactions.length > 0 ? (
+                <div className="space-y-2.5">
+                  {recentTransactions.slice(0, 6).map((transaction) => {
+                    const category = categories.find((c) => c.id === transaction.categoryId);
+                    return (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div
+                            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                              transaction.type === 'income'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                            }`}
+                          >
+                            {category ? (
+                              <CategoryIcon
+                                icon={category.icon as IconName}
+                                color={category.color}
+                                size="sm"
+                              />
+                            ) : transaction.type === 'income' ? (
+                              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            ) : (
+                              <TrendingDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-xs text-neutral-900 dark:text-white truncate">
+                              {transaction.description}
+                            </p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                              {transaction.category} • {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          className={`font-bold font-mono text-xs shrink-0 ml-3 ${
+                            transaction.type === 'income'
+                              ? 'text-emerald-600 dark:text-emerald-400'
+                              : 'text-rose-600 dark:text-rose-400'
+                          }`}
+                        >
+                          {transaction.type === 'income' ? '+' : '-'}
+                          {formatCurrency(transaction.amount)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-xs text-neutral-400 dark:text-neutral-500">
+                  Nenhuma transação registrada no período
+                </div>
+              )}
             </div>
           </div>
-        )
-      }
 
-      {/* Loading Analytics */}
-      {
-        isLoadingAnalytics && (
-          <div className="card">
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" />
-              <span className="ml-3 text-gray-600 dark:text-neutral-400">
-                Carregando análises...
-              </span>
-            </div>
+          {/* Coluna 2: Histórico Mensal, Resumo Anual e Análises Avançadas */}
+          <div className="space-y-6">
+            {/* Histórico Mensal Touch com Alternador Saldo / Fluxo */}
+            <MobileMonthlyHistoryCard
+              data={monthlyData}
+              formatCurrency={formatCurrency}
+            />
+
+            {/* Resumo Anual e Curva Patrimonial Acumulada */}
+            <MobileYearlyAccumulatedCard
+              yearlyData={yearlyMonthlyData}
+              accumulatedData={accumulatedBalanceData}
+              formatCurrency={formatCurrency}
+            />
+
+            {/* Análises & Insights Avançados (Accordion Expansível com Análises Completas) */}
+            <MobileAnalyticsAccordion
+              analytics={analytics}
+              isLoading={isLoadingAnalytics}
+              isEmpty={analyticsEmpty}
+              formatCurrency={formatCurrency}
+            />
           </div>
-        )
-      }
+        </div>
       </div>
 
       <QuickAddSheet
