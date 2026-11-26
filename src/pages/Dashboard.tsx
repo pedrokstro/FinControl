@@ -45,7 +45,7 @@ import { toast } from 'react-hot-toast'
 import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
-import { getDynamicIcon, type IconName } from '@/utils/iconMapping'
+import { type IconName } from '@/utils/iconMapping'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { haptics } from '@/utils/haptics'
@@ -145,8 +145,10 @@ const Dashboard = () => {
     loadAnalytics()
   }, [selectedDate])
 
-  // Carregar cards de aviso dinâmicos do banco de dados
+  // Carregar cards de aviso dinâmicos apenas na versão mobile
   useEffect(() => {
+    if (!isMobile) return
+
     const loadCards = async () => {
       try {
         const cards = await dashboardService.getCards()
@@ -156,7 +158,7 @@ const Dashboard = () => {
       }
     }
     loadCards()
-  }, [])
+  }, [isMobile])
 
   // Recarregar meta quando mudar o mês/ano selecionado
   useEffect(() => {
@@ -807,57 +809,13 @@ const Dashboard = () => {
       {/* Banner de Limite de Transações */}
       <TransactionLimitBanner />
 
-      {/* Carrossel de Avisos/Notificações (Estilo Nubank) */}
-      {dashboardCards.length > 0 && (
-        <div className="w-full overflow-x-auto flex gap-4 py-2 mb-6 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-          {dashboardCards.map((card) => {
-            const IconComponent = getDynamicIcon(card.icon)
-            return (
-              <button
-                key={card.id}
-                onClick={() => {
-                  if (card.actionPath.startsWith('http')) {
-                    window.open(card.actionPath, '_blank')
-                  } else {
-                    navigate(card.actionPath)
-                  }
-                }}
-                className={`flex-shrink-0 w-[250px] sm:w-[270px] p-4 ${card.bg} rounded-2xl flex flex-col justify-between text-left active:scale-[0.98] hover:shadow-md transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 h-[120px] cursor-pointer`}
-              >
-                <div className="flex items-center justify-between w-full">
-                  {card.imageSrc ? (
-                    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200/30">
-                      <img src={card.imageSrc} alt={card.title} className="w-full h-full object-cover" />
-                    </div>
-                  ) : IconComponent ? (
-                    <div className={`w-8 h-8 rounded-lg ${card.iconBg || 'bg-primary-50 dark:bg-primary-950/20'} flex items-center justify-center`}>
-                      <IconComponent className={`w-4.5 h-4.5 ${card.iconColor || 'text-primary-600 dark:text-primary-400'}`} />
-                    </div>
-                  ) : null}
-                  <span className={`text-[9px] font-bold uppercase tracking-widest opacity-40 ${card.textColor}`}>
-                    FinControl
-                  </span>
-                </div>
-                <div className="mt-2">
-                  <p className={`text-xs font-bold ${card.textColor} line-clamp-1`}>
-                    {card.title}
-                  </p>
-                  <p className={`text-[10px] mt-0.5 ${card.descColor} line-clamp-2 leading-relaxed`}>
-                    {card.desc}
-                  </p>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      )}
-
       {/* ========================================================================= */}
       {/* VISÃO MOBILE DEDICADA (Lazy-loaded apenas quando isMobile)                */}
       {/* ========================================================================= */}
       {isMobile && (
         <Suspense fallback={null}>
           <MobileDashboardSections
+            dashboardCards={dashboardCards}
             budgets={budgets}
             categories={categories}
             transactions={transactions}

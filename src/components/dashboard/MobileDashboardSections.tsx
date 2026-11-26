@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-react'
 import CategoryIcon from '@/components/common/CategoryIcon'
-import { type IconName } from '@/utils/iconMapping'
+import { getDynamicIcon, type IconName } from '@/utils/iconMapping'
+import { haptics } from '@/utils/haptics'
 import {
   MobileAnalyticsAccordion,
   MobileBudgetsCarousel,
@@ -14,8 +15,10 @@ import { type MobileCategoryItem } from '@/components/dashboard/mobile/MobileCat
 import { Budget, Category, Transaction } from '@/types'
 import { SavingsGoal } from '@/services/savingsGoal.service'
 import { AnalyticsData } from '@/services/analytics.service'
+import { type DashboardCard } from '@/services/dashboard.service'
 
 interface MobileDashboardSectionsProps {
+  dashboardCards: DashboardCard[]
   budgets: Budget[]
   categories: Category[]
   transactions: Transaction[]
@@ -39,6 +42,7 @@ interface MobileDashboardSectionsProps {
 }
 
 const MobileDashboardSections = ({
+  dashboardCards,
   budgets,
   categories,
   transactions,
@@ -60,8 +64,56 @@ const MobileDashboardSections = ({
   onEditGoal,
   onDeleteGoal,
 }: MobileDashboardSectionsProps) => {
+  const navigate = useNavigate()
+
   return (
     <div className="block sm:hidden space-y-4 mb-8">
+      {dashboardCards.length > 0 && (
+        <div className="w-full overflow-x-auto flex gap-3 py-1 scrollbar-none -mx-4 px-4 snap-x snap-mandatory scroll-px-4">
+          {dashboardCards.map((card) => {
+            const IconComponent = getDynamicIcon(card.icon)
+            return (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  if (card.actionPath.startsWith('http')) {
+                    window.open(card.actionPath, '_blank')
+                  } else {
+                    navigate(card.actionPath)
+                  }
+                }}
+                className={`snap-start flex-shrink-0 w-[78vw] max-w-[280px] min-h-[118px] p-4 ${card.bg} rounded-2xl flex flex-col justify-between text-left active:scale-[0.97] transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 cursor-pointer`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  {card.imageSrc ? (
+                    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200/30 flex-shrink-0">
+                      <img src={card.imageSrc} alt={card.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : IconComponent ? (
+                    <div className={`w-8 h-8 rounded-lg ${card.iconBg || 'bg-primary-50 dark:bg-primary-950/20'} flex items-center justify-center flex-shrink-0`}>
+                      <IconComponent className={`w-4 h-4 ${card.iconColor || 'text-primary-600 dark:text-primary-400'}`} />
+                    </div>
+                  ) : (
+                    <span />
+                  )}
+                  <ArrowUpRight className={`w-4 h-4 opacity-60 flex-shrink-0 ${card.textColor}`} />
+                </div>
+                <div className="mt-2.5">
+                  <p className={`text-xs font-bold ${card.textColor} line-clamp-1`}>
+                    {card.title}
+                  </p>
+                  <p className={`text-[11px] mt-0.5 ${card.descColor} line-clamp-2 leading-relaxed`}>
+                    {card.desc}
+                  </p>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       <MobileBudgetsCarousel
         budgets={budgets}
         categories={categories}
