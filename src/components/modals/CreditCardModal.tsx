@@ -137,8 +137,10 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            className="fixed inset-0 bg-black/60 z-[200]"
+            style={{ willChange: 'opacity' }}
           />
 
           {/* Modal Container */}

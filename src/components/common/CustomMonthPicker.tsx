@@ -143,7 +143,9 @@ const CustomMonthPicker: React.FC<CustomMonthPickerProps> = ({ value, onChange, 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm sm:hidden"
+                            transition={{ duration: 0.15 }}
+                            className="fixed inset-0 z-40 bg-black/40 sm:hidden"
+                            style={{ willChange: 'opacity' }}
                             onClick={() => setIsOpen(false)}
                         />
 

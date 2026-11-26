@@ -673,7 +673,9 @@ const Categories = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex"
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="fixed inset-0 bg-black/60 z-[200] flex"
+                style={{ willChange: 'opacity' }}
                 onClick={handleCloseModal}
               />
               <div className={`fixed inset-0 flex justify-center z-[200] pointer-events-none ${isMobile ? 'items-end' : 'items-center p-4 sm:p-6'}`}>

@@ -93,7 +93,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-sm"
+                                        transition={{ duration: 0.15 }}
+                                        className="fixed inset-0 z-[9990] bg-black/40"
+                                        style={{ willChange: 'opacity' }}
                                         onClick={() => setIsOpen(false)}
                                     />
 

@@ -98,24 +98,26 @@ const DesktopModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="fixed inset-0 bg-black/60 z-[200]"
+            style={{ willChange: 'opacity' }}
             onClick={handleBackdropClick}
           />
 
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+              style={{ willChange: 'transform, opacity' }}
               role="dialog"
               aria-modal="true"
               className={`w-full ${sizeClasses[size]} bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-3xl shadow-2xl flex flex-col max-h-[92vh] pointer-events-auto overflow-hidden`}
               onClick={(e) => e.stopPropagation()}
             >
               {(title || !hideCloseButton) && (
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 sticky top-0 z-10 flex-shrink-0">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       {title && (
