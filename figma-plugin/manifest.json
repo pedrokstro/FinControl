@@ -1,0 +1,11 @@
+{
+  "name": "FinControl - Mobile Design System & Screens Generator",
+  "id": "fincontrol-mobile-ds-generator",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma"
+  ]
+}
