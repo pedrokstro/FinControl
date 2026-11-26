@@ -1,5 +1,5 @@
 import { Mail, FileQuestion, Sparkles, ChevronDown, ArrowLeft } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { MobileSupportView } from '@/components/support/mobile/MobileSupportView'
 

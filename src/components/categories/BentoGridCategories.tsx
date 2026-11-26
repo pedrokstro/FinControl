@@ -8,7 +8,6 @@ import {
   Target,
   GripVertical,
   RotateCcw,
-  Sparkles,
   Receipt,
   Percent
 } from 'lucide-react'

@@ -59,7 +59,7 @@ export const MobileYearlyAccumulatedCard: React.FC<MobileYearlyAccumulatedCardPr
   const pathD = points.length > 0 ? `M ${points.join(' L ')}` : ''
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Topo do Card */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export const MobileYearlyAccumulatedCard: React.FC<MobileYearlyAccumulatedCardPr
           </div>
         </div>
 
-        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 tabular-figures">
           {activeMonthsCount} meses ativos
         </span>
       </div>
@@ -97,7 +97,7 @@ export const MobileYearlyAccumulatedCard: React.FC<MobileYearlyAccumulatedCardPr
             {latestAccumulated >= 0 ? '↑ Superávit' : '↓ Déficit'}
           </span>
         </div>
-        <div className="text-xl font-extrabold font-display text-neutral-900 dark:text-white mt-1">
+        <div className="text-xl font-extrabold font-display tracking-[-0.02em] tabular-figures text-neutral-900 dark:text-white mt-1">
           {formatCurrency(latestAccumulated)}
         </div>
 

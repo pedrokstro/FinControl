@@ -238,51 +238,37 @@ const AnimatedRoutes = () => {
         } />
         <Route path="transactions" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Transactions />
-            </PageTransition>
+            <Transactions />
           </Suspense>
         } />
         <Route path="categories" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Categories />
-            </PageTransition>
+            <Categories />
           </Suspense>
         } />
         <Route path="subscriptions" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Subscriptions />
-            </PageTransition>
+            <Subscriptions />
           </Suspense>
         } />
         <Route path="cards" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Cards />
-            </PageTransition>
+            <Cards />
           </Suspense>
         } />
         <Route path="reports" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Reports />
-            </PageTransition>
+            <Reports />
           </Suspense>
         } />
         <Route path="plans" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Plans />
-            </PageTransition>
+            <Plans />
           </Suspense>
         } />
         <Route path="upgrade" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Plans />
-            </PageTransition>
+            <Plans />
           </Suspense>
         } />
         <Route path="checkout" element={
@@ -294,9 +280,7 @@ const AnimatedRoutes = () => {
         } />
         <Route path="settings" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <Settings />
-            </PageTransition>
+            <Settings />
           </Suspense>
         } />
         <Route path="settings/subscription" element={
@@ -309,24 +293,18 @@ const AnimatedRoutes = () => {
         <Route path="profile" element={<Navigate to="/app/settings" replace />} />
         <Route path="calculadora-porcentagem" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <PercentageCalculator />
-            </PageTransition>
+            <PercentageCalculator />
           </Suspense>
         } />
         <Route path="calculadora-juros" element={
           <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <CompoundInterestCalculator />
-            </PageTransition>
+            <CompoundInterestCalculator />
           </Suspense>
         } />
         <Route path="admin" element={
           <AdminRoute>
             <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Admin />
-              </PageTransition>
+              <Admin />
             </Suspense>
           </AdminRoute>
         } />
@@ -363,13 +341,18 @@ function App() {
       setLocked(true)
     }
 
-    // Timer mínimo para garantir exibição premium da Splash Screen no mobile
+    if (!isMobile) {
+      setShowSplash(false)
+      return
+    }
+
+    // Timer mínimo para garantir exibição da Splash Screen apenas no mobile
     const timer = setTimeout(() => {
       setShowSplash(false)
     }, 1500)
 
     return () => clearTimeout(timer)
-  }, [initializeAuth, isBiometricEnabled, setLocked])
+  }, [initializeAuth, isBiometricEnabled, setLocked, isMobile])
 
   // Lógica para bloquear quando o app volta do background
   useEffect(() => {

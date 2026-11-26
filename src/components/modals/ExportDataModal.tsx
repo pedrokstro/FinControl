@@ -90,13 +90,13 @@ const ExportDataModal = ({ isOpen, onClose, onConfirm }: ExportDataModalProps) =
         <div className="p-6 bg-gray-50 dark:bg-neutral-800 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors border border-gray-300 dark:border-neutral-600"
+            className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 active:scale-[0.97] transition-[transform,background-color] duration-150 border border-gray-300 dark:border-neutral-600"
           >
             Cancelar
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-medium hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg hover:shadow-xl"
+            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-full font-medium hover:from-primary-700 hover:to-primary-800 active:scale-[0.97] transition-[transform,box-shadow] duration-150 shadow-lg hover:shadow-xl"
           >
             Continuar Exportação
           </button>

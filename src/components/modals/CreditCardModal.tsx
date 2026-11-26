@@ -137,19 +137,19 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
+            transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 z-[200]"
+            className="fixed inset-0 bg-black/55 z-[200]"
             style={{ willChange: 'opacity' }}
           />
 
           {/* Modal Container */}
           <div className="fixed inset-0 flex justify-center z-[200] pointer-events-none items-end sm:items-center p-0 sm:p-4">
             <motion.div
-              initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+              initial={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.96, y: 12 }}
               animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
-              exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              exit={isMobile ? { opacity: 0, y: '100%' } : { opacity: 0, scale: 0.96, y: 10 }}
+              transition={{ type: 'spring', bounce: 0, duration: 0.32 }}
               drag={isMobile ? 'y' : false}
               dragControls={dragControls}
               dragListener={false}
@@ -186,7 +186,7 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
                       haptics.light()
                       onClose()
                     }}
-                    className="hidden sm:flex p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    className="hidden sm:flex p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full active:scale-[0.94] transition-[transform,background-color,color] duration-150"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -306,7 +306,7 @@ export default function CreditCardModal({ isOpen, onClose, card }: Props) {
                     type="submit"
                     disabled={isLoading}
                     className={cn(
-                      "w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl py-4 font-bold transition-all active:scale-[0.98] shadow-lg shadow-primary-500/30",
+                      "w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white rounded-full py-4 font-bold transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] shadow-lg shadow-primary-500/25 cursor-pointer",
                       isLoading && "opacity-70 cursor-not-allowed"
                     )}
                   >

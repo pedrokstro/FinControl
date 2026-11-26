@@ -1,15 +1,21 @@
 import { useState } from 'react'
 import { Plus, X, Receipt, FolderOpen, Calculator, Percent, TrendingUp, ChevronLeft, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
 import { haptics } from '@/utils/haptics'
+
+const fabItemInitial = { scale: 0.88, y: 6, opacity: 0 }
+const fabItemAnimate = { scale: 1, y: 0, opacity: 1 }
+const fabItemExit = { scale: 0.88, y: 4, opacity: 0 }
+const fabItemEase = [0.23, 1, 0.32, 1] as const
 
 const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [showCalculators, setShowCalculators] = useState(false)
   const navigate = useNavigate()
   const { logout } = useAuthStore()
+  const shouldReduceMotion = useReducedMotion()
 
   const handleAction = (action: 'transaction' | 'category' | 'calc-percent' | 'calc-interest') => {
     haptics.medium()
@@ -67,12 +73,12 @@ const FloatingActionButton = () => {
                 <>
                   {/* Nova Transação */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.05 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.02, ease: fabItemEase }}
                     onClick={() => handleAction('transaction')}
-                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
+                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-gray-200 dark:border-neutral-700 group"
                   >
                     <Receipt className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     <span className="text-sm font-medium whitespace-nowrap">Nova Transação</span>
@@ -80,12 +86,12 @@ const FloatingActionButton = () => {
 
                   {/* Nova Categoria */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.1 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.05, ease: fabItemEase }}
                     onClick={() => handleAction('category')}
-                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
+                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-gray-200 dark:border-neutral-700 group"
                   >
                     <FolderOpen className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     <span className="text-sm font-medium whitespace-nowrap">Nova Categoria</span>
@@ -93,12 +99,12 @@ const FloatingActionButton = () => {
 
                   {/* Calculadora (Abre sub-menu) */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.15 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.08, ease: fabItemEase }}
                     onClick={() => { haptics.light(); setShowCalculators(true) }}
-                    className="flex items-center gap-3 bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-primary-100 dark:border-primary-800 group"
+                    className="flex items-center gap-3 bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-primary-100 dark:border-primary-800 group"
                   >
                     <Calculator className="w-5 h-5" />
                     <span className="text-sm font-semibold whitespace-nowrap">Calculadoras</span>
@@ -108,12 +114,12 @@ const FloatingActionButton = () => {
 
                   {/* Sair do App */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.2 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.11, ease: fabItemEase }}
                     onClick={logout}
-                    className="flex items-center gap-3 bg-danger-50 dark:bg-danger-900/40 text-danger-600 dark:text-danger-400 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-danger-100 dark:border-danger-800/50 group"
+                    className="flex items-center gap-3 bg-danger-50 dark:bg-danger-900/40 text-danger-600 dark:text-danger-400 px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-danger-100 dark:border-danger-800/50 group"
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="text-sm font-bold whitespace-nowrap">Sair do App</span>
@@ -123,11 +129,12 @@ const FloatingActionButton = () => {
                 <>
                   {/* Voltar */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.15, ease: fabItemEase }}
                     onClick={() => { haptics.light(); setShowCalculators(false) }}
-                    className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 px-4 py-2 rounded-full shadow-md transition-all border border-gray-200 dark:border-neutral-700"
+                    className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 px-4 py-2 rounded-full shadow-md active:scale-[0.97] transition-[transform,background-color] duration-150 border border-gray-200 dark:border-neutral-700"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">Voltar</span>
@@ -135,12 +142,12 @@ const FloatingActionButton = () => {
 
                   {/* Calculadora Porcentagem */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.05 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.03, ease: fabItemEase }}
                     onClick={() => handleAction('calc-percent')}
-                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
+                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-gray-200 dark:border-neutral-700 group"
                   >
                     <Percent className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     <span className="text-sm font-medium whitespace-nowrap">Porcentagem</span>
@@ -148,12 +155,12 @@ const FloatingActionButton = () => {
 
                   {/* Juros Compostos */}
                   <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ delay: 0.1 }}
+                    initial={shouldReduceMotion ? { opacity: 0 } : fabItemInitial}
+                    animate={shouldReduceMotion ? { opacity: 1 } : fabItemAnimate}
+                    exit={shouldReduceMotion ? { opacity: 0 } : fabItemExit}
+                    transition={{ duration: 0.16, delay: 0.06, ease: fabItemEase }}
                     onClick={() => handleAction('calc-interest')}
-                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-neutral-700 group"
+                    className="flex items-center gap-3 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-[0.97] transition-[transform,box-shadow] duration-150 border border-gray-200 dark:border-neutral-700 group"
                   >
                     <TrendingUp className="w-5 h-5 text-amber-500 animate-arrow-up" />
                     <span className="text-sm font-medium whitespace-nowrap">Juros Compostos</span>

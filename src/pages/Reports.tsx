@@ -51,6 +51,7 @@ import {
   Rows,
 } from 'lucide-react'
 import PageTransition from '@/components/common/PageTransition'
+import PageHeader from '@/components/common/PageHeader'
 import { exportService } from '@/services/exportService'
 import { toast } from 'react-hot-toast'
 import CustomDatePicker from '@/components/common/CustomDatePicker'
@@ -80,8 +81,9 @@ const fmtPct = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
 // ─────────────────────────────────────────────────────────────────────────────
 
 const Reports = () => {
-  const { transactions, categories } = useFinancialStore()
-  const { user } = useAuthStore()
+  const transactions = useFinancialStore((s) => s.transactions)
+  const categories = useFinancialStore((s) => s.categories)
+  const user = useAuthStore((s) => s.user)
 
   // ── Filtros ────────────────────────────────────────────────────────────────
   const [filterMode, setFilterMode] = useState<FilterMode>('period')
@@ -409,72 +411,73 @@ const Reports = () => {
       <div className="responsive-page">
 
         {/* ── HEADER ──────────────────────────────────────────────────────── */}
-        <div className="responsive-header">
-          <div className="hidden sm:block">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Relatórios</h1>
-            <p className="text-gray-600 dark:text-neutral-400 mt-1">Análise detalhada das suas finanças</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            {/* Seletor de Modo de Visualização */}
-            <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl mr-2">
+        <PageHeader
+          title="Relatórios"
+          subtitle="Análise detalhada das suas finanças"
+          hideSubtitleOnMobile
+          actions={
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              {/* Seletor de Modo de Visualização */}
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl mr-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReportsViewMode('bento')
+                    haptics.light()
+                  }}
+                  className={`p-2 rounded-lg transition-all ${
+                    reportsViewMode === 'bento'
+                      ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                      : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                  title="Visualização Bento Grid (com arraste)"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReportsViewMode('classic')
+                    haptics.light()
+                  }}
+                  className={`p-2 rounded-lg transition-all ${
+                    reportsViewMode === 'classic'
+                      ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                      : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                  title="Visualização Clássica"
+                >
+                  <Rows className="w-4 h-4" />
+                </button>
+              </div>
+
               <button
-                type="button"
-                onClick={() => {
-                  setReportsViewMode('bento')
-                  haptics.light()
-                }}
-                className={`p-2 rounded-lg transition-all ${
-                  reportsViewMode === 'bento'
-                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-                title="Visualização Bento Grid (com arraste)"
+                onClick={() => handleExport('pdf')}
+                disabled={isExporting}
+                className="btn-danger flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold disabled:opacity-50"
               >
-                <LayoutGrid className="w-4 h-4" />
+                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                PDF
               </button>
               <button
-                type="button"
-                onClick={() => {
-                  setReportsViewMode('classic')
-                  haptics.light()
-                }}
-                className={`p-2 rounded-lg transition-all ${
-                  reportsViewMode === 'classic'
-                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-                title="Visualização Clássica"
+                onClick={() => handleExport('excel')}
+                disabled={isExporting}
+                className="btn-success flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold disabled:opacity-50"
               >
-                <Rows className="w-4 h-4" />
+                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+                Excel
+              </button>
+              <button
+                onClick={() => handleExport('csv')}
+                disabled={isExporting}
+                className="btn-primary flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold disabled:opacity-50"
+              >
+                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                CSV
               </button>
             </div>
-
-            <button
-              onClick={() => handleExport('pdf')}
-              disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
-            >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-              PDF
-            </button>
-            <button
-              onClick={() => handleExport('excel')}
-              disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
-            >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
-              Excel
-            </button>
-            <button
-              onClick={() => handleExport('csv')}
-              disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
-            >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-              CSV
-            </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* ── FILTROS ──────────────────────────────────────────────────────── */}
         <div className="card border border-primary-100 dark:border-primary-900/40 bg-primary-50/40 dark:bg-primary-950/20">

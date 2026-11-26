@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { parseISO } from 'date-fns'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plus, 
@@ -11,17 +12,25 @@ import {
   Zap
 } from 'lucide-react'
 import { useFinancialStore } from '@/store/financialStore'
+import { useIsMobile } from '@/hooks'
 import PageTransition from '@/components/common/PageTransition'
+import PageHeader from '@/components/common/PageHeader'
 import { haptics } from '@/utils/haptics'
 import { CreditCard as CreditCardType, Transaction } from '@/types'
 import CreditCardModal from '@/components/modals/CreditCardModal'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 import InteractiveCreditCard3D from '@/components/cards/InteractiveCreditCard3D'
-import MobileCardsView from '@/components/cards/mobile/MobileCardsView'
+const MobileCardsView = lazy(() => import('@/components/cards/mobile/MobileCardsView'))
 
 const Cards = () => {
-  const { creditCards, fetchCreditCards, transactions, currentMonthTransactions, deleteCreditCard, isLoading } = useFinancialStore()
+  const creditCards = useFinancialStore((s) => s.creditCards)
+  const fetchCreditCards = useFinancialStore((s) => s.fetchCreditCards)
+  const transactions = useFinancialStore((s) => s.transactions)
+  const currentMonthTransactions = useFinancialStore((s) => s.currentMonthTransactions)
+  const deleteCreditCard = useFinancialStore((s) => s.deleteCreditCard)
+  const isLoading = useFinancialStore((s) => s.isLoading)
+  const isMobile = useIsMobile()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null)
@@ -85,7 +94,7 @@ const Cards = () => {
     const subMap = new Map<string, Transaction>()
     subs.forEach(s => {
       const key = `${s.description.toLowerCase().trim()}`
-      if (!subMap.has(key) || new Date(s.date) > new Date(subMap.get(key)!.date)) {
+      if (!subMap.has(key) || parseISO(s.date) > parseISO(subMap.get(key)!.date)) {
         subMap.set(key, s)
       }
     })
@@ -144,36 +153,36 @@ const Cards = () => {
     <PageTransition>
       <div className="container mx-auto px-4 py-6 md:py-8 pb-32 md:pb-8">
         {/* Visualização Nativa Mobile */}
-        <div className="lg:hidden">
-          <MobileCardsView
-            creditCards={creditCards}
-            transactions={transactions}
-            currentMonthTransactions={currentMonthTransactions}
-            onOpenDesktopModal={handleAddCard}
-          />
-        </div>
+        {isMobile && (
+          <div className="lg:hidden">
+            <Suspense fallback={null}>
+              <MobileCardsView
+                creditCards={creditCards}
+                transactions={transactions}
+                currentMonthTransactions={currentMonthTransactions}
+                onOpenDesktopModal={handleAddCard}
+              />
+            </Suspense>
+          </div>
+        )}
 
         {/* Visualização Desktop */}
         <div className="hidden lg:block">
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <CardIcon className="w-8 h-8 text-primary-500" />
-                Meus Cartões
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                Cadastre suas faturas para acompanhar os gastos e registrar na despesa de fatura.
-              </p>
-            </div>
-            
-            <button
-              onClick={handleAddCard}
-              className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg active:scale-95 whitespace-nowrap cursor-pointer"
-            >
-              <Plus className="w-5 h-5" />
-              Novo Cartão
-            </button>
-          </header>
+          <PageHeader
+            title="Meus Cartões"
+            subtitle="Cadastre suas faturas para acompanhar os gastos e registrar na despesa de fatura."
+            icon={<CardIcon className="w-8 h-8 text-primary-500" />}
+            className="mb-8"
+            actions={
+              <button
+                onClick={handleAddCard}
+                className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg active:scale-95 whitespace-nowrap cursor-pointer"
+              >
+                <Plus className="w-5 h-5" />
+                Novo Cartão
+              </button>
+            }
+          />
 
           {isLoading && creditCards.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -224,7 +233,7 @@ const Cards = () => {
                     {/* Background Glossy Effect */}
                     <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${cardGradient.split(' ')[0]} ${cardGradient.split(' ')[1]} blur-3xl opacity-20 rounded-full group-hover:scale-150 transition-transform duration-700`} />
                     
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 z-10 translate-y-0 md:translate-y-[-10px] md:group-hover:translate-y-0">
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-all duration-300 z-10 translate-y-0 md:translate-y-[-10px] md:group-hover:translate-y-0 md:group-focus-within:translate-y-0">
                       <button
                         onClick={() => handleEditCard(card)}
                         className="p-2.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md shadow-sm border border-gray-100 dark:border-neutral-700 rounded-full text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 transition-all active:scale-95 cursor-pointer"

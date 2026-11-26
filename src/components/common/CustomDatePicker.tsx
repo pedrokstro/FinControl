@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import {
     format,
     addMonths,
@@ -32,7 +32,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
     const containerRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
-    const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
+    const shouldReduceMotion = useReducedMotion();
+    const [coords, setCoords] = useState<{ top: number; bottom: number; left: number; width: number } | null>(null);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 640);
     const [mounted, setMounted] = useState(false);
 
@@ -45,6 +46,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
             const rect = containerRef.current.getBoundingClientRect();
             setCoords({
                 top: rect.top,
+                bottom: rect.bottom,
                 left: rect.left,
                 width: rect.width
             });
@@ -186,7 +188,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                             type="button"
                             disabled={isDisabled}
                             onClick={() => handleDateClick(cloneDay)}
-                            className={`w-full aspect-square flex items-center justify-center rounded-full text-sm sm:text-base transition-all
+                            className={`w-full aspect-square flex items-center justify-center rounded-full text-sm sm:text-base tabular-figures transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.94]
                     ${isDisabled ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer'}
                     ${!isCurrentMonth && !isDisabled ? 'text-gray-300 dark:text-neutral-600 hover:bg-gray-100 dark:hover:bg-neutral-800' : ''}
                     ${isCurrentMonth && !isDisabled && !isSelected && !isToday ? 'text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800' : ''}
@@ -226,7 +228,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
             <button
                 type="button"
                 onClick={() => { haptics.light(); setIsOpen(!isOpen) }}
-                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-4 text-left ${isOpen ? 'border-primary-500 ring-primary-100 dark:ring-primary-900/20' : ''
+                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm active:scale-[0.985] transition-[border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus:outline-none focus:ring-4 text-left ${isOpen ? 'border-primary-500 ring-primary-100 dark:ring-primary-900/20' : ''
                     } ${error
                         ? 'border-red-300 ring-red-50 dark:border-red-900 dark:ring-red-900/20'
                         : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700 focus:ring-primary-100 dark:focus:ring-primary-900/20'
@@ -256,11 +258,29 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                             {/* Dropdown / Bottom Sheet */}
                             <motion.div
                                 ref={popoverRef}
-                                initial={align === 'top' ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 0, y: 50, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={align === 'top' ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 0, y: 50, scale: 0.95 }}
-                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                drag={!isDesktop ? 'y' : false}
+                                initial={
+                                    shouldReduceMotion
+                                        ? { opacity: 0 }
+                                        : isDesktop
+                                            ? (align === 'top' ? { opacity: 0, y: 6, scale: 0.96 } : { opacity: 0, y: -6, scale: 0.96 })
+                                            : { opacity: 0, y: '100%' }
+                                }
+                                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                                exit={
+                                    shouldReduceMotion
+                                        ? { opacity: 0 }
+                                        : isDesktop
+                                            ? (align === 'top' ? { opacity: 0, y: 4, scale: 0.97 } : { opacity: 0, y: -4, scale: 0.97 })
+                                            : { opacity: 0, y: '100%' }
+                                }
+                                transition={
+                                    shouldReduceMotion
+                                        ? { duration: 0.14 }
+                                        : isDesktop
+                                            ? { duration: 0.16, ease: [0.23, 1, 0.32, 1] }
+                                            : { type: 'spring', bounce: 0, duration: 0.32 }
+                                }
+                                drag={!isDesktop && !shouldReduceMotion ? 'y' : false}
                                 dragControls={dragControls}
                                 dragListener={false}
                                 dragConstraints={{ top: 0, bottom: 0 }}
@@ -272,12 +292,14 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, er
                                 }}
                                 style={isDesktop ? {
                                     position: 'fixed',
-                                    top: coords ? `${coords.top}px` : '0px',
+                                    ...(align === 'top'
+                                        ? { bottom: coords ? `${window.innerHeight - coords.top + 8}px` : '0px' }
+                                        : { top: coords ? `${coords.bottom + 8}px` : '0px' }
+                                    ),
                                     left: coords ? `${Math.max(16, coords.left + coords.width - 340)}px` : '0px',
                                     width: '340px',
-                                    transform: align === 'top' ? 'translateY(-100%) translateY(-8px)' : 'translateY(48px)',
+                                    transformOrigin: align === 'top' ? 'bottom right' : 'top right',
                                     zIndex: 9999,
-                                    opacity: coords ? 1 : 0,
                                     pointerEvents: coords ? 'auto' : 'none',
                                 } : undefined}
                                 className={`fixed z-[9999] bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 flex flex-col p-4 sm:p-5 pb-8 sm:pb-5 ${

@@ -5,8 +5,6 @@ import {
   CreditCard as CardIcon,
   Pencil,
   Trash2,
-  Calendar,
-  DollarSign,
   TrendingUp,
   Zap,
   Wifi,
@@ -17,8 +15,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Check,
-  Tag,
-  ArrowRight
+  Tag
 } from 'lucide-react'
 import { CreditCard as CreditCardType, Transaction } from '@/types'
 import { useFinancialStore } from '@/store/financialStore'

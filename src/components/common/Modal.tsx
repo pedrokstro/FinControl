@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import { useIsMobile } from '@/hooks'
@@ -56,6 +56,7 @@ const DesktopModal = ({
   contentClassName = '',
 }: ModalProps) => {
   const [mounted, setMounted] = useState(() => typeof window !== 'undefined')
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     setMounted(true)
@@ -98,18 +99,22 @@ const DesktopModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="fixed inset-0 bg-black/60 z-[200]"
+            transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
+            className="fixed inset-0 bg-black/55 z-[200]"
             style={{ willChange: 'opacity' }}
             onClick={handleBackdropClick}
           />
 
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 12 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 10 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 }}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0.14 }
+                  : { type: 'spring', bounce: 0, duration: 0.32 }
+              }
               style={{ willChange: 'transform, opacity' }}
               role="dialog"
               aria-modal="true"
@@ -135,7 +140,7 @@ const DesktopModal = ({
                       <button
                         type="button"
                         onClick={onClose}
-                        className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+                        className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 active:scale-[0.94] transition-[transform,background-color,color] duration-150 flex-shrink-0"
                         aria-label="Fechar modal"
                       >
                         <X className="w-5 h-5" />

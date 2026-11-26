@@ -1,149 +1,163 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
+    "apple-design": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "163ba8b42c7d9d5ccb08674266d4727c9ec610b9d876c906b1f29ce5e0d933da"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "e1b377ccde1d32743d1d3f7d8626629deb8055c9114d180c184697928cc66cc6"
+    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+      "computedHash": "e1481fcd7484d1bc55f2ca7170b788d7357821f5595d27e7132ec7df6841b0cf"
     },
     "gsap-core": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-core/SKILL.md",
-      "computedHash": "b891c9ed42d9319685250231085ebe21538f2c844613b277b9dd2b3ff529a542"
+      "computedHash": "dfc8ba849fa8b81c8cc60964ee2a5fa8db4b2a2611801cf549a5b267b8284fa5"
     },
     "gsap-frameworks": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-frameworks/SKILL.md",
-      "computedHash": "08b3917649997d53f94a9831b5db21afafafc89ee3a9a020d2471c69c336bdd6"
+      "computedHash": "25f2f1f85c3d7a6431623c50e894af58213cc96d4e6660564be80ca011b883f6"
     },
     "gsap-performance": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-performance/SKILL.md",
-      "computedHash": "da73dbf11663abb1a880e1796367f84b19877db4a16186b36d1dce96fe0ce983"
+      "computedHash": "4dd4382cad329927a248fbe55c426901f2bf4f5c598db6ef5ec38c19861b829f"
     },
     "gsap-plugins": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-plugins/SKILL.md",
-      "computedHash": "50a320904c3053a1a7d01ea95235944814d18c0b5958f17e38046504aa6078a8"
+      "computedHash": "328b52a98e9704c0349ba2cee23a6a92376c06b6b1fd3e60e5c20395b55e25e8"
     },
     "gsap-react": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-react/SKILL.md",
-      "computedHash": "255206fb6a4a079ad73b4a12e7c63197dc451a8549c7ac4e852b50ff74ef3bd6"
+      "computedHash": "35fd08f2cbfc945f1a8cdd39e232882a19e27781a4043ee1bc71f65432f03389"
     },
     "gsap-scrolltrigger": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-scrolltrigger/SKILL.md",
-      "computedHash": "358dd3381c74fc4be8db5a94e0cd008bf0fa7c1ccd45999671b0d61b9d9ffd9b"
+      "computedHash": "c29c5a0fb1506a7f577fe68282eafc6df14b8d2b8ecd24f1f05836f5a0957b67"
     },
     "gsap-timeline": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-timeline/SKILL.md",
-      "computedHash": "e7c07909bb427f74e1bda1ff716bd97ae166269382f7abbd649c0d1ba8f6e0ec"
+      "computedHash": "622140f48b7aa6bcf2f4d4c050b8fa20effa533688a1650854f5ffc1be169a0b"
     },
     "gsap-utils": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
       "skillPath": "skills/gsap-utils/SKILL.md",
-      "computedHash": "72af4a036d417d6eaef7478eca2f28e760631fb78db822ba34a9c706797aab62"
+      "computedHash": "d05b56284eea0118d481b8c673aff27cae66199282995bfe78315785f561002d"
     },
     "motion-design": {
       "source": "LottieFiles/motion-design-skill",
       "sourceType": "github",
       "skillPath": "skills/motion-design/SKILL.md",
-      "computedHash": "4f16f46c81f25a2a25b7a4720b7ea001e65f384b31b5b7f4b455fef87fbc9016"
+      "computedHash": "bf661a366f1a51e6ccee48f1b3addbc2e5b1bf69321d99157619fd4a52c1e0d7"
     },
     "remotion-best-practices": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-best-practices/SKILL.md",
-      "computedHash": "0b1865fe0e29d27dffa00a4f48918f545b3b034e911516bba678e868c114515c"
+      "computedHash": "8a392b8113e047f62a08c4281d517730c00e59b725c21a8f8dad2b30113ee15c"
     },
     "remotion-captions": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-captions/SKILL.md",
-      "computedHash": "ad63932e17eaf4bab325940c9fbe28f1291ffd2f2ebad00470def52405c7c8df"
+      "computedHash": "57066bc9332800dc4ecb2dc53a748bb0fac9c32dfdd090e325dce1d17af0db86"
     },
     "remotion-create": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-create/SKILL.md",
-      "computedHash": "b2ff571cb7c4c06cfe0a657c917cd7b7aa0703d2bac4f5de9e2a5e273de20503"
+      "computedHash": "f670cceb6abaa36557b8f08fda8941ba1d9183d1a66cbc21fb8c55daed14f7b5"
     },
     "remotion-docs": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-docs/SKILL.md",
-      "computedHash": "5a2d45da3c9a74fa0533298c7d7ebd7deb3708bcd91bd2a8bc8cdea988621fdb"
+      "computedHash": "03209a0f13e8b8eecd8bd0809bd182ecb8517d413c4f84df4a7357318b6ce2c7"
     },
     "remotion-interactivity": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-interactivity/SKILL.md",
-      "computedHash": "beedb05847dd2e38fcacb8e1be994cc666f5f13326c42184b379248826bf6dec"
+      "computedHash": "8d515cac004f8bfd6d03e27397e38c97993795f75e3ee45acd5b68c40e74e021"
     },
     "remotion-maps": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-maps/SKILL.md",
-      "computedHash": "dc29555dbba17f737a34462dd873a40ce69741f939a98b55e83ab66b258b1ba7"
+      "computedHash": "4221fe6cf498de02c2e41ab047b280baed6d7fd85a4403d9a6ee8c1264e3ac09"
     },
     "remotion-markup": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-markup/SKILL.md",
-      "computedHash": "6b720146711a371a78b23a3125f34d49abab09637e6122804aa139ea1b643bab"
+      "computedHash": "0353bd24c8bfb03a6fab87d5cbb6882d1571c975cb1817295ad5b3b72ed3a902"
     },
     "remotion-multimedia": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-multimedia/SKILL.md",
-      "computedHash": "5528a974ada577fbee26580766f276edeeef4a1206e9dad2843729894f2384ba"
+      "computedHash": "3d772b06268ab0fe83291ebb4b2389d3adc3ccb5d5d854c37fb0a39aa7801e73"
     },
     "remotion-render": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-render/SKILL.md",
-      "computedHash": "9bff54dd1689df3b411eb4919cc027434129e67b19bcd75529041048efb9581a"
+      "computedHash": "801d4a054b856506e6ea8524ac91b7c37505371202c7162d1aa20a1b7b01aa8f"
     },
     "remotion-saas": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-saas/SKILL.md",
-      "computedHash": "f3b0af2fb0cdd20471235a4ed30802fc3cd99c9e4a80a5925e49f78e6263a5bd"
+      "computedHash": "d7b89a8c0cfd014da3f90ed79a66dcca1854082d08d16ac156313bbd972eca69"
     },
     "remotion-studio": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-studio/SKILL.md",
-      "computedHash": "8bb518476a376a0278dc6a849cdf05057e3a2670d818523aee07f297cebfa920"
+      "computedHash": "4e3937afe4b67e92841cda5b79e1ef5c551b81b2445dd77fb342a57021ae7188"
     },
     "remotion-upgrade": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "skillPath": "skills/remotion-upgrade/SKILL.md",
-      "computedHash": "4f94318381b12248ee43f651bac020935a6aaa543c2db6ccc814a240b4e14bd6"
+      "computedHash": "a9430e215c957cb1d14ecff1924512348f957226d9c1a9af7568ba14aa08e7de"
     },
     "supabase": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase/SKILL.md",
-      "computedHash": "af1844ade632808fc0c15cf2db87daf3b2431c5262dc8a0c3ea7d70880fadf91"
+      "computedHash": "2fbff32fd63b7d31585cacf0ed43e5bf8d05dd20d6c0c751d256cb967a00eec1"
     },
     "supabase-postgres-best-practices": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
-      "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
+      "computedHash": "3eb972c2d7c818e544e35cc33ea8d7147d4d78ae08142ef40037b0fbac7a2505"
     }
   }
 }

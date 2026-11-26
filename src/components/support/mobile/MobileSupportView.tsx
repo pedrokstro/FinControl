@@ -8,11 +8,6 @@ import {
   ChevronDown,
   HelpCircle,
   FileQuestion,
-  Sparkles,
-  ShieldCheck,
-  CreditCard,
-  Layers,
-  ArrowUpRight,
   Clock,
   X
 } from 'lucide-react'

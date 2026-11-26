@@ -11,9 +11,7 @@ import {
   Sun,
   Moon,
   Sparkles,
-  HelpCircle,
-  ShieldCheck,
-  CreditCard
+  HelpCircle
 } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 import { useNavigate } from 'react-router-dom'

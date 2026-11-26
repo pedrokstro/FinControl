@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Bell, Check, CheckCheck, Trash2, X, Info, AlertTriangle, CheckCircle, XCircle, Sparkles } from 'lucide-react'
 import notificationService, { Notification } from '@/services/notification.service'
 import { formatDistanceToNow } from 'date-fns'
@@ -16,6 +16,7 @@ const NotificationDropdown = () => {
   const [isRinging, setIsRinging] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+  const shouldReduceMotion = useReducedMotion()
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -139,13 +140,12 @@ const NotificationDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Bell Button com Animação de Sino */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.92 }}
+      {/* Bell Button */}
+      <button
+        type="button"
         onClick={toggleDropdown}
         aria-label="Notificações"
-        className={`relative p-2.5 rounded-2xl transition-colors duration-200 ${
+        className={`relative p-2.5 rounded-2xl active:scale-[0.94] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/70 ${
           isOpen
             ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
             : 'text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800/80'
@@ -153,14 +153,12 @@ const NotificationDropdown = () => {
       >
         <motion.div
           animate={
-            isRinging || (unreadCount > 0 && !isOpen)
+            isRinging && !shouldReduceMotion
               ? {
-                  rotate: [0, -18, 18, -12, 12, -6, 6, 0],
+                  rotate: [0, -14, 14, -8, 8, 0],
                   transition: {
-                    duration: 0.7,
-                    ease: 'easeInOut',
-                    repeat: isRinging ? 0 : Infinity,
-                    repeatDelay: 4,
+                    duration: 0.45,
+                    ease: [0.23, 1, 0.32, 1],
                   },
                 }
               : { rotate: 0 }
@@ -170,24 +168,23 @@ const NotificationDropdown = () => {
           <Bell className="w-5 h-5" />
         </motion.div>
 
-        {/* Badge Pulsante com Efeito de Onda */}
+        {/* Badge de contagem tabular */}
         <AnimatePresence>
           {unreadCount > 0 && (
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: 'spring', damping: 15, stiffness: 400 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.85, opacity: 0 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 0.85, opacity: 0 }}
+              transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
               className="absolute top-1 right-1 flex items-center justify-center"
             >
-              <span className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-60" />
-              <span className="relative min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md shadow-rose-500/30">
+              <span className="relative min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-black tabular-figures rounded-full flex items-center justify-center shadow-sm shadow-rose-500/25">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.button>
+      </button>
 
       {/* Backdrop para Mobile */}
       <AnimatePresence>
@@ -196,7 +193,7 @@ const NotificationDropdown = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={() => setIsOpen(false)}
           />
@@ -208,20 +205,28 @@ const NotificationDropdown = () => {
         {isOpen && (
           <motion.div
             initial={
-              isMobile
-                ? { opacity: 0, y: -20, scale: 0.95 }
-                : { opacity: 0, scale: 0.92, y: -10, transformOrigin: 'top right' }
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : isMobile
+                  ? { opacity: 0, y: -12, scale: 0.96 }
+                  : { opacity: 0, scale: 0.96, y: -6 }
             }
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
             exit={
-              isMobile
-                ? { opacity: 0, y: -15, scale: 0.96 }
-                : { opacity: 0, scale: 0.92, y: -8, transformOrigin: 'top right' }
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : isMobile
+                  ? { opacity: 0, y: -8, scale: 0.97 }
+                  : { opacity: 0, scale: 0.96, y: -4 }
             }
-            transition={{ type: 'spring', damping: 24, stiffness: 320 }}
+            transition={{
+              duration: 0.18,
+              ease: [0.23, 1, 0.32, 1],
+            }}
+            style={isMobile ? undefined : { transformOrigin: 'top right' }}
             className={`
               ${isMobile ? 'fixed inset-x-4 top-20 w-auto max-w-none' : 'absolute right-0 mt-3 w-96'}
-              bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-[24px]
+              chrome-translucent bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-[24px]
               shadow-2xl shadow-neutral-950/15 dark:shadow-black/60
               border border-gray-100 dark:border-neutral-800/80 z-50 flex flex-col overflow-hidden
               ${isMobile ? 'max-h-[75vh]' : 'max-h-[580px]'}

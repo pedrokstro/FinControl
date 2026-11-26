@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Github, Mail, Shield, FileText, HelpCircle } from 'lucide-react'
-import packageInfo from '../../../package.json'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -121,7 +120,7 @@ const Footer = () => {
             <div className="text-sm text-gray-600 dark:text-neutral-400 flex flex-col items-start text-left">
               <p className="font-medium">© {currentYear} FinControl — Todos os direitos reservados</p>
               <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
-                Versão {packageInfo.version}
+                Versão {__APP_VERSION__}
               </p>
             </div>
             <div className="flex items-center gap-4 bg-gray-50 dark:bg-neutral-800/50 p-2 px-4 rounded-full">

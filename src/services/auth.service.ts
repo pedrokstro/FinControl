@@ -9,6 +9,7 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
+  cpf?: string;
 }
 
 export interface AuthResponse {
@@ -16,8 +17,12 @@ export interface AuthResponse {
     id: string;
     name: string;
     email: string;
-    avatar?: string;
+    avatar?: string | null;
     role: string;
+    isPremium?: boolean;
+    isTrial?: boolean;
+    isAdmin?: boolean;
+    emailVerified?: boolean;
   };
   accessToken: string;
   refreshToken: string;
@@ -30,16 +35,21 @@ class AuthService {
     return response.data.data;
   }
 
+  async loginWithGoogle(accessToken: string): Promise<AuthResponse> {
+    const response = await api.post('/auth/google', { accessToken });
+    return response.data.data;
+  }
+
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await api.post('/auth/register', data);
     // Tokens são gerenciados pelo Zustand authStore
     return response.data.data;
   }
 
-  async logout(): Promise<void> {
+  async logout(refreshToken?: string): Promise<void> {
     // O refreshToken é obtido do Zustand authStore
     try {
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', refreshToken ? { refreshToken } : undefined);
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }

@@ -44,7 +44,7 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
   }
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Topo do Card */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -62,14 +62,14 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
         </div>
 
         {/* Alternador Despesas / Receitas */}
-        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-xl text-xs font-semibold">
+        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-full text-xs font-semibold">
           <button
             type="button"
             onClick={() => handleTabChange('expense')}
-            className={`px-2.5 py-1 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded-full active:scale-[0.96] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer ${
               activeTab === 'expense'
                 ? 'bg-rose-500 text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             Despesas
@@ -77,10 +77,10 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
           <button
             type="button"
             onClick={() => handleTabChange('income')}
-            className={`px-2.5 py-1 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded-full active:scale-[0.96] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer ${
               activeTab === 'income'
                 ? 'bg-emerald-500 text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             Receitas
@@ -100,7 +100,7 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
               Total em {activeTab === 'expense' ? 'Despesas' : 'Receitas'}
             </span>
             <span
-              className={`text-base font-extrabold font-display ${
+              className={`text-base font-extrabold font-display tabular-figures ${
                 activeTab === 'expense'
                   ? 'text-rose-600 dark:text-rose-400'
                   : 'text-emerald-600 dark:text-emerald-400'
@@ -154,10 +154,10 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 ml-2">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-neutral-200/60 dark:bg-neutral-700/60 text-neutral-600 dark:text-neutral-300">
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-neutral-200/60 dark:bg-neutral-700/60 text-neutral-600 dark:text-neutral-300 tabular-figures">
                         {percentage}%
                       </span>
-                      <span className="text-xs font-bold font-mono text-neutral-900 dark:text-white">
+                      <span className="text-xs font-bold font-mono text-neutral-900 dark:text-white tabular-figures">
                         {formatCurrency(item.value)}
                       </span>
                     </div>
@@ -176,10 +176,10 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
                   haptics.light()
                   setShowAll(!showAll)
                 }}
-                className="text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                className="px-2.5 py-1 rounded-full text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center gap-0.5 cursor-pointer"
               >
                 <span>{showAll ? 'Mostrar menos' : `Ver todas (${filteredData.length})`}</span>
-                <ChevronRight className={`w-3.5 h-3.5 transform transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
+                <ChevronRight className={`w-3.5 h-3.5 transform transition-transform duration-150 ${showAll ? '-rotate-90' : 'rotate-90'}`} />
               </button>
             ) : <span />}
 
@@ -190,7 +190,7 @@ export const MobileCategoryBreakdown: React.FC<MobileCategoryBreakdownProps> = (
                   haptics.light()
                   onManageCategories()
                 }}
-                className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 font-medium flex items-center gap-1"
+                className="px-2.5 py-1 rounded-full text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.97] transition-[transform,background-color,color] duration-150 font-medium flex items-center gap-1 cursor-pointer"
               >
                 <span>Gerenciar</span>
                 <ArrowUpRight className="w-3 h-3" />

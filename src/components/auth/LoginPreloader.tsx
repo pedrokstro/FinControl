@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
 interface LoginPreloaderProps {
@@ -13,6 +13,7 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
   isSuccess = false,
 }) => {
   const [stepIndex, setStepIndex] = useState(0)
+  const shouldReduceMotion = useReducedMotion()
 
   const steps = [
     { label: 'Inicializando' },
@@ -56,10 +57,14 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{
-            x: '-100vw',
-            transition: { duration: 0.8, ease: [0.65, 0, 0.35, 1] },
-          }}
+          exit={
+            shouldReduceMotion
+              ? { opacity: 0, transition: { duration: 0.16 } }
+              : {
+                  x: '-100vw',
+                  transition: { duration: 0.45, ease: [0.32, 0.72, 0, 1] },
+                }
+          }
           className="fixed inset-0 w-screen h-[100dvh] min-h-[100dvh] z-[99999] flex flex-col items-center justify-center bg-white dark:bg-white select-none px-4 py-6 sm:p-6 overflow-hidden shadow-[40px_0_80px_rgba(0,0,0,0.25)] border-r-2 border-primary-500/30"
         >
           {/* Borda direita luminosa para dar efeito premium no wipe lateral */}
@@ -71,21 +76,29 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
 
           {/* Container Principal em Fundo Branco com Efeito Parallax de Saída */}
           <motion.div
-            initial={{ scale: 0.94, opacity: 0, y: 12 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{
-              x: '-35vw',
-              opacity: 0.7,
-              transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
-            }}
-            transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.96, opacity: 0, y: 10 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1, y: 0 }}
+            exit={
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : {
+                    x: '-35vw',
+                    opacity: 0.7,
+                    transition: { duration: 0.42, ease: [0.32, 0.72, 0, 1] },
+                  }
+            }
+            transition={
+              shouldReduceMotion
+                ? { duration: 0.14 }
+                : { type: 'spring', bounce: 0, duration: 0.34 }
+            }
             className="relative flex flex-col items-center text-center max-w-[360px] sm:max-w-md w-full my-auto"
           >
             {/* 1. LOGO OFICIAL COM EFEITO DE PROFUNDIDADE */}
             <motion.div
-              initial={{ scale: 0.75, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.88, opacity: 0 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
               className="relative w-16 h-16 sm:w-20 sm:h-20 mb-3 sm:mb-4 rounded-2xl sm:rounded-3xl bg-white p-2 sm:p-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 flex items-center justify-center shrink-0"
             >
               <img
@@ -97,12 +110,12 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
 
             {/* 2. TIPOGRAFIA FINCONTROL & SLOGAN EM TEMA BRANCO */}
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.4 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              transition={{ delay: shouldReduceMotion ? 0 : 0.08, duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
               className="text-center mb-4 sm:mb-6"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display text-slate-900">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-[-0.02em] font-display text-slate-900">
                 Fin<span className="text-primary-500">Control</span>
               </h1>
               <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-1 sm:mt-2 font-medium">
@@ -114,10 +127,10 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
             <div className="relative w-full h-28 sm:h-36 mb-4 sm:mb-6 px-1 sm:px-2">
               {/* Badge Flutuante no Topo Direito (↗ +12,5%) */}
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 1.15, type: 'spring', stiffness: 350, damping: 15 }}
-                className="absolute top-0 right-1 sm:right-3 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white border border-primary-200/80 text-primary-600 text-[11px] sm:text-xs font-bold font-mono flex items-center gap-1 shadow-md shadow-primary-500/10 z-20"
+                initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.88, y: 4, opacity: 0 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, y: 0, opacity: 1 }}
+                transition={{ delay: shouldReduceMotion ? 0 : 0.9, type: 'spring', bounce: 0, duration: 0.28 }}
+                className="absolute top-0 right-1 sm:right-3 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white border border-primary-200/80 text-primary-600 text-[11px] sm:text-xs font-bold font-mono tabular-figures flex items-center gap-1 shadow-md shadow-primary-500/10 z-20"
               >
                 <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-600" />
                 <span>+12,5%</span>
@@ -197,12 +210,12 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
                         fill={isLast ? '#0284c7' : '#0ea5e9'}
                         stroke="#ffffff"
                         strokeWidth="2.5"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: p.delay, type: 'spring', stiffness: 350, damping: 14 }}
+                        initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.72, opacity: 0 }}
+                        animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : p.delay, duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
                       />
-                      {/* Halo Pulsante no Ponto Final */}
-                      {isLast && (
+                      {/* Halo no Ponto Final */}
+                      {isLast && !shouldReduceMotion && (
                         <motion.circle
                           cx={p.cx}
                           cy={p.cy}
@@ -210,9 +223,9 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
                           fill="none"
                           stroke="#0ea5e9"
                           strokeWidth="2"
-                          initial={{ opacity: 0, scale: 0.5 }}
-                          animate={{ opacity: [0.7, 0], scale: [0.8, 1.8] }}
-                          transition={{ delay: 1.2, repeat: Infinity, duration: 1.6, ease: 'easeOut' }}
+                          initial={{ opacity: 0, scale: 0.85 }}
+                          animate={{ opacity: [0.65, 0], scale: [0.9, 1.7] }}
+                          transition={{ delay: 1.1, repeat: Infinity, duration: 1.6, ease: [0.23, 1, 0.32, 1] }}
                         />
                       )}
                     </g>
@@ -237,15 +250,15 @@ export const LoginPreloader: React.FC<LoginPreloaderProps> = ({
               </motion.div>
             </AnimatePresence>
 
-            {/* 5. BARRA DE PROGRESSO EM PÍLULA FINA */}
+            {/* 5. BARRA DE PROGRESSO EM PÍLULA FINA (Compositor transform scaleX) */}
             <div className="w-full max-w-[220px] sm:max-w-xs h-1.5 bg-slate-100 rounded-full overflow-hidden mb-4 sm:mb-5">
               <motion.div
-                className="h-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 rounded-full shadow-[0_0_8px_rgba(2,132,199,0.3)]"
-                initial={{ width: '15%' }}
+                className="w-full h-full origin-left bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 rounded-full shadow-[0_0_8px_rgba(2,132,199,0.3)]"
+                initial={{ scaleX: 0.15 }}
                 animate={{
-                  width: isSuccess ? '100%' : `${Math.min((stepIndex + 1) * 45, 90)}%`,
+                  scaleX: isSuccess ? 1 : Math.min((stepIndex + 1) * 0.45, 0.9),
                 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
+                transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
               />
             </div>
 

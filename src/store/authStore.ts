@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { imageStorage } from '@/utils/imageStorage'
-import { authService, userService } from '@/services/api'
+import authService from '@/services/auth.service'
+import userService from '@/services/user.service'
+import { registerApiAuthHandlers } from '@/config/api'
 import { supabase } from '@/lib/supabaseClient'
 import { useFinancialStore } from './financialStore'
 
@@ -454,3 +456,17 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 )
+
+registerApiAuthHandlers({
+  onTokenRefreshed: (accessToken) => {
+    useAuthStore.setState({ accessToken })
+  },
+  onAuthExpired: () => {
+    useAuthStore.setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+    })
+  },
+})

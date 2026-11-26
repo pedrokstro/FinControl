@@ -49,7 +49,7 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
   const avgSaldo = (totalReceitas - totalDespesas) / (processedData.length || 1)
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -67,17 +67,17 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
         </div>
 
         {/* Alternador de Visão: Saldo vs Entradas/Saídas */}
-        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-xl text-xs font-semibold">
+        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-full text-xs font-semibold">
           <button
             type="button"
             onClick={() => {
               haptics.light()
               setActiveView('balance')
             }}
-            className={`px-2 py-1 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded-full active:scale-[0.96] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer ${
               activeView === 'balance'
                 ? 'bg-primary-500 text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             Saldo
@@ -88,10 +88,10 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
               haptics.light()
               setActiveView('flow')
             }}
-            className={`px-2 py-1 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded-full active:scale-[0.96] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer ${
               activeView === 'flow'
                 ? 'bg-primary-500 text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             Fluxo
@@ -108,7 +108,7 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
             </span>
             <div className="flex items-baseline gap-2">
               <span
-                className={`text-sm font-extrabold font-display ${
+                className={`text-sm font-extrabold font-display tabular-figures ${
                   activeMonth.saldo >= 0
                     ? 'text-emerald-600 dark:text-emerald-400'
                     : 'text-rose-600 dark:text-rose-400'
@@ -120,7 +120,7 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] font-mono">
+          <div className="flex items-center gap-3 text-[11px] font-mono tabular-figures">
             <div className="text-right">
               <span className="text-emerald-600 dark:text-emerald-400 font-bold block">
                 +{formatCurrency(activeMonth.receitas)}
@@ -234,7 +234,7 @@ export const MobileMonthlyHistoryCard: React.FC<MobileMonthlyHistoryCardProps> =
         <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
           <TrendingUp className="w-3.5 h-3.5 text-primary-500" />
           <span>Média Saldo:</span>
-          <strong className={`font-mono ${avgSaldo >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+          <strong className={`font-mono tabular-figures ${avgSaldo >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {formatCurrency(avgSaldo)}
           </strong>
         </div>

@@ -90,7 +90,7 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
   if (computedBudgets.length === 0) return null
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Topo do Widget */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
           <button
             type="button"
             onClick={onManageBudgets}
-            className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+            className="px-2.5 py-1 rounded-full text-xs text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center gap-0.5 cursor-pointer"
           >
             <span>Ver todos</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -119,8 +119,8 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
         )}
       </div>
 
-      {/* Carrossel no Mobile / Grid Responsivo no Desktop */}
-      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-x-auto sm:overflow-visible pb-1 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none snap-x snap-mandatory">
+      {/* Carrossel no Mobile / Grid 2 Colunas Equilibrado no Desktop */}
+      <div className="flex sm:grid sm:grid-cols-2 gap-3 overflow-x-auto sm:overflow-visible pb-1 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none snap-x snap-mandatory">
         {computedBudgets.map(({ budget, category, spent, percentage, rawPercentage, remaining, isExceeded }) => {
           let statusColor = 'bg-emerald-500'
           let statusBg = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
@@ -135,7 +135,7 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
           return (
             <div
               key={budget.id}
-              className="snap-start flex-shrink-0 w-[230px] sm:w-auto p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 flex flex-col justify-between hover:border-primary-500/40 transition-all"
+              className="snap-start flex-shrink-0 w-[230px] sm:w-auto p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 flex flex-col justify-between hover:border-primary-500/40 transition-[border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]"
             >
               {/* Header do Card */}
               <div className="flex items-center justify-between mb-2">
@@ -155,23 +155,23 @@ export const MobileBudgetsCarousel: React.FC<MobileBudgetsCarouselProps> = ({
                   </span>
                 </div>
 
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${statusBg}`}>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full tabular-figures ${statusBg}`}>
                   {Math.round(rawPercentage)}%
                 </span>
               </div>
 
-              {/* Barra de Progresso */}
+              {/* Barra de Progresso (GPU scaleX) */}
               <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden my-1.5">
                 <div
-                  className={`h-full ${statusColor} rounded-full transition-all duration-500`}
-                  style={{ width: `${percentage}%` }}
+                  className={`w-full h-full ${statusColor} rounded-full origin-left transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]`}
+                  style={{ transform: `scaleX(${Math.min(Math.max(percentage / 100, 0), 1)})` }}
                 />
               </div>
 
               {/* Informações de Valores */}
               <div className="flex items-center justify-between text-[11px] mt-1 text-neutral-500 dark:text-neutral-400">
-                <span>Gasto: <strong className="text-neutral-900 dark:text-white font-mono">{formatCurrency(spent)}</strong></span>
-                <span>Teto: <span className="font-mono">{formatCurrency(budget.amount)}</span></span>
+                <span>Gasto: <strong className="text-neutral-900 dark:text-white font-mono tabular-figures">{formatCurrency(spent)}</strong></span>
+                <span>Teto: <span className="font-mono tabular-figures">{formatCurrency(budget.amount)}</span></span>
               </div>
 
               {/* Aviso de Status */}

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { haptics } from '@/utils/haptics';
 import { useIsMobile } from '@/hooks';
@@ -35,6 +35,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
     const isMobile = useIsMobile();
+    const shouldReduceMotion = useReducedMotion();
 
     const selectedOption = options.find((opt) => opt.value === value);
 
@@ -70,7 +71,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             <button
                 type="button"
                 onClick={() => { haptics.light(); setIsOpen(!isOpen) }}
-                className="w-full h-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/20 text-left"
+                className="w-full h-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-full shadow-sm active:scale-[0.985] transition-[border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-primary-300 dark:hover:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/20 text-left"
             >
                 <div className="flex items-center gap-2 truncate">
                     {icon && <span className="flex-shrink-0">{icon}</span>}
@@ -79,7 +80,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                         {selectedOption ? selectedOption.label : placeholder}
                     </span>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform duration-300 ml-2 ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] ml-2 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Popover Desktop & Mobile Bottom Sheet */}            <AnimatePresence>
@@ -101,11 +102,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
                                     {/* Bottom Sheet */}
                                     <motion.div
-                                        initial={{ opacity: 0, y: "100%" }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: "100%" }}
-                                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                        drag="y"
+                                        initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: "100%" }}
+                                        animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                                        exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: "100%" }}
+                                        transition={shouldReduceMotion ? { duration: 0.14 } : { type: 'spring', bounce: 0, duration: 0.32 }}
+                                        drag={shouldReduceMotion ? false : "y"}
                                         dragControls={dragControls}
                                         dragListener={false}
                                         dragConstraints={{ top: 0, bottom: 0 }}
@@ -170,10 +171,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                         ) : (
                             /* Desktop Dropdown (no portal needed for absolute positioning) */
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                transition={{ duration: 0.2 }}
+                                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.96 }}
+                                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
+                                transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
+                                style={{ transformOrigin: 'top center' }}
                                 className="absolute z-50 top-full mt-2 w-full min-w-[240px] bg-white dark:bg-neutral-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[300px]"
                                 onClick={(e) => e.stopPropagation()}
                                 ref={dropdownRef}

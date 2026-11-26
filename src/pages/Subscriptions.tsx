@@ -1,17 +1,20 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
+import { parseISO } from 'date-fns'
 import { useFinancialStore } from '@/store/financialStore'
+import { useIsMobile } from '@/hooks'
 import { CalendarClock, Search, CreditCard, CalendarDays, Wallet, TrendingUp, XCircle, Pencil, Check, Loader2 } from 'lucide-react'
 import { formatCurrency } from '@/utils/helpers'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import PageTransition from '@/components/common/PageTransition'
+import PageHeader from '@/components/common/PageHeader'
 import { haptics } from '@/utils/haptics'
 import Modal from '@/components/common/Modal'
 import api from '@/config/api'
 import { toast } from 'react-hot-toast'
 import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecurrenceModal'
-import MobileSubscriptionsView from '@/components/subscriptions/mobile/MobileSubscriptionsView'
+const MobileSubscriptionsView = lazy(() => import('@/components/subscriptions/mobile/MobileSubscriptionsView'))
 import CategorySelect from '@/components/common/CategorySelect'
 import CustomSelect, { type SelectOption } from '@/components/common/CustomSelect'
 
@@ -34,7 +37,11 @@ const getBrandIcon = (name: string, defaultIcon?: string) => {
 }
 
 const Subscriptions = () => {
-  const { transactions, categories, syncWithBackend, updateTransaction } = useFinancialStore()
+  const transactions = useFinancialStore((s) => s.transactions)
+  const categories = useFinancialStore((s) => s.categories)
+  const syncWithBackend = useFinancialStore((s) => s.syncWithBackend)
+  const updateTransaction = useFinancialStore((s) => s.updateTransaction)
+  const isMobile = useIsMobile()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedSubscription, setSelectedSubscription] = useState<any | null>(null)
   const [showCancelModal, setShowCancelModal] = useState(false)
@@ -129,7 +136,7 @@ const Subscriptions = () => {
     const groupedSubs = new Map()
 
     // Sort by date descending to get the most recent ones first
-    const sorted = [...recurringExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    const sorted = [...recurringExpenses].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime())
 
     sorted.forEach((t) => {
       const key = `${t.description.toLowerCase().trim()}-${t.categoryId}`
@@ -155,7 +162,7 @@ const Subscriptions = () => {
       
       let frequency = 'mensal'
       if (transactionsGroup.length > 1) {
-        const diffTime = Math.abs(new Date(mostRecent.date).getTime() - new Date(previous.date).getTime())
+        const diffTime = Math.abs(parseISO(mostRecent.date).getTime() - parseISO(previous.date).getTime())
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         
         if (diffDays >= 350) frequency = 'anual'
@@ -196,7 +203,7 @@ const Subscriptions = () => {
     let otherExpenses = 0
     
     transactions.forEach(t => {
-      const tDate = new Date(t.date)
+      const tDate = parseISO(t.date)
       if (tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear) {
         if (t.type === 'income') {
           income += t.amount
@@ -223,29 +230,28 @@ const Subscriptions = () => {
   return (
     <PageTransition>
       {/* Visualização Nativa Mobile */}
-      <div className="block lg:hidden">
-        <MobileSubscriptionsView
-          subscriptions={subscriptions}
-          categories={categories}
-          monthlyTotal={monthlyTotal}
-          yearlyTotal={yearlyTotal}
-          currentMonthIncome={currentMonthIncome}
-          onRefresh={syncWithBackend}
-        />
-      </div>
+      {isMobile && (
+        <div className="block lg:hidden">
+          <Suspense fallback={null}>
+            <MobileSubscriptionsView
+              subscriptions={subscriptions}
+              categories={categories}
+              monthlyTotal={monthlyTotal}
+              yearlyTotal={yearlyTotal}
+              currentMonthIncome={currentMonthIncome}
+              onRefresh={syncWithBackend}
+            />
+          </Suspense>
+        </div>
+      )}
 
       {/* Visualização Desktop */}
       <div className="hidden lg:block space-y-6 pb-20 md:pb-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-            <CalendarClock className="w-6 h-6 text-primary-500" />
-            Assinaturas
-          </h1>
-          <p className="text-gray-600 dark:text-neutral-400">
-            Acompanhe e gerencie seus gastos fixos recorrentes.
-          </p>
-        </div>
+        <PageHeader
+          title="Assinaturas"
+          subtitle="Acompanhe e gerencie seus gastos fixos recorrentes."
+          icon={<CalendarClock className="w-7 h-7 text-primary-500" />}
+        />
 
         {/* Resumo e Gráfico de Descoberta */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -317,10 +323,13 @@ const Subscriptions = () => {
               {/* Central Text */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4">
                 <span className="text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Comprometido</span>
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                <span
+                  className="text-lg font-bold text-gray-900 dark:text-white"
+                  title={currentMonthIncome <= 0 ? 'Cadastre receitas no mês para calcular o percentual comprometido' : undefined}
+                >
                   {currentMonthIncome > 0 
                     ? `${Math.round((monthlyTotal / currentMonthIncome) * 100)}%`
-                    : '--%'}
+                    : 'Sem renda'}
                 </span>
               </div>
             </div>
@@ -355,7 +364,7 @@ const Subscriptions = () => {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col space-y-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 <AnimatePresence>
                   {subscriptions.map((sub, index) => {
                     const percentageOfTotal = monthlyTotal > 0 ? (sub.amount / monthlyTotal) * 100 : 0
@@ -393,7 +402,7 @@ const Subscriptions = () => {
                                   {formatCurrency(sub.amount)}
                                   <span className="text-xs font-normal text-gray-400 dark:text-neutral-500">/{sub.frequency === 'anual' ? 'ano' : sub.frequency === 'semanal' ? 'sem' : sub.frequency === 'trimestral' ? 'tri' : 'mês'}</span>
                                 </p>
-                                <div className="opacity-0 group-hover:opacity-100 transition-all hidden sm:flex items-center -mr-2 ml-1">
+                                <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all hidden sm:flex items-center -mr-2 ml-1">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
@@ -548,14 +557,14 @@ const Subscriptions = () => {
                 {isEditing ? (
                   <>
                     <button 
-                      className="w-full py-3 px-4 rounded-xl font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors border border-transparent"
+                      className="w-full py-3 px-4 rounded-full font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 active:scale-[0.97] transition-[transform,background-color] duration-150 border border-transparent"
                       onClick={() => setIsEditing(false)}
                       disabled={isSaving}
                     >
                       Cancelar
                     </button>
                     <button 
-                      className="w-full py-3 px-4 rounded-xl font-medium text-sm bg-primary-600 text-white hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary-500/20"
+                      className="w-full py-3 px-4 rounded-full font-medium text-sm bg-primary-600 text-white hover:bg-primary-700 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center justify-center gap-2 shadow-sm shadow-primary-500/20"
                       onClick={handleSaveEdit}
                       disabled={isSaving}
                     >
@@ -566,14 +575,14 @@ const Subscriptions = () => {
                 ) : (
                   <>
                     <button 
-                      className="w-full py-3 px-4 rounded-xl font-medium text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 px-4 rounded-full font-medium text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center justify-center gap-2"
                       onClick={() => setIsEditing(true)}
                     >
                       <Pencil className="w-4 h-4" />
                       Editar
                     </button>
                     <button 
-                      className="w-full py-3 px-4 rounded-xl font-medium text-sm text-danger-600 bg-danger-50 hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/30 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 px-4 rounded-full font-medium text-sm text-danger-600 bg-danger-50 hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center justify-center gap-2"
                       onClick={() => {
                         handleCancelRecurrence(selectedSubscription)
                         setSelectedSubscription(null)

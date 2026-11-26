@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Player } from '@remotion/player'
 import { AuthHeroComposition } from '@/remotion/AuthHeroComposition'
 
@@ -13,6 +13,7 @@ export const AuthVisualSide = ({
   subtitle,
 }: AuthVisualSideProps) => {
   const [activeSlide, setActiveSlide] = useState(0)
+  const shouldReduceMotion = useReducedMotion()
 
   const slides = useMemo(() => [
     {
@@ -59,8 +60,8 @@ export const AuthVisualSide = ({
             compositionWidth={800}
             compositionHeight={600}
             fps={30}
-            autoPlay
-            loop
+            autoPlay={!shouldReduceMotion}
+            loop={!shouldReduceMotion}
             controls={false}
             clickToPlay={false}
             doubleClickToFullscreen={false}
@@ -82,15 +83,18 @@ export const AuthVisualSide = ({
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSlide}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.35 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+            transition={{
+              duration: shouldReduceMotion ? 0.14 : 0.22,
+              ease: [0.23, 1, 0.32, 1],
+            }}
           >
-            <h3 className="text-2xl xl:text-3xl font-bold font-display text-white mb-2 leading-tight">
+            <h3 className="text-2xl xl:text-3xl font-bold font-display tracking-[-0.02em] text-balance text-white mb-2 leading-tight">
               {slides[activeSlide].title}
             </h3>
-            <p className="text-sm xl:text-base text-white/80 leading-relaxed">
+            <p className="text-sm xl:text-base text-white/80 max-w-[65ch] text-pretty leading-relaxed">
               {slides[activeSlide].subtitle}
             </p>
           </motion.div>
@@ -101,12 +105,17 @@ export const AuthVisualSide = ({
           {slides.map((_, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => setActiveSlide(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                activeSlide === index ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'
-              }`}
+              className="py-2 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 rounded-full"
               aria-label={`Slide ${index + 1}`}
-            />
+            >
+              <span
+                className={`block h-1.5 rounded-full transition-[width,background-color,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-active:scale-90 ${
+                  activeSlide === index ? 'w-8 bg-white' : 'w-2 bg-white/40 group-hover:bg-white/60'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

@@ -123,7 +123,7 @@ export const PasswordStrengthInput = forwardRef<
       <div className="w-full space-y-3">
         {/* Input Container com Borda Arredondada e Label Entalhada */}
         <div
-          className={`relative rounded-2xl border-2 transition-all duration-300 ${
+          className={`relative rounded-2xl border-2 focus-within:ring-4 focus-within:ring-primary-500/10 transition-[border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
             error
               ? 'border-red-500'
               : isStrengthActive && color === 'green'
@@ -170,7 +170,7 @@ export const PasswordStrengthInput = forwardRef<
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
-              className="absolute right-4 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200 transition-colors p-1"
+              className="absolute right-4 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200 active:scale-[0.9] transition-[transform,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] p-1 rounded-lg"
               aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
             >
               {showPassword ? (

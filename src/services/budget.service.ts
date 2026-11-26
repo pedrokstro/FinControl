@@ -1,5 +1,5 @@
 import { Budget } from '../types'
-import api from './api'
+import api from '@/config/api'
 
 export const budgetService = {
     getBudgets: async (): Promise<Budget[]> => {

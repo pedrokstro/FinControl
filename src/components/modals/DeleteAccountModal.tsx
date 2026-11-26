@@ -146,14 +146,14 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
                   <div className="p-6 bg-gray-50 dark:bg-neutral-800 flex gap-3">
                     <button
                       onClick={handleClose}
-                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors border border-gray-300 dark:border-neutral-600"
+                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 active:scale-[0.97] transition-[transform,background-color] duration-150 border border-gray-300 dark:border-neutral-600"
                     >
                       Cancelar
                     </button>
                     <button
                       onClick={handleSendCode}
                       disabled={isSendingCode}
-                      className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-3 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isSendingCode ? (
                         <>
@@ -235,14 +235,14 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
                   <div className="p-6 bg-gray-50 dark:bg-neutral-800 flex gap-3">
                     <button
                       onClick={handleClose}
-                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors border border-gray-300 dark:border-neutral-600"
+                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 active:scale-[0.97] transition-[transform,background-color] duration-150 border border-gray-300 dark:border-neutral-600"
                     >
                       Cancelar
                     </button>
                     <button
                       onClick={handleValidateCode}
                       disabled={code.length !== 6}
-                      className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Verificar Código
                     </button>
@@ -300,14 +300,14 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
                     <button
                       onClick={handleClose}
                       disabled={isLoading}
-                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors border border-gray-300 dark:border-neutral-600 disabled:opacity-50"
+                      className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-neutral-600 active:scale-[0.97] transition-[transform,background-color] duration-150 border border-gray-300 dark:border-neutral-600 disabled:opacity-50"
                     >
                       Não, Manter Conta
                     </button>
                     <button
                       onClick={handleConfirmDelete}
                       disabled={isLoading}
-                      className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-3 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isLoading ? (
                         <>

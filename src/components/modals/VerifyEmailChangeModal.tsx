@@ -131,14 +131,14 @@ const VerifyEmailChangeModal = ({ isOpen, onClose, newEmail }: VerifyEmailChange
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors font-medium"
+              className="flex-1 px-4 py-3 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-800 active:scale-[0.97] transition-[transform,background-color] duration-150 font-medium"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isVerifying || code.length !== 6}
-              className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] transition-[transform,background-color] duration-150 font-medium"
             >
               {isVerifying ? 'Verificando...' : 'Confirmar'}
             </button>

@@ -4,9 +4,15 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
+  avatar?: string | null;
   role: string;
   isActive: boolean;
+  isPremium?: boolean;
+  isTrial?: boolean;
+  isAdmin?: boolean;
+  emailVerified?: boolean;
+  planType?: 'free' | 'premium';
+  planEndDate?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -9,6 +15,10 @@
 
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
   }
 
   body {
@@ -71,30 +81,34 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-full active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
     @apply dark:bg-primary-600 dark:hover:bg-primary-500;
+    transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   }
 
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-full active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
     @apply dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white;
+    transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   }
 
   .btn-danger {
-    @apply bg-danger-600 hover:bg-danger-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-danger-600 hover:bg-danger-700 text-white font-medium py-2 px-4 rounded-full active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
     @apply dark:bg-danger-600 dark:hover:bg-danger-500;
+    transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   }
 
   .btn-success {
-    @apply bg-success-600 hover:bg-success-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-success-600 hover:bg-success-700 text-white font-medium py-2 px-4 rounded-full active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
     @apply dark:bg-success-600 dark:hover:bg-success-500;
+    transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   }
 
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
     @apply dark:bg-neutral-900 dark:border-neutral-800;
     @apply hover:shadow-md hover:border-primary-100 dark:hover:border-neutral-700;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: border-color 180ms var(--ease-out), box-shadow 200ms var(--ease-out);
   }
 
   /* Animação apenas para cards que precisam */
@@ -115,7 +129,8 @@
   }
 
   .card-telegram {
-    @apply bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-neutral-800 shadow-sm transition-all duration-300;
+    @apply bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-neutral-800 shadow-sm;
+    transition: border-color 180ms var(--ease-out), box-shadow 200ms var(--ease-out);
   }
 
   @keyframes fadeIn {
@@ -616,4 +631,42 @@
 
 .animate-marquee-reverse:hover {
   animation-play-state: paused;
+}
+
+.tabular-figures {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .chrome-translucent {
+    backdrop-filter: none !important;
+    background-color: rgb(255 255 255 / 0.98) !important;
+  }
+
+  .dark .chrome-translucent {
+    background-color: rgb(10 10 10 / 0.98) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .card,
+  .card-telegram,
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-success {
+    transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease !important;
+    transform: none !important;
+  }
+
+  .animate-spin-slow,
+  .animate-float-slow,
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none !important;
+  }
 }

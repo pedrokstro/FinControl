@@ -88,6 +88,23 @@ interface FinancialState {
   deleteCreditCard: (id: string) => Promise<void>
 }
 
+// Controle em voo e contador de requisições para evitar corridas de loading e chamadas duplicadas
+let inFlightSyncPromise: Promise<void> | null = null
+let inFlightCardsPromise: Promise<void> | null = null
+let activeLoadingRequests = 0
+
+const startLoadingRequest = (set: (partial: any) => void) => {
+  activeLoadingRequests += 1
+  set({ isLoading: true })
+}
+
+const finishLoadingRequest = (set: (partial: any) => void) => {
+  activeLoadingRequests = Math.max(0, activeLoadingRequests - 1)
+  if (activeLoadingRequests === 0) {
+    set({ isLoading: false })
+  }
+}
+
 // Categorias padrão removidas - sempre buscar do backend
 
 export const useFinancialStore = create<FinancialState>()(
@@ -337,7 +354,7 @@ export const useFinancialStore = create<FinancialState>()(
 
       fetchTransactions: async () => {
         try {
-          set({ isLoading: true })
+          startLoadingRequest(set)
           console.log('🔄 Buscando transações recentes do backend (todas)...')
 
           const data = await transactionService.getAll({
@@ -360,16 +377,18 @@ export const useFinancialStore = create<FinancialState>()(
           set({
             transactions: normalizedTransactions as any,
             currentMonthTransactions: monthTransactions as any,
-            isLoading: false,
           })
 
-          // Buscar restante em background (todas as páginas)
-          get().syncAllTransactions().catch((error) => {
-            console.error('❌ Erro ao sincronizar todas as transações:', error)
-          })
+          // Só sincroniza páginas adicionais em background se houver mais de 1 página
+          if ((data.totalPages || 1) > 1) {
+            get().syncAllTransactions().catch((error) => {
+              console.error('❌ Erro ao sincronizar todas as transações:', error)
+            })
+          }
         } catch (error) {
           console.error('❌ Erro ao buscar transações:', error)
-          set({ isLoading: false })
+        } finally {
+          finishLoadingRequest(set)
         }
       },
 
@@ -436,13 +455,23 @@ export const useFinancialStore = create<FinancialState>()(
       },
 
       syncWithBackend: async () => {
+        if (inFlightSyncPromise) {
+          return inFlightSyncPromise
+        }
+
         const { fetchTransactions, fetchCategories, fetchBudgets, fetchCreditCards } = get()
-        await Promise.all([
+        inFlightSyncPromise = Promise.all([
           fetchTransactions(),
           fetchCategories(),
           fetchBudgets(),
           fetchCreditCards(),
-        ])
+        ]).then(() => undefined)
+
+        try {
+          await inFlightSyncPromise
+        } finally {
+          inFlightSyncPromise = null
+        }
       },
 
       fetchBudgets: async () => {
@@ -485,13 +514,26 @@ export const useFinancialStore = create<FinancialState>()(
       },
 
       fetchCreditCards: async () => {
+        if (inFlightCardsPromise) {
+          return inFlightCardsPromise
+        }
+
+        inFlightCardsPromise = (async () => {
+          try {
+            startLoadingRequest(set)
+            const data = await creditCardService.getAll()
+            set({ creditCards: data })
+          } catch (error) {
+            console.error('❌ Erro ao buscar cartões:', error)
+          } finally {
+            finishLoadingRequest(set)
+          }
+        })()
+
         try {
-          set({ isLoading: true })
-          const data = await creditCardService.getAll()
-          set({ creditCards: data, isLoading: false })
-        } catch (error) {
-          console.error('❌ Erro ao buscar cartões:', error)
-          set({ isLoading: false })
+          await inFlightCardsPromise
+        } finally {
+          inFlightCardsPromise = null
         }
       },
 
@@ -550,6 +592,14 @@ export const useFinancialStore = create<FinancialState>()(
     }),
     {
       name: 'financial-storage',
+      partialize: (state) => ({
+        currentUserId: state.currentUserId,
+        transactions: state.transactions,
+        currentMonthTransactions: state.currentMonthTransactions,
+        categories: state.categories,
+        budgets: state.budgets,
+        creditCards: state.creditCards,
+      }),
       // Criar storage key dinâmico baseado no userId
       storage: {
         getItem: (name: string) => {

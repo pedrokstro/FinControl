@@ -1,23 +1,16 @@
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { lazy, Suspense, useMemo, useState, useEffect, useCallback } from 'react'
 import { useFinancialStore } from '@/store/financialStore'
 import { useAuthStore } from '@/store/authStore'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import {
   Sparkles,
   ChevronDown,
   ArrowUpRight,
   TrendingUp,
   TrendingDown,
-  Wallet,
   Target,
   Plus,
-  Loader2,
-  Repeat,
   Edit3,
   Trash2,
-  BarChart3,
   ChevronLeft,
   ChevronRight,
   Calendar,
@@ -28,214 +21,71 @@ import {
   Percent,
   LogOut,
   Sun,
-  Moon
+  Moon,
+  Wallet,
 } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useIsMobile } from '@/hooks'
-import Calculator from '@/components/Calculator'
-import SetSavingsGoalModal from '@/components/modals/SetSavingsGoalModal'
-import ConfirmDeleteGoalModal from '@/components/modals/ConfirmDeleteGoalModal'
+import PageHeader from '@/components/common/PageHeader'
 import TransactionLimitBanner from '@/components/common/TransactionLimitBanner'
-import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
+import TransactionFormModal from '@/components/transactions/TransactionFormModal'
+const Calculator = lazy(() => import('@/components/Calculator'))
+const SetSavingsGoalModal = lazy(() => import('@/components/modals/SetSavingsGoalModal'))
+const ConfirmDeleteGoalModal = lazy(() => import('@/components/modals/ConfirmDeleteGoalModal'))
+const TransactionLimitModal = lazy(() => import('@/components/modals/TransactionLimitModal'))
+const MonthTransactionsListModal = lazy(() => import('@/components/dashboard/MonthTransactionsListModal'))
+const MobileDashboardSections = lazy(() => import('@/components/dashboard/MobileDashboardSections'))
+const DesktopAnalyticsColumn = lazy(() => import('@/components/dashboard/DesktopAnalyticsColumn'))
 import Footer from '@/components/layout/Footer'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
 import dashboardService, { type DashboardCard } from '@/services/dashboard.service'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
-import * as LucideIcons from 'lucide-react'
-import {
-  CashFlowChart,
-  TopExpensesChart,
-  SavingsRateChart,
-  ExpensesByWeekdayChart,
-  BudgetVsActualChart,
-} from '@/components/charts/AdvancedCharts'
 import { toast } from 'react-hot-toast'
-import {
-  AreaChart,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  BarChart,
-  Bar,
-  RadialBarChart,
-  RadialBar,
-  LineChart,
-  Line
-} from 'recharts'
 import { format, startOfMonth, endOfMonth, subMonths, getMonth, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import CategoryIcon from '@/components/common/CategoryIcon'
-import CategorySelect from '@/components/common/CategorySelect'
-import CustomDatePicker from '@/components/common/CustomDatePicker'
-import CustomSelect from '@/components/common/CustomSelect'
-import { type IconName } from '@/utils/iconMapping'
-import Modal from '@/components/common/Modal'
-import NativeBottomSheet from '@/components/common/NativeBottomSheet'
+import { getDynamicIcon, type IconName } from '@/utils/iconMapping'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
-import BudgetProgressBar from '@/components/common/BudgetProgressBar'
-import { motion, AnimatePresence } from 'framer-motion'
-import BrandIcon from '@/components/common/BrandIcon'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { haptics } from '@/utils/haptics'
 import AnimatedCounter from '@/components/ui/AnimatedCounter'
-import InteractiveDataCard from '@/components/dashboard/InteractiveDataCard'
 import {
   MobileCategoryBreakdown,
   MobileBudgetsCarousel,
   MobileMonthlyHistoryCard,
   MobileYearlyAccumulatedCard,
-  MobileSavingsGoalCard,
-  MobileAnalyticsAccordion,
-  MobileCashFlowCard,
-  MobileSavingsRateCard,
-  MobileTopExpensesCard,
-  MobileWeekdayExpensesCard,
-  MobileBudgetVsActualCard,
 } from '@/components/dashboard/mobile'
 
-const RADIAN = Math.PI / 180
 
-type PieLabelProps = {
-  cx: number
-  cy: number
-  midAngle: number
-  outerRadius: number
-  percent?: number
-  name?: string
-  fill?: string
-  payload?: {
-    name?: string
-    color?: string
-  }
-}
-
-const renderCategoryLabel = ({
-  cx,
-  cy,
-  midAngle,
-  outerRadius,
-  percent = 0,
-  name = '',
-  fill = '#111827',
-  payload,
-}: PieLabelProps) => {
-  const resolvedName = payload?.name ?? name
-  const textColor = payload?.color ?? fill
-  const radius = outerRadius + (percent < 0.08 ? 28 : 18)
-  const x = cx + radius * Math.cos(-midAngle * RADIAN)
-  const y = cy + radius * Math.sin(-midAngle * RADIAN)
-  const isRightSide = x > cx
-  const anchor = isRightSide ? 'start' : 'end'
-  const percentLabel = percent > 0 ? `${(percent * 100).toFixed(0)}%` : ''
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill={textColor}
-      textAnchor={anchor}
-      dominantBaseline="middle"
-      fontSize={12}
-      fontWeight={600}
-    >
-      <tspan x={x} dy="-0.3em">
-        {resolvedName}
-      </tspan>
-      {percentLabel && (
-        <tspan x={x} dy="1.2em" fill="#111827">
-          {percentLabel}
-        </tspan>
-      )}
-    </text>
-  )
-}
-
-const transactionSchema = z
-  .object({
-    type: z.enum(['income', 'expense']),
-    amount: z.string().min(1, 'Valor e obrigatorio'),
-    categoryId: z.string().min(1, 'Categoria e obrigatoria'),
-    description: z.string().min(3, 'Descricao deve ter no minimo 3 caracteres'),
-    date: z.string().min(1, 'Data e obrigatoria'),
-    isRecurring: z.boolean().optional(),
-    recurrenceType: z.enum(['daily', 'weekly', 'monthly', 'yearly']).optional(),
-    totalInstallments: z.string().optional(),
-    creditCardId: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.isRecurring) {
-      if (!data.recurrenceType) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['recurrenceType'],
-          message: 'Selecione a frequência',
-        })
-      }
-
-      // Validação do número de parcelas (opcional para tempo indeterminado)
-      if (data.totalInstallments) {
-        const installments = parseInt(data.totalInstallments)
-        if (isNaN(installments) || installments < 2) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['totalInstallments'],
-            message: 'Mínimo de 2 parcelas',
-          })
-        } else if (installments > 360) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['totalInstallments'],
-            message: 'Máximo de 360 parcelas',
-          })
-        }
-      }
-    }
-  })
-
-type TransactionFormData = z.infer<typeof transactionSchema>
 
 const Dashboard = () => {
-  const {
-    transactions,
-    categories,
-    budgets,
-    addTransaction,
-    syncWithBackend,
-    isCreatingTransaction,
-    creditCards,
-    fetchCreditCards
-  } = useFinancialStore()
+  const transactions = useFinancialStore((s) => s.transactions)
+  const categories = useFinancialStore((s) => s.categories)
+  const budgets = useFinancialStore((s) => s.budgets)
+  const syncWithBackend = useFinancialStore((s) => s.syncWithBackend)
   const { user, logout } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
+  const shouldReduceMotion = useReducedMotion()
   const [showQuickAdd, setShowQuickAdd] = useState(false)
+  const [quickAddType, setQuickAddType] = useState<'income' | 'expense'>('expense')
   const isMobile = useIsMobile()
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([])
 
-  useEffect(() => {
-    fetchCreditCards()
-  }, [fetchCreditCards])
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
   const [showDeleteGoalModal, setShowDeleteGoalModal] = useState(false)
   const [currentGoal, setCurrentGoal] = useState<SavingsGoal | null>(null)
   const [isLoadingGoal, setIsLoadingGoal] = useState(true)
   const [isDeletingGoal, setIsDeletingGoal] = useState(false)
-  const [isQuickAddRecurring, setIsQuickAddRecurring] = useState(false)
   const [showIncomeModal, setShowIncomeModal] = useState(false)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
   const [analyticsEmpty, setAnalyticsEmpty] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
-  const { usage, checkLimit, refreshUsage } = useTransactionLimit()
+  const { usage, refreshUsage } = useTransactionLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [desktopAnalyticsOpen, setDesktopAnalyticsOpen] = useState(false)
 
@@ -388,44 +238,10 @@ const Dashboard = () => {
     }
   }
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    control,
-    setValue,
-    formState: { errors },
-  } = useForm<TransactionFormData>({
-    resolver: zodResolver(transactionSchema),
-    defaultValues: {
-      type: 'expense',
-      date: (() => {
-        const today = new Date()
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-      })(),
-    },
-  })
-
-  const transactionType = watch('type')
-
   const openQuickAdd = useCallback((type: 'income' | 'expense' = 'expense') => {
-    // Obter data de hoje sem timezone
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-    console.log('🔄 [DEBUG] Abrindo Quick Add com data:', todayString, 'tipo:', type);
-
-    reset({
-      type: type,
-      amount: '',
-      categoryId: '',
-      description: '',
-      date: todayString,
-      creditCardId: '',
-    })
+    setQuickAddType(type)
     setShowQuickAdd(true)
-  }, [reset])
+  }, [])
 
   useEffect(() => {
     const quickAddParam = searchParams.get('quickAdd')
@@ -438,80 +254,9 @@ const Dashboard = () => {
     }
   }, [searchParams, setSearchParams, openQuickAdd])
 
-  const quickAmountPresets = [50, 100, 250, 500]
-
-  const closeQuickAdd = () => {
+  const closeQuickAdd = useCallback(() => {
     setShowQuickAdd(false)
-    setIsQuickAddRecurring(false)
-
-    const today = new Date()
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-
-    reset({
-      type: 'expense',
-      amount: '',
-      categoryId: '',
-      description: '',
-      date: todayString,
-      isRecurring: false,
-      recurrenceType: undefined,
-      totalInstallments: '',
-      creditCardId: '',
-    })
-  }
-
-  const handleQuickAddSafeClose = () => {
-    if (isCreatingTransaction) return
-    closeQuickAdd()
-  }
-
-  const handlePresetAmount = (value: number) => {
-    setValue('amount', value.toString(), { shouldDirty: true, shouldValidate: true })
-  }
-
-  const onSubmit = async (data: TransactionFormData) => {
-    // Verificar limite de transações antes de criar
-    const canCreate = await checkLimit()
-    if (!canCreate) {
-      setShowLimitModal(true)
-      return
-    }
-
-    const category = categories.find((c) => c.id === data.categoryId)
-
-    const dateValue: any = data.date;
-
-    console.log('📅 [FRONTEND DEBUG v2] Data do formulário:', dateValue)
-    console.log('📅 [FRONTEND DEBUG v2] Tipo:', typeof dateValue)
-    console.log('📅 [FRONTEND DEBUG v2] instanceof Date:', dateValue instanceof Date)
-
-    // Garantir que a data seja sempre string no formato YYYY-MM-DD (timezone local)
-    const dateString = typeof dateValue === 'string'
-      ? dateValue
-      : dateValue instanceof Date
-        ? `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}-${String(dateValue.getDate()).padStart(2, '0')}`
-        : dateValue;
-
-    console.log('📅 [FRONTEND DEBUG] Data convertida:', dateString, typeof dateString)
-
-    await addTransaction({
-      ...data,
-      date: dateString,
-      amount: parseFloat(data.amount),
-      category: category?.name || '',
-      userId: '1',
-      // Adicionar campos de recorrência se marcado
-      isRecurring: isQuickAddRecurring,
-      recurrenceType: isQuickAddRecurring ? data.recurrenceType : undefined,
-      totalInstallments: isQuickAddRecurring && data.totalInstallments ? Number(data.totalInstallments) : undefined,
-    })
-
-    // Atualizar uso após criar transação
-    await refreshUsage()
-
-    closeQuickAdd()
-    setIsQuickAddRecurring(false) // Reset recorrência
-  }
+  }, [])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -577,53 +322,17 @@ const Dashboard = () => {
     }
   }, [selectedMonthTransactions])
 
-  // Calcular as 3 maiores despesas do mês selecionado
-  const topExpensesCurrentMonth = useMemo(() => {
-    if (!transactions.length || !categories.length) return []
-
-    // 1. Filtrar transações de despesa do mês selecionado
-    const expenses = transactions.filter((t) => {
-      if (t.type !== 'expense') return false
-      const date = parseISO(t.date)
-      return date.getFullYear() === selectedDate.year && (date.getMonth() + 1) === selectedDate.month
-    })
-
-    // 2. Agrupar por categoria
-    const categoryTotals: { [key: string]: number } = {}
-    expenses.forEach((t) => {
-      categoryTotals[t.categoryId] = (categoryTotals[t.categoryId] || 0) + t.amount
-    })
-
-    // 3. Mapear para array e enriquecer com dados da categoria
-    const sorted = Object.keys(categoryTotals)
-      .map((catId) => {
-        const category = categories.find((c) => c.id === catId)
-        return {
-          categoryId: catId,
-          name: category?.name || 'Outros',
-          color: category?.color || '#9ca3af',
-          icon: category?.icon || 'FolderOpen',
-          amount: categoryTotals[catId],
-          percentage: financialSummary.monthExpense > 0
-            ? (categoryTotals[catId] / financialSummary.monthExpense) * 100
-            : 0
-        }
-      })
-      .sort((a, b) => b.amount - a.amount)
-
-    return sorted.slice(0, 3) // Pegar as top 3
-  }, [transactions, categories, selectedDate, financialSummary.monthExpense])
 
   const incomeTransactions = useMemo(() => {
     return [...selectedMonthTransactions]
       .filter((t) => t.type === 'income')
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime())
   }, [selectedMonthTransactions])
 
   const expenseTransactions = useMemo(() => {
     return [...selectedMonthTransactions]
       .filter((t) => t.type === 'expense')
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime())
   }, [selectedMonthTransactions])
 
   const monthlyData = useMemo(() => {
@@ -713,7 +422,7 @@ const Dashboard = () => {
 
   const recentTransactions = useMemo(() => {
     const sorted = [...selectedMonthTransactions].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()
     )
 
     const grouped: any[] = []
@@ -751,22 +460,6 @@ const Dashboard = () => {
     return listToDisplay.slice(0, limit || 5)
   }, [selectedMonthTransactions])
 
-  // Dados para o Radial Bar Chart (Meta de Economia)
-  const savingsGoalData = useMemo(() => {
-    if (!currentGoal) return []
-
-    const currentAmount = currentGoal.currentAmount || 0
-    const targetAmount = currentGoal.targetAmount || 1
-    const percentage = Math.min((currentAmount / targetAmount) * 100, 100)
-
-    return [
-      {
-        name: 'Meta',
-        value: percentage,
-        fill: percentage >= 100 ? '#22c55e' : percentage >= 50 ? '#3b82f6' : '#f59e0b'
-      }
-    ]
-  }, [currentGoal])
 
   // Dados para o Line Chart (Saldo Acumulado)
   const accumulatedBalanceData = useMemo(() => {
@@ -826,33 +519,6 @@ const Dashboard = () => {
     return { income, expense, balance }
   }, [transactions, selectedDate])
 
-  // Sparklines diárias para os Interactive Data Cards
-  const dailySparklineMetrics = useMemo(() => {
-    const daysInMonth = new Date(selectedDate.year, selectedDate.month, 0).getDate()
-    const pointsCount = 7
-    const step = Math.max(Math.floor(daysInMonth / pointsCount), 1)
-
-    const incomePoints: number[] = []
-    const expensePoints: number[] = []
-    const balancePoints: number[] = []
-
-    for (let day = 1; day <= daysInMonth; day += step) {
-      const txUpToDay = selectedMonthTransactions.filter((t) => {
-        if (!t.date) return false
-        const tDay = parseISO(t.date).getDate()
-        return tDay <= day
-      })
-
-      const inc = txUpToDay.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const exp = txUpToDay.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-
-      incomePoints.push(inc)
-      expensePoints.push(exp)
-      balancePoints.push(inc - exp)
-    }
-
-    return { incomePoints, expensePoints, balancePoints }
-  }, [selectedMonthTransactions, selectedDate])
 
   const incomeTrendPercent = useMemo(() => {
     if (!lastMonthSummary.income) return financialSummary.monthIncome > 0 ? 100 : 0
@@ -866,169 +532,66 @@ const Dashboard = () => {
     return Math.round((diff / lastMonthSummary.expense) * 100)
   }, [financialSummary.monthExpense, lastMonthSummary.expense])
 
-  // Permite alternar perfeitamente entre o Bottom Sheet nativo mobile e o Modal desktop
-  const QuickAddSheet = isMobile ? NativeBottomSheet : Modal
 
   return (
     <div className="responsive-page">
 
-      {/* Header Premium Desktop (Aurora Glow, Saudação & Cápsula de Período) */}
-      <div className="hidden sm:block mb-6 select-none">
-        <h1 className="sr-only">Dashboard</h1>
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#090d16] dark:via-[#0e1726] dark:to-[#050811] rounded-3xl p-6 lg:p-7 text-white shadow-xl shadow-primary-950/20 dark:shadow-2xl dark:shadow-black/70 border border-white/10 dark:border-white/5">
-          {/* Elementos de Fundo com Mesh Aurora Glow e Micro-animações Orgânicas */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-            {/* Orb 1: Luz Ciano / Celeste no topo direito */}
-            <motion.div
-              initial={false}
-              animate={{
-                x: [0, 20, 0],
-                y: [0, -15, 0],
-                scale: [1, 1.15, 1],
-                opacity: [0.35, 0.5, 0.35],
-              }}
-              transition={{
-                duration: 9,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-cyan-300/80 dark:bg-cyan-500/20 blur-3xl transform-gpu pointer-events-none"
-            />
+      {/* Cabeçalho Desktop Limpo + Seletor de Período */}
+      <div className="hidden sm:block mb-6">
+        <PageHeader
+          title="Dashboard"
+          subtitle="Visão geral do seu mês financeiro"
+          actions={
+            <div className="bg-white dark:bg-neutral-900 rounded-full px-3 py-1.5 border border-neutral-200/80 dark:border-neutral-800 flex items-center gap-1.5 shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  goToPreviousMonth()
+                }}
+                className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.92] rounded-full text-neutral-600 dark:text-neutral-300 transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 cursor-pointer"
+                title="Mês anterior"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
 
-            {/* Orb 2: Luz Índigo profundo no canto inferior esquerdo */}
-            <motion.div
-              initial={false}
-              animate={{
-                x: [0, -15, 0],
-                y: [0, 15, 0],
-                scale: [1, 1.18, 1],
-                opacity: [0.3, 0.45, 0.3],
-              }}
-              transition={{
-                duration: 11,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-indigo-500/80 dark:bg-indigo-600/20 blur-3xl transform-gpu pointer-events-none"
-            />
-
-            {/* Orb 3: Pulso de Realce Central */}
-            <motion.div
-              initial={false}
-              animate={{
-                scale: [0.95, 1.1, 0.95],
-                opacity: [0.15, 0.28, 0.15],
-              }}
-              transition={{
-                duration: 7,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-sky-200/60 dark:bg-sky-400/10 blur-2xl transform-gpu pointer-events-none"
-            />
-
-            {/* Camada de Gradiente Angular de Vidro */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 dark:from-white/[0.04] via-transparent to-black/10 dark:to-black/30 pointer-events-none" />
-
-            {/* Linha de reflexo especular na base do cartão */}
-            <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent pointer-events-none" />
-          </div>
-
-          {/* Conteúdo em primeiro plano */}
-          <div className="relative z-10">
-            {/* Linha Superior: Usuário e Cápsula de Controle de Mês */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex flex-col text-left min-w-0">
-                  <span className="text-xs text-white/80 dark:text-neutral-400 font-medium">
-                    {(() => {
-                      const hour = new Date().getHours()
-                      if (hour < 12) return 'Bom dia'
-                      if (hour < 18) return 'Boa tarde'
-                      return 'Boa noite'
-                    })()}
-                  </span>
-                  <span className="text-lg font-bold text-white leading-tight font-display tracking-tight truncate">
-                    {user?.name || 'Usuário'}
-                  </span>
-                </div>
-
-              {/* Cápsula de Navegação de Período Integrada */}
-              <div className="bg-white/15 dark:bg-white/[0.08] backdrop-blur-md rounded-full px-3.5 py-1.5 border border-white/20 dark:border-white/10 flex items-center gap-2 shadow-sm text-white">
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptics.light()
-                    goToPreviousMonth()
-                  }}
-                  className="p-1 hover:bg-white/20 dark:hover:bg-white/10 active:scale-90 rounded-full text-white transition-all focus:outline-none"
-                  title="Mês anterior"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                <div className="flex items-center gap-2 px-2">
-                  <Calendar className="w-3.5 h-3.5 text-white/80 dark:text-neutral-300" />
-                  <span className="text-xs font-semibold capitalize tracking-wide text-white font-display">
-                    {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
-                  </span>
-                </div>
-
-                {!isCurrentMonth() && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptics.light()
-                      goToCurrentMonth()
-                    }}
-                    className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-white dark:bg-neutral-800 text-primary-700 dark:text-neutral-200 border border-transparent dark:border-white/10 shadow-sm hover:scale-105 active:scale-95 transition-all"
-                  >
-                    Hoje
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptics.light()
-                    goToNextMonth()
-                  }}
-                  disabled={isCurrentMonth()}
-                  className={`p-1 hover:bg-white/20 dark:hover:bg-white/10 rounded-full text-white transition-all focus:outline-none ${
-                    isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'active:scale-90'
-                  }`}
-                  title="Próximo mês"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Linha Principal: Saldo do Mês com Badges de Destaque */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
-              <div>
-                <span className="text-xs text-white/80 dark:text-neutral-400 font-medium tracking-wider uppercase">
-                  Saldo do Mês
+              <div className="flex items-center gap-2 px-2">
+                <Calendar className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                <span className="text-xs font-semibold capitalize tracking-wide text-neutral-900 dark:text-white font-display whitespace-nowrap">
+                  {format(new Date(selectedDate.year, selectedDate.month - 1), 'MMMM yyyy', { locale: ptBR })}
                 </span>
-                <div className="mt-1 flex items-baseline gap-3">
-                  <AnimatedCounter
-                    value={financialSummary.monthBalance}
-                    prefix="R$ "
-                    className="text-4xl lg:text-5xl font-black tracking-tight font-display text-white leading-none drop-shadow-sm"
-                  />
-                </div>
               </div>
 
-              {/* Badges de Destaque no Hero */}
-              {financialSummary.monthIncome > 0 && (
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/15 dark:bg-white/[0.08] text-white border border-white/20 dark:border-white/10 backdrop-blur-md">
-                    Poupança: {Math.max(Math.round(((financialSummary.monthIncome - financialSummary.monthExpense) / financialSummary.monthIncome) * 100), 0)}%
-                  </div>
-                </div>
+              {!isCurrentMonth() && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    goToCurrentMonth()
+                  }}
+                  className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/40 active:scale-[0.95] transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer"
+                >
+                  Hoje
+                </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  goToNextMonth()
+                }}
+                disabled={isCurrentMonth()}
+                className={`p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full text-neutral-600 dark:text-neutral-300 transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
+                  isCurrentMonth() ? 'opacity-30 cursor-not-allowed' : 'active:scale-[0.92] cursor-pointer'
+                }`}
+                title="Próximo mês"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-          </div>
-        </div>
+          }
+        />
       </div>
 
       {/* Header Premium Mobile (Inspirado no estilo nativo de referência) */}
@@ -1248,7 +811,7 @@ const Dashboard = () => {
       {dashboardCards.length > 0 && (
         <div className="w-full overflow-x-auto flex gap-4 py-2 mb-6 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {dashboardCards.map((card) => {
-            const IconComponent = card.icon ? (LucideIcons as any)[card.icon] : null
+            const IconComponent = getDynamicIcon(card.icon)
             return (
               <button
                 key={card.id}
@@ -1259,7 +822,7 @@ const Dashboard = () => {
                     navigate(card.actionPath)
                   }
                 }}
-                className={`flex-shrink-0 w-[250px] sm:w-[270px] p-4 ${card.bg} rounded-2xl flex flex-col justify-between text-left active:scale-[0.98] hover:scale-[1.01] transition-all focus:outline-none h-[120px]`}
+                className={`flex-shrink-0 w-[250px] sm:w-[270px] p-4 ${card.bg} rounded-2xl flex flex-col justify-between text-left active:scale-[0.98] hover:shadow-md transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 h-[120px] cursor-pointer`}
               >
                 <div className="flex items-center justify-between w-full">
                   {card.imageSrc ? (
@@ -1290,144 +853,80 @@ const Dashboard = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* VISÃO MOBILE DEDICADA (Cards e Widgets Próprios para Smartphones)     */}
+      {/* VISÃO MOBILE DEDICADA (Lazy-loaded apenas quando isMobile)                */}
       {/* ========================================================================= */}
-      <div className="block sm:hidden space-y-4 mb-8">
-        {/* 1. Meus Limites / Orçamentos em Carrossel Horizontal */}
-        <MobileBudgetsCarousel
-          budgets={budgets}
-          categories={categories}
-          transactions={transactions}
-          selectedDate={selectedDate}
-          formatCurrency={formatCurrency}
-          onManageBudgets={() => navigate('/app/categories?manageBudgets=true')}
-        />
-
-        {/* 2. Finanças por Categoria com Barra Multi-Segmentada e Feed */}
-        <MobileCategoryBreakdown
-          data={categoryData}
-          formatCurrency={formatCurrency}
-          onManageCategories={() => navigate('/app/categories')}
-        />
-
-        {/* 3. Histórico Mensal Touch com Alternador Saldo / Fluxo */}
-        <MobileMonthlyHistoryCard
-          data={monthlyData}
-          formatCurrency={formatCurrency}
-        />
-
-        {/* 4. Meta de Economia com Progresso Visual */}
-        <MobileSavingsGoalCard
-          goal={currentGoal}
-          formatCurrency={formatCurrency}
-          onEditGoal={() => setShowGoalModal(true)}
-          onDeleteGoal={currentGoal ? handleDeleteGoal : undefined}
-          isLoading={isLoadingGoal}
-        />
-
-        {/* 5. Resumo Anual e Curva Patrimonial Acumulada */}
-        <MobileYearlyAccumulatedCard
-          yearlyData={yearlyMonthlyData}
-          accumulatedData={accumulatedBalanceData}
-          formatCurrency={formatCurrency}
-        />
-
-        {/* 6. Transações Recentes Mobile */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-                Transações Recentes
-              </h3>
-              <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                Últimas movimentações
-              </p>
-            </div>
-            <Link
-              to="/app/transactions"
-              className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
-            >
-              <span>Ver todas</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {recentTransactions.length > 0 ? (
-            <div className="space-y-2">
-              {recentTransactions.slice(0, 5).map((transaction) => {
-                const category = categories.find((c) => c.id === transaction.categoryId)
-                return (
-                  <div
-                    key={transaction.id}
-                    className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div
-                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                          transaction.type === 'income'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                        }`}
-                      >
-                        {category ? (
-                          <CategoryIcon
-                            icon={category.icon as IconName}
-                            color={category.color}
-                            size="sm"
-                          />
-                        ) : transaction.type === 'income' ? (
-                          <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                        ) : (
-                          <TrendingDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-xs text-neutral-900 dark:text-white truncate">
-                          {transaction.description}
-                        </p>
-                        <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                          {transaction.category} • {format(new Date(transaction.date), 'dd/MM/yyyy')}
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className={`font-bold font-mono text-xs shrink-0 ml-2 ${
-                        transaction.type === 'income'
-                          ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-rose-600 dark:text-rose-400'
-                      }`}
-                    >
-                      {transaction.type === 'income' ? '+' : '-'}
-                      {formatCurrency(transaction.amount)}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-6 text-xs text-neutral-400">
-              Nenhuma transação registrada
-            </div>
-          )}
-        </div>
-
-        {/* 7. Análises Avançadas Expansíveis (Accordion) */}
-        <MobileAnalyticsAccordion
-          analytics={analytics}
-          isLoading={isLoadingAnalytics}
-          isEmpty={analyticsEmpty}
-          formatCurrency={formatCurrency}
-        />
-      </div>
+      {isMobile && (
+        <Suspense fallback={null}>
+          <MobileDashboardSections
+            budgets={budgets}
+            categories={categories}
+            transactions={transactions}
+            recentTransactions={recentTransactions}
+            selectedDate={selectedDate}
+            categoryData={categoryData}
+            monthlyData={monthlyData}
+            yearlyMonthlyData={yearlyMonthlyData}
+            accumulatedBalanceData={accumulatedBalanceData}
+            currentGoal={currentGoal}
+            isLoadingGoal={isLoadingGoal}
+            analytics={analytics}
+            isLoadingAnalytics={isLoadingAnalytics}
+            analyticsEmpty={analyticsEmpty}
+            formatCurrency={formatCurrency}
+            formatDate={formatDate}
+            onManageBudgets={() => navigate('/app/categories?manageBudgets=true')}
+            onManageCategories={() => navigate('/app/categories')}
+            onEditGoal={() => setShowGoalModal(true)}
+            onDeleteGoal={handleDeleteGoal}
+          />
+        </Suspense>
+      )}
 
       {/* ========================================================================= */}
       {/* VISÃO DESKTOP COMPLETA (Telas Grandes sm: e acima)                    */}
       {/* ========================================================================= */}
       <div className="hidden sm:block space-y-6 mb-8">
-        {/* 1. Grid de Cards de Topo no Estilo Mobile Clean: Receitas, Despesas, Meta de Economia */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* 1. Grid Único de 4 Cards no Topo: Saldo, Receitas, Despesas, Meta de Economia */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          {/* Card Saldo do Mês */}
+          <div className="bg-gradient-to-br from-[#025ec2] via-[#0284c7] to-[#0369a1] dark:from-[#0c1424] dark:via-[#111c33] dark:to-[#090f1d] text-white border border-white/10 dark:border-neutral-800 rounded-2xl p-5 shadow-md hover:shadow-lg transition-[border-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/15 border border-white/20 text-white/95 tabular-figures">
+                  {financialSummary.monthIncome > 0
+                    ? `Poupança ${Math.max(Math.round(((financialSummary.monthIncome - financialSummary.monthExpense) / financialSummary.monthIncome) * 100), 0)}%`
+                    : 'Resumo mensal'}
+                </span>
+              </div>
+              <span className="text-xs font-bold text-white/80 uppercase tracking-wider font-display">
+                Saldo do Mês
+              </span>
+              <div className="mt-1">
+                <AnimatedCounter
+                  value={financialSummary.monthBalance}
+                  prefix="R$ "
+                  className="text-2xl lg:text-3xl font-black tracking-[-0.02em] tabular-figures font-display text-white"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs text-white/85">
+              <span>Balanço líquido</span>
+              <Link
+                to="/app/transactions"
+                className="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 active:scale-[0.96] transition-[transform,background-color] duration-150 font-semibold text-white flex items-center gap-0.5"
+              >
+                <span>Extrato</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
           {/* Card Receitas */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-[border-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
@@ -1436,7 +935,7 @@ const Dashboard = () => {
                 <button
                   type="button"
                   onClick={() => setShowIncomeModal(true)}
-                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                  className="px-2.5 py-1 rounded-full text-xs text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center gap-0.5 cursor-pointer"
                 >
                   <span>Ver todas</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1449,16 +948,16 @@ const Dashboard = () => {
                 <AnimatedCounter
                   value={financialSummary.monthIncome}
                   prefix="R$ "
-                  className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                  className="text-2xl lg:text-3xl font-black tracking-[-0.02em] tabular-figures font-display text-neutral-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
-              <span className="text-neutral-500 dark:text-neutral-400">
+              <span className="text-neutral-500 dark:text-neutral-400 tabular-figures">
                 {incomeTransactions.length} {incomeTransactions.length === 1 ? 'lançamento' : 'lançamentos'}
               </span>
-              <span className={`font-semibold px-2 py-0.5 rounded-full ${
+              <span className={`font-semibold px-2 py-0.5 rounded-full tabular-figures ${
                 incomeTrendPercent >= 0
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                   : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
@@ -1469,7 +968,7 @@ const Dashboard = () => {
           </div>
 
           {/* Card Despesas */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-[border-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center">
@@ -1478,7 +977,7 @@ const Dashboard = () => {
                 <button
                   type="button"
                   onClick={() => setShowExpenseModal(true)}
-                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                  className="px-2.5 py-1 rounded-full text-xs text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center gap-0.5 cursor-pointer"
                 >
                   <span>Ver todas</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1491,16 +990,16 @@ const Dashboard = () => {
                 <AnimatedCounter
                   value={financialSummary.monthExpense}
                   prefix="R$ "
-                  className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                  className="text-2xl lg:text-3xl font-black tracking-[-0.02em] tabular-figures font-display text-neutral-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
-              <span className="text-neutral-500 dark:text-neutral-400">
+              <span className="text-neutral-500 dark:text-neutral-400 tabular-figures">
                 {expenseTransactions.length} {expenseTransactions.length === 1 ? 'saída' : 'saídas'}
               </span>
-              <span className={`font-semibold px-2 py-0.5 rounded-full ${
+              <span className={`font-semibold px-2 py-0.5 rounded-full tabular-figures ${
                 expenseTrendPercent <= 0
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                   : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
@@ -1511,13 +1010,7 @@ const Dashboard = () => {
           </div>
 
           {/* Card Meta de Economia */}
-          <div
-            onClick={() => {
-              haptics.light()
-              setShowGoalModal(true)
-            }}
-            className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
-          >
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-[border-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col justify-between group">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 border border-primary-500/20 flex items-center justify-center">
@@ -1531,7 +1024,7 @@ const Dashboard = () => {
                       haptics.light()
                       setShowGoalModal(true)
                     }}
-                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-500 dark:text-neutral-400 transition-colors"
+                    className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.94] rounded-full text-neutral-500 dark:text-neutral-400 transition-[transform,background-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 cursor-pointer"
                     title={currentGoal ? 'Editar meta' : 'Definir meta'}
                   >
                     {currentGoal ? <Edit3 className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -1544,7 +1037,7 @@ const Dashboard = () => {
                         haptics.light()
                         handleDeleteGoal()
                       }}
-                      className="p-1 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg text-rose-500 dark:text-rose-400 transition-colors"
+                      className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 active:scale-[0.94] rounded-full text-rose-500 dark:text-rose-400 transition-[transform,background-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer"
                       title="Excluir meta"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1563,39 +1056,46 @@ const Dashboard = () => {
                     <AnimatedCounter
                       value={currentGoal.targetAmount}
                       prefix="R$ "
-                      className="text-2xl lg:text-3xl font-black font-display text-neutral-900 dark:text-white"
+                      className="text-2xl lg:text-3xl font-black tracking-[-0.02em] tabular-figures font-display text-neutral-900 dark:text-white"
                     />
                   </div>
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-neutral-500 dark:text-neutral-400 font-medium">Progresso</span>
-                      <span className="font-bold text-neutral-800 dark:text-neutral-200 font-mono">
+                      <span className="font-bold text-neutral-800 dark:text-neutral-200 font-mono tabular-figures">
                         {formatCurrency(currentGoal.currentAmount)}
                       </span>
                     </div>
                     <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-700 ${
+                        className={`w-full h-full rounded-full origin-left transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                           currentGoal.currentAmount >= currentGoal.targetAmount
                             ? 'bg-emerald-500'
                             : 'bg-primary-500'
                         }`}
                         style={{
-                          width: `${Math.min(Math.round((currentGoal.currentAmount / currentGoal.targetAmount) * 100), 100)}%`,
+                          transform: `scaleX(${Math.min(Math.max(currentGoal.currentAmount / currentGoal.targetAmount, 0), 1)})`,
                         }}
                       />
                     </div>
                   </div>
                 </>
               ) : (
-                <div className="mt-2 py-2">
-                  <p className="text-base font-bold text-neutral-400 dark:text-neutral-500 font-display">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    setShowGoalModal(true)
+                  }}
+                  className="mt-2 py-2 text-left w-full rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 active:scale-[0.98] transition-[transform,background-color] duration-150 px-2 -mx-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                >
+                  <p className="text-base font-bold text-neutral-500 dark:text-neutral-400 font-display">
                     Sem meta definida
                   </p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-                    Clique aqui para planejar sua economia do mês
+                  <p className="text-xs text-primary-600 dark:text-primary-400 font-medium mt-1">
+                    Definir meta de economia para o mês
                   </p>
-                </div>
+                </button>
               )}
             </div>
 
@@ -1604,7 +1104,7 @@ const Dashboard = () => {
                 {currentGoal ? (currentGoal.currentAmount >= currentGoal.targetAmount ? 'Meta atingida!' : 'Em andamento') : 'Planejamento'}
               </span>
               {currentGoal && (
-                <span className={`font-semibold px-2 py-0.5 rounded-full ${
+                <span className={`font-semibold px-2 py-0.5 rounded-full tabular-figures ${
                   currentGoal.currentAmount >= currentGoal.targetAmount
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                     : 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
@@ -1650,7 +1150,7 @@ const Dashboard = () => {
                 </div>
                 <Link
                   to="/app/transactions"
-                  className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline flex items-center gap-0.5"
+                  className="px-2.5 py-1 rounded-full text-xs text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/30 active:scale-[0.97] transition-[transform,background-color] duration-150 flex items-center gap-0.5"
                 >
                   <span>Ver todas</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1691,12 +1191,12 @@ const Dashboard = () => {
                               {transaction.description}
                             </p>
                             <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                              {transaction.category} • {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                              {transaction.category} • {formatDate(transaction.date)}
                             </p>
                           </div>
                         </div>
                         <div
-                          className={`font-bold font-mono text-xs shrink-0 ml-3 ${
+                          className={`font-bold font-mono text-xs tabular-figures shrink-0 ml-3 ${
                             transaction.type === 'income'
                               ? 'text-emerald-600 dark:text-emerald-400'
                               : 'text-rose-600 dark:text-rose-400'
@@ -1720,24 +1220,21 @@ const Dashboard = () => {
             <AnimatePresence>
               {desktopAnalyticsOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
-                  transition={{ duration: 0.3 }}
+                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                  animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                  exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                  transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
                   className="space-y-6"
                 >
-                  {!isLoadingAnalytics && !analyticsEmpty && analytics && (
-                    <>
-                      <MobileTopExpensesCard
-                        data={analytics.topExpenses}
-                        formatCurrency={formatCurrency}
-                      />
-                      <MobileBudgetVsActualCard
-                        data={analytics.budgetVsActual}
-                        formatCurrency={formatCurrency}
-                      />
-                    </>
-                  )}
+                  <Suspense fallback={null}>
+                    <DesktopAnalyticsColumn
+                      column="left"
+                      analytics={analytics}
+                      isLoading={isLoadingAnalytics}
+                      isEmpty={analyticsEmpty}
+                      formatCurrency={formatCurrency}
+                    />
+                  </Suspense>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1766,7 +1263,7 @@ const Dashboard = () => {
                   haptics.light()
                   setDesktopAnalyticsOpen(!desktopAnalyticsOpen)
                 }}
-                className="w-full p-4 flex items-center justify-between text-left hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                className="w-full p-5 flex items-center justify-between text-left hover:bg-neutral-50 dark:hover:bg-neutral-800/50 active:scale-[0.99] transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-sm">
@@ -1783,12 +1280,12 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                  <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 tabular-figures">
                     {desktopAnalyticsOpen ? 'Ocultar' : 'Explorar (5)'}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-neutral-400 transition-transform duration-300 ${
-                      desktopAnalyticsOpen ? 'transform rotate-180 text-primary-500' : ''
+                    className={`w-4 h-4 text-neutral-400 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                      desktopAnalyticsOpen ? 'rotate-180 text-primary-500' : ''
                     }`}
                   />
                 </div>
@@ -1799,37 +1296,21 @@ const Dashboard = () => {
             <AnimatePresence>
               {desktopAnalyticsOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
-                  transition={{ duration: 0.3 }}
+                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                  animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                  exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                  transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
                   className="space-y-6"
                 >
-                  {isLoadingAnalytics ? (
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-8 flex items-center justify-center text-neutral-400 text-xs shadow-sm">
-                      <Loader2 className="w-5 h-5 animate-spin mr-2 text-primary-500" />
-                      <span>Carregando análises detalhadas...</span>
-                    </div>
-                  ) : analyticsEmpty || !analytics ? (
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-8 text-center text-xs text-neutral-400 shadow-sm">
-                      Nenhum dado analítico disponível para este mês.
-                    </div>
-                  ) : (
-                    <>
-                      <MobileCashFlowCard
-                        data={analytics.dailyCashFlow}
-                        formatCurrency={formatCurrency}
-                      />
-                      <MobileSavingsRateCard
-                        data={analytics.savingsRate}
-                        formatCurrency={formatCurrency}
-                      />
-                      <MobileWeekdayExpensesCard
-                        data={analytics.expensesByWeekday}
-                        formatCurrency={formatCurrency}
-                      />
-                    </>
-                  )}
+                  <Suspense fallback={null}>
+                    <DesktopAnalyticsColumn
+                      column="right"
+                      analytics={analytics}
+                      isLoading={isLoadingAnalytics}
+                      isEmpty={analyticsEmpty}
+                      formatCurrency={formatCurrency}
+                    />
+                  </Suspense>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1837,304 +1318,15 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <QuickAddSheet
+      <TransactionFormModal
         isOpen={showQuickAdd}
-        onClose={handleQuickAddSafeClose}
-        title="Nova Transação"
-        size="md"
-        closeOnBackdrop={!isCreatingTransaction}
-        contentClassName="space-y-5"
-        footer={
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleQuickAddSafeClose}
-              className="flex-1 btn-secondary rounded-full"
-              disabled={isCreatingTransaction}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              form="quick-add-form"
-              className="flex-1 btn-primary flex items-center justify-center gap-2 rounded-full shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
-              disabled={isCreatingTransaction}
-            >
-              {isCreatingTransaction ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Processando...
-                </>
-              ) : (
-                'Salvar'
-              )}
-            </button>
-          </div>
-        }
-      >
-        <div className="relative">
-          {isCreatingTransaction && (
-            <div className="absolute inset-0 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10 rounded-xl">
-              <Loader2 className="w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin" />
-              <p className="text-sm font-medium text-primary-700 dark:text-primary-300 text-center px-6">
-                Criando transação e gerando parcelas...
-              </p>
-            </div>
-          )}
-
-          <form id="quick-add-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-left">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block font-display">Tipo de Lançamento</label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-success-400/60 has-[:checked]:border-success-500 has-[:checked]:bg-success-50/20 dark:has-[:checked]:bg-success-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-success-500/5 active:scale-[0.97] select-none">
-                  <input
-                    type="radio"
-                    value="income"
-                    {...register('type')}
-                    className="sr-only"
-                  />
-                  <div className="text-center">
-                    <div className="w-10 h-10 rounded-xl bg-success-50/60 dark:bg-success-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
-                      <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
-                    </div>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Receita</span>
-                  </div>
-                </label>
-                <label className="relative flex items-center justify-center p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-gray-200 dark:border-neutral-800/80 hover:border-danger-400/60 has-[:checked]:border-danger-500 has-[:checked]:bg-danger-50/20 dark:has-[:checked]:bg-danger-950/15 has-[:checked]:shadow-md has-[:checked]:shadow-danger-500/5 active:scale-[0.97] select-none">
-                  <input
-                    type="radio"
-                    value="expense"
-                    {...register('type')}
-                    className="sr-only"
-                  />
-                  <div className="text-center">
-                    <div className="w-10 h-10 rounded-xl bg-danger-50/60 dark:bg-danger-950/20 flex items-center justify-center mx-auto mb-2 transition-colors">
-                      <TrendingDown className="w-6 h-6 text-danger-600 dark:text-danger-400" />
-                    </div>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white font-display">Despesa</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Valor do Lançamento FinTech Style */}
-            <div className="flex flex-col items-center justify-center py-6 bg-gray-50/40 dark:bg-neutral-850/20 rounded-2xl border border-gray-200/50 dark:border-neutral-800/60 relative overflow-hidden">
-              <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-1.5 font-display">Valor do Lançamento</span>
-              <div className="flex items-baseline justify-center gap-1.5 w-full px-4">
-                <span className="text-xl font-bold text-gray-400 dark:text-neutral-500 font-display">R$</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  inputMode="decimal"
-                  placeholder="0,00"
-                  {...register('amount')}
-                  className={`w-full max-w-[220px] text-center text-4xl font-extrabold font-display bg-transparent border-none outline-none focus:ring-0 p-0 text-gray-900 dark:text-white ${errors.amount ? 'text-danger-500 dark:text-danger-400' : ''}`}
-                />
-              </div>
-              {errors.amount && (
-                <p className="text-xs text-danger-500 dark:text-danger-400 font-semibold mt-2 font-sans">{errors.amount.message}</p>
-              )}
-              {isMobile && (
-                <div className="flex flex-wrap gap-2 mt-4 justify-center px-4">
-                  {quickAmountPresets.map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => handlePresetAmount(preset)}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-full border border-primary-200 text-primary-700 bg-primary-50 dark:text-primary-200 dark:border-primary-800 dark:bg-primary-950/40 transition-colors"
-                    >
-                      R$ {preset.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Categoria</label>
-              <Controller
-                name="categoryId"
-                control={control}
-                render={({ field }) => (
-                  <CategorySelect
-                    categories={categories.filter((cat) => cat.type === transactionType)}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.categoryId?.message}
-                  />
-                )}
-              />
-              {errors.categoryId && (
-                <p className="error-message">{errors.categoryId.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Descrição</label>
-              <input
-                type="text"
-                placeholder="Ex: Compra no supermercado"
-                {...register('description')}
-                className={`input-field rounded-xl ${errors.description ? 'input-error' : ''}`}
-              />
-              {errors.description && (
-                <p className="error-message">{errors.description.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Data</label>
-                <Controller
-                  name="date"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomDatePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={errors.date?.message}
-                      align="top"
-                    />
-                  )}
-                />
-                {errors.date && (
-                  <p className="error-message">{errors.date.message}</p>
-                )}
-              </div>
-
-              {transactionType === 'expense' ? (
-                <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Cartão de Crédito (Opcional)</label>
-                  <Controller
-                    name="creditCardId"
-                    control={control}
-                    render={({ field }) => (
-                      <CustomSelect
-                        options={[
-                          { value: '', label: 'Nenhum cartão' },
-                          ...creditCards.map(card => ({
-                            value: card.id,
-                            label: card.name,
-                            icon: <BrandIcon brand={card.brand} className="w-5 h-5" />
-                          }))
-                        ]}
-                        value={field.value || ''}
-                        onChange={field.onChange}
-                        dropdownTitle="Selecione um Cartão"
-                        className="w-full"
-                      />
-                    )}
-                  />
-                  <p className="text-[9px] text-gray-400 dark:text-neutral-500 mt-1 leading-tight">
-                    Se marcado, a despesa não será somada ao total mensal para evitar redundância com a fatura.
-                  </p>
-                </div>
-              ) : (
-                <div className="hidden sm:block opacity-0 pointer-events-none" />
-              )}
-            </div>
-
-            {/* Transação Recorrente */}
-            <div className={`p-4 rounded-2xl border transition-all duration-300 ${
-              isQuickAddRecurring
-                ? 'border-primary-500 bg-primary-50/20 dark:bg-primary-950/10 shadow-sm'
-                : 'border-gray-200 dark:border-neutral-800/85 bg-white dark:bg-neutral-900/40'
-            }`}>
-              <label className="flex items-center justify-between cursor-pointer select-none">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-xl transition-colors ${
-                    isQuickAddRecurring 
-                      ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' 
-                      : 'bg-gray-50 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 border border-gray-200/40 dark:border-neutral-700/40'
-                  }`}>
-                    <Repeat className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-gray-900 dark:text-white block font-sans">Transação Recorrente</span>
-                    <span className="text-[10px] text-gray-400 dark:text-neutral-500">Repetir automaticamente este lançamento</span>
-                  </div>
-                </div>
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    id="quickAddRecurring"
-                    checked={isQuickAddRecurring}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const checked = e.target.checked
-                      setIsQuickAddRecurring(checked)
-                      if (!checked) {
-                        setValue('recurrenceType', undefined)
-                        setValue('totalInstallments', '')
-                      }
-                      haptics.light()
-                    }}
-                    className="sr-only"
-                  />
-                  <div className={`w-10 h-6 rounded-full transition-colors duration-300 relative ${isQuickAddRecurring ? 'bg-primary-500' : 'bg-gray-200 dark:bg-neutral-800'}`}>
-                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform duration-300 ${isQuickAddRecurring ? 'left-5' : 'left-1'}`} />
-                  </div>
-                </div>
-              </label>
-
-              {isQuickAddRecurring && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ type: 'spring', stiffness: 220, damping: 20 }}
-                  className="mt-4 pt-4 border-t border-primary-100/50 dark:border-primary-900/10 space-y-4"
-                >
-                  {/* Frequência */}
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Frequência</label>
-                    <Controller
-                      name="recurrenceType"
-                      control={control}
-                      render={({ field }) => (
-                        <CustomSelect
-                          options={[
-                            { value: 'daily', label: 'Diária', icon: '📅' },
-                            { value: 'weekly', label: 'Semanal', icon: '📆' },
-                            { value: 'monthly', label: 'Mensal', icon: '🗓️' },
-                            { value: 'yearly', label: 'Anual', icon: '🎯' }
-                          ]}
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          dropdownTitle="Frequência de Recorrência"
-                          className="w-full"
-                        />
-                      )}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block font-display">Número de Parcelas</label>
-                    <input
-                      type="number"
-                      min="2"
-                      max="360"
-                      placeholder="Ex: 12 (vazio para tempo indeterminado)"
-                      {...register('totalInstallments')}
-                      className={`w-full px-4 py-2.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all ${errors.totalInstallments ? 'border-danger-500 focus:ring-danger-500' : ''}`}
-                    />
-                    {errors.totalInstallments && (
-                      <p className="text-danger-600 dark:text-danger-400 text-xs mt-1">
-                        {errors.totalInstallments.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="bg-primary-50 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3">
-                    <p className="text-xs text-primary-700 dark:text-primary-300">
-                      <strong>ℹ️ Como funciona:</strong> As parcelas serão geradas automaticamente. Deixe o campo "Número de Parcelas" vazio para uma transação recorrente fixa (tempo indeterminado).
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </form>
-        </div>
-      </QuickAddSheet>
-
+        onClose={closeQuickAdd}
+        initialType={quickAddType}
+        showQuickAmountPresets={true}
+        onSaved={refreshUsage}
+        onLimitReached={() => setShowLimitModal(true)}
+      />
+      <Suspense fallback={null}>
       {/* Calculator Modal */}
       <Calculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 
@@ -2154,125 +1346,40 @@ const Dashboard = () => {
         goalAmount={currentGoal?.targetAmount || 0}
         isLoading={isDeletingGoal}
       />
+      </Suspense>
 
-      {/* Income Transactions Modal */}
-      <Modal
-        isOpen={showIncomeModal}
-        onClose={() => setShowIncomeModal(false)}
-        title="Receitas do Mês"
-        description={`${incomeTransactions.length} ${incomeTransactions.length === 1 ? 'receita' : 'receitas'} • ${formatCurrency(financialSummary.monthIncome)}`}
-        size="lg"
-        footer={
-          <div className="flex justify-end w-full">
-            <button
-              type="button"
-              onClick={() => setShowIncomeModal(false)}
-              className="px-5 py-2.5 rounded-xl text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors font-medium text-sm"
-            >
-              Fechar
-            </button>
-          </div>
-        }
-      >
-        <div>
-          {incomeTransactions.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-              Nenhuma receita registrada neste mês.
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-              {incomeTransactions.map((transaction) => {
-                const category = categories.find((cat) => cat.id === transaction.categoryId)
-                return (
-                  <div key={transaction.id} className="py-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-success-50 dark:bg-success-900/20 flex items-center justify-center flex-shrink-0">
-                      <CategoryIcon
-                        icon={(category?.icon as IconName) || 'Wallet'}
-                        color={category?.color || '#22c55e'}
-                        size="md"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 dark:text-white truncate">{transaction.description}</p>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400">
-                        {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                      </p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-success-600 dark:text-success-400">
-                        {formatCurrency(transaction.amount)}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </Modal>
+      {/* Modais de Receitas e Despesas do Mês (Unificado e Lazy) */}
+      <Suspense fallback={null}>
+        <MonthTransactionsListModal
+          isOpen={showIncomeModal}
+          onClose={() => setShowIncomeModal(false)}
+          type="income"
+          transactions={incomeTransactions}
+          categories={categories}
+          totalAmount={financialSummary.monthIncome}
+          formatCurrency={formatCurrency}
+          formatDate={formatDate}
+        />
+        <MonthTransactionsListModal
+          isOpen={showExpenseModal}
+          onClose={() => setShowExpenseModal(false)}
+          type="expense"
+          transactions={expenseTransactions}
+          categories={categories}
+          totalAmount={financialSummary.monthExpense}
+          formatCurrency={formatCurrency}
+          formatDate={formatDate}
+        />
+      </Suspense>
 
-      {/* Expense Transactions Modal */}
-      <Modal
-        isOpen={showExpenseModal}
-        onClose={() => setShowExpenseModal(false)}
-        title="Despesas do Mês"
-        description={`${expenseTransactions.length} ${expenseTransactions.length === 1 ? 'despesa' : 'despesas'} • ${formatCurrency(financialSummary.monthExpense)}`}
-        size="lg"
-        footer={
-          <div className="flex justify-end w-full">
-            <button
-              type="button"
-              onClick={() => setShowExpenseModal(false)}
-              className="px-5 py-2.5 rounded-xl text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors font-medium text-sm"
-            >
-              Fechar
-            </button>
-          </div>
-        }
-      >
-        <div>
-          {expenseTransactions.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-neutral-400">
-              Nenhuma despesa registrada neste mês.
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100 dark:divide-neutral-800">
-              {expenseTransactions.map((transaction) => {
-                const category = categories.find((cat) => cat.id === transaction.categoryId)
-                return (
-                  <div key={transaction.id} className="py-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-danger-50 dark:bg-danger-900/20 flex items-center justify-center flex-shrink-0">
-                      <CategoryIcon
-                        icon={(category?.icon as IconName) || 'Wallet'}
-                        color={category?.color || '#ef4444'}
-                        size="md"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 dark:text-white truncate">{transaction.description}</p>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400">
-                        {category?.name || 'Sem categoria'} • {formatDate(transaction.date)}
-                      </p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-danger-600 dark:text-danger-400">
-                        {formatCurrency(transaction.amount)}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </Modal>
-
+      <Suspense fallback={null}>
       {/* Transaction Limit Modal */}
       <TransactionLimitModal
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
         usage={usage}
       />
+      </Suspense>
 
       {/* Footer (Apenas Desktop) */}
       <div className="mt-12 hidden md:block">

@@ -5,17 +5,13 @@ import {
   Sparkles,
   Zap,
   Shield,
-  Star,
   ChevronLeft,
   ChevronDown,
   Gift,
   ExternalLink,
-  Calendar,
   Lock,
   ArrowRight,
   XCircle,
-  HelpCircle,
-  Clock,
   Layers,
   FileSpreadsheet
 } from 'lucide-react'

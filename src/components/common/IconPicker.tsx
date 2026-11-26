@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Search, Package, Smile, Globe } from 'lucide-react'
 import { iconCategories, type IconName, type IconCategoryItem } from '@/utils/iconMapping'
-import EmojiPickerTab from './EmojiPickerTab'
 import BrandPickerTab from './BrandPickerTab'
 import CategoryIcon from './CategoryIcon'
 import NativeBottomSheet from './NativeBottomSheet'
 import { haptics } from '@/utils/haptics'
+
+const EmojiPickerTab = lazy(() => import('./EmojiPickerTab'))
 
 interface IconPickerProps {
   selectedIcon: IconName | string
@@ -194,12 +195,14 @@ const IconPicker = ({
       {/* Content */}
       <div className={`flex-1 flex flex-col ${activeTab === 'icons' ? 'overflow-y-auto custom-scrollbar' : 'overflow-hidden'}`}>
         {activeTab === 'emojis' ? (
-          <EmojiPickerTab
-            onSelectEmoji={handleSelectEmoji}
-            selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
-            isPremium={isPremium}
-            onUpgradeClick={onUpgradeClick}
-          />
+          <Suspense fallback={<div className="p-8 text-center text-xs text-gray-500 dark:text-neutral-400">Carregando seletor de emojis...</div>}>
+            <EmojiPickerTab
+              onSelectEmoji={handleSelectEmoji}
+              selectedEmoji={isEmoji(selectedIcon as string) ? selectedIcon as string : undefined}
+              isPremium={isPremium}
+              onUpgradeClick={onUpgradeClick}
+            />
+          </Suspense>
         ) : activeTab === 'brands' ? (
           <BrandPickerTab
             onSelectBrand={(icon) => {

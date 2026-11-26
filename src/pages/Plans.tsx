@@ -179,7 +179,7 @@ const Plans = () => {
           <div className="flex items-center justify-center gap-4 mb-12">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2.5 rounded-lg font-semibold transition-all ${billingCycle === 'monthly'
+              className={`px-6 py-2.5 rounded-full font-semibold active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${billingCycle === 'monthly'
                 ? 'bg-amber-500 text-white shadow-lg'
                 : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 shadow-sm border border-gray-200 dark:border-neutral-700'
                 }`}
@@ -188,7 +188,7 @@ const Plans = () => {
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-6 py-2.5 rounded-lg font-semibold transition-all relative ${billingCycle === 'yearly'
+              className={`px-6 py-2.5 rounded-full font-semibold active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] relative ${billingCycle === 'yearly'
                 ? 'bg-amber-500 text-white shadow-lg'
                 : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 shadow-sm border border-gray-200 dark:border-neutral-700'
                 }`}
@@ -222,7 +222,7 @@ const Plans = () => {
 
               <button
                 disabled
-                className="w-full py-4 text-neutral-400 dark:text-neutral-600 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl font-bold mb-8 cursor-default border border-neutral-200 dark:border-neutral-800"
+                className="w-full py-4 text-neutral-400 dark:text-neutral-600 bg-neutral-50 dark:bg-neutral-800/50 rounded-full font-bold mb-8 cursor-default border border-neutral-200 dark:border-neutral-800"
               >
                 Seu Plano Atual
               </button>
@@ -294,7 +294,7 @@ const Plans = () => {
                   <button
                     onClick={handleStartTrial}
                     disabled={isStartingTrial}
-                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-black text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-emerald-500/30 flex items-center justify-center gap-2 group disabled:opacity-50"
+                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full font-black text-sm uppercase tracking-wider active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-lg hover:shadow-emerald-500/30 flex items-center justify-center gap-2 group disabled:opacity-50"
                   >
                     <Zap className="w-5 h-5 fill-white" />
                     {isStartingTrial ? 'Preparando...' : 'Liberar 7 Dias Grátis'}
@@ -304,7 +304,7 @@ const Plans = () => {
 
                 <button
                   onClick={handleUpgrade}
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-white rounded-xl font-black text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-amber-500/30 flex items-center justify-center gap-2 group"
+                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-white rounded-full font-black text-sm uppercase tracking-wider active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-lg hover:shadow-amber-500/30 flex items-center justify-center gap-2 group"
                 >
                   <Crown className="w-5 h-5 fill-white" />
                   {user?.isPremium ? 'Renovar Assinatura' : 'Assinar Pró Agora'}
@@ -375,14 +375,14 @@ const Plans = () => {
           <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-amber-600 to-orange-500 text-white p-12 text-center shadow-3xl">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
             <div className="relative z-10 max-w-2xl mx-auto">
-              <Crown className="w-20 h-20 mx-auto mb-8 animate-bounce transition-all duration-[2000ms]" />
+              <Crown className="w-20 h-20 mx-auto mb-8" />
               <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter">PRONTO PARA A EVOLUÇÃO?</h2>
               <p className="text-lg text-white/90 font-medium mb-10 leading-relaxed">
                 Junte-se a centenas de usuários que transformaram suas planilhas em um centro de comando inteligente.
               </p>
               <button
                 onClick={handleUpgrade}
-                className="px-10 py-5 bg-white text-orange-600 rounded-2xl font-black text-xl hover:bg-neutral-50 transition-all shadow-2xl flex items-center gap-3 mx-auto"
+                className="px-10 py-5 bg-white text-orange-600 rounded-full font-black text-xl hover:bg-neutral-50 active:scale-[0.97] transition-[transform,background-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-2xl flex items-center gap-3 mx-auto"
               >
                 COMEÇAR AGORA
                 <ArrowRight className="w-6 h-6" />

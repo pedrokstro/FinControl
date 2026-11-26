@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import CategoryIcon from './CategoryIcon';
 import { createPortal } from 'react-dom';
 import { useIsMobile } from '@/hooks';
@@ -26,6 +26,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
     const dropdownRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
     const isMobile = useIsMobile();
+    const shouldReduceMotion = useReducedMotion();
 
     const selectedCategory = categories.find((c) => c.id === value);
 
@@ -61,7 +62,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm transition-all text-left ${error
+                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm active:scale-[0.985] transition-[border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] text-left ${error
                     ? 'border-red-300 ring-4 ring-red-50 dark:border-red-900 dark:ring-red-900/20'
                     : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/20'
                     }`}
@@ -70,7 +71,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
                     <div className="flex items-center gap-3">
                         {selectedCategory.icon && (
                             <div
-                                className="w-6 h-6 rounded-md flex items-center justify-center"
+                                className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
                                 style={{ backgroundColor: `${selectedCategory.color}20`, color: selectedCategory.color }}
                             >
                                 <CategoryIcon icon={selectedCategory.icon} color={selectedCategory.color} size="sm" />
@@ -81,7 +82,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
                 ) : (
                     <span className="text-gray-500 dark:text-neutral-400">Selecione uma categoria</span>
                 )}
-                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Popover Desktop & Mobile Bottom Sheet */}
@@ -104,11 +105,11 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
 
                                     {/* Bottom Sheet */}
                                     <motion.div
-                                        initial={{ opacity: 0, y: "100%" }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: "100%" }}
-                                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                        drag="y"
+                                        initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: "100%" }}
+                                        animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                                        exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: "100%" }}
+                                        transition={shouldReduceMotion ? { duration: 0.14 } : { type: 'spring', bounce: 0, duration: 0.32 }}
+                                        drag={shouldReduceMotion ? false : "y"}
                                         dragControls={dragControls}
                                         dragListener={false}
                                         dragConstraints={{ top: 0, bottom: 0 }}
@@ -184,10 +185,11 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ categories, value, onCh
                         ) : (
                             /* Desktop Dropdown */
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                transition={{ duration: 0.2 }}
+                                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.96 }}
+                                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
+                                transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
+                                style={{ transformOrigin: 'top center' }}
                                 className="absolute z-50 top-full mt-2 w-full min-w-[280px] bg-white dark:bg-neutral-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col max-h-[300px]"
                                 ref={dropdownRef}
                                 onClick={(e) => e.stopPropagation()}

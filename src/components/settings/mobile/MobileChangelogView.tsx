@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   History,
   Sparkles,
-  CheckCircle2,
   ShieldCheck,
   Zap,
   Smartphone

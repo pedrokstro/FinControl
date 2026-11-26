@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Send, Users, Bell, Shield, X, Crown, Mail, Calendar, Edit3, Trash2, Plus, Sparkles, Check } from 'lucide-react'
-import * as LucideIcons from 'lucide-react'
+import { getDynamicIcon } from '@/utils/iconMapping'
 import { toast } from 'react-hot-toast'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -591,7 +591,7 @@ const Admin = () => {
                   </tr>
                 ) : (
                   dashboardCards.map((c) => {
-                    const IconComponent = c.icon ? (LucideIcons as any)[c.icon] : null
+                    const IconComponent = getDynamicIcon(c.icon)
                     return (
                       <tr key={c.id} className="hover:bg-gray-50/20 dark:hover:bg-neutral-800/5 transition-colors">
                         <td className="py-4 pl-2">

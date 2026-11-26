@@ -125,14 +125,14 @@ const TransactionLimitModal = ({ isOpen, onClose, usage }: TransactionLimitModal
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={handleUpgrade}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-full active:scale-[0.97] transition-[transform,box-shadow] duration-150 shadow-md hover:shadow-lg"
                   >
                     <Sparkles className="w-5 h-5" />
                     Fazer Upgrade Agora
                   </button>
                   <button
                     onClick={onClose}
-                    className="w-full px-6 py-3 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-300 font-medium rounded-lg transition-colors"
+                    className="w-full px-6 py-3 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-300 font-medium rounded-full active:scale-[0.97] transition-[transform,background-color] duration-150"
                   >
                     Voltar
                   </button>

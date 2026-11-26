@@ -115,6 +115,12 @@ import {
   Users,
   Baby,
   Cigarette,
+  Shield,
+  Bell,
+  Info,
+  Calendar,
+  AlertCircle,
+  CheckCircle2,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react'
@@ -580,6 +586,20 @@ const exclusiveIconSet: readonly IconCategoryItem[] = exclusiveImageIcons.map(({
 
 export const getIcon = (iconName: IconName): LucideIcon => {
   return iconMap[iconName] || DollarSign
+}
+
+const extraDynamicIcons: Record<string, LucideIcon> = {
+  Shield,
+  Bell,
+  Info,
+  Calendar,
+  AlertCircle,
+  CheckCircle2,
+}
+
+export const getDynamicIcon = (iconName?: string): LucideIcon | null => {
+  if (!iconName) return null
+  return (iconMap as Record<string, LucideIcon>)[iconName] || extraDynamicIcons[iconName] || null
 }
 
 // Organized icon categories for easy selection

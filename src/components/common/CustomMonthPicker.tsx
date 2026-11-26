@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import {
     format,
     addYears,
@@ -13,6 +13,7 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { haptics } from '@/utils/haptics';
+import { useIsMobile } from '@/hooks';
 
 interface CustomMonthPickerProps {
     value: string; // YYYY-MM
@@ -24,6 +25,8 @@ const CustomMonthPicker: React.FC<CustomMonthPickerProps> = ({ value, onChange, 
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
+    const isMobile = useIsMobile();
+    const shouldReduceMotion = useReducedMotion();
 
     const selectedDate = value ? parseISO(`${value}-01`) : new Date();
     const [currentYear, setCurrentYear] = useState(startOfYear(selectedDate));
@@ -126,7 +129,7 @@ const CustomMonthPicker: React.FC<CustomMonthPickerProps> = ({ value, onChange, 
             <button
                 type="button"
                 onClick={() => { haptics.light(); setIsOpen(!isOpen) }}
-                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm transition-all focus:outline-none focus:ring-4 text-left ${isOpen ? 'border-primary-500 ring-primary-100 dark:ring-primary-900/20' : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700'
+                className={`w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-neutral-900 border rounded-xl shadow-sm active:scale-[0.985] transition-[border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus:outline-none focus:ring-4 text-left ${isOpen ? 'border-primary-500 ring-primary-100 dark:ring-primary-900/20' : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700'
                     }`}
             >
                 <span className="text-gray-900 dark:text-white font-medium capitalize truncate">
@@ -143,7 +146,7 @@ const CustomMonthPicker: React.FC<CustomMonthPickerProps> = ({ value, onChange, 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15 }}
+                            transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
                             className="fixed inset-0 z-40 bg-black/40 sm:hidden"
                             style={{ willChange: 'opacity' }}
                             onClick={() => setIsOpen(false)}
@@ -151,11 +154,30 @@ const CustomMonthPicker: React.FC<CustomMonthPickerProps> = ({ value, onChange, 
 
                         {/* Dropdown / Bottom Sheet */}
                         <motion.div
-                            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                            drag="y"
+                            initial={
+                                shouldReduceMotion
+                                    ? { opacity: 0 }
+                                    : isMobile
+                                        ? { opacity: 0, y: '100%' }
+                                        : { opacity: 0, y: -6, scale: 0.96 }
+                            }
+                            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                            exit={
+                                shouldReduceMotion
+                                    ? { opacity: 0 }
+                                    : isMobile
+                                        ? { opacity: 0, y: '100%' }
+                                        : { opacity: 0, y: -4, scale: 0.97 }
+                            }
+                            transition={
+                                shouldReduceMotion
+                                    ? { duration: 0.14 }
+                                    : isMobile
+                                        ? { type: 'spring', bounce: 0, duration: 0.32 }
+                                        : { duration: 0.16, ease: [0.23, 1, 0.32, 1] }
+                            }
+                            style={isMobile ? undefined : { transformOrigin: 'top right' }}
+                            drag={isMobile && !shouldReduceMotion ? 'y' : false}
                             dragControls={dragControls}
                             dragListener={false}
                             dragConstraints={{ top: 0, bottom: 0 }}

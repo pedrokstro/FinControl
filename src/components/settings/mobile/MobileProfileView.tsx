@@ -2,12 +2,9 @@ import React from 'react'
 import {
   ChevronLeft,
   Camera,
-  Upload,
   Mail,
   User as UserIcon,
-  ShieldCheck,
-  Sparkles,
-  Check
+  Sparkles
 } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 

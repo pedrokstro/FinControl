@@ -33,6 +33,7 @@ import BudgetProgressBar from '@/components/common/BudgetProgressBar'
 import { haptics } from '@/utils/haptics'
 import { Target } from 'lucide-react'
 import { useIsMobile } from '@/hooks'
+import PageHeader from '@/components/common/PageHeader'
 
 const categorySchema = z.object({
   name: z.string().min(3, 'Nome deve ter no minimo 3 caracteres'),
@@ -67,7 +68,13 @@ const itemVariants: Variants = {
 }
 
 const Categories = () => {
-  const { categories, budgets, currentMonthTransactions, addCategory, updateCategory, deleteCategory, fetchCategories } = useFinancialStore()
+  const categories = useFinancialStore((s) => s.categories)
+  const budgets = useFinancialStore((s) => s.budgets)
+  const currentMonthTransactions = useFinancialStore((s) => s.currentMonthTransactions)
+  const addCategory = useFinancialStore((s) => s.addCategory)
+  const updateCategory = useFinancialStore((s) => s.updateCategory)
+  const deleteCategory = useFinancialStore((s) => s.deleteCategory)
+  const fetchCategories = useFinancialStore((s) => s.fetchCategories)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const isMobile = useIsMobile()
@@ -292,64 +299,60 @@ const Categories = () => {
     <PageTransition>
       <div className="responsive-page pb-28 sm:pb-8">
         {/* Header Responsivo */}
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-3xl font-extrabold text-gray-900 dark:text-white font-display tracking-tight">
-              Categorias
-            </h1>
-            <p className="hidden sm:block text-gray-600 dark:text-neutral-400 mt-1 text-sm">
-              Organize suas transações em categorias personalizadas
-            </p>
-          </div>
+        <PageHeader
+          title="Categorias"
+          subtitle="Organize suas transações em categorias personalizadas"
+          hideSubtitleOnMobile
+          actions={
+            <div className="flex items-center gap-2">
+              {/* Toggle View Mode */}
+              <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl">
+                <button
+                  onClick={() => handleViewModeChange('bento')}
+                  disabled={isViewModeLoading}
+                  className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'bento'
+                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                    } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  title="Visualização Bento Grid"
+                >
+                  <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                <button
+                  onClick={() => handleViewModeChange('grid')}
+                  disabled={isViewModeLoading}
+                  className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'grid'
+                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                    } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  title="Visualização em Grade"
+                >
+                  <Grid3x3 className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                <button
+                  onClick={() => handleViewModeChange('list')}
+                  disabled={isViewModeLoading}
+                  className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'list'
+                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                    } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  title="Visualização em Lista"
+                >
+                  <List className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+              </div>
 
-          <div className="flex items-center gap-2">
-            {/* Toggle View Mode */}
-            <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl">
+              {/* Botão Nova Categoria (Desktop apenas) */}
               <button
-                onClick={() => handleViewModeChange('bento')}
-                disabled={isViewModeLoading}
-                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'bento'
-                  ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                  : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-                title="Visualização Bento Grid"
+                onClick={() => handleOpenModal()}
+                className="hidden sm:inline-flex btn-primary items-center justify-center gap-2 rounded-full shadow-sm text-sm"
               >
-                <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <button
-                onClick={() => handleViewModeChange('grid')}
-                disabled={isViewModeLoading}
-                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'grid'
-                  ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                  : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-                title="Visualização em Grade"
-              >
-                <Grid3x3 className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <button
-                onClick={() => handleViewModeChange('list')}
-                disabled={isViewModeLoading}
-                className={`p-1.5 sm:p-2 rounded-lg transition-all ${viewMode === 'list'
-                  ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                  : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
-                  } ${isViewModeLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
-                title="Visualização em Lista"
-              >
-                <List className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                Nova Categoria
               </button>
             </div>
-
-            {/* Botão Nova Categoria (Desktop apenas) */}
-            <button
-              onClick={() => handleOpenModal()}
-              className="hidden sm:inline-flex btn-primary items-center justify-center gap-2 rounded-full shadow-sm text-sm"
-            >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-              Nova Categoria
-            </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Premium Banner */}
         {!isPremium && (
@@ -1008,11 +1011,11 @@ const Categories = () => {
                           <button
                             type="button"
                             onClick={handleCloseModal}
-                            className="flex-1 btn-secondary rounded-xl py-2.5 text-xs font-bold"
+                            className="flex-1 btn-secondary rounded-full py-2.5 text-xs font-bold"
                           >
                             Cancelar
                           </button>
-                          <button type="submit" className="flex-1 btn-primary rounded-xl py-2.5 text-xs font-bold shadow-md shadow-primary-500/20">
+                          <button type="submit" className="flex-1 btn-primary rounded-full py-2.5 text-xs font-bold shadow-md shadow-primary-500/20">
                             {editingId ? 'Salvar Alterações' : 'Criar Categoria'}
                           </button>
                         </div>
@@ -1058,7 +1061,7 @@ const Categories = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUpgradeModal(false)}
-                    className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all"
+                    className="flex-1 px-4 py-2.5 text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-800 rounded-full font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 active:scale-[0.97] transition-[transform,background-color] duration-150"
                   >
                     Fechar
                   </button>
@@ -1067,7 +1070,7 @@ const Categories = () => {
                       setShowUpgradeModal(false)
                       navigate('/plans')
                     }}
-                    className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
+                    className="flex-1 px-4 py-2.5 text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-full font-semibold hover:from-amber-600 hover:to-orange-600 active:scale-[0.97] transition-[transform,box-shadow] duration-150"
                   >
                     Ver Planos
                   </button>

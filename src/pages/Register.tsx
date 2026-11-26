@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { useAuthStore } from '@/store/authStore'
 import { Mail, User, CreditCard, ArrowRight, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { authService } from '@/services/api'
+import authService from '@/services/auth.service'
 import PasswordStrengthInput from '@/components/ui/PasswordStrengthInput'
 import AuthVisualSide from '@/components/auth/AuthVisualSide'
 

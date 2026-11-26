@@ -3,8 +3,6 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Globe,
-  Coins,
   Check
 } from 'lucide-react'
 import { haptics } from '@/utils/haptics'

@@ -29,7 +29,6 @@ import {
 } from 'recharts'
 import CustomDatePicker from '@/components/common/CustomDatePicker'
 import { haptics } from '@/utils/haptics'
-import { motion } from 'framer-motion'
 
 interface YearlyBreakdown {
   year: number

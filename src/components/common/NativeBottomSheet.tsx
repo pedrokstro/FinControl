@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion, PanInfo, type Transition } from 'framer-motion'
+import { AnimatePresence, motion, PanInfo, useReducedMotion, type Transition } from 'framer-motion'
 import { haptics } from '@/utils/haptics'
 
 export interface NativeBottomSheetProps {
@@ -26,9 +26,8 @@ const sizeClasses = {
 
 const sheetSpringTransition: Transition = {
   type: 'spring',
-  damping: 28,
-  stiffness: 300,
-  mass: 0.8,
+  bounce: 0,
+  duration: 0.34,
 }
 
 export const NativeBottomSheet = ({
@@ -45,6 +44,7 @@ export const NativeBottomSheet = ({
   zIndex = 200,
 }: NativeBottomSheetProps) => {
   const [mounted, setMounted] = useState(() => typeof window !== 'undefined')
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     setMounted(true)
@@ -96,9 +96,9 @@ export const NativeBottomSheet = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
             style={{ zIndex }}
-            className="fixed inset-0 bg-black/60"
+            className="fixed inset-0 bg-black/55"
             onClick={handleBackdropClick}
             aria-hidden="true"
           />
@@ -109,11 +109,11 @@ export const NativeBottomSheet = ({
             className="fixed inset-0 flex items-end sm:items-center justify-center pointer-events-none sm:p-4"
           >
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={sheetSpringTransition}
-              drag="y"
+              initial={shouldReduceMotion ? { opacity: 0 } : { y: '100%' }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { y: 0 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { y: '100%' }}
+              transition={shouldReduceMotion ? { duration: 0.16 } : sheetSpringTransition}
+              drag={shouldReduceMotion ? false : 'y'}
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0, bottom: 0.5 }}
               onDragEnd={handleDragEnd}

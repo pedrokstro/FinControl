@@ -221,14 +221,14 @@ const SetSavingsGoalModal = ({
                       type="button"
                       onClick={handleClose}
                       disabled={isLoading}
-                      className="flex-1 px-4 py-2.5 bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-300 dark:border-neutral-700 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-2.5 bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-300 dark:border-neutral-700 rounded-full font-medium hover:bg-gray-50 dark:hover:bg-neutral-700 active:scale-[0.97] transition-[transform,background-color] duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium active:scale-[0.97] transition-[transform,background-color] duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isLoading ? (
                         <>
