@@ -117,24 +117,24 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
     {
       title: 'Geral',
       items: [
-        { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard', activeColor: 'text-primary-600 dark:text-primary-400', activeBg: 'from-primary-500/10 to-transparent dark:from-primary-500/5', hoverClass: 'group-hover:scale-105' },
-        { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações', activeColor: 'text-emerald-500 dark:text-emerald-400', activeBg: 'from-emerald-500/10 to-transparent dark:from-emerald-500/5', hoverClass: 'group-hover:scale-105' },
-        { path: '/app/cards', icon: CreditCard, label: 'Cartões', activeColor: 'text-orange-500 dark:text-orange-400', activeBg: 'from-orange-500/10 to-transparent dark:from-orange-500/5', hoverClass: 'group-hover:scale-105' },
-        { path: '/app/categories', icon: FolderOpen, label: 'Categorias', activeColor: 'text-violet-500 dark:text-violet-400', activeBg: 'from-violet-500/10 to-transparent dark:from-violet-500/5', hoverClass: 'group-hover:scale-105' },
+        { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard', activeColor: 'text-primary-600 dark:text-primary-400', activeBg: 'from-primary-500/10 to-transparent dark:from-primary-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
+        { path: '/app/transactions', icon: ArrowLeftRight, label: 'Transações', activeColor: 'text-emerald-500 dark:text-emerald-400', activeBg: 'from-emerald-500/10 to-transparent dark:from-emerald-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
+        { path: '/app/cards', icon: CreditCard, label: 'Cartões', activeColor: 'text-orange-500 dark:text-orange-400', activeBg: 'from-orange-500/10 to-transparent dark:from-orange-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
+        { path: '/app/categories', icon: FolderOpen, label: 'Categorias', activeColor: 'text-violet-500 dark:text-violet-400', activeBg: 'from-violet-500/10 to-transparent dark:from-violet-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
       ]
     },
     {
       title: 'Análise',
       items: [
-        { path: '/app/reports', icon: BarChart3, label: 'Relatórios', activeColor: 'text-sky-500 dark:text-sky-400', activeBg: 'from-sky-500/10 to-transparent dark:from-sky-500/5', hoverClass: 'group-hover:scale-105' },
-        { path: '/app/subscriptions', icon: CalendarClock, label: 'Assinaturas', activeColor: 'text-pink-500 dark:text-pink-400', activeBg: 'from-pink-500/10 to-transparent dark:from-pink-500/5', hoverClass: 'group-hover:scale-105' },
+        { path: '/app/reports', icon: BarChart3, label: 'Relatórios', activeColor: 'text-sky-500 dark:text-sky-400', activeBg: 'from-sky-500/10 to-transparent dark:from-sky-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
+        { path: '/app/subscriptions', icon: CalendarClock, label: 'Assinaturas', activeColor: 'text-pink-500 dark:text-pink-400', activeBg: 'from-pink-500/10 to-transparent dark:from-pink-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
       ]
     },
     {
       title: 'Preferências',
       items: [
-        { path: '/app/settings', icon: Settings, label: 'Configurações', activeColor: 'text-slate-500 dark:text-slate-400', activeBg: 'from-slate-500/10 to-transparent dark:from-slate-500/5', hoverClass: 'group-hover:scale-105' },
-        ...(isAdmin ? [{ path: '/app/admin', icon: Shield, label: 'Admin', activeColor: 'text-red-500 dark:text-red-400', activeBg: 'from-red-500/10 to-transparent dark:from-red-500/5', hoverClass: 'group-hover:scale-105' }] : [])
+        { path: '/app/settings', icon: Settings, label: 'Configurações', activeColor: 'text-slate-500 dark:text-slate-400', activeBg: 'from-slate-500/10 to-transparent dark:from-slate-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' },
+        ...(isAdmin ? [{ path: '/app/admin', icon: Shield, label: 'Admin', activeColor: 'text-red-500 dark:text-red-400', activeBg: 'from-red-500/10 to-transparent dark:from-red-500/5', hoverClass: '[@media(hover:hover)]:group-hover:scale-105' }] : [])
       ]
     }
   ]
@@ -189,9 +189,9 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                       to={item.path}
                       onClick={onNavigate}
                       className={({ isActive }) =>
-                        `group flex items-center relative ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-xl active:scale-[0.985] transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/60 overflow-visible ${isActive
-                          ? 'bg-primary-50/60 dark:bg-primary-950/25 text-primary-600 dark:text-white font-bold border border-primary-100/60 dark:border-primary-900/20'
-                          : 'text-gray-600 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white'
+                        `group flex items-center relative ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-xl active:scale-[0.985] border transition-[color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/60 overflow-visible ${isActive
+                          ? 'text-primary-600 dark:text-white font-bold border-primary-100/70 dark:border-primary-700/30'
+                          : 'text-gray-600 dark:text-neutral-300 hover:bg-gray-100/70 dark:hover:bg-neutral-900/50 hover:text-gray-900 dark:hover:text-white border-transparent'
                         }`
                       }
                       title={isCollapsed ? item.label : ''}
@@ -202,14 +202,18 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
                           {isActive && (
                             <motion.div
                               layoutId={shouldReduceMotion ? undefined : 'activeIndicator'}
-                              className="absolute left-1.5 w-1 h-5 bg-primary-600 dark:bg-primary-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                              className="absolute left-1.5 w-1 h-[1.25em] bg-primary-600 dark:bg-primary-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"
                               transition={shouldReduceMotion ? { duration: 0.12 } : { duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
                             />
                           )}
 
-                          {/* Brilho de gradiente interno */}
+                          {/* Fundo animado que desliza entre itens */}
                           {isActive && (
-                            <div className={`absolute inset-0 bg-gradient-to-r ${item.activeBg} rounded-xl pointer-events-none`} />
+                            <motion.div
+                              layoutId={shouldReduceMotion ? undefined : 'activeBg'}
+                              className={`absolute inset-0 bg-primary-50/80 dark:bg-primary-900/35 bg-gradient-to-r ${item.activeBg} rounded-xl pointer-events-none`}
+                              transition={shouldReduceMotion ? { duration: 0.12 } : { duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+                            />
                           )}
 
                           <Icon className={`w-5 h-5 flex-shrink-0 relative z-10 transition-[color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${isActive ? item.activeColor : 'text-gray-400 dark:text-neutral-400 group-hover:text-gray-600 dark:group-hover:text-neutral-200'} ${item.hoverClass || ''}`} />
