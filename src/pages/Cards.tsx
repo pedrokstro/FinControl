@@ -9,7 +9,8 @@ import {
   Calendar, 
   DollarSign, 
   TrendingUp,
-  Zap
+  Zap,
+  CheckCircle2,
 } from 'lucide-react'
 import { useFinancialStore } from '@/store/financialStore'
 import { useIsMobile } from '@/hooks'
@@ -19,6 +20,7 @@ import { haptics } from '@/utils/haptics'
 import { CreditCard as CreditCardType, Transaction } from '@/types'
 import CreditCardModal from '@/components/modals/CreditCardModal'
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal'
+import PayInvoiceModal from '@/components/modals/PayInvoiceModal'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion'
 import InteractiveCreditCard3D from '@/components/cards/InteractiveCreditCard3D'
 const MobileCardsView = lazy(() => import('@/components/cards/mobile/MobileCardsView'))
@@ -29,12 +31,15 @@ const Cards = () => {
   const transactions = useFinancialStore((s) => s.transactions)
   const currentMonthTransactions = useFinancialStore((s) => s.currentMonthTransactions)
   const deleteCreditCard = useFinancialStore((s) => s.deleteCreditCard)
+  const categories = useFinancialStore((s) => s.categories)
+  const payCreditCardInvoice = useFinancialStore((s) => s.payCreditCardInvoice)
   const isLoading = useFinancialStore((s) => s.isLoading)
   const isMobile = useIsMobile()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null)
   const [cardToDelete, setCardToDelete] = useState<CreditCardType | null>(null)
+  const [cardToPay, setCardToPay] = useState<{ card: CreditCardType; amount: number } | null>(null)
 
   useEffect(() => {
     fetchCreditCards()
@@ -64,6 +69,11 @@ const Cards = () => {
       setIsDeleteModalOpen(false)
       setCardToDelete(null)
     }
+  }
+
+  const handleOpenPayInvoice = (card: CreditCardType, amount: number) => {
+    haptics.light()
+    setCardToPay({ card, amount })
   }
 
   // Calculate current invoice breakdown per card
@@ -161,6 +171,7 @@ const Cards = () => {
                 transactions={transactions}
                 currentMonthTransactions={currentMonthTransactions}
                 onOpenDesktopModal={handleAddCard}
+                onPayInvoice={handleOpenPayInvoice}
               />
             </Suspense>
           </div>
@@ -262,7 +273,7 @@ const Cards = () => {
 
                     {/* Fatura / Limite section */}
                     <div className="bg-gray-50/50 dark:bg-neutral-800/30 backdrop-blur-sm rounded-[24px] p-4 sm:p-5 mb-4 border border-gray-100/50 dark:border-white/5 shadow-inner">
-                      <div className="flex flex-row justify-between items-start mb-4 sm:mb-6">
+                      <div className="flex flex-row justify-between items-start mb-3">
                         <div>
                           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fatura Atual</p>
                           <p className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
@@ -278,6 +289,24 @@ const Cards = () => {
                           </p>
                         </div>
                       </div>
+
+                      {/* Botão de Pagar Fatura */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptics.light()
+                          setCardToPay({ card, amount: spent })
+                        }}
+                        disabled={spent <= 0}
+                        className={`w-full mb-4 py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                          spent > 0
+                            ? 'bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white shadow-sm shadow-emerald-600/20 cursor-pointer'
+                            : 'bg-gray-200/50 dark:bg-neutral-800/60 text-gray-400 dark:text-neutral-500 cursor-not-allowed'
+                        }`}
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{spent > 0 ? 'Pagar Fatura' : 'Fatura Zerada'}</span>
+                      </button>
 
                       {/* Breakdown Visual */}
                       {spent > 0 && (
@@ -431,6 +460,16 @@ const Cards = () => {
           }
           itemName={cardToDelete?.name}
           isLoading={isLoading}
+        />
+
+        {/* Modal de Pagamento de Fatura */}
+        <PayInvoiceModal
+          isOpen={Boolean(cardToPay)}
+          onClose={() => setCardToPay(null)}
+          card={cardToPay?.card || null}
+          invoiceAmount={cardToPay?.amount || 0}
+          categories={categories}
+          onPayInvoice={payCreditCardInvoice}
         />
       </div>
     </PageTransition>

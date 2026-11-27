@@ -29,6 +29,7 @@ interface MobileCardsViewProps {
   transactions: Transaction[]
   currentMonthTransactions: Transaction[]
   onOpenDesktopModal?: () => void
+  onPayInvoice?: (card: CreditCardType, amount: number) => void
 }
 
 const POPULAR_BRANDS = [
@@ -48,6 +49,7 @@ export const MobileCardsView: React.FC<MobileCardsViewProps> = ({
   creditCards,
   transactions,
   currentMonthTransactions,
+  onPayInvoice,
 }) => {
   const { addCreditCard, updateCreditCard, deleteCreditCard, isLoading } = useFinancialStore()
 
@@ -552,6 +554,27 @@ export const MobileCardsView: React.FC<MobileCardsViewProps> = ({
                   </p>
                 </div>
               </div>
+
+              {/* Botão de Pagar Fatura no Mobile */}
+              {onPayInvoice && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    onPayInvoice(activeCard, breakdown.total)
+                  }}
+                  disabled={breakdown.total <= 0}
+                  className={cn(
+                    "w-full py-2.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]",
+                    breakdown.total > 0
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20"
+                      : "bg-gray-150 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 cursor-not-allowed"
+                  )}
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>{breakdown.total > 0 ? 'Pagar Fatura Agora' : 'Fatura Zerada'}</span>
+                </button>
+              )}
 
               {/* Barra de Progresso do Limite */}
               {hasLimit && (

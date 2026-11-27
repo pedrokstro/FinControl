@@ -190,7 +190,7 @@ const VerifyEmail = () => {
 
         {/* Footer Info */}
         <p className="mt-8 text-center text-sm text-gray-400 dark:text-neutral-500">
-          💡 Você pode colar o código completo de 6 dígitos.
+          Você pode colar o código completo de 6 dígitos.
         </p>
       </div>
     </PageTransition>

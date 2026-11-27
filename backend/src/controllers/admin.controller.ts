@@ -48,7 +48,7 @@ export class AdminController {
 
       // Buscar todos os usuários com informações básicas
       const users = await userRepository.find({
-        select: ['id', 'name', 'email', 'isPremium', 'createdAt'],
+        select: ['id', 'name', 'email', 'isPremium', 'createdAt', 'role', 'isActive', 'planType'],
         order: {
           createdAt: 'DESC',
         },
@@ -274,6 +274,90 @@ export class AdminController {
       res.json({
         success: true,
         message: 'Card removido com sucesso',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Alternar status Premium de um usuário
+   * PATCH /api/v1/admin/users/:userId/toggle-premium
+   */
+  async toggleUserPremium(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+      const userRepository = AppDataSource.getRepository(User);
+      const user = await userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+      }
+
+      user.isPremium = !user.isPremium;
+      user.planType = user.isPremium ? 'premium' : 'free';
+      await userRepository.save(user);
+
+      res.json({
+        success: true,
+        message: `Status Premium ${user.isPremium ? 'ativado' : 'desativado'} com sucesso`,
+        data: { id: user.id, isPremium: user.isPremium, planType: user.planType }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Alternar status Ativo/Suspenso de um usuário
+   * PATCH /api/v1/admin/users/:userId/toggle-status
+   */
+  async toggleUserStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+      const userRepository = AppDataSource.getRepository(User);
+      const user = await userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+      }
+
+      user.isActive = !user.isActive;
+      await userRepository.save(user);
+
+      res.json({
+        success: true,
+        message: `Usuário ${user.isActive ? 'ativado' : 'suspenso'} com sucesso`,
+        data: { id: user.id, isActive: user.isActive }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Histórico recente de notificações enviadas
+   * GET /api/v1/admin/notifications/history
+   */
+  async getNotificationHistory(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const notificationRepository = AppDataSource.getRepository(Notification);
+      const notifications = await notificationRepository.find({
+        order: { createdAt: 'DESC' },
+        take: 30,
+        relations: ['user']
+      });
+
+      res.json({
+        success: true,
+        data: notifications.map(n => ({
+          id: n.id,
+          title: n.title,
+          message: n.message,
+          type: n.type,
+          category: n.category,
+          isRead: n.isRead,
+          createdAt: n.createdAt,
+          user: n.user ? { id: n.user.id, name: n.user.name, email: n.user.email } : null
+        }))
       });
     } catch (error) {
       next(error);

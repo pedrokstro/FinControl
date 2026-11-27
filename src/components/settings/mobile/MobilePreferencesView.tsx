@@ -3,7 +3,8 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Check
+  Check,
+  Globe
 } from 'lucide-react'
 import { haptics } from '@/utils/haptics'
 
@@ -30,9 +31,9 @@ export const MobilePreferencesView: React.FC<MobilePreferencesViewProps> = ({
   onCurrencyChange,
 }) => {
   const languages = [
-    { value: 'pt-BR', label: 'Português (Brasil)', flag: '🇧🇷' },
-    { value: 'en', label: 'English (US)', flag: '🇺🇸' },
-    { value: 'es', label: 'Español', flag: '🇪🇸' },
+    { value: 'pt-BR', label: 'Português (Brasil)' },
+    { value: 'en', label: 'English (US)' },
+    { value: 'es', label: 'Español' },
   ]
 
   const currencies = [
@@ -154,7 +155,7 @@ export const MobilePreferencesView: React.FC<MobilePreferencesViewProps> = ({
                 className="w-full flex items-center justify-between p-3.5 text-left active:bg-gray-50 dark:active:bg-neutral-800/50 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-lg leading-none">{item.flag}</span>
+                  <Globe className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   <span className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                     {item.label}
                   </span>

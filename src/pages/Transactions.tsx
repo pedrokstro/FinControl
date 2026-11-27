@@ -19,6 +19,7 @@ import {
   Wallet,
   Activity,
   CreditCard as CreditCardIcon,
+  UploadCloud,
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, parseISO, isToday, isYesterday } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -28,6 +29,7 @@ import ConfirmCancelRecurrenceModal from '@/components/modals/ConfirmCancelRecur
 import RecurrenceDetailsModal from '@/components/modals/RecurrenceDetailsModal'
 import TransactionLimitBanner from '@/components/common/TransactionLimitBanner'
 import TransactionLimitModal from '@/components/modals/TransactionLimitModal'
+import ImportTransactionsModal from '@/components/modals/ImportTransactionsModal'
 import PageTransition from '@/components/common/PageTransition'
 import CategoryIcon from '@/components/common/CategoryIcon'
 import CustomSelect from '@/components/common/CustomSelect'
@@ -42,10 +44,12 @@ const Transactions = () => {
   const transactions = useFinancialStore((s) => s.transactions)
   const categories = useFinancialStore((s) => s.categories)
   const deleteTransaction = useFinancialStore((s) => s.deleteTransaction)
+  const importTransactionsBatch = useFinancialStore((s) => s.importTransactionsBatch)
   const syncWithBackend = useFinancialStore((s) => s.syncWithBackend)
   const isLoading = useFinancialStore((s) => s.isLoading)
 
   const [showModal, setShowModal] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showCancelRecurrenceModal, setShowCancelRecurrenceModal] = useState(false)
@@ -295,14 +299,29 @@ const Transactions = () => {
               </button>
             </div>
 
-            {/* Botão Nova Transação - desktop only */}
-            <button
-              onClick={() => handleOpenModal()}
-              className="hidden sm:flex btn-primary items-center justify-center gap-2 rounded-full shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
-            >
-              <Plus className="w-5 h-5" />
-              Nova Transação
-            </button>
+            {/* Botões de Ação - Importar Extrato & Nova Transação */}
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  setIsImportModalOpen(true)
+                }}
+                className="btn-secondary flex items-center justify-center gap-1.5 rounded-full h-[42px] px-4 text-xs font-bold transition-all duration-200 active:scale-95"
+                title="Importar extrato bancário em CSV ou OFX"
+              >
+                <UploadCloud className="w-4 h-4 text-primary-500" />
+                <span className="hidden sm:inline">Importar Extrato</span>
+              </button>
+
+              <button
+                onClick={() => handleOpenModal()}
+                className="hidden sm:flex btn-primary items-center justify-center gap-2 rounded-full shadow-md h-[42px] px-6 transition-all duration-250 hover:scale-102 active:scale-98 font-semibold font-display"
+              >
+                <Plus className="w-5 h-5" />
+                Nova Transação
+              </button>
+            </div>
           </div>
         </div>
 
@@ -814,6 +833,15 @@ const Transactions = () => {
             setSelectedRecurrenceTransaction(null)
           }}
           transaction={selectedRecurrenceTransaction}
+        />
+
+        {/* Modal de Importação de Extrato (CSV e OFX) */}
+        <ImportTransactionsModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+          categories={categories}
+          existingTransactions={transactions}
+          onImportBatch={importTransactionsBatch}
         />
 
         {/* Transaction Limit Modal */}

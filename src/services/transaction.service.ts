@@ -112,6 +112,27 @@ class TransactionService {
     return result.data;
   }
 
+  async createBatch(transactions: CreateTransactionData[]): Promise<Transaction[]> {
+    const authStorage = localStorage.getItem('auth-storage');
+    let token = '';
+    if (authStorage) {
+      const { state } = JSON.parse(authStorage);
+      token = state?.accessToken || '';
+    }
+
+    const response = await fetch(`${api.defaults.baseURL}/transactions/batch`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ transactions })
+    });
+
+    const result = await response.json();
+    return result.data || [];
+  }
+
   async update(id: string, data: Partial<CreateTransactionData>): Promise<Transaction> {
     const response = await api.put(`/transactions/${id}`, data);
     return response.data.data;

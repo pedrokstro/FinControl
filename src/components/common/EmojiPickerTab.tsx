@@ -223,7 +223,7 @@ const EmojiPickerTab = ({
 
               <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg mb-6">
                 <p className="text-sm text-amber-900 dark:text-amber-300 text-center">
-                  💎 <strong>Oferta Especial:</strong> Upgrade agora e ganhe 7 dias grátis!
+                  <strong>Oferta Especial:</strong> Upgrade agora e ganhe 7 dias grátis!
                 </p>
               </div>
 

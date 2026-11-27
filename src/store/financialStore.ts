@@ -65,6 +65,8 @@ interface FinancialState {
   isLoading: boolean
   isCreatingTransaction: boolean
   isSyncingAllTransactions: boolean
+  importTransactionsBatch: (transactions: Omit<Transaction, 'id' | 'createdAt'>[]) => Promise<number>
+  payCreditCardInvoice: (cardId: string, amount: number, paymentDate: string, categoryId: string) => Promise<void>
   addTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>
   updateTransaction: (id: string, transaction: Partial<Transaction>) => Promise<void>
   deleteTransaction: (id: string) => Promise<void>
@@ -161,6 +163,54 @@ export const useFinancialStore = create<FinancialState>()(
         } catch (error) {
           set({ isLoading: false, isCreatingTransaction: false })
           toast.error('Erro ao adicionar transação')
+          throw error
+        }
+      },
+
+      importTransactionsBatch: async (transactionsToImport) => {
+        try {
+          set({ isLoading: true })
+          const payload = transactionsToImport.map((tx) => ({
+            ...tx,
+            amount: Number(tx.amount),
+          }))
+          const created = await transactionService.createBatch(payload as any)
+          const normalized = created.map(normalizeTransaction)
+          set((state) => ({
+            transactions: [...(normalized as any), ...state.transactions],
+            isLoading: false,
+          }))
+          toast.success(`${normalized.length} transações importadas com sucesso!`)
+          return normalized.length
+        } catch (error) {
+          set({ isLoading: false })
+          toast.error('Erro ao importar transações em lote')
+          throw error
+        }
+      },
+
+      payCreditCardInvoice: async (cardId, amount, paymentDate, categoryId) => {
+        try {
+          set({ isLoading: true })
+          const card = get().creditCards.find((c) => c.id === cardId)
+          const cardName = card ? card.name : 'Cartão de Crédito'
+
+          await get().addTransaction({
+            description: `Pagamento de Fatura - ${cardName}`,
+            amount: Number(amount),
+            type: 'expense',
+            categoryId,
+            date: paymentDate,
+            paymentMethod: 'cash',
+          } as any)
+
+          await Promise.all([get().fetchTransactions(), get().fetchCreditCards()])
+
+          set({ isLoading: false })
+          toast.success(`Fatura de ${cardName} paga com sucesso!`)
+        } catch (error) {
+          set({ isLoading: false })
+          toast.error('Erro ao registrar pagamento de fatura')
           throw error
         }
       },

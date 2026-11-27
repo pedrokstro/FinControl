@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react'
-import { Search, Package, Smile, Globe } from 'lucide-react'
+import { Search, Package, Smile, Globe, Lock } from 'lucide-react'
 import { iconCategories, type IconName, type IconCategoryItem } from '@/utils/iconMapping'
 import BrandPickerTab from './BrandPickerTab'
 import CategoryIcon from './CategoryIcon'
@@ -272,7 +272,7 @@ const IconPicker = ({
                           />
                           {isLocked && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-black/20 rounded-lg">
-                              <span className="text-[10px]">🔒</span>
+                              <Lock className="w-3 h-3 text-amber-500" />
                             </div>
                           )}
                           {isSelected && !isLocked && (

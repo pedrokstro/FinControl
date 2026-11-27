@@ -70,7 +70,7 @@ class ResendService {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🎉 Bem-vindo ao FinControl!</h1>
+              <h1>Bem-vindo ao FinControl!</h1>
             </div>
             <div class="content">
               <p>Olá!</p>
@@ -89,7 +89,7 @@ class ResendService {
 
     await this.sendEmail({
       to: email,
-      subject: '🔐 Código de Verificação - FinControl',
+      subject: 'Código de Verificação - FinControl',
       html,
     });
   }
@@ -115,7 +115,7 @@ class ResendService {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🔒 Recuperação de Senha</h1>
+              <h1>Recuperação de Senha</h1>
             </div>
             <div class="content">
               <p>Olá!</p>
@@ -134,7 +134,7 @@ class ResendService {
 
     await this.sendEmail({
       to: email,
-      subject: '🔐 Recuperação de Senha - FinControl',
+      subject: 'Recuperação de Senha - FinControl',
       html,
     });
   }

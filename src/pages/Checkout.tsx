@@ -99,7 +99,7 @@ const Checkout = () => {
       });
 
       toast.success('Pagamento processado com sucesso!');
-      toast.success('Bem-vindo ao Premium! 🎉');
+      toast.success('Bem-vindo ao plano Premium!');
       
       // Redirecionar para dashboard
       setTimeout(() => {

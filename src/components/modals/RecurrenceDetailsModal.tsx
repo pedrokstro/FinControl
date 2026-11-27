@@ -4,6 +4,7 @@ import { ptBR } from 'date-fns/locale'
 import {
   X,
   Repeat,
+  Calendar,
   CalendarCheck,
   CalendarX,
   Clock,
@@ -85,11 +86,13 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
 
   const getRecurrenceTypeIcon = (type?: string) => {
     switch (type) {
-      case 'daily': return '📅'
-      case 'weekly': return '📆'
-      case 'monthly': return '🗓️'
-      case 'yearly': return '🎯'
-      default: return '🔄'
+      case 'daily':
+      case 'weekly':
+      case 'monthly':
+      case 'yearly':
+        return <Calendar className="w-5 h-5 text-primary-600" />
+      default:
+        return <Repeat className="w-5 h-5 text-primary-600" />
     }
   }
 
@@ -192,10 +195,10 @@ const RecurrenceDetailsModal = ({ isOpen, onClose, transaction }: RecurrenceDeta
                     <div className={`p-1 rounded-2xl border-2 transition-all ${isUpdating ? 'border-primary-400 opacity-70 animate-pulse' : 'border-primary-100 dark:border-primary-900/30'}`}>
                       <CustomSelect
                         options={[
-                          { value: 'daily', label: 'Diária', icon: '📅' },
-                          { value: 'weekly', label: 'Semanal', icon: '📆' },
-                          { value: 'monthly', label: 'Mensal', icon: '🗓️' },
-                          { value: 'yearly', label: 'Anual', icon: '🎯' }
+                          { value: 'daily', label: 'Diária', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'weekly', label: 'Semanal', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'monthly', label: 'Mensal', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'yearly', label: 'Anual', icon: <Calendar className="w-4 h-4 text-primary-500" /> }
                         ]}
                         value={localRecurrenceType}
                         onChange={handleFrequencyChange}

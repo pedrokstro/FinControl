@@ -105,7 +105,7 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
                     <div className="space-y-3">
                       <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                         <h3 className="font-semibold text-red-900 dark:text-red-100 mb-2">
-                          ⚠️ Atenção: Dados Permanentemente Perdidos
+                          Atenção: Dados Permanentemente Perdidos
                         </h3>
                         <ul className="space-y-2 text-sm text-red-700 dark:text-red-300">
                           <li className="flex items-start gap-2">
@@ -133,7 +133,7 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
 
                       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                         <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-2">
-                          💡 Alternativa: Exportar seus dados
+                          Alternativa: Exportar seus dados
                         </p>
                         <p className="text-xs text-blue-700 dark:text-blue-300">
                           Considere exportar seus dados antes de excluir a conta. Você pode fazer isso em Configurações → Dados e Privacidade.
@@ -278,7 +278,7 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, userEmail }: DeleteAcc
                     <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg border-2 border-red-300 dark:border-red-700 text-center space-y-3">
                       <AlertTriangle className="w-16 h-16 text-red-600 dark:text-red-400 mx-auto" />
                       <h3 className="text-lg font-bold text-red-900 dark:text-red-100">
-                        ⚠️ ATENÇÃO: AÇÃO IRREVERSÍVEL
+                        Atenção: Ação Irreversível
                       </h3>
                       <p className="text-sm text-red-700 dark:text-red-300">
                         Ao confirmar, sua conta será <strong>permanentemente excluída</strong> e todos os seus dados serão <strong>perdidos para sempre</strong>.

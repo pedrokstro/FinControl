@@ -48,6 +48,22 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
+export const createBatch = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.userId;
+    const { transactions } = req.body;
+
+    if (!Array.isArray(transactions) || transactions.length === 0) {
+      return res.status(400).json({ message: 'A lista de transações não pode estar vazia' });
+    }
+
+    const created = await transactionService.createBatch(userId, transactions);
+    sendCreated(res, created, `${created.length} transações importadas com sucesso`);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;

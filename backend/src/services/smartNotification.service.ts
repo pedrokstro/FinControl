@@ -49,13 +49,12 @@ export class SmartNotificationService {
       return; // Não notificar se não tiver valor válido
     }
 
-    const emoji = type === 'income' ? '💰' : '💸';
     const title = type === 'income' ? 'Nova Receita Registrada' : 'Nova Despesa Registrada';
     const message = `${description || 'Transação'} - R$ ${Number(amount).toFixed(2)}`;
 
     await notificationService.create(
       userId,
-      `${emoji} ${title}`,
+      title,
       message,
       type === 'income' ? 'success' : 'info',
       'transaction'
@@ -91,7 +90,7 @@ export class SmartNotificationService {
     if (expensePercentage > 80 && totalIncome > 0) {
       await notificationService.create(
         userId,
-        '⚠️ Atenção aos Gastos',
+        'Atenção aos Gastos',
         `Você já gastou ${expensePercentage.toFixed(0)}% da sua receita este mês (R$ ${totalExpense.toFixed(2)} de R$ ${totalIncome.toFixed(2)}). Considere reduzir gastos não essenciais.`,
         'warning',
         'budget'
@@ -102,7 +101,7 @@ export class SmartNotificationService {
     if (expensePercentage < 50 && totalIncome > 500 && totalExpense > 0) {
       await notificationService.create(
         userId,
-        '🎉 Parabéns!',
+        'Excelente Controle!',
         `Você está economizando bem! Gastou apenas ${expensePercentage.toFixed(0)}% da sua receita. Saldo disponível: R$ ${balance.toFixed(2)}`,
         'success',
         'goal'
@@ -120,7 +119,7 @@ export class SmartNotificationService {
     if (amount >= 500) {
       await notificationService.create(
         userId,
-        '💡 Dica de Investimento',
+        'Dica de Investimento',
         `Que tal investir R$ ${suggestedAmount.toFixed(2)} (15%) desta receita? Pequenos investimentos regulares podem gerar grandes resultados no futuro!`,
         'info',
         'goal'
@@ -166,7 +165,7 @@ export class SmartNotificationService {
 
       await notificationService.create(
         userId,
-        '📊 Análise de Gastos',
+        'Análise de Gastos',
         `Você já gastou R$ ${categoryTotal.toFixed(2)} em ${finalCategoryName} este mês. Revise seus gastos nesta categoria para economizar mais.`,
         'info',
         'budget'
@@ -198,35 +197,35 @@ export class SmartNotificationService {
     // Lista de dicas rotativas
     const tips = [
       {
-        title: '💡 Dica de Economia',
+        title: 'Dica de Economia',
         message: 'Prepare suas refeições em casa! Você pode economizar até 70% comparado a comer fora todos os dias.',
       },
       {
-        title: '💡 Dica de Investimento',
+        title: 'Dica de Investimento',
         message: 'Comece pequeno! Investir R$ 100 por mês com rendimento de 10% ao ano pode se tornar R$ 20.000 em 10 anos.',
       },
       {
-        title: '💡 Dica de Economia',
+        title: 'Dica de Economia',
         message: 'Cancele assinaturas que você não usa. Revise seus gastos mensais e elimine serviços desnecessários.',
       },
       {
-        title: '💡 Dica Financeira',
+        title: 'Dica Financeira',
         message: 'Regra 50-30-20: Use 50% da renda para necessidades, 30% para desejos e 20% para poupança/investimentos.',
       },
       {
-        title: '💡 Dica de Economia',
+        title: 'Dica de Economia',
         message: 'Evite compras por impulso! Espere 24 horas antes de comprar algo não essencial. Muitas vezes você perceberá que não precisa.',
       },
       {
-        title: '💡 Dica de Investimento',
+        title: 'Dica de Investimento',
         message: 'Diversifique! Não coloque todos os ovos na mesma cesta. Distribua seus investimentos em diferentes tipos de ativos.',
       },
       {
-        title: '💡 Dica Financeira',
+        title: 'Dica Financeira',
         message: 'Crie um fundo de emergência! Tenha de 3 a 6 meses de despesas guardados para imprevistos.',
       },
       {
-        title: '💡 Dica de Economia',
+        title: 'Dica de Economia',
         message: 'Compare preços antes de comprar! Use aplicativos de comparação e aproveite promoções para economizar.',
       },
     ];
@@ -249,23 +248,23 @@ export class SmartNotificationService {
   async sendFeatureTips(userId: string): Promise<void> {
     const features = [
       {
-        title: '🎯 Conheça as Metas',
+        title: 'Conheça as Metas',
         message: 'Defina metas mensais de economia e acompanhe seu progresso em tempo real! Acesse a seção de Metas.',
       },
       {
-        title: '📊 Dashboard Completo',
+        title: 'Dashboard Completo',
         message: 'Visualize gráficos detalhados de receitas, despesas e categorias no Dashboard. Tome decisões baseadas em dados!',
       },
       {
-        title: '🔄 Transações Recorrentes',
+        title: 'Transações Recorrentes',
         message: 'Configure transações recorrentes para não esquecer de registrar contas mensais como aluguel, internet, etc.',
       },
       {
-        title: '📱 Categorias Personalizadas',
+        title: 'Categorias Personalizadas',
         message: 'Organize suas transações por categorias e veja onde você mais gasta. Use ícones exclusivos para personalizar!',
       },
       {
-        title: '🔔 Notificações Inteligentes',
+        title: 'Notificações Inteligentes',
         message: 'Receba alertas sobre gastos elevados, metas atingidas e dicas de economia personalizadas.',
       },
     ];
@@ -307,7 +306,7 @@ export class SmartNotificationService {
 
     await notificationService.create(
       userId,
-      '📈 Resumo Semanal',
+      'Resumo Semanal',
       `Última semana: ${expense_count} despesas totalizando R$ ${totalExpense.toFixed(2)}. Média diária: R$ ${avgDailyExpense.toFixed(2)}. ${totalIncome > 0 ? `Receitas: R$ ${totalIncome.toFixed(2)}` : 'Nenhuma receita registrada.'}`,
       'info',
       'system'

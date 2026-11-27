@@ -197,7 +197,7 @@ const SetSavingsGoalModal = ({
                   {currentGoal && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                       <p className="text-sm text-blue-800 dark:text-blue-300">
-                        <strong>💡 Dica:</strong> Você já economizou{' '}
+                        <strong>Dica:</strong> Você já economizou{' '}
                         <strong>
                           {new Intl.NumberFormat('pt-BR', {
                             style: 'currency',
@@ -211,7 +211,7 @@ const SetSavingsGoalModal = ({
 
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
                     <p className="text-xs text-amber-800 dark:text-amber-300">
-                      <strong>ℹ️ Como funciona:</strong> A meta é calculada automaticamente baseada no seu saldo mensal (receitas - despesas). Atualize suas transações para ver o progresso!
+                      <strong>Como funciona:</strong> A meta é calculada automaticamente baseada no seu saldo mensal (receitas - despesas). Atualize suas transações para ver o progresso!
                     </p>
                   </div>
 

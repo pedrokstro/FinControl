@@ -115,6 +115,7 @@ export const useAuthStore = create<AuthState>()(
               email: 'demo@financeiro.com',
               avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
               isPremium: true, // Demo user é premium
+              isAdmin: true, // Demo user é admin
             }
 
             set({ user, isAuthenticated: true, accessToken: 'demo-token', refreshToken: 'demo-refresh' })

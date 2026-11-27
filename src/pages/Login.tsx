@@ -69,7 +69,6 @@ const Login = () => {
       if (error.message === 'EMAIL_NOT_VERIFIED') {
         toast.error('Você precisa verificar seu email antes de fazer login', {
           duration: 5000,
-          icon: '📧',
         })
         navigate('/verify-email', {
           state: { email }

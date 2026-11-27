@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { TrendingUp, TrendingDown, Repeat, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, Repeat, Loader2, Calendar } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useFinancialStore } from '@/store/financialStore'
 import { useTransactionLimit } from '@/hooks/useTransactionLimit'
@@ -485,10 +485,10 @@ const TransactionFormModal = ({
                     render={({ field }) => (
                       <CustomSelect
                         options={[
-                          { value: 'daily', label: 'Diária', icon: '📅' },
-                          { value: 'weekly', label: 'Semanal', icon: '📆' },
-                          { value: 'monthly', label: 'Mensal', icon: '🗓️' },
-                          { value: 'yearly', label: 'Anual', icon: '🎯' },
+                          { value: 'daily', label: 'Diária', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'weekly', label: 'Semanal', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'monthly', label: 'Mensal', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
+                          { value: 'yearly', label: 'Anual', icon: <Calendar className="w-4 h-4 text-primary-500" /> },
                         ]}
                         value={field.value || ''}
                         onChange={(val) => {

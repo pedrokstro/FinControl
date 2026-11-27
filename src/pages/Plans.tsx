@@ -77,7 +77,7 @@ const Plans = () => {
       setIsStartingTrial(true);
       await subscriptionService.startTrial();
       await refreshPremiumStatus();
-      toast.success('🎉 Teste grátis de 7 dias ativado com sucesso!');
+      toast.success('Teste grátis de 7 dias ativado com sucesso!');
       navigate('/app/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Erro ao iniciar teste grátis');

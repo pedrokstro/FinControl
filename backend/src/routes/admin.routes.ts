@@ -40,6 +40,27 @@ router.post('/broadcast-notification', adminController.broadcastNotification);
 router.post('/send-notification/:userId', adminController.sendNotificationToUser);
 
 /**
+ * @route   GET /api/v1/admin/notifications/history
+ * @desc    Histórico recente de notificações
+ * @access  Private (Admin)
+ */
+router.get('/notifications/history', adminController.getNotificationHistory);
+
+/**
+ * @route   PATCH /api/v1/admin/users/:userId/toggle-premium
+ * @desc    Alternar status premium do usuário
+ * @access  Private (Admin)
+ */
+router.patch('/users/:userId/toggle-premium', adminController.toggleUserPremium);
+
+/**
+ * @route   PATCH /api/v1/admin/users/:userId/toggle-status
+ * @desc    Alternar status ativo/suspenso do usuário
+ * @access  Private (Admin)
+ */
+router.patch('/users/:userId/toggle-status', adminController.toggleUserStatus);
+
+/**
  * Rotas de Gerenciamento de Cards do Dashboard
  */
 router.get('/dashboard-cards', adminController.getDashboardCards);

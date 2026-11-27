@@ -1068,8 +1068,8 @@ const Settings = () => {
                             value={theme}
                             onChange={(val) => handleThemeChange(val)}
                             options={[
-                              { value: 'light', label: '☀️ Modo Claro' },
-                              { value: 'dark', label: '🌙 Modo Escuro' }
+                              { value: 'light', label: 'Modo Claro' },
+                              { value: 'dark', label: 'Modo Escuro' }
                             ]}
                           />
                         </div>
@@ -1082,9 +1082,9 @@ const Settings = () => {
                             value={preferences.language}
                             onChange={(val) => handleLanguageChange(val)}
                             options={[
-                              { value: 'pt-BR', label: '🇧🇷 Português (Brasil)' },
-                              { value: 'en', label: '🇺🇸 English' },
-                              { value: 'es', label: '🇪🇸 Español' }
+                              { value: 'pt-BR', label: 'Português (Brasil)' },
+                              { value: 'en', label: 'English' },
+                              { value: 'es', label: 'Español' }
                             ]}
                           />
                         </div>

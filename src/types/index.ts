@@ -33,6 +33,7 @@ export interface Transaction {
   totalInstallments?: number
   currentInstallment?: number
   isCancelled?: boolean
+  paymentMethod?: string | null
   creditCardId?: string | null
   creditCard?: CreditCard
 }
@@ -44,6 +45,7 @@ export interface CreditCard {
   closingDay: number
   dueDay: number
   brand: string
+  lastFourDigits?: string | null
   userId: string
   createdAt: string
   updatedAt: string

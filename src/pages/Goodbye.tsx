@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Send, Loader2, CheckCircle } from 'lucide-react'
+import { Heart, Send, Loader2, CheckCircle, DollarSign, Sliders, HelpCircle, RefreshCw, Shield, Clock, MessageSquare } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Goodbye = () => {
@@ -11,13 +11,13 @@ const Goodbye = () => {
   const [submitted, setSubmitted] = useState(false)
 
   const reasons = [
-    { id: 'expensive', label: 'Muito caro', emoji: '💰' },
-    { id: 'features', label: 'Faltam recursos', emoji: '⚙️' },
-    { id: 'difficult', label: 'Difícil de usar', emoji: '😕' },
-    { id: 'alternative', label: 'Encontrei alternativa', emoji: '🔄' },
-    { id: 'privacy', label: 'Preocupações com privacidade', emoji: '🔒' },
-    { id: 'temporary', label: 'Uso temporário', emoji: '⏱️' },
-    { id: 'other', label: 'Outro motivo', emoji: '💭' },
+    { id: 'expensive', label: 'Muito caro', icon: DollarSign },
+    { id: 'features', label: 'Faltam recursos', icon: Sliders },
+    { id: 'difficult', label: 'Difícil de usar', icon: HelpCircle },
+    { id: 'alternative', label: 'Encontrei alternativa', icon: RefreshCw },
+    { id: 'privacy', label: 'Preocupações com privacidade', icon: Shield },
+    { id: 'temporary', label: 'Uso temporário', icon: Clock },
+    { id: 'other', label: 'Outro motivo', icon: MessageSquare },
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,14 +106,16 @@ const Goodbye = () => {
                     key={reason.id}
                     type="button"
                     onClick={() => setSelectedReason(reason.id)}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${
                       selectedReason === reason.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                         : 'border-gray-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{reason.emoji}</span>
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-600 dark:text-neutral-400">
+                        <reason.icon className="w-4 h-4" />
+                      </div>
                       <span className={`text-sm font-medium ${
                         selectedReason === reason.id
                           ? 'text-primary-700 dark:text-primary-300'
@@ -147,7 +149,7 @@ const Goodbye = () => {
             {/* Message */}
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <p className="text-sm text-blue-900 dark:text-blue-100 text-center">
-                💙 Você sempre será bem-vindo de volta! Esperamos vê-lo novamente em breve.
+                Você sempre será bem-vindo de volta. Esperamos vê-lo novamente em breve.
               </p>
             </div>
 

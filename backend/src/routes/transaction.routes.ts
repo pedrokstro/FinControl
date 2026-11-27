@@ -59,6 +59,8 @@ router.use(authenticate);
  */
 router.get('/', validateQuery(filterTransactionsSchema), transactionController.findAll);
 
+router.post('/batch', transactionController.createBatch);
+
 /**
  * @swagger
  * /transactions:

@@ -199,7 +199,7 @@ const BudgetModal = ({ isOpen, onClose, category, existingBudget }: BudgetModalP
                                         </div>
 
                                         <p className="text-sm text-gray-500 dark:text-neutral-400 bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-xl">
-                                            💡 Você receberá alertas visuais (amarelo, vermelho) ao chegar perto desse limite ao longo do mês.
+                                            Você receberá alertas visuais (amarelo, vermelho) ao chegar perto desse limite ao longo do mês.
                                         </p>
                                     </div>
 

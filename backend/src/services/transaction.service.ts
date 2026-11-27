@@ -89,6 +89,19 @@ export class TransactionService {
     });
   }
 
+  async createBatch(userId: string, items: any[]) {
+    const created: any[] = [];
+    for (const item of items) {
+      try {
+        const tx = await this.create(userId, item);
+        if (tx) created.push(tx);
+      } catch (err) {
+        console.error('Erro ao importar transação individual do lote:', err);
+      }
+    }
+    return created;
+  }
+
   async findAll(userId: string, filters: any) {
     console.log('🔍 [DEBUG] Buscando transações...');
     const {

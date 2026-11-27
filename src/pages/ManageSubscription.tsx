@@ -12,6 +12,7 @@ import {
   Shield,
   Star,
   TrendingUp,
+  Check,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { subscriptionService, type SubscriptionStatus } from '@/services/subscription.service'
@@ -47,7 +48,7 @@ const ManageSubscription = () => {
       await subscriptionService.startTrial()
       await refreshPremiumStatus()
       await loadSubscriptionStatus()
-      toast.success('🎉 Teste grátis de 7 dias ativado com sucesso!')
+      toast.success('Teste grátis de 7 dias ativado com sucesso!')
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Erro ao iniciar teste grátis')
     } finally {
@@ -315,8 +316,9 @@ const ManageSubscription = () => {
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">{feature.text}</p>
                 {isPremium && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                    ✓ Disponível
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-1 flex items-center gap-1 font-semibold">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Disponível</span>
                   </p>
                 )}
               </div>

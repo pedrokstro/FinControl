@@ -37,6 +37,8 @@ const MonthTransactionsListModal = lazy(() => import('@/components/dashboard/Mon
 const MobileDashboardSections = lazy(() => import('@/components/dashboard/MobileDashboardSections'))
 const DesktopAnalyticsColumn = lazy(() => import('@/components/dashboard/DesktopAnalyticsColumn'))
 import Footer from '@/components/layout/Footer'
+import { calculateBalanceForecast } from '@/utils/balanceForecast'
+import ForecastDetailsModal from '@/components/modals/ForecastDetailsModal'
 import savingsGoalService, { SavingsGoal } from '@/services/savingsGoal.service'
 import analyticsService, { type AnalyticsData } from '@/services/analytics.service'
 import dashboardService, { type DashboardCard } from '@/services/dashboard.service'
@@ -63,6 +65,7 @@ const Dashboard = () => {
   const transactions = useFinancialStore((s) => s.transactions)
   const categories = useFinancialStore((s) => s.categories)
   const budgets = useFinancialStore((s) => s.budgets)
+  const creditCards = useFinancialStore((s) => s.creditCards)
   const syncWithBackend = useFinancialStore((s) => s.syncWithBackend)
   const { user, logout } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
@@ -72,6 +75,11 @@ const Dashboard = () => {
   const [quickAddType, setQuickAddType] = useState<'income' | 'expense'>('expense')
   const isMobile = useIsMobile()
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([])
+  const [isForecastModalOpen, setIsForecastModalOpen] = useState(false)
+
+  const balanceForecast = useMemo(() => {
+    return calculateBalanceForecast(transactions, creditCards)
+  }, [transactions, creditCards])
 
   const [showCalculator, setShowCalculator] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
@@ -758,6 +766,21 @@ const Dashboard = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Pílula de Saldo Previsto Mobile */}
+              <div className="flex items-center justify-center mt-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptics.light()
+                    setIsForecastModalOpen(true)
+                  }}
+                  className="bg-white/10 hover:bg-white/20 active:scale-95 rounded-full px-3 py-1 border border-white/15 flex items-center gap-1.5 text-white text-[11px] font-medium transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-300" />
+                  <span>Previsto fim do mês: <strong>{formatCurrency(balanceForecast.projectedBalance)}</strong></span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -869,6 +892,27 @@ const Dashboard = () => {
                   className="text-2xl lg:text-3xl font-black tracking-[-0.02em] tabular-figures font-display text-white"
                 />
               </div>
+
+              {/* Pílula de Saldo Previsto (Contas e Faturas a Pagar) */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.light()
+                  setIsForecastModalOpen(true)
+                }}
+                className="mt-2.5 w-full p-2 bg-white/10 hover:bg-white/20 active:scale-[0.98] rounded-xl border border-white/15 flex items-center justify-between text-left transition-all cursor-pointer"
+                title="Ver projeção detalhada de contas e faturas até o fim do mês"
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span className="text-[11px] font-medium text-white/90 truncate">
+                    Previsto fim do mês:
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-white tabular-figures ml-1 shrink-0">
+                  {formatCurrency(balanceForecast.projectedBalance)}
+                </span>
+              </button>
             </div>
 
             <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs text-white/85">
@@ -1338,6 +1382,13 @@ const Dashboard = () => {
         usage={usage}
       />
       </Suspense>
+
+      {/* Modal de Previsão de Saldo do Mês */}
+      <ForecastDetailsModal
+        isOpen={isForecastModalOpen}
+        onClose={() => setIsForecastModalOpen(false)}
+        forecast={balanceForecast}
+      />
 
       {/* Footer (Apenas Desktop) */}
       <div className="mt-12 hidden md:block">

@@ -15,7 +15,7 @@ export class NotificationHelper {
     description: string,
     transactionId: string
   ) {
-    const title = transactionType === 'income' ? '💰 Nova Receita' : '💸 Nova Despesa';
+    const title = transactionType === 'income' ? 'Nova Receita' : 'Nova Despesa';
     const message = `${description} - R$ ${amount.toFixed(2)}`;
 
     await notificationService.create(
@@ -38,7 +38,7 @@ export class NotificationHelper {
     percentage: number,
     goalId: string
   ) {
-    const title = percentage >= 100 ? '🎉 Meta Atingida!' : '📊 Progresso da Meta';
+    const title = percentage >= 100 ? 'Meta Atingida!' : 'Progresso da Meta';
     const message = `Você atingiu ${percentage}% da meta "${goalName}"!`;
 
     await notificationService.create(
@@ -60,7 +60,7 @@ export class NotificationHelper {
     totalExpenses: number,
     limit: number
   ) {
-    const title = '⚠️ Gastos Elevados';
+    const title = 'Gastos Elevados';
     const message = `Seus gastos este mês (R$ ${totalExpenses.toFixed(2)}) ultrapassaram R$ ${limit.toFixed(2)}`;
 
     await notificationService.create(
@@ -80,7 +80,7 @@ export class NotificationHelper {
     currentBalance: number,
     threshold: number
   ) {
-    const title = '📉 Saldo Baixo';
+    const title = 'Saldo Baixo';
     const message = `Seu saldo atual (R$ ${currentBalance.toFixed(2)}) está abaixo de R$ ${threshold.toFixed(2)}`;
 
     await notificationService.create(
@@ -101,7 +101,7 @@ export class NotificationHelper {
     amount: number,
     transactionId: string
   ) {
-    const title = '🔄 Transação Recorrente';
+    const title = 'Transação Recorrente';
     const message = `${description} - R$ ${amount.toFixed(2)} foi processada automaticamente`;
 
     await notificationService.create(
@@ -122,7 +122,7 @@ export class NotificationHelper {
     userId: string,
     daysRemaining: number
   ) {
-    const title = '👑 Plano Premium';
+    const title = 'Plano Premium';
     const message = `Seu plano Premium expira em ${daysRemaining} dia(s)`;
 
     await notificationService.create(
@@ -138,7 +138,7 @@ export class NotificationHelper {
    * Notificação de boas-vindas
    */
   static async notifyWelcome(userId: string, userName: string) {
-    const title = '🎉 Bem-vindo ao FinControl!';
+    const title = 'Bem-vindo ao FinControl!';
     const message = `Olá ${userName}! Explore todas as funcionalidades do sistema de controle financeiro.`;
 
     await notificationService.create(
@@ -160,7 +160,7 @@ export class NotificationHelper {
     limit: number,
     percentage: number
   ) {
-    const title = percentage >= 100 ? '🚨 Limite Ultrapassado' : '⚠️ Atenção ao Limite';
+    const title = percentage >= 100 ? 'Limite Ultrapassado' : 'Atenção ao Limite';
     const message = `Você gastou R$ ${spent.toFixed(2)} (${percentage}%) do limite de R$ ${limit.toFixed(2)} em ${categoryName}`;
 
     await notificationService.create(
